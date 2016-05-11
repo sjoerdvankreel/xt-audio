@@ -1,0 +1,9 @@
+lib/**
+dist/**
+temp/**
+scratch/**
+build/*.sdf
+build/.vs/**
+build/obj/**
+build/*.user
+build/*.opensdf

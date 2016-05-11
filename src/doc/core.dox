@@ -1,0 +1,893 @@
+/**
+ * @mainpage XT-Audio
+ *
+ * @section abstractions Core abstractions
+ *
+ * <b>Systems and services</b>
+ *
+ * An audio service is an implementation of the XtService API on a specific backend.
+ * Supported backends include DirectSound, WASAPI and ASIO on windows, and PulseAudio,
+ * ALSA and JACK on linux. Services are used primarily to query and open available audio devices.
+ *
+ * <b>Devices</b>
+ *
+ * An audio device is an implementation of the XtDevice API on a specific backend.
+ * Depending on the backend type, devices may directly correspond to physical audio
+ * cards (ASIO, ALSA hw, WASAPI exclusive), system mixers on top of such cards
+ * (ALSA plughw, WASAPI shared, DirectSound), or sound services which allow user-
+ * defined routing from application input/output to physical or virtual devices
+ * (JACK and PulseAudio). The device API may be used to query format support and
+ * buffer sizes, and to create audio streams.
+ *
+ * <b>Streams</b>
+ *
+ * An audio stream is an implementation of the XtStream API on a specific backend.
+ * Each stream is tied to an application-defined callback function (XtStreamCallback)
+ * which is called whenever the stream is ready to deliver or receive more data.
+ * The XtStream API can be used to control (start/stop) audio streams and to query
+ * latencies and buffer sizes.
+ *
+ * @section usage Basic usage
+ *
+ * An application must first initialize the library using XtAudioInit.
+ * From there, it can select an audio service, query for available devices,
+ * and open streams on those devices. The choice of backend (system) greatly
+ * affects the way audio is streamed in terms of latency, supported formats
+ * and whether the application takes system-wide exclusive control of a device.
+ * If you know exactly what your application needs, use XtAudioGetServiceBySetup
+ * or XtAudioGetServiceBySystem to select a backend with specific characteristics.
+ * Otherwise it's probably best to let the end-user pick the system and device to use.
+ *
+ * Streaming audio with XT-Audio involves at least these steps:
+ * 1. Initialize (XtAudioInit)
+ * 2. Select service (XtAudioGetServiceByIndex/XtAudioGetServiceBySetup/XtAudioGetServiceBySystem)
+ * 3. Select device (XtServiceOpenDevice/XtServiceOpenDefaultDevice)
+ * 4. Test format and buffer size support (XtDeviceSupportsFormat/XtDeviceGetBuffer)
+ * 5. Open a stream (XtDeviceOpenStream)
+ * 6. Start running (XtStreamStart)
+ * 7. Stop running (XtStreamStop)
+ * 8. Cleanup stream (XtStreamDestroy)
+ * 9. Cleanup device (XtDeviceDestroy)
+ * 10. Cleanup library (XtAudioTerminate)
+ *
+ * @section langdiffs API differences between languages
+ *
+ * <b>Error handling</b>
+ *
+ * The core API uses error codes exclusively. C++, Java and C# API's use only exceptions.
+ *
+ * <b>String handling</b>
+ *
+ * In the C and C++ API's, all strings are encoded as UTF-8. In the C# and Java API's strings use the built-in string type.
+ *
+ * <b>Resource handling</b>
+ *
+ * In all language API's there are 3 resources that must be explicitly managed: devices, streams, and the library itself.
+ * For C, this means XtDeviceDestroy/XtStreamDestroy/XtAudioTerminate. For C++ everything is handled using RAII,
+ * the XtAudio constructor calls XtAudioInit and destructor calls XtAudioTerminate. Devices and streams are handled
+ * using std::unique_ptrs. For Java each resource implements Closeable, for C# IDisposable. Except for the C API
+ * these are the only resources the application needs to be concerned about. For C, it is documented whether return
+ * values and output parameters should be explicitly cleaned up using XtAudioFree().
+ *
+ * <b>Audio buffers</b>
+ *
+ * The input/output buffers passed to XtStreamCallback should be cast to the appropriate type before usage.
+ * For C and C++ this means unsigned char*, short*, int* or float*. For Java and C# this means byte[], short[],
+ * int[] or float[]. Applications should never write to the input buffer (this is enforced in C and C++ through
+ * the use of const).
+ */
+
+ /**
+ * @file xt-audio.h
+ * @brief The core XT-Audio interface.
+ */
+
+/**
+ * @defgroup library Generic interface
+ * @brief Common datatypes.
+ *
+ * Contains definitions of common datatypes.
+ */
+
+/**
+ * @defgroup audio Bootstrapping interface
+ * @brief Bootstrapping and service selection
+ *
+ * Contains functions to initialize the library, choosing between
+ * audio services and seting up logging and error handling.
+ */
+
+/**
+ * @defgroup service Service interface
+ * @brief Service capabilities and device enumeration.
+ *
+ * Contains functions to query audio services for
+ * capabilities and opening default and specific devices.
+ */
+
+/**
+ * @defgroup device Device interface
+ * @brief Device queries and stream creation.
+ *
+ * Contains functions to query audio devices for
+ * capabilities and opening audio streams.
+ */
+
+/**
+ * @defgroup stream Stream interface
+ * @brief Stream queries and operation.
+ *
+ * Contains functions to control (start/stop) audio streams
+ * and querying running audio streams for buffer size and latencies.
+ */
+
+/**
+ * @defgroup stream Stream interface
+ * @brief Stream queries and operation.
+ *
+ * Contains functions to control (start/stop) audio streams
+ * and querying running audio streams for buffer size and latencies.
+ */
+
+/**
+ * @defgroup print Print interface
+ * @brief Datatype to text conversions.
+ *
+ * Contains functions to print datatypes to a human
+ * readably representation. Note that values returned by
+ * the XtPrint* functions are meant as a help to developers
+ * and are not intended to be shown to end users.
+ */
+ 
+/**
+ * @def XT_CALL
+ * @brief Calling convention.
+ *
+ * Public XT-Audio API functions use this convention.
+ * @ingroup library
+ */
+
+/**
+ * @def XT_CALLBACK
+ * @brief Calling convention.
+ *
+ * Callback functions passed to XT-Audio must use this convention.
+ * @ingroup library
+ */
+
+ /**
+  * @typedef typedef int32_t XtBool
+  * @brief Boolean type.
+  *
+  * Zero is false, nonzero is true.
+  * @ingroup library
+  * @see XtTrue
+  * @see XtFalse
+  */
+
+/**
+  * @var XtBool XtTrue
+  * @brief Boolean true (1).
+  *
+  * @ingroup library
+  */
+
+/**
+  * @var XtBool XtFalse
+  * @brief Boolean false (0).
+  *
+  * @ingroup library
+  */
+
+/**
+  * @typedef uint64_t XtError
+  * @brief Error type.
+  *
+  * Use the XtError* functions to extract meaningful data from an error value.
+  * @ingroup library
+  * @see XtErrorGetText
+  * @see XtErrorGetCause
+  * @see XtErrorGetFault
+  * @see XtErrorGetSystem
+  * @see XtPrintErrorToString
+  */
+
+/** 
+  * @enum XtLevel
+  * @brief Logging level.
+  *
+  * @ingroup library
+  * @see XtTraceCallback
+  * @see XtPrintLevelToString
+  */
+
+/**
+  * @enum XtCause
+  * @brief Platform-independent error cause value.
+  *
+  * @ingroup library
+  * @see XtErrorGetCause
+  * @see XtPrintCauseToString
+  */
+
+/** 
+  * @enum XtSystem
+  * @brief Platform-specific service identifier.
+  *
+  * @ingroup library
+  * @see XtErrorGetSystem
+  * @see XtServiceGetSystem
+  * @see XtDeviceGetSystem
+  * @see XtStreamGetSystem
+  * @see XtAudioGetServiceBySystem
+  * @see XtPrintSystemToString
+  */
+
+/**
+  * @enum XtSample
+  * @brief Audio sample format.
+  *
+  * @ingroup library
+  * @see XtMix
+  * @see XtAudioGetSampleAttributes
+  * @see XtPrintSampleToString
+  */
+
+/**
+  * @enum XtSetup
+  * @brief Platform-independent service setup.
+  *
+  * @ingroup library
+  * @see XtPrintSetupToString
+  * @see XtAudioGetServiceBySetup
+  */
+
+/** 
+  * @enum XtCapabilities
+  * @brief Audio service capabilities.
+  *
+  * @ingroup library
+  * @see XtServiceGetCapabilities
+  * @see XtPrintCapabilitiesToString
+  */
+
+/** 
+  * @struct XtMix
+  * @brief Audio mix format.
+  *
+  * @ingroup library
+  * @see XtFormat
+  * @see XtDeviceGetMix
+  * @see XtPrintMixToString
+  */
+
+/** 
+  * @struct XtFormat
+  * @brief Audio stream format.
+  *
+  * Formats with both inputs and outputs can only be used with 
+  * services that support full-duplex, see XtServiceGetCapabilities.
+  * 
+  * Channel masks will be ignored for services that do not support
+  * masking, see XtServiceGetCapabilities.
+  *
+  * @ingroup library
+  * @see XtDeviceOpenStream
+  * @see XtDeviceSupportsFormat
+  * @see XtDeviceGetBuffer
+  * @see XtPrintFormatToString
+  * @see XtServiceGetCapabilities
+  */
+
+/** 
+  * @struct XtBuffer
+  * @brief Device buffer size limits.
+  *
+  * @ingroup library
+  * @see XtDeviceGetBuffer
+  * @see XtDeviceOpenStream
+  * @see XtPrintBufferToString
+  */
+
+/** 
+  * @struct XtLatency
+  * @brief Stream latency.
+  *
+  * @ingroup library
+  * @see XtStreamGetLatency
+  * @see XtPrintLatencyToString
+  */
+
+/** 
+  * @struct XtAttributes
+  * @brief Sample type attributes.
+  *
+  * @ingroup library
+  * @see XtAudioGetSampleAttributes
+  * @see XtPrintAttributesToString
+  */
+
+/**
+  * @typedef typedef void (*XtFatalCallback)(void)
+  * @brief Fatal error callback.
+  *
+  * @ingroup library
+  * XT-Audio will call the application-defined fatal error handler (if one was supplied to XtAudioInit)
+  * whenever an unrecoverable error occurs. It is assumed that the callback does not return. If it does,
+  * abort() is called. This function may be called on any thread, implementations must ensure thread-safety.
+  * @see XtAudioInit
+  */
+
+/**
+  * @typedef typedef void (*XtTraceCallback)(XtLevel level, const char* message)
+  * @brief Logging callback.
+  *
+  * @ingroup library
+  * @param level The log level.
+  * @param message The log message.
+  *
+  * XT-Audio will call the application-defined logging callback (if one was supplied to XtAudioInit)
+  * on each error (whether fatal or not) and each time an event (such as opening or closing a device or
+  * stream) occurs. This function may be called on any thread, implementations must ensure thread-safety.
+  *
+  * @see XtAudioInit
+  */
+
+
+/**
+  * @typedef typedef void (*XtStreamCallback)(const XtStream* stream, const void* input, void* output, int32_t frames, double time, uint64_t position, XtBool timeValid, XtError error, void* user)
+  * @brief Audio stream callback.
+  *
+  * @ingroup library
+  * @param stream The audio stream. May be used to query buffer size and latencies only, do not call control methods from the callback.
+  * @param input The buffer containing (interleaved) data captured from the device, if any. May be NULL if frames == 0 or when no input channels are present.
+  * @param output The buffer where the application writes it's (interleaved) output, if any. May be NULL if frames == 0 or when no output channels are present.
+  * @param frames The number of frames in the input and/or output buffer. It will never exceed XtStreamGetFrames.
+  * @param time The stream timestamp. Only available on services which have the Time capability (see XtCapabilities), otherwise 0.
+  * @param position The stream position. Only available on services which have the Time capability (see XtCapabilities), otherwise 0.
+  * @param timeValid Indicates whether the time and position parameters are valid. Only available on services which have the Time capability (see XtCapabilities), otherwise false. Even on services which support time and position info this parameter may be false sometimes, for example during stream startup/shutdown or when a glitch occurred.
+  * @param error If nonzero, indicates that an error occurred on the audio thread and that the stream will be stopped after the callback returns.
+  * @param user The user data passed to XtDeviceOpenStream.
+  *
+  * The audio callback will normally be called from a high priority thread.
+  * To prevent glitches the callback should not call any blocking methods (using locks, doing I/O etc).
+  * The input/output buffers should be cast to the appropriate datatype for the format used to open the stream,
+  * e.g. (unsigned char*) for UInt8 and UInt24, (short*) for Int16, (int*) for Int32 and (float*) for Float32.
+  * @see XtDeviceOpenStream
+  * @see XtStreamStart
+  * @see XtStreamGetFrames
+  * @see XtServiceGetCapabilities
+  */
+
+/**
+ * @fn XtCause XtErrorGetCause(XtError error)
+ * @brief Extract system-independent cause from error.
+ * @param error the error value, must not be 0.
+ * @return the cause for the given error.
+ *
+ * An error cause is a system-independent code indicating the source of the error.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn uint32_t XtErrorGetFault(XtError error)
+ * @brief Extract system-specific fault from error.
+ * @param error the error value, must not be 0.
+ * @return the fault for the given error.
+ *
+ * An error fault is a system-specific code indicating the source of the error.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn XtSystem XtErrorGetSystem(XtError error)
+ * @brief Extract system from error.
+ * @param error the error value, must not be 0.
+ * @return the system for the given error.
+ *
+ * An error value contains the system that generated it, to allow mapping
+ * between system-specific fault values and system-independent cause values.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtErrorGetText(XtError error)
+ * @brief Extract system-specific text from error.
+ * @param error the error value, must not be 0.
+ * @return a pointer to a statically allocated string containing the error text for the given error.
+ *
+ * The error text is only useful for development purposes and is not meant to be shown to end users.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintLevelToString(XtLevel level)
+ * @brief Convert a level to a human-readable string.
+ * @param level the level value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintCauseToString(XtCause cause)
+ * @brief Convert a cause to a human-readable string.
+ * @param cause the cause value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintSetupToString(XtSetup setup)
+ * @brief Convert a setup to a human-readable string.
+ * @param setup the setup value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintSystemToString(XtSystem system)
+ * @brief Convert a system to a human-readable string.
+ * @param system the system value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintSampleToString(XtSample sample)
+ * @brief Convert a sample to a human-readable string.
+ * @param sample the sample value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintErrorToString(XtError error)
+ * @brief Convert an error to a human-readable string.
+ * @param error the error value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintMixToString(const XtMix* mix)
+ * @brief Convert a mix to a human-readable string.
+ * @param mix the mix value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintFormatToString(const XtFormat* format)
+ * @brief Convert a format to a human-readable string.
+ * @param format the format value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintBufferToString(const XtBuffer* buffer)
+ * @brief Convert buffer sizes to a human-readable string.
+ * @param buffer the buffer value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintLatencyToString(const XtLatency* latency)
+ * @brief Convert latencies to a human-readable string.
+ * @param latency the latency value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintCapabilitiesToString(XtCapabilities capabilities)
+ * @brief Convert capabilities to a human-readable string.
+ * @param capabilities the capabilities value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintAttributesToString(const XtAttributes* attributes)
+ * @brief Convert sample attributes to a human-readable string.
+ * @param attributes the attributes value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn XtBool XtAudioIsWin32(void)
+ * @brief Indicates whether XT-Audio is running on Windows (true) or Linux (false).
+ * @return true if running on windows, false if running on linux.
+ *
+ * The only time this value is useful is when an application wants to work with a specific service (XtAudioGetServiceBySystem).
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn void XtAudioTerminate(void)
+ * @brief Terminates the XT-Audio library.
+ *
+ * It is an error to terminate the library when any streams or devices are still open.
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn void XtAudioFree(void* ptr)
+ * @brief Standard free() wrapper.
+ * @param ptr the memory to free.
+ *
+ * All functions which allocate memory that must be free()d by the application indicate so in the documentation.
+ * It is ok to free NULL.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtAudioGetVersion(void)
+ * @brief Get library version.
+ * @return a pointer to a statically allocated string containing the library version.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn int32_t XtAudioGetServiceCount(void)
+ * @brief Get number of available services on the current platform.
+ * @return number of available services.
+ *
+ * This function may be called from any thread.
+ * @see XtAudioGetServiceByIndex
+ */
+
+/**
+ * @fn const XtService* XtAudioGetServiceByIndex(int32_t index)
+ * @brief Get service by index.
+ * @return an audio service.
+ * @param index the index, from 0 to XtAudioGetServiceCount (exclusive).
+ *
+ * This function may be called from any thread.
+ * @see XtAudioGetServiceCount
+ */
+
+/**
+ * @fn const XtService* XtAudioGetServiceBySetup(XtSetup setup)
+ * @brief Get service by setup.
+ * @return an audio service.
+ * @param setup the desired setup type.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const XtService* XtAudioGetServiceBySystem(XtSystem system)
+ * @brief Get service by system.
+ * @return an audio service.
+ * @param system the desired system.
+ *
+ * It is an error to call this function with a system that does not exist on the current platform,
+ * for example, to specify XtSystemJack when running on Windows. Any attempt to do so will result
+ * in a fatal error.
+ *
+ * This function may be called from any thread.
+ * @see XtAudioIsWin32
+ */
+
+/**
+ * @fn void XtAudioGetSampleAttributes(XtSample sample, XtAttributes* attributes)
+ * @brief Get sample attributes for a specific sample type.
+ * @param sample the sample type.
+ * @param attributes (output) resulting sample attributes.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn void XtAudioInit(const char* id, void* window, XtTraceCallback trace, XtFatalCallback fatal)
+ * @brief Initialize the XT-Audio library.
+ * @param id the application id. Used to identify against sound servers such as JACK and PulseAudio. When NULL, "XT-Audio" is used.
+ * @param window application main window handle. ASIO uses this to show model control panels. When NULL, a dummy message window is used.
+ * @param trace application-defined logging callback. When NULL, no logging is performed. Fatal errors are always written to stdout.
+ * @param fatal application-defined fatal error handler to allow cleanup, may be NULL. This function must not return.
+ *
+ * This function may be called from any thread. The thread on which it is called becomes
+ * the main thread, many other functions may only be called from the main thread. On Windows,
+ * COM is initialized in STA mode by this call.
+ */
+
+/**
+ * @fn XtSystem XtServiceGetSystem(const XtService* s)
+ * @brief Get service system.
+ * @return the system for the given service.
+ * @param s the audio service.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtServiceGetName(const XtService* s)
+ * @brief Get service name.
+ * @return a pointer to a statically allocated string containing the name of the given service.
+ * @param s the audio service.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn XtCapabilities XtServiceGetCapabilities(const XtService* s)
+ * @brief Get service capabilities.
+ * @return the capabilities for the given service.
+ * @param s the audio service.
+ *
+ * This function may be called from any thread.
+ *
+ * @see XtFormat
+ * @see XtStreamCallback
+ * @see XtStreamGetLatency
+ */
+
+/**
+ * @fn XtError XtServiceGetDeviceCount(const XtService* s, int32_t* count)
+ * @brief Gets number of devices in service.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param count on success, receives the number of devices.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtServiceOpenDevice
+ */
+
+/**
+ * @fn XtError XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device)
+ * @brief Open an audio device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param index the device index.
+ * @param device on success, receives a pointer to the opened device. On error, *device is set to NULL.
+ *
+ * Use XtDeviceDestroy to clean up the device.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceDestroy
+ * @see XtServiceGetDeviceCount
+ */
+
+/**
+ * @fn XtError XtServiceOpenDefaultDevice(const XtService* s, XtBool output, XtDevice** device)
+ * @brief Open the default audio device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param output true to open the default output device, false to open the default input device.
+ * @param device on success, receives a pointer to the opened device. On error or when no default device is present, *device is set to NULL.
+ *
+ * Use XtDeviceDestroy to clean up the device. It is NOT an error when no default device is present.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceDestroy
+ */
+
+/**
+ * @fn void XtDeviceDestroy(XtDevice* d)
+ * @brief Destroys an audio device.
+ * @param d the audio service.
+ *
+ * It is an error to destroy a device which still has open streams. It is ok to pass NULL.
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn XtError XtDeviceShowControlPanel(XtDevice* d)
+ * @brief Show the device specific control pabel.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ *
+ * This method currently has an effect on ASIO devices only.
+ * All others succeed and do nothing.
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn XtSystem XtDeviceGetSystem(const XtDevice* d)
+ * @brief Get device system.
+ * @return the system for the given device.
+ * @param d the audio device.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn XtError XtDeviceGetMix(const XtDevice* d, XtMix** mix)
+ * @brief Gets the device's current mix format.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param mix on success, receives a pointer to a newly allocated XtMix. Use XtAudioFree to free the returned value. On error, or when no mix format is present, *mix will be NULL.
+ *
+ * It is NOT an error when a device has no current or default mix format.
+ * The mix format may be used as a starting point to query for supported
+ * audio formats (see XtDeviceSupportsFormat).
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceSupportsFormat
+ */
+
+/**
+ * @fn XtError XtDeviceGetName(const XtDevice* d, char** name)
+ * @brief Gets the device's name.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param name on success, receives a pointer to a dynamically allocated string. Use XtAudioFree to free the returned string. On error *name will be NULL.
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn XtError XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count)
+ * @brief Gets the maximum number of channels supported by the device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param output true to query output channels, false to query input channels.
+ * @param count on success, receives the maximum channel count.
+ *
+ * The channel count represents the maximum number of channels representable by
+ * the current device. This value dictates the possible values of the audio
+ * format's channel masks only, it does not indicate that the device actually
+ * supports streams with the number of channels returned by this method.
+ *
+ * This function may only be called from the main thread.
+ * @see XtFormat
+ * @see XtDeviceGetChannelName
+ */
+
+/**
+ * @fn XtError XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer)
+ * @brief Gets the buffer size limits supported by the device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param format the audio format to test buffer limits for.
+ * @param buffer on success, buffer receives the buffer size limits for the given format.
+ *
+ * The given format must be supported by the device, see XtDeviceSupportsFormat.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceOpenStream
+ * @see XtDeviceSupportsFormat
+ */
+
+/**
+ * @fn XtError XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports)
+ * @brief Indicates whether an audio format is supported by the device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param format the audio format to test support for.
+ * @param supports on success, indicates whether the format is supported.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceOpenStream
+ * @see XtDeviceGetBuffer
+ */
+
+/**
+ * @fn XtError XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name)
+ * @brief Gets the name of a specific input/output channel.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param output true for output channels, false for input channels.
+ * @param index the channel index.
+ * @param name on success, receives a pointer to a dynamically allocated string. Use XtAudioFree to free the returned string. On error *name will be NULL.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtDeviceGetChannelCount
+ */
+
+/**
+ * @fn XtError XtDeviceOpenStream(XtDevice* d, const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream)
+ * @brief Opens an audio stream on the given device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param format the audio format (must be supported).
+ * @param bufferSize the desired buffer size in milliseconds (will be truncated to the supported range).
+ * @param callback the application-defined stream callback.
+ * @param user user data passed to the stream callback (may be NULL).
+ * @param stream on success, receives a pointer to the opened audio stream. On error, *stream will be NULL.
+ *
+ * Use XtDeviceGetBuffer to query supported buffer sizes.
+ *
+ * The resulting stream must be closed using XtStreamDestroy.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamDestroy
+ */
+
+/**
+ * @fn void XtStreamDestroy(XtStream* s)
+ * @brief Destroys an audio stream.
+ * @param s the audio stream.
+ *
+ * It is ok to pass NULL and to destroy a running stream (it will be stopped first).
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn XtError XtStreamStop(XtStream* s)
+ * @brief Stops an audio stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio stream.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamStart
+ */
+
+/**
+ * @fn XtError XtStreamStart(XtStream* s)
+ * @brief Starts an audio stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio stream.
+ *
+ * When the stream is running the application-defined stream callback will be invoked whenever audio data is needed or available.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamStop
+ */
+
+/**
+ * @fn XtSystem XtStreamGetSystem(const XtStream* s)
+ * @brief Get stream system.
+ * @return the system for the given stream.
+ * @param s the audio stream.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn XtError XtStreamGetFrames(const XtStream* s, int32_t* frames)
+ * @brief Get maximum stream buffer size.
+ * @return The maximum buffer size for the given stream.
+ * @param s the audio stream.
+ * @param frames on success, reveices the stream buffer size in frames.
+ *
+ * This value is constant for the lifetime of the stream. It may be used
+ * to pre-allocate any intermediate buffers the application may need.
+ *
+ * This function may be called from any thread (to allow invocation from the stream callback).
+ */
+
+/**
+ * @fn XtError XtStreamGetLatency(const XtStream* s, XtLatency* latency)
+ * @brief Get the end-to-end latency, if supported by the system.
+ * @return The current latencies for the given stream.
+ * @param s the audio stream.
+ * @param latency on success, receives the current input/output latency in milliseconds. When the service does not support latency information, latency->input and latency->output will be 0.
+ *
+ * This value may change during the lifetime of the stream.
+ *
+ * This function may be called from any thread (to allow invocation from the stream callback).
+ *
+ * @see XtServiceGetCapabilities
+ */

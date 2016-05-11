@@ -1,0 +1,37 @@
+Building XT-Audio
+
+* Windows dependencies: asmjit (source), steinberg asio sdk (source), msvcrt
+* Linux dependencies: libasound-dev, libjack-jackd2-dev, libpulse-dev, libpulse-simple
+
+* Have a windows box or vm ready with:
+** mvn on PATH
+** cmake on PATH
+** msbuild on PATH
+** doxygen on PATH
+** java sdk on PATH
+** coreflags on PATH
+** asmjit (library source)
+** asiosdk (library source)
+** sandcastle helpfile builder
+** visual studio 2015 or equivalent windows sdk
+
+* Have an x86 and x64 linux box or vm ready with:
+** gcc
+** cmake
+** alsa development libraries
+** jack development libraries
+** pulseaudio development libraries
+
+* All machines should be able to acces the xt-audio/build directory.
+* On windows:
+cd build && build.bat path\to\asiosdk path\to\asmjit
+* On x86 linux:
+cd build && export XT_ARCH=x86 && /.build.sh
+* On x64 linux:
+cd build && export XT_ARCH=x64 && /.build.sh
+
+Running the build will produce 3 folders:
+* Scratch: working directory with all project files and binaries produced by individual targets
+* Temp: complete outputs including required binaries for all projects, including debug builds and test programs
+* Dist: only stuff that's actually supported ends up here: release versions of core library, wrapper libraries, sample programs, cli gui app and docs.
+

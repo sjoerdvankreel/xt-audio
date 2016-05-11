@@ -1,0 +1,450 @@
+#ifdef __linux__
+#include "xt-linux.hpp"
+#include <vector>
+#include <cstring>
+#include <climits>
+#include <alsa/asoundlib.h>
+
+/* Copyright (C) 2015-2016 Sjoerd van Kreel.
+ *
+ * This file is part of XT-Audio.
+ *
+ * XT-Audio is free software: you can redistribute it and/or modify it under the 
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * XT-Audio is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
+ */
+
+#define XT_VERIFY_ALSA(c) do { int e = (c); if(e < 0) \
+  return XT_TRACE(XtLevelError, "%s", #c), e; } while(0)
+
+// ---- local ----
+
+static void LogError(const char *file, int line, 
+  const char *fun, int err, const char *fmt, ...);
+static void LogNull(const char *file, int line, 
+  const char *fun, int err, const char *fmt, ...) {}
+
+static const double XtAlsaMinBufferMs = 1.0;
+static const double XtAlsaMaxBufferMs = 2000.0;
+static const size_t XtAlsaDefaultBufferBytes = 64 * 1024;
+
+struct AlsaDeviceInfo {
+  bool output;
+  std::string name;
+  std::string description;
+};
+
+struct AlsaLogDisabler {
+  AlsaLogDisabler()
+  { XT_ASSERT(snd_lib_error_set_handler(&LogNull) == 0); }
+  ~AlsaLogDisabler()
+  { XT_ASSERT(snd_lib_error_set_handler(&LogError) == 0); }
+};
+
+struct AlsaPcm {
+  snd_pcm_t* pcm;
+  AlsaPcm(const AlsaPcm&) = delete;
+  AlsaPcm& operator=(const AlsaPcm&) = delete;
+
+  AlsaPcm(snd_pcm_t* pcm): pcm(pcm)
+  { XT_ASSERT(pcm != nullptr); }
+  
+  AlsaPcm(AlsaPcm&& rhs):
+  pcm(rhs.pcm) { rhs.pcm = nullptr; }
+  
+  AlsaPcm& operator=(AlsaPcm&& rhs)
+  { pcm = rhs.pcm; rhs.pcm = nullptr; return *this; }
+
+  ~AlsaPcm()
+  { XT_ASSERT(pcm == nullptr || snd_pcm_close(pcm) == 0); }
+};
+
+struct AlsaHint {
+  char* hint;
+  ~AlsaHint() { free(hint); }
+  AlsaHint(char* hint): hint(hint) {}
+};
+
+struct AlsaHints {
+  void** hints;
+  ~AlsaHints()
+  { XT_ASSERT(snd_device_name_free_hint(hints) == 0); }
+  AlsaHints(): hints(nullptr) 
+  { XT_ASSERT(snd_device_name_hint(-1, "pcm", &hints) == 0); }
+};
+
+// ---- forward ----
+
+XT_DECLARE_SERVICE(Alsa);
+
+struct AlsaDevice: public XtDevice {
+  const AlsaDeviceInfo info;
+  XT_IMPLEMENT_DEVICE(Alsa);
+
+  AlsaDevice(const AlsaDeviceInfo& info):
+  info(info) {}
+};
+
+struct AlsaStream: public XtlLinuxStream {
+  const AlsaPcm pcm;
+  const bool output;
+  uint64_t processed;
+  std::vector<char> audio;
+  const int32_t bufferFrames;
+  XT_IMPLEMENT_STREAM(Alsa);
+
+  ~AlsaStream() { Stop(); }
+  AlsaStream(AlsaPcm&& p, bool output, int32_t bufferFrames, int32_t frameSize):
+  pcm(std::move(p)), output(output), processed(0),
+  audio(static_cast<size_t>(bufferFrames * frameSize), '\0'),
+  bufferFrames(bufferFrames) {}
+
+  void StopStream();
+  void StartStream();
+  void ProcessBuffer(bool prefill);
+};
+
+// ---- local ----
+
+static void LogError(const char *file, int line, 
+  const char *fun, int err, const char *fmt, ...) {
+
+  va_list arg;
+  va_start(arg, fmt);
+  if(err != 0)
+    XtiVTrace(XtLevelError, file, line, fun, fmt, arg);
+  va_end(arg);
+}
+
+static snd_pcm_format_t ToAlsaSample(XtSample sample) {
+  switch(sample) {
+  case XtSampleUInt8: return SND_PCM_FORMAT_U8; 
+  case XtSampleInt16: return SND_PCM_FORMAT_S16_LE; 
+  case XtSampleInt24: return SND_PCM_FORMAT_S24_3LE; 
+  case XtSampleInt32: return SND_PCM_FORMAT_S32_LE; 
+  case XtSampleFloat32: return SND_PCM_FORMAT_FLOAT_LE;
+  default: return XT_FAIL("Unknown sample."), SND_PCM_FORMAT_U8;
+  }
+}
+
+static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
+  AlsaHints hints;
+  std::vector<AlsaDeviceInfo> result;
+  std::vector<AlsaDeviceInfo> outputs;
+
+  for(size_t i = 0; hints.hints[i] != nullptr; i++) {
+    AlsaDeviceInfo device = AlsaDeviceInfo();
+    AlsaHint ioid(snd_device_name_get_hint(hints.hints[i], "IOID"));
+    AlsaHint name(snd_device_name_get_hint(hints.hints[i], "NAME"));
+    if(!strcmp("null", name.hint))
+      continue;
+    device.name = name.hint;
+    if(strstr(name.hint, "dmix") != name.hint && (ioid.hint == nullptr || !strcmp("Input", ioid.hint))) {
+      device.output = false;
+      device.description = device.name + " (Input)";
+      result.push_back(device);
+    }
+    if(strstr(name.hint, "dsnoop") != name.hint && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))) {
+      device.output = true;
+      device.description = device.name + " (Output)";
+      outputs.push_back(device);
+    }
+  }
+  result.insert(result.end(), outputs.begin(), outputs.end());
+  return result;
+}
+
+static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
+  const XtFormat* format, snd_pcm_uframes_t* minBuffer, snd_pcm_uframes_t* maxBuffer) {
+
+  int fault;
+  int32_t channels = format->inputs + format->outputs;
+  unsigned urate = static_cast<unsigned>(format->mix.rate);
+  snd_pcm_format_t alsaFormat = ToAlsaSample(format->mix.sample);
+
+  if((fault = snd_pcm_hw_params_set_rate(pcm, hwParams, urate, 0)) < 0)
+    return fault;
+  if((fault = snd_pcm_hw_params_set_rate_resample(pcm, hwParams, 0)) < 0)
+    return fault;
+  if((fault = snd_pcm_hw_params_set_format(pcm, hwParams, alsaFormat)) < 0)
+    return fault;
+  if((fault = snd_pcm_hw_params_set_channels(pcm, hwParams, channels)) < 0)
+    return fault;
+  if((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
+    return fault;
+  if((fault = snd_pcm_hw_params_get_buffer_size_min(hwParams, minBuffer)) < 0)
+    return fault;
+  if((fault = snd_pcm_hw_params_get_buffer_size_max(hwParams, maxBuffer)) < 0)
+    return fault;
+  return 0;
+}
+
+static int QueryDevice(const AlsaDevice& device, const XtFormat* format, XtBool* supports, double* min, double* max) {
+
+  snd_pcm_t* pcm;
+  AlsaLogDisabler disabler;
+  snd_pcm_uframes_t minBuffer;
+  snd_pcm_uframes_t maxBuffer;
+  snd_pcm_hw_params_t* hwParams;
+  snd_pcm_stream_t stream = format->inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
+
+  *min = 0;
+  *max = 0;
+  *supports = XtFalse;
+  if(snd_pcm_open(&pcm, device.info.name.c_str(), stream, 0) < 0) 
+    return 0;
+  AlsaPcm alsaPcm(pcm);
+  snd_pcm_hw_params_alloca(&hwParams);
+  if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
+    return 0;
+  if(SetHwParams(pcm, hwParams, format, &minBuffer, &maxBuffer) < 0)
+    return 0;
+
+  *supports = XtTrue;
+  *min = minBuffer * 1000.0 / format->mix.rate;
+  *max = maxBuffer * 1000.0 / format->mix.rate;
+  if(*min < XtAlsaMinBufferMs)
+    *min = XtAlsaMinBufferMs;
+  if(*max > XtAlsaMaxBufferMs)
+    *max = XtAlsaMaxBufferMs;
+  return 0;
+}
+
+// ---- linux ----
+
+void XtlInitAlsa() {
+  XT_ASSERT(snd_lib_error_set_handler(&LogError) == 0);
+}
+
+void XtlTerminateAlsa() {
+  XT_ASSERT(snd_lib_error_set_handler(nullptr) == 0);
+  XT_ASSERT(snd_config_update_free_global() == 0);
+}
+
+// ---- service ----
+
+const char* AlsaService::GetName() const {
+  return "ALSA";
+}
+
+XtFault AlsaService::GetFormatFault() const {
+  return EINVAL;
+}
+
+const char* AlsaService::GetFaultText(XtFault fault) const {
+  return snd_strerror(fault);
+}
+
+XtCause AlsaService::GetFaultCause(XtFault fault) const {
+  return XtlPosixErrorToCause(std::abs(static_cast<int>(fault)));
+}
+
+XtCapabilities AlsaService::GetCapabilities() const {
+  return static_cast<XtCapabilities>(XtCapabilitiesTime | XtCapabilitiesLatency);
+}
+
+XtFault AlsaService::GetDeviceCount(int32_t* count) const {
+  *count = static_cast<int32_t>(GetDeviceInfos().size());
+  return 0;
+}
+
+XtFault AlsaService::OpenDevice(int32_t index, XtDevice** device) const {  
+  std::vector<AlsaDeviceInfo> infos(GetDeviceInfos());
+  if(index >= static_cast<int32_t>(infos.size()))
+    return -EINVAL;
+  *device = new AlsaDevice(infos[index]);
+  return 0;
+}
+
+XtFault AlsaService::OpenDefaultDevice(XtBool output, XtDevice** device) const { 
+
+  int32_t firstIndex = -1;
+  int32_t defaultIndex = -1;
+  std::vector<AlsaDeviceInfo> infos(GetDeviceInfos());
+
+  for(size_t i = 0; i < infos.size(); i++) {
+    if(firstIndex == -1 && infos[i].output == output)
+      firstIndex = static_cast<int32_t>(i);
+    if(defaultIndex == -1 && infos[i].name == "default (Input)" && !infos[i].output && !output) {
+      defaultIndex = static_cast<int32_t>(i);
+      break;
+    }
+    if(defaultIndex == -1 && infos[i].name == "default (Output)" && infos[i].output && output) {
+      defaultIndex = static_cast<int32_t>(i);
+      break;
+    }
+  }
+  if(defaultIndex != -1)
+    *device = new AlsaDevice(infos[defaultIndex]);
+  else if(firstIndex != -1)
+    *device = new AlsaDevice(infos[firstIndex]);
+  return 0;
+}
+
+// ---- device ----
+
+XtFault AlsaDevice::ShowControlPanel() {
+  return 0;
+}
+
+XtFault AlsaDevice::GetMix(XtMix** mix) const {
+  return 0;
+}
+
+XtFault AlsaDevice::GetName(char** name) const {
+  *name = strdup(info.description.c_str());
+  return 0;
+}
+
+XtFault AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const {  
+  *count = info.output != (output != XtFalse)? 0: SND_CHMAP_LAST;
+  return 0;
+}
+
+XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
+  int fault;
+  double min, max;
+  if(format->inputs > 0 && info.output || format->outputs > 0 && !info.output)
+    return 0;
+  return QueryDevice(*this, format, supports, &min, &max);
+}
+
+XtFault AlsaDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
+
+  XtBool supports;
+  double frameSize = (format->inputs + format->outputs) * XtiGetSampleSize(format->mix.sample);
+
+  XT_VERIFY_ALSA(QueryDevice(*this, format, &supports, &buffer->min, &buffer->max));
+  buffer->current = (XtAlsaDefaultBufferBytes / frameSize) / format->mix.rate * 1000.0;
+  if(buffer->current < buffer->min)
+    buffer->current = buffer->min;
+  if(buffer->current > buffer->max)
+    buffer->current = buffer->max;
+  return 0;
+}
+
+XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char** name) const {
+  *name = strdup(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)));
+  return 0;
+}
+
+XtFault AlsaDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
+  
+  snd_pcm_t* pcm;
+  int32_t frameSize;
+  snd_pcm_uframes_t minBuffer;
+  snd_pcm_uframes_t maxBuffer;
+  snd_pcm_uframes_t realBuffer;
+  snd_pcm_hw_params_t* hwParams;
+  snd_pcm_sw_params_t* swParams;
+  snd_pcm_stream_t direction = format->inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
+
+  XT_VERIFY_ALSA(snd_pcm_open(&pcm, info.name.c_str(), direction, 0));
+  AlsaPcm alsaPcm(pcm);
+
+  snd_pcm_hw_params_alloca(&hwParams);
+  XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm, hwParams));
+  {
+    AlsaLogDisabler disabler;
+    XT_VERIFY_ALSA(SetHwParams(pcm, hwParams, format, &minBuffer, &maxBuffer));
+  }
+
+  realBuffer = bufferSize / 1000.0 * format->mix.rate;
+  if(realBuffer < minBuffer)
+    realBuffer = minBuffer;
+  if(realBuffer > maxBuffer)
+    realBuffer = maxBuffer;
+  XT_VERIFY_ALSA(snd_pcm_hw_params_set_buffer_size_near(pcm, hwParams, &realBuffer));
+  XT_VERIFY_ALSA(snd_pcm_hw_params(pcm, hwParams));
+
+  snd_pcm_sw_params_alloca(&swParams);
+  XT_VERIFY_ALSA(snd_pcm_sw_params_current(pcm, swParams));
+  XT_VERIFY_ALSA(snd_pcm_sw_params_set_tstamp_mode(pcm, swParams, SND_PCM_TSTAMP_ENABLE));
+  XT_VERIFY_ALSA(snd_pcm_sw_params(pcm, swParams));
+
+  frameSize = (format->inputs + format->outputs) * XtiGetSampleSize(format->mix.sample);
+  *stream = new AlsaStream(std::move(alsaPcm), info.output, realBuffer, frameSize);
+  return 0;
+}
+
+// ---- stream ----
+
+void AlsaStream::StartStream() {
+  processed = 0;
+  if(snd_pcm_state(pcm.pcm) == SND_PCM_STATE_PREPARED)
+    XT_ASSERT(snd_pcm_start(pcm.pcm) == 0);
+}
+
+void AlsaStream::StopStream() {
+  if(snd_pcm_state(pcm.pcm) == SND_PCM_STATE_RUNNING) {
+    XT_ASSERT(snd_pcm_drop(pcm.pcm) == 0);
+    XT_ASSERT(snd_pcm_prepare(pcm.pcm) == 0);
+  }
+  processed = 0;
+}
+
+XtFault AlsaStream::GetFrames(int32_t* frames) const {
+  *frames = bufferFrames;
+  return 0;
+}
+
+XtFault AlsaStream::GetLatency(XtLatency* latency) const {
+  snd_pcm_sframes_t delay;
+  if(snd_pcm_delay(pcm.pcm, &delay) < 0)
+    return 0;
+  latency->input = output? 0.0: delay * 1000.0 / format.mix.rate;
+  latency->output = !output? 0.0: delay * 1000.0 / format.mix.rate;
+  return 0;
+}
+
+void AlsaStream::ProcessBuffer(bool prefill) {
+
+  double time;
+  XtBool timeValid;
+  uint64_t position;
+  snd_pcm_status_t* status;
+  snd_pcm_sframes_t frames;
+  snd_timestamp_t timeStamp;
+  snd_pcm_uframes_t available;
+  snd_pcm_status_alloca(&status);
+
+  if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_status(pcm.pcm, status)))
+    return;
+  available = snd_pcm_status_get_avail(status);
+  snd_pcm_status_get_tstamp(status, &timeStamp);
+  position = processed + available;
+  time = timeStamp.tv_sec * 1000.0 + timeStamp.tv_usec / 1000.0;
+  timeValid = timeStamp.tv_sec != 0 || timeStamp.tv_usec != 0;
+
+  if(!output) {
+    frames = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames);
+    if(frames < 0) {
+      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, frames, 1)))
+        return;
+      if((frames = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames)) < 0) {
+        XT_VERIFY_STREAM_CALLBACK(frames);
+        return;
+      }
+    }
+    callback(this, &audio[0], nullptr, frames, time, position, timeValid, 0, user);
+  } else {
+    callback(this, nullptr, &audio[0], bufferFrames, time, position, timeValid, 0, user);
+    frames = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames);
+    if(frames < 0) {
+      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, frames, 1)))
+        return;
+      if((frames = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames)) < 0)
+        XT_VERIFY_STREAM_CALLBACK(frames);
+    }
+  }
+  processed += bufferFrames;
+}
+
+#endif // __linux__
