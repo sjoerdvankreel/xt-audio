@@ -410,11 +410,16 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     XT_ASSERT(waitResult == WAIT_OBJECT_0);
   }
   else if(render) {
-    callback(this, nullptr, &buffer[0], bufferFrames, 0.0, 0, XtFalse, DS_OK, user);
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0)))
       return;
-    SplitBufferParts(buffer, audio1, size1, audio2, size2);
-    XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2));
+    if(size2 == 0) {
+      callback(this, nullptr, audio1, bufferFrames, 0.0, 0, XtFalse, DS_OK, user);
+    } else {
+      callback(this, nullptr, &buffer[0], bufferFrames, 0.0, 0, XtFalse, DS_OK, user);
+      SplitBufferParts(buffer, audio1, size1, audio2, size2);
+    }
+    if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
+      return;
     xtBytesProcessed += bufferBytes;
     return;
   }
@@ -436,10 +441,16 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     }
     if(!XT_VERIFY_STREAM_CALLBACK(capture->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
-    CombineBufferParts(buffer, audio1, size1, audio2, size2);
-    if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
-      return;
-    callback(this, &buffer[0], nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK, user);
+    if(size2 == 0) {
+      callback(this, audio1, nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK, user);
+      if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
+        return;
+    } else {
+      CombineBufferParts(buffer, audio1, size1, audio2, size2);
+      if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
+        return;
+      callback(this, &buffer[0], nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK, user);
+    }
     xtBytesProcessed += available;
   }
 
@@ -458,11 +469,16 @@ void DSoundStream::ProcessBuffer(bool prefill) {
       XT_VERIFY_STREAM_CALLBACK(DSERR_BUFFERLOST);
       return;
     }
-    callback(this, nullptr, &buffer[0], available / frameSize, 0.0, 0, XtFalse, S_OK, user);
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
-    SplitBufferParts(buffer, audio1, size1, audio2, size2);
-    XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2));
+    if(size2 == 0) {
+      callback(this, nullptr, audio1, available / frameSize, 0.0, 0, XtFalse, DS_OK, user);
+    } else {
+      callback(this, nullptr, &buffer[0], available / frameSize, 0.0, 0, XtFalse, DS_OK, user);
+      SplitBufferParts(buffer, audio1, size1, audio2, size2);
+    }
+    if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
+      return;
     xtBytesProcessed += available;
   }
 }
