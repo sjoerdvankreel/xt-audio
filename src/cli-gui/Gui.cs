@@ -320,15 +320,15 @@ namespace Xt {
                 if (type == StreamType.Capture) {
 
                     captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
-                    CaptureCallback callback = new CaptureCallback(inputFormat, OnStreamError, AddMessage, captureFile);
+                    CaptureCallback callback = new CaptureCallback(OnStreamError, AddMessage, captureFile);
                     XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
                     inputStream = inputDevice.OpenStream(inputFormat, bufferSize.Value, callback.OnCallback, "capture-user-data");
-                    callback.Init(inputStream.GetFrames());
+                    callback.Init(inputStream.GetFormat(), inputStream.GetFrames());
                     inputStream.Start();
 
                 } else if (type == StreamType.Render) {
 
-                    RenderCallback callback = new RenderCallback(outputFormat, OnStreamError, AddMessage);
+                    RenderCallback callback = new RenderCallback(OnStreamError, AddMessage);
                     XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
                     outputStream = outputDevice.OpenStream(outputFormat, bufferSize.Value, callback.OnCallback, "render-user-data");
                     outputStream.Start();
@@ -338,7 +338,7 @@ namespace Xt {
                     XtFormat duplexFormat = inputFormat;
                     duplexFormat.outputs = outputFormat.outputs;
                     duplexFormat.outMask = outputFormat.outMask;
-                    FullDuplexCallback callback = new FullDuplexCallback(duplexFormat, OnStreamError, AddMessage);
+                    FullDuplexCallback callback = new FullDuplexCallback(OnStreamError, AddMessage);
                     XtDevice duplexDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
                     outputStream = duplexDevice.OpenStream(duplexFormat, bufferSize.Value, callback.OnCallback, "duplex-user-data");
                     outputStream.Start();
@@ -348,8 +348,8 @@ namespace Xt {
                     ConcurrentRingBuffer buffer = new ConcurrentRingBuffer();
                     XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
                     XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    PlayThroughCaptureCallback inputCallback = new PlayThroughCaptureCallback(inputFormat, OnStreamError, AddMessage, buffer);
-                    PlayThroughRenderCallback outputCallback = new PlayThroughRenderCallback(outputFormat, OnStreamError, AddMessage, buffer);
+                    PlayThroughCaptureCallback inputCallback = new PlayThroughCaptureCallback(OnStreamError, AddMessage, buffer);
+                    PlayThroughRenderCallback outputCallback = new PlayThroughRenderCallback(OnStreamError, AddMessage, buffer);
                     inputStream = inputDevice.OpenStream(inputFormat, bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
                     outputStream = outputDevice.OpenStream(outputFormat, bufferSize.Value, outputCallback.OnCallback, "render-user-data");
                     inputStream.Start();

@@ -24,14 +24,12 @@ namespace Xt {
         private Array input;
         private Array output;
         private readonly object user;
-        private readonly XtFormat format;
         private readonly XtStreamCallback callback;
         internal XtNative.StreamCallbackNet netCallback;
         internal XtNative.StreamCallbackMono monoCallback;
 
-        internal XtStream(XtStreamCallback callback, object user, XtFormat format) {
+        internal XtStream(XtStreamCallback callback, object user) {
             this.user = user;
-            this.format = format;
             this.callback = callback;
         }
 
@@ -45,6 +43,10 @@ namespace Xt {
 
         public void Start() {
             XtNative.HandleError(XtNative.XtStreamStart(s));
+        }
+
+        public XtFormat GetFormat() {
+            return ((XtNative.Format)Marshal.PtrToStructure(XtNative.XtStreamGetFormat(s), typeof(XtNative.Format))).FromNative();
         }
 
         public void Dispose() {
@@ -69,6 +71,7 @@ namespace Xt {
 
             this.s = s;
             int frames = GetFrames();
+            XtFormat format = GetFormat();
             switch (format.mix.sample) {
                 case XtSample.UInt8:
                     input = new byte[format.inputs * frames];
@@ -98,8 +101,10 @@ namespace Xt {
         internal void Callback(IntPtr stream, IntPtr input, IntPtr output, int frames,
             double time, ulong position, bool timeValid, ulong error, IntPtr u) {
 
+            XtFormat format = GetFormat();
             Array inData = input == IntPtr.Zero ? null : this.input;
             Array outData = output == IntPtr.Zero ? null : this.output;
+
             if (inData != null)
                 switch (format.mix.sample) {
                     case XtSample.UInt8:

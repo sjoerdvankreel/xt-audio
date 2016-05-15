@@ -29,7 +29,6 @@ static const Xt::Level Tracelevel = Xt::Level::Info;
 struct StreamContext {
   double phase;
   double start;
-  Xt::Format format;
   uint64_t processed;
   std::ofstream recording;
 };
@@ -182,11 +181,12 @@ static void OnStreamCallback(
 
   void* dest;
   double value;
+  const Xt::Format& format = stream.GetFormat();
   StreamContext& ctx = *static_cast<StreamContext*>(user);
-  int32_t outputs = ctx.format.outputs;
-  int32_t sampleSize = Xt::Audio::GetSampleAttributes(ctx.format.mix.sample).size;
-  int32_t bufferSizeBytes = frames * ctx.format.inputs * sampleSize;
-  assert(ctx.format.inputs == 0 || ctx.format.outputs == 0 || ctx.format.inputs == ctx.format.outputs);
+  int32_t outputs = format.outputs;
+  int32_t sampleSize = Xt::Audio::GetSampleAttributes(format.mix.sample).size;
+  int32_t bufferSizeBytes = frames * format.inputs * sampleSize;
+  assert(format.inputs == 0 || format.outputs == 0 || format.inputs == format.outputs);
   
   if(error != 0) {
     std::cout << "Stream error: " << Xt::Print::ErrorToString(error) << "\n";
@@ -196,26 +196,26 @@ static void OnStreamCallback(
   if(frames == 0)
     return;
 
-  if(ctx.format.outputs == 0)
+  if(format.outputs == 0)
     ctx.recording.write(static_cast<const char*>(input), bufferSizeBytes);
-  else if(ctx.format.inputs != 0)
+  else if(format.inputs != 0)
     memcpy(output, input, bufferSizeBytes);
   else 
     for(int32_t f = 0; f < frames; f++) {
-      ctx.phase += ToneFrequency / ctx.format.mix.rate;
+      ctx.phase += ToneFrequency / format.mix.rate;
       if(ctx.phase > 1.0)
         ctx.phase = -1.0;
       value = sin(ctx.phase * M_PI) * 0.95;
-      for(int32_t c = 0; c < ctx.format.outputs; c++) {
+      for(int32_t c = 0; c < format.outputs; c++) {
         dest = &static_cast<unsigned char*>(output)[(f * outputs + c) * sampleSize];
-        OutputSine(dest, ctx.format.mix.sample, value);
+        OutputSine(dest, format.mix.sample, value);
       }
     }
 
   if(ctx.start < 0.0)
     ctx.start = time;
   ctx.processed += frames;
-  if(ctx.processed > ctx.format.mix.rate) {
+  if(ctx.processed > format.mix.rate) {
     std::cout << "Time: " << (time - ctx.start) 
               << ", position: " << position
               << ", valid: " << timeValid
@@ -266,7 +266,6 @@ static bool StreamBufferSize(
   context.phase = 0.0;
   context.start = -1.0;
   context.processed = 0;
-  context.format = format;
   std::string fileName = GetRecordFileName(service, device, format, bufferSize);
 
   std::cout << "Streaming: " << service.GetName() << ": " << device.GetName();

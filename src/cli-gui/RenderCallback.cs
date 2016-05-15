@@ -7,11 +7,11 @@ namespace Xt {
         private double phase;
         private static readonly double Frequency = 660.0;
 
-        internal RenderCallback(XtFormat format, Action<string> onError, Action<string> onMessage) :
-            base("Render", format, onError, onMessage) {
+        internal RenderCallback(Action<string> onError, Action<string> onMessage) :
+            base("Render", onError, onMessage) {
         }
 
-        internal override void OnCallback(Array input, Array output, int frames) {
+        internal override void OnCallback(XtFormat format, Array input, Array output, int frames) {
 
             for (int f = 0; f < frames; f++) {
 

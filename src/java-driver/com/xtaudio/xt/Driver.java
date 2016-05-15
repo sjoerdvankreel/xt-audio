@@ -26,7 +26,6 @@ public class Driver {
         double phase;
         double start;
         long processed;
-        XtFormat format;
         ByteBuffer buffer;
         FileOutputStream recording;
     }
@@ -216,7 +215,6 @@ public class Driver {
         context.phase = 0.0;
         context.start = -1.0;
         context.processed = 0;
-        context.format = format;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss");
         String recordFileName = String.format("xt-recording-%s-%s-%s-%s-%s.raw",
                 service, d, formatter.format(LocalDateTime.now()), format, bufferSize);
@@ -249,10 +247,11 @@ public class Driver {
 
         double value;
         StreamContext ctx = (StreamContext) user;
-        int outputs = ctx.format.outputs;
-        int sampleSize = XtAudio.getSampleAttributes(ctx.format.mix.sample).size;
-        int bufferSizeBytes = frames * ctx.format.inputs * sampleSize;
-        assert (ctx.format.inputs == 0 || ctx.format.outputs == 0 || ctx.format.inputs == ctx.format.outputs);
+        XtFormat format = stream.getFormat();
+        int outputs = format.outputs;
+        int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
+        int bufferSizeBytes = frames * format.inputs * sampleSize;
+        assert (format.inputs == 0 || format.outputs == 0 || format.inputs == format.outputs);
 
         if (error != 0) {
             System.out.println(String.format("Stream error: %s\n", XtPrint.errorToString(error)));
@@ -262,24 +261,24 @@ public class Driver {
         if (frames == 0)
             return;
 
-        if (ctx.format.outputs == 0)
-            writeRecording(ctx, input, frames, bufferSizeBytes);
-        else if (ctx.format.inputs != 0)
-            System.arraycopy(input, 0, output, 0, frames * ctx.format.inputs);
+        if (format.outputs == 0)
+            writeRecording(ctx, format, input, frames, bufferSizeBytes);
+        else if (format.inputs != 0)
+            System.arraycopy(input, 0, output, 0, frames * format.inputs);
         else
             for (int f = 0; f < frames; f++) {
-                ctx.phase += TONE_FREQUENCY / ctx.format.mix.rate;
+                ctx.phase += TONE_FREQUENCY / format.mix.rate;
                 if (ctx.phase > 1.0)
                     ctx.phase = -1.0;
                 value = Math.sin(ctx.phase * Math.PI) * 0.95;
-                for (int c = 0; c < ctx.format.outputs; c++)
-                    outputSine(output, f * outputs + c, ctx.format.mix.sample, value);
+                for (int c = 0; c < format.outputs; c++)
+                    outputSine(output, f * outputs + c, format.mix.sample, value);
             }
 
         if (ctx.start < 0.0)
             ctx.start = time;
         ctx.processed += frames;
-        if (ctx.processed > ctx.format.mix.rate) {
+        if (ctx.processed > format.mix.rate) {
             ctx.processed = 0;
             System.out.println(String.format("Time: %s, position: %s, valid: %s, latency: %s\n",
                     time - ctx.start, position, timeValid, stream.getLatency()));
@@ -312,23 +311,24 @@ public class Driver {
         }
     }
 
-    private static void writeRecording(StreamContext ctx, Object input, int frames, int bufferSizeBytes) {
-        ctx.buffer.clear();
-        switch (ctx.format.mix.sample) {
+    private static void writeRecording(StreamContext ctx, XtFormat format, Object input, int frames, int bufferSizeBytes) {
+
+        ctx.buffer.clear();        
+        switch (format.mix.sample) {
             case UINT8:
-                ctx.buffer.put((byte[]) input, 0, frames * ctx.format.inputs);
+                ctx.buffer.put((byte[]) input, 0, frames * format.inputs);
                 break;
             case INT16:
-                ctx.buffer.asShortBuffer().put((short[]) input, 0, frames * ctx.format.inputs);
+                ctx.buffer.asShortBuffer().put((short[]) input, 0, frames * format.inputs);
                 break;
             case INT24:
-                ctx.buffer.put((byte[]) input, 0, frames * ctx.format.inputs * 3);
+                ctx.buffer.put((byte[]) input, 0, frames * format.inputs * 3);
                 break;
             case INT32:
-                ctx.buffer.asIntBuffer().put((int[]) input, 0, frames * ctx.format.inputs);
+                ctx.buffer.asIntBuffer().put((int[]) input, 0, frames * format.inputs);
                 break;
             case FLOAT32:
-                ctx.buffer.asFloatBuffer().put((float[]) input, 0, frames * ctx.format.inputs);
+                ctx.buffer.asFloatBuffer().put((float[]) input, 0, frames * format.inputs);
                 break;
         }
         try {

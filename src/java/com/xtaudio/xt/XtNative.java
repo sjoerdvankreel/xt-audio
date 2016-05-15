@@ -78,9 +78,28 @@ final class XtNative {
         public int outputs;
         public long outMask;
 
+        Format() {
+        }
+
+        Format(Pointer value) {
+            super(value);
+            read();
+        }
+
         @Override
         protected List getFieldOrder() {
             return Arrays.asList("rate", "sample", "inputs", "inMask", "outputs", "outMask");
+        }
+
+        XtFormat fromNative() {
+            XtFormat result = new XtFormat();
+            result.mix.rate = rate;
+            result.mix.sample = XtSample.values()[sample];
+            result.inputs = inputs;
+            result.inMask = inMask;
+            result.outputs = outputs;
+            result.outMask = outMask;
+            return result;
         }
 
         static Format toNative(XtFormat format) {
@@ -163,6 +182,7 @@ final class XtNative {
     static native int XtStreamGetSystem(Pointer s);
     static native long XtStreamGetFrames(Pointer s, IntByReference frames);
     static native long XtStreamGetLatency(Pointer s, XtLatency latency);
+    static native Pointer XtStreamGetFormat(Pointer s);
 
     static native int XtServiceGetSystem(Pointer s);
     static native String XtServiceGetName(Pointer s);

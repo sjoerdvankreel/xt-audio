@@ -86,7 +86,7 @@ System Exception::GetSystem(uint64_t error) {
   return static_cast<System>(XtErrorGetSystem(error));
 }
 
-// ---- stream ----
+// ---- ostream ----
 
 std::ostream& operator<<(std::ostream& os, Level level) {
   return os << Print::LevelToString(level);
@@ -370,6 +370,10 @@ int32_t Stream::GetFrames() const {
 
 System Stream::GetSystem() const {
   return static_cast<System>(XtStreamGetSystem(s)); 
+}
+
+const Format& Stream::GetFormat() const {
+  return *reinterpret_cast<const Format*>(XtStreamGetFormat(s));
 }
 
 Latency Stream::GetLatency() const {

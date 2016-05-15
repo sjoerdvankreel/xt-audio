@@ -191,6 +191,7 @@ public:
   System GetSystem() const;
   int32_t GetFrames() const;
   Latency GetLatency() const;
+  const Format& GetFormat() const;
 };
 
 class Service final {

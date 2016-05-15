@@ -173,6 +173,8 @@ namespace Xt {
         internal static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtStreamGetLatency(IntPtr s, [In, Out] XtLatency latency);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern IntPtr XtStreamGetFormat(IntPtr s);
 
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern XtSystem XtServiceGetSystem(IntPtr s);

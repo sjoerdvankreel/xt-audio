@@ -9,23 +9,23 @@ namespace Xt {
         internal int frameSize;
         private readonly FileStream stream;
 
-        internal CaptureCallback(XtFormat format, Action<string> onError, 
+        internal CaptureCallback(Action<string> onError,
             Action<string> onMessage, FileStream stream) :
-            base("Capture", format, onError, onMessage) {
+            base("Capture", onError, onMessage) {
             this.stream = stream;
         }
 
-        internal void Init(int maxFrames) {
+        internal void Init(XtFormat format, int maxFrames) {
             frameSize = format.inputs * XtAudio.GetSampleAttributes(format.mix.sample).size;
             block = new byte[maxFrames * frameSize];
         }
 
-        internal override void OnCallback(Array input, Array output, int frames) {
+        internal override void OnCallback(XtFormat format, Array input, Array output, int frames) {
 
-            if (frames > 0) {
-                Buffer.BlockCopy(input, 0, block, 0, frames * frameSize);
-                stream.Write(block, 0, frames * frameSize);
-            }
+            if (frames == 0)
+                return;
+            Buffer.BlockCopy(input, 0, block, 0, frames * frameSize);
+            stream.Write(block, 0, frames * frameSize);
         }
     }
 }

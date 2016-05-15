@@ -5,18 +5,18 @@ import java.util.Random;
 
 public class RenderDefaultOutput {
 
-    static final int CHANNELS = 2;
     static final Random RANDOM = new Random();
 
     static void render(XtStream stream, Object input, Object output, int frames,
             double time, long position, boolean timeValid, long error, Object user) {
 
-        if (frames == 0)
-            return;
+        XtFormat format = stream.getFormat();
         short[] buffer = (short[]) output;
         for (int f = 0; f < frames; f++)
-            for (int c = 0; c < CHANNELS; c++)
-                buffer[f * CHANNELS + c] = (short) ((RANDOM.nextDouble() * 2.0 - 1.0) * Short.MAX_VALUE);
+            for (int c = 0; c < format.outputs; c++) {
+                double noise = RANDOM.nextDouble() * 2.0 - 1.0;
+                buffer[f * format.outputs + c] = (short) (noise * Short.MAX_VALUE);
+            }
     }
 
     public static void main(String[] args) {
@@ -30,7 +30,7 @@ public class RenderDefaultOutput {
                     return;
                 }
 
-                XtFormat format = new XtFormat(new XtMix(44100, XtSample.INT16), 0, 0, CHANNELS, 0);
+                XtFormat format = new XtFormat(new XtMix(44100, XtSample.INT16), 0, 0, 2, 0);
                 if (!device.supportsFormat(format)) {
                     System.out.println("Format not supported.");
                     return;

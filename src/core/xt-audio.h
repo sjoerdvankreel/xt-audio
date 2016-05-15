@@ -327,6 +327,7 @@ XT_API void XT_CALL XtStreamDestroy(XtStream* s);
 XT_API XtError XT_CALL XtStreamStop(XtStream* s);
 XT_API XtError XT_CALL XtStreamStart(XtStream* s);
 XT_API XtSystem XT_CALL XtStreamGetSystem(const XtStream* s);
+XT_API const XtFormat* XT_CALL XtStreamGetFormat(const XtStream* s);
 XT_API XtError XT_CALL XtStreamGetFrames(const XtStream* s, int32_t* frames);
 XT_API XtError XT_CALL XtStreamGetLatency(const XtStream* s, XtLatency* latency);
 /** @} */

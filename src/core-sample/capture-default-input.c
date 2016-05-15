@@ -7,23 +7,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static const int Channels = 2;
-static const XtSample CaptureSample = XtSampleInt24;
-
 static void XT_CALL CaptureCallback(
   const XtStream* stream, const void* input, void* output, int32_t frames, 
   double time, uint64_t position, XtBool timeValid, uint64_t error, void* user) {
 
   int32_t bufferSize;
+  const XtFormat* format;
   XtAttributes attributes;
-  if (frames == 0)
-    return;
+  
+  format = XtStreamGetFormat(stream);
+  XtAudioGetSampleAttributes(format->mix.sample, &attributes);
+  bufferSize = frames * format->inputs * attributes.size;
 
-  XtAudioGetSampleAttributes(CaptureSample, &attributes);
-  bufferSize = frames * Channels * attributes.size;
-
-  // Don't do this.
-  fwrite(input, 1, bufferSize, (FILE*)(user));
+  if(frames > 0)
+    // Don't do this.
+    fwrite(input, 1, bufferSize, (FILE*)(user));
 }
 
 int CaptureMain(int argc, char** argv) {
@@ -47,9 +45,9 @@ int CaptureMain(int argc, char** argv) {
     goto error;
   }
 
+  format.inputs = 2;
   format.mix.rate = 44100;
-  format.mix.sample = CaptureSample;
-  format.inputs = Channels;
+  format.mix.sample = XtSampleInt24;
   if((err = XtDeviceSupportsFormat(device, &format, &supports)) != 0)
     goto error;
   if(!supports) {

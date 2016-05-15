@@ -5,18 +5,18 @@ namespace Xt {
 
     public static class RenderDefaultOutput {
 
-        const int Channels = 2;
         static readonly Random Rand = new Random();
 
         static void Render(XtStream stream, Array input, Array output, int frames,
                 double time, ulong position, bool timeValid, ulong error, Object user) {
 
-            if (frames == 0)
-                return;
             short[] buffer = (short[])output;
+            XtFormat format = stream.GetFormat();
             for (int f = 0; f < frames; f++)
-                for (int c = 0; c < Channels; c++)
-                    buffer[f * Channels + c] = (short)((Rand.NextDouble() * 2.0 - 1.0) * short.MaxValue);
+                for (int c = 0; c < format.outputs; c++) {
+                    double noise = Rand.NextDouble() * 2.0 - 1.0;
+                    buffer[f * format.outputs + c] = (short)(noise * short.MaxValue);
+                }
         }
 
         [STAThread]
@@ -31,7 +31,7 @@ namespace Xt {
                         return;
                     }
 
-                    XtFormat format = new XtFormat(new XtMix(44100, XtSample.Int16), 0, 0, Channels, 0);
+                    XtFormat format = new XtFormat(new XtMix(44100, XtSample.Int16), 0, 0, 2, 0);
                     if (!device.SupportsFormat(format)) {
                         Console.WriteLine("Format not supported.");
                         return;

@@ -7,19 +7,17 @@
 #include <climits>
 #include <iostream>
 
-static const int Channels = 2;
-static const Xt::Sample RenderSample = Xt::Sample::Int16;
-
 static void RenderCallback(
   const Xt::Stream& stream, const void* input, void* output, int32_t frames, 
   double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
 
-  if (frames == 0)
-    return;
+  const Xt::Format& format = stream.GetFormat();
   short* buffer = static_cast<short*>(output);
   for(int32_t f = 0; f < frames; f++)
-    for(int32_t c = 0; c < Channels; c++)
-      buffer[f * Channels + c] = static_cast<short>((rand() / static_cast<double>(RAND_MAX) * 2.0 - 1.0) * SHRT_MAX);
+    for(int32_t c = 0; c < format.outputs; c++) {
+      double noise = rand() / static_cast<double>(RAND_MAX) * 2.0 - 1.0;
+      buffer[f * format.outputs + c] = static_cast<short>(noise * SHRT_MAX);
+    }
 }
 
 int RenderMain(int argc, char** argv) {
@@ -33,7 +31,7 @@ int RenderMain(int argc, char** argv) {
     return 0;
   }
 
-  Xt::Format format(Xt::Mix(44100, RenderSample), 0, 0, Channels, 0);
+  Xt::Format format(Xt::Mix(44100, Xt::Sample::Int16), 0, 0, 2, 0);
   if (!device->SupportsFormat(format)) {
     std::cout << "Format not supported.\n";
     return 0;

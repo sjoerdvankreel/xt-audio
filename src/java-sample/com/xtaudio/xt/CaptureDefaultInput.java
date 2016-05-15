@@ -6,13 +6,13 @@ import java.io.IOException;
 
 public class CaptureDefaultInput {
 
-    static final int CHANNELS = 2;
-    static final XtSample SAMPLE = XtSample.INT24;
-
     static void capture(XtStream stream, Object input, Object output, int frames,
             double time, long position, boolean timeValid, long error, Object user) {
 
-        int bufferSize = frames * CHANNELS * XtAudio.getSampleAttributes(SAMPLE).size;
+        XtFormat format = stream.getFormat();
+        int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
+        int bufferSize = frames * format.inputs * sampleSize;
+
         if (frames != 0)
             try {
                 // Don't do this.
@@ -33,7 +33,7 @@ public class CaptureDefaultInput {
                     return;
                 }
 
-                XtFormat format = new XtFormat(new XtMix(44100, SAMPLE), CHANNELS, 0, 0, 0);
+                XtFormat format = new XtFormat(new XtMix(44100, XtSample.INT24), 2, 0, 0, 0);
                 if (!device.supportsFormat(format)) {
                     System.out.println("Format not supported.");
                     return;

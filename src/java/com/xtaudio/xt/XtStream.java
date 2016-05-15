@@ -19,56 +19,59 @@ import com.sun.jna.ptr.IntByReference;
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
 public final class XtStream implements XtCloseable {
-    
+
     private Pointer s;
     private Object input;
     private Object output;
     private final Object user;
-    private final XtFormat format;
     XtNative.StreamCallback nativeCallback;
     private final XtStreamCallback userCallback;
-    
-    XtStream(XtStreamCallback userCallback, Object user, XtFormat format) {
+
+    XtStream(XtStreamCallback userCallback, Object user) {
         this.user = user;
-        this.format = format;
         this.userCallback = userCallback;
     }
-    
+
     public XtSystem getSystem() {
         return XtSystem.class.getEnumConstants()[XtNative.XtStreamGetSystem(s) - 1];
     }
-    
+
     public void stop() {
         XtNative.handleError(XtNative.XtStreamStop(s));
     }
-    
+
     public void start() {
         XtNative.handleError(XtNative.XtStreamStart(s));
     }
-    
+
+    public XtFormat getFormat() {
+        return new XtNative.Format(XtNative.XtStreamGetFormat(s)).fromNative();
+    }
+
     @Override
     public void close() {
         if (s != null)
             XtNative.XtStreamDestroy(s);
         s = null;
     }
-    
+
     public int getFrames() {
         IntByReference frames = new IntByReference();
         XtNative.handleError(XtNative.XtStreamGetFrames(s, frames));
         return frames.getValue();
     }
-    
+
     public XtLatency getLatency() {
         XtLatency latency = new XtLatency();
         XtNative.handleError(XtNative.XtStreamGetLatency(s, latency));
         return latency;
     }
-    
+
     void init(Pointer s) {
-        
+
         this.s = s;
         int frames = getFrames();
+        XtFormat format = getFormat();
         switch (format.mix.sample) {
             case UINT8:
                 input = new byte[format.inputs * frames];
@@ -94,12 +97,14 @@ public final class XtStream implements XtCloseable {
                 throw new IllegalArgumentException();
         }
     }
-    
+
     void callback(Pointer stream, Pointer input, Pointer output, int frames,
             double time, long position, boolean timeValid, long error, Pointer u) {
-        
+
+        XtFormat format = getFormat();
         Object inData = input == null ? null : this.input;
         Object outData = output == null ? null : this.output;
+        
         if (inData != null)
             switch (format.mix.sample) {
                 case UINT8:

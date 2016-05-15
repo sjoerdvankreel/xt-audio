@@ -6,17 +6,16 @@ namespace Xt {
 
     public static class CaptureDefaultInput {
 
-        const int Channels = 2;
-        const XtSample Sample = XtSample.Int24;
-
         internal static void Capture(XtStream stream, Array input, Array output, int frames,
                 double time, ulong position, bool timeValid, ulong error, object user) {
 
-            int bufferSize = frames * Channels * XtAudio.GetSampleAttributes(Sample).size;
-            if (frames == 0)
-                return;
-            // Don't do this.
-            ((FileStream)user).Write(((byte[])input), 0, bufferSize);
+            XtFormat format = stream.GetFormat();
+            int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
+            int bufferSize = frames * format.inputs * sampleSize;
+
+            if (frames > 0)
+                // Don't do this.
+                ((FileStream)user).Write(((byte[])input), 0, bufferSize);
         }
 
         [STAThread]
@@ -31,7 +30,7 @@ namespace Xt {
                         return;
                     }
 
-                    XtFormat format = new XtFormat(new XtMix(44100, Sample), Channels, 0, 0, 0);
+                    XtFormat format = new XtFormat(new XtMix(44100, XtSample.Int24), 2, 0, 0, 0);
                     if (!device.SupportsFormat(format)) {
                         Console.WriteLine("Format not supported.");
                         return;

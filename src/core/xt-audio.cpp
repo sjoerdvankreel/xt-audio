@@ -460,6 +460,11 @@ XtSystem XT_CALL XtStreamGetSystem(const XtStream* s) {
   return s->GetSystem();
 }
 
+const XtFormat* XT_CALL XtStreamGetFormat(const XtStream* s) {
+  XT_ASSERT(s != nullptr);
+  return &s->format;
+}
+
 XtError XT_CALL XtStreamGetFrames(const XtStream* s, int32_t* frames) {
   XT_ASSERT(s != nullptr);
   XT_ASSERT(frames != nullptr);

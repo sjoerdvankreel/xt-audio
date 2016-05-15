@@ -7,19 +7,17 @@
 #include <fstream>
 #include <iostream>
 
-static const int Channels = 2;
-static const Xt::Sample CaptureSample = Xt::Sample::Int24;
-
 static void CaptureCallback(
   const Xt::Stream& stream, const void* input, void* output, int32_t frames, 
   double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
 
-  int32_t bufferSize = frames * Channels * Xt::Audio::GetSampleAttributes(CaptureSample).size;
-  if (frames == 0)
-    return;
+  const Xt::Format& format = stream.GetFormat();
+  int32_t sampleSize = Xt::Audio::GetSampleAttributes(format.mix.sample).size;
+  int32_t bufferSize = frames * format.inputs * sampleSize;
 
-  // Don't do this.
-  static_cast<std::ofstream*>(user)->write(static_cast<const char*>(input), bufferSize);
+  if(frames > 0)
+    // Don't do this.
+    static_cast<std::ofstream*>(user)->write(static_cast<const char*>(input), bufferSize);
 }
 
 int CaptureMain(int argc, char** argv) {
@@ -33,7 +31,7 @@ int CaptureMain(int argc, char** argv) {
     return 0;
   }
 
-  Xt::Format format(Xt::Mix(44100, CaptureSample), Channels, 0, 0, 0);
+  Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), 2, 0, 0, 0);
   if (!device->SupportsFormat(format)) {
     std::cout << "Format not supported.\n";
     return 0;

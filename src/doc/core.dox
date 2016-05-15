@@ -866,6 +866,15 @@
  */
 
 /**
+ * @fn const XtFormat* XtStreamGetFormat(const XtStream* s)
+ * @brief Get stream format.
+ * @return the audio format used to open the stream.
+ * @param s the audio stream.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
  * @fn XtError XtStreamGetFrames(const XtStream* s, int32_t* frames)
  * @brief Get maximum stream buffer size.
  * @return The maximum buffer size for the given stream.
