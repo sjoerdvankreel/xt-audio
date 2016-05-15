@@ -37,6 +37,7 @@ static const size_t XtAlsaDefaultBufferBytes = 64 * 1024;
 
 struct AlsaDeviceInfo {
   bool output;
+  bool mmap;
   std::string name;
   std::string description;
 };
@@ -93,18 +94,18 @@ struct AlsaDevice: public XtDevice {
 };
 
 struct AlsaStream: public XtlLinuxStream {
-  const AlsaPcm pcm;
+  const bool mmap;
   const bool output;
+  const AlsaPcm pcm;
   uint64_t processed;
   std::vector<char> audio;
   const int32_t bufferFrames;
   XT_IMPLEMENT_STREAM(Alsa);
 
   ~AlsaStream() { Stop(); }
-  AlsaStream(AlsaPcm&& p, bool output, int32_t bufferFrames, int32_t frameSize):
-  pcm(std::move(p)), output(output), processed(0),
-  audio(static_cast<size_t>(bufferFrames * frameSize), '\0'),
-  bufferFrames(bufferFrames) {}
+  AlsaStream(AlsaPcm&& p, bool output, bool mmap, int32_t bufferFrames, int32_t frameSize):
+  mmap(mmap), output(output), pcm(std::move(p)), processed(0),
+  audio(static_cast<size_t>(bufferFrames * frameSize), '\0'), bufferFrames(bufferFrames) {}
 
   void StopStream();
   void StartStream();
@@ -148,12 +149,18 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
     device.name = name.hint;
     if(strstr(name.hint, "dmix") != name.hint && (ioid.hint == nullptr || !strcmp("Input", ioid.hint))) {
       device.output = false;
-      device.description = device.name + " (Input)";
+      device.description = device.name + " (Input) (R/W)";
+      result.push_back(device);
+      device.mmap = true;
+      device.description = device.name + " (Input) (Mmap)";
       result.push_back(device);
     }
     if(strstr(name.hint, "dsnoop") != name.hint && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))) {
       device.output = true;
-      device.description = device.name + " (Output)";
+      device.description = device.name + " (Output) (R/W)";
+      outputs.push_back(device);
+      device.mmap = true;
+      device.description = device.name + " (Output) (Mmap)";
       outputs.push_back(device);
     }
   }
@@ -161,7 +168,7 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
   return result;
 }
 
-static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
+static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap,
   const XtFormat* format, snd_pcm_uframes_t* minBuffer, snd_pcm_uframes_t* maxBuffer) {
 
   int fault;
@@ -177,7 +184,9 @@ static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams,
     return fault;
   if((fault = snd_pcm_hw_params_set_channels(pcm, hwParams, channels)) < 0)
     return fault;
-  if((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
+  if(mmap && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED)) < 0))
+    return fault;
+  if(!mmap && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0))
     return fault;
   if((fault = snd_pcm_hw_params_get_buffer_size_min(hwParams, minBuffer)) < 0)
     return fault;
@@ -204,7 +213,7 @@ static int QueryDevice(const AlsaDevice& device, const XtFormat* format, XtBool*
   snd_pcm_hw_params_alloca(&hwParams);
   if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
     return 0;
-  if(SetHwParams(pcm, hwParams, format, &minBuffer, &maxBuffer) < 0)
+  if(SetHwParams(pcm, hwParams, device.info.mmap, format, &minBuffer, &maxBuffer) < 0)
     return 0;
 
   *supports = XtTrue;
@@ -272,11 +281,11 @@ XtFault AlsaService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
   for(size_t i = 0; i < infos.size(); i++) {
     if(firstIndex == -1 && infos[i].output == output)
       firstIndex = static_cast<int32_t>(i);
-    if(defaultIndex == -1 && infos[i].name == "default (Input)" && !infos[i].output && !output) {
+    if(defaultIndex == -1 && infos[i].name == "default (Input) (R/W)" && !infos[i].output && !output) {
       defaultIndex = static_cast<int32_t>(i);
       break;
     }
-    if(defaultIndex == -1 && infos[i].name == "default (Output)" && infos[i].output && output) {
+    if(defaultIndex == -1 && infos[i].name == "default (Output) (R/W)" && infos[i].output && output) {
       defaultIndex = static_cast<int32_t>(i);
       break;
     }
@@ -339,6 +348,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, double bufferSize, XtStre
   
   snd_pcm_t* pcm;
   int32_t frameSize;
+  int32_t sampleSize;
   snd_pcm_uframes_t minBuffer;
   snd_pcm_uframes_t maxBuffer;
   snd_pcm_uframes_t realBuffer;
@@ -353,7 +363,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, double bufferSize, XtStre
   XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm, hwParams));
   {
     AlsaLogDisabler disabler;
-    XT_VERIFY_ALSA(SetHwParams(pcm, hwParams, format, &minBuffer, &maxBuffer));
+    XT_VERIFY_ALSA(SetHwParams(pcm, hwParams, info.mmap, format, &minBuffer, &maxBuffer));
   }
 
   realBuffer = bufferSize / 1000.0 * format->mix.rate;
@@ -369,8 +379,9 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, double bufferSize, XtStre
   XT_VERIFY_ALSA(snd_pcm_sw_params_set_tstamp_mode(pcm, swParams, SND_PCM_TSTAMP_ENABLE));
   XT_VERIFY_ALSA(snd_pcm_sw_params(pcm, swParams));
 
-  frameSize = (format->inputs + format->outputs) * XtiGetSampleSize(format->mix.sample);
-  *stream = new AlsaStream(std::move(alsaPcm), info.output, realBuffer, frameSize);
+  sampleSize = XtiGetSampleSize(format->mix.sample);
+  frameSize = (format->inputs + format->outputs) * sampleSize;
+  *stream = new AlsaStream(std::move(alsaPcm), info.output, info.mmap, realBuffer, frameSize);
   return 0;
 }
 
@@ -406,45 +417,78 @@ XtFault AlsaStream::GetLatency(XtLatency* latency) const {
 
 void AlsaStream::ProcessBuffer(bool prefill) {
 
+  int fault;
+  void* data;
   double time;
   XtBool timeValid;
   uint64_t position;
   snd_pcm_status_t* status;
-  snd_pcm_sframes_t frames;
+  snd_pcm_uframes_t offset;
+  snd_pcm_sframes_t sframes;
+  snd_pcm_uframes_t uframes;
   snd_timestamp_t timeStamp;
-  snd_pcm_uframes_t available;
-  snd_pcm_status_alloca(&status);
+  snd_pcm_sframes_t available;
+  const snd_pcm_channel_area_t* areas;
 
+  snd_pcm_status_alloca(&status);
   if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_status(pcm.pcm, status)))
     return;
-  available = snd_pcm_status_get_avail(status);
+  if((available = snd_pcm_avail(pcm.pcm)) < 0) {
+    XT_VERIFY_STREAM_CALLBACK(available);
+    return;
+  }
+  
   snd_pcm_status_get_tstamp(status, &timeStamp);
   position = processed + available;
   time = timeStamp.tv_sec * 1000.0 + timeStamp.tv_usec / 1000.0;
   timeValid = timeStamp.tv_sec != 0 || timeStamp.tv_usec != 0;
 
-  if(!output) {
-    frames = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames);
-    if(frames < 0) {
-      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, frames, 1)))
+  if(!mmap) {
+    if(!output) {
+      if((sframes = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames)) < 0) {
+        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+          return;
+        if((sframes = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames)) < 0) {
+          XT_VERIFY_STREAM_CALLBACK(sframes);
+          return;
+        }
+      }
+      callback(this, &audio[0], nullptr, sframes, time, position, timeValid, 0, user);
+    } else {
+      callback(this, nullptr, &audio[0], bufferFrames, time, position, timeValid, 0, user);
+      if((sframes = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames)) < 0) {
+        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+          return;
+        if((sframes = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames)) < 0)
+          XT_VERIFY_STREAM_CALLBACK(sframes);
+      }
+    }
+    processed += sframes;
+  } else {
+    uframes = bufferFrames;
+    if((fault = snd_pcm_mmap_begin(pcm.pcm, &areas, &offset, &uframes)) < 0) {
+      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
         return;
-      if((frames = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames)) < 0) {
-        XT_VERIFY_STREAM_CALLBACK(frames);
+      uframes = bufferFrames;
+      if((fault = snd_pcm_mmap_begin(pcm.pcm, &areas, &offset, &uframes)) < 0) {
+        XT_VERIFY_STREAM_CALLBACK(fault);
         return;
       }
     }
-    callback(this, &audio[0], nullptr, frames, time, position, timeValid, 0, user);
-  } else {
-    callback(this, nullptr, &audio[0], bufferFrames, time, position, timeValid, 0, user);
-    frames = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames);
-    if(frames < 0) {
-      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, frames, 1)))
+    data = static_cast<char*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
+    if(!output)
+      callback(this, data, nullptr, uframes, time, position, timeValid, 0, user);
+    else
+      callback(this, nullptr, data, uframes, time, position, timeValid, 0, user);
+    if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
+      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
         return;
-      if((frames = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames)) < 0)
-        XT_VERIFY_STREAM_CALLBACK(frames);
+      if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
+        XT_VERIFY_STREAM_CALLBACK(fault);
+        return;
+      }
     }
   }
-  processed += bufferFrames;
 }
 
 #endif // __linux__
