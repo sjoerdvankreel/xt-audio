@@ -167,17 +167,17 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
   std::vector<AlsaDeviceInfo> outputs;
 
   for(size_t i = 0; hints.hints[i] != nullptr; i++) {
-    AlsaDeviceInfo device = AlsaDeviceInfo();
     AlsaHint ioid(snd_device_name_get_hint(hints.hints[i], "IOID"));
     AlsaHint name(snd_device_name_get_hint(hints.hints[i], "NAME"));
     if(!strcmp("null", name.hint))
       continue;
-    device.name = name.hint;
 
     if(strstr(name.hint, "dmix") != name.hint 
       && (ioid.hint == nullptr || !strcmp("Input", ioid.hint)) 
       && AnyAccessMaskAvailable(name.hint, SND_PCM_STREAM_CAPTURE)) {
 
+      AlsaDeviceInfo device = AlsaDeviceInfo();
+      device.name = name.hint;
       device.output = false;
       device.description = device.name + " (Input) (R/W)";
       result.push_back(device);
@@ -190,6 +190,8 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
       && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))
       && AnyAccessMaskAvailable(name.hint, SND_PCM_STREAM_PLAYBACK)) {
 
+      AlsaDeviceInfo device = AlsaDeviceInfo();
+      device.name = name.hint;
       device.output = true;
       device.description = device.name + " (Output) (R/W)";
       outputs.push_back(device);
