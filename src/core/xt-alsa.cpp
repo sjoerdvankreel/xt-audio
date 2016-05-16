@@ -89,8 +89,11 @@ struct AlsaDevice: public XtDevice {
   const AlsaDeviceInfo info;
   XT_IMPLEMENT_DEVICE(Alsa);
 
-  AlsaDevice(const AlsaDeviceInfo& info):
-  info(info) {}
+  AlsaDevice(const AlsaDeviceInfo& info): info(info) {}
+  XtFault SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
+                         XtBool interleaved, XtBool* supports) const;
+  XtFault IsAlsaInterleaved(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
+                            XtBool interleaved, XtBool* alsaInterleaved) const;
 };
 
 struct AlsaStream: public XtlLinuxStream {
@@ -211,14 +214,17 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
   return result;
 }
 
-static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap, bool interleaved,
+static int SetHwParams(const AlsaDevice& device, snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap, bool interleaved,
                        const XtFormat* format, snd_pcm_uframes_t* minBuffer, snd_pcm_uframes_t* maxBuffer) {
 
   int fault;
+  XtBool alsaInterleaved;
   int32_t channels = format->inputs + format->outputs;
   unsigned urate = static_cast<unsigned>(format->mix.rate);
   snd_pcm_format_t alsaFormat = ToAlsaSample(format->mix.sample);
 
+  if((fault = device.IsAlsaInterleaved(pcm, hwParams, interleaved, &alsaInterleaved)) < 0)
+    return fault;
   if((fault = snd_pcm_hw_params_set_rate(pcm, hwParams, urate, 0)) < 0)
     return fault;
   if((fault = snd_pcm_hw_params_set_rate_resample(pcm, hwParams, 0)) < 0)
@@ -227,13 +233,13 @@ static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap,
     return fault;
   if((fault = snd_pcm_hw_params_set_channels(pcm, hwParams, channels)) < 0)
     return fault;
-  if(mmap && interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED)) < 0))
+  if(mmap && alsaInterleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED)) < 0))
     return fault;
-  if(mmap && !interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_NONINTERLEAVED)) < 0))
+  if(mmap && !alsaInterleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_NONINTERLEAVED)) < 0))
     return fault;
-  if(!mmap && interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0))
+  if(!mmap && alsaInterleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0))
     return fault;
-  if(!mmap && !interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_NONINTERLEAVED)) < 0))
+  if(!mmap && !alsaInterleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_NONINTERLEAVED)) < 0))
     return fault;
   if((fault = snd_pcm_hw_params_get_buffer_size_min(hwParams, minBuffer)) < 0)
     return fault;
@@ -261,7 +267,7 @@ static int QueryDevice(const AlsaDevice& device, const XtFormat* format,
   snd_pcm_hw_params_alloca(&hwParams);
   if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
     return 0;
-  if(SetHwParams(pcm, hwParams, device.info.mmap, interleaved, format, &minBuffer, &maxBuffer) < 0)
+  if(SetHwParams(device, pcm, hwParams, device.info.mmap, interleaved, format, &minBuffer, &maxBuffer) < 0)
     return 0;
 
   *supports = XtTrue;
@@ -365,6 +371,11 @@ XtFault AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const {
   return 0;
 }
 
+XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char** name) const {
+  *name = strdup(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)));
+  return 0;
+}
+
 XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
   int fault;
   double min, max;
@@ -387,28 +398,42 @@ XtFault AlsaDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
   return 0;
 }
 
-XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char** name) const {
-  *name = strdup(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)));
-  return 0;
-}
-
 XtFault AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
   
   snd_pcm_t* pcm;
   AlsaLogDisabler disabler;
   snd_pcm_hw_params_t* hwParams;
+  snd_pcm_hw_params_alloca(&hwParams);
   snd_pcm_stream_t stream = !info.output? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
 
   if(snd_pcm_open(&pcm, info.name.c_str(), stream, 0) < 0) 
     return 0;
   AlsaPcm alsaPcm(pcm);
-  snd_pcm_hw_params_alloca(&hwParams);
-  if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
-    return 0;
-  *supports |= !info.mmap && interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED) >= 0;
-  *supports |= info.mmap && interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED) >= 0;
-  *supports |= !info.mmap && !interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_RW_NONINTERLEAVED) >= 0;
-  *supports |= info.mmap && !interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_NONINTERLEAVED) >= 0;
+  XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm, hwParams));
+  return SupportsAccess(pcm, hwParams, interleaved, supports);
+}
+
+XtFault AlsaDevice::IsAlsaInterleaved(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
+                                      XtBool interleaved, XtBool* alsaInterleaved) const {
+
+  XtFault fault;
+  XtBool canInterleaved;
+  XtBool canNonInterleaved;  
+  if((fault = SupportsAccess(pcm, hwParams, XtTrue, &canInterleaved)) != 0)
+    return fault;
+  if((fault = SupportsAccess(pcm, hwParams, XtFalse, &canNonInterleaved)) != 0)
+    return fault;
+  *alsaInterleaved = canInterleaved && canNonInterleaved? interleaved: canInterleaved;
+  return 0;
+}
+
+XtFault AlsaDevice::SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, XtBool interleaved, XtBool* supports) const {
+
+  *supports = 0;
+  (*supports) |= (!info.mmap && interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED) >= 0);
+  (*supports) |= (info.mmap && interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED) >= 0);
+  (*supports) |= (!info.mmap && !interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_RW_NONINTERLEAVED) >= 0);
+  (*supports) |= (info.mmap && !interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_NONINTERLEAVED) >= 0);
   return 0;
 }
 
@@ -417,12 +442,9 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   
   XtFault fault;
   snd_pcm_t* pcm;
-  XtBool supports;
   int32_t channels;
   int32_t sampleSize;
-  bool alsaInterleaved;
-  XtBool canInterleaved;
-  XtBool canNonInterleaved;
+  XtBool alsaInterleaved;
   snd_pcm_uframes_t minBuffer;
   snd_pcm_uframes_t maxBuffer;
   snd_pcm_uframes_t realBuffer;
@@ -430,25 +452,14 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   snd_pcm_sw_params_t* swParams;
   snd_pcm_stream_t direction = format->inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
 
-  if((fault = SupportsAccess(XtTrue, &canInterleaved)) != 0)
-    return fault;
-  if((fault = SupportsAccess(XtFalse, &canNonInterleaved)) != 0)
-    return fault;
-  if(canInterleaved && canNonInterleaved)
-    alsaInterleaved = interleaved;
-  else if(canInterleaved)
-    alsaInterleaved = true;
-  else
-    alsaInterleaved = false;
-
+  snd_pcm_hw_params_alloca(&hwParams);
   XT_VERIFY_ALSA(snd_pcm_open(&pcm, info.name.c_str(), direction, 0));
   AlsaPcm alsaPcm(pcm);
-
-  snd_pcm_hw_params_alloca(&hwParams);
   XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm, hwParams));
   {
     AlsaLogDisabler disabler;
-    XT_VERIFY_ALSA(SetHwParams(pcm, hwParams, info.mmap, alsaInterleaved, format, &minBuffer, &maxBuffer));
+    XT_VERIFY_ALSA(IsAlsaInterleaved(pcm, hwParams, interleaved, &alsaInterleaved));
+    XT_VERIFY_ALSA(SetHwParams(*this, pcm, hwParams, info.mmap, alsaInterleaved, format, &minBuffer, &maxBuffer));
   }
 
   realBuffer = bufferSize / 1000.0 * format->mix.rate;
