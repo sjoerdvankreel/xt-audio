@@ -202,7 +202,7 @@ bool XtlLinuxStream::VerifyStreamCallback(int error, const char* file, int line,
     return true;
   StopStream();
   XtiTrace(XtLevelError, file, line, func, expr);
-  callback(this, nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), error), user);
+  ProcessCallback(nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), error));
   XT_ASSERT(pthread_mutex_lock(&lock.m) == 0);
   state = XtStreamStateStopped;
   XT_ASSERT(pthread_cond_signal(&respondCv.cv) == 0);

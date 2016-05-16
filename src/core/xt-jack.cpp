@@ -108,8 +108,8 @@ struct JackStream: public XtStream {
   const XtJackClient client;
   std::vector<XtJackPort> inputs;
   std::vector<XtJackPort> outputs;
-  std::vector<char> inputInterleaved;
-  std::vector<char> outputInterleaved;
+  std::vector<void*> inputChannels;
+  std::vector<void*> outputChannels;
   std::vector<XtJackConnection> connections;
   XT_IMPLEMENT_STREAM(Jack);
   XT_IMPLEMENT_STREAM_CONTROL();
@@ -118,8 +118,7 @@ struct JackStream: public XtStream {
     std::vector<XtJackPort>&& inputs, std::vector<XtJackPort>&& outputs,
     size_t inputCount, size_t outputCount, size_t sampleSize, size_t bufferFrames):
   client(std::move(client)), inputs(std::move(inputs)), outputs(std::move(outputs)), 
-  inputInterleaved(bufferFrames * inputCount * sampleSize, '\0'),
-  outputInterleaved(bufferFrames * outputCount * sampleSize, '\0'),
+  inputChannels(inputCount, nullptr), outputChannels(outputCount, nullptr),
   connections() { XT_ASSERT(this->client.client != nullptr); }
 };
 
@@ -183,8 +182,8 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   JackStream* s = static_cast<JackStream*>(arg);
   int32_t sampleSize = XtiGetSampleSize(s->format.mix.sample);
 
-  input = s->inputs.size() == 0? nullptr: &s->inputInterleaved[0];
-  output = s->outputs.size() == 0? nullptr: &s->outputInterleaved[0];  
+  input = s->inputs.size() == 0? nullptr: &s->inputChannels[0];
+  output = s->outputs.size() == 0? nullptr: &s->outputChannels[0];  
   if(jack_get_cycle_times(s->client.client, &jackPosition, &jackTime, &nextTime, &period) == 0) {
     timeValid = XtTrue;
     position = jackPosition;
@@ -192,13 +191,10 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   }
 
   for(int32_t i = 0; i < s->inputs.size(); i++)
-    XtiInterleave(&s->inputInterleaved[0], jack_port_get_buffer(s->inputs[i].port, frames), 
-      frames, static_cast<int32_t>(s->inputs.size()), sampleSize, i);
-  s->callback(s, input, output, frames, time, position, timeValid, 0, s->user);
+    s->inputChannels[i] = jack_port_get_buffer(s->inputs[i].port, frames);
   for(int32_t i = 0; i < s->outputs.size(); i++)
-    XtiDeinterleave(jack_port_get_buffer(s->outputs[i].port, frames), &s->outputInterleaved[0],
-      frames, static_cast<int32_t>(s->outputs.size()), sampleSize, i);
-
+    s->outputChannels[i] = jack_port_get_buffer(s->outputs[i].port, frames);
+  s->ProcessCallback(input, output, frames, time, position, timeValid, 0);
   return 0;
 }
 

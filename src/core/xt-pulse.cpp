@@ -285,7 +285,7 @@ void PulseStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_STREAM_CALLBACK(fault);
     return;
   }
-  callback(this, inData, outData, bufferFrames, 0.0, 0, XtFalse, 0, user);
+  ProcessCallback(inData, outData, bufferFrames, 0.0, 0, XtFalse, 0);
   if(output && pa_simple_write(client.simple, &audio[0], audio.size(), &fault) < 0)
     XT_VERIFY_STREAM_CALLBACK(fault);
 }

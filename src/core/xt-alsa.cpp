@@ -98,14 +98,21 @@ struct AlsaStream: public XtlLinuxStream {
   const bool output;
   const AlsaPcm pcm;
   uint64_t processed;
-  std::vector<char> audio;
   const int32_t bufferFrames;
+  std::vector<char> interleavedAudio;
+  std::vector<void*> nonInterleavedAudio;
+  std::vector<std::vector<char>> nonInterleavedAudioChannels;
   XT_IMPLEMENT_STREAM(Alsa);
 
   ~AlsaStream() { Stop(); }
-  AlsaStream(AlsaPcm&& p, bool output, bool mmap, int32_t bufferFrames, int32_t frameSize):
-  mmap(mmap), output(output), pcm(std::move(p)), processed(0),
-  audio(static_cast<size_t>(bufferFrames * frameSize), '\0'), bufferFrames(bufferFrames) {}
+  AlsaStream(AlsaPcm&& p, bool output, bool mmap, int32_t bufferFrames, int32_t channels, int32_t sampleSize):
+  mmap(mmap), output(output), pcm(std::move(p)), processed(0), bufferFrames(bufferFrames),
+  interleavedAudio(bufferFrames * channels * sampleSize, '\0'),
+  nonInterleavedAudio(channels, nullptr),
+  nonInterleavedAudioChannels(channels, std::vector<char>(bufferFrames * sampleSize, '\0')) {
+    for(size_t i = 0; i < channels; i++)
+      nonInterleavedAudio[i] = &(nonInterleavedAudioChannels[i][0]);
+  }
 
   void StopStream();
   void StartStream();
@@ -195,8 +202,8 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
   return result;
 }
 
-static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap,
-  const XtFormat* format, snd_pcm_uframes_t* minBuffer, snd_pcm_uframes_t* maxBuffer) {
+static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap, bool interleaved,
+                       const XtFormat* format, snd_pcm_uframes_t* minBuffer, snd_pcm_uframes_t* maxBuffer) {
 
   int fault;
   int32_t channels = format->inputs + format->outputs;
@@ -211,9 +218,13 @@ static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap,
     return fault;
   if((fault = snd_pcm_hw_params_set_channels(pcm, hwParams, channels)) < 0)
     return fault;
-  if(mmap && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED)) < 0))
+  if(mmap && interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED)) < 0))
     return fault;
-  if(!mmap && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0))
+  if(mmap && !interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_NONINTERLEAVED)) < 0))
+    return fault;
+  if(!mmap && interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0))
+    return fault;
+  if(!mmap && !interleaved && ((fault = snd_pcm_hw_params_set_access(pcm, hwParams, SND_PCM_ACCESS_RW_NONINTERLEAVED)) < 0))
     return fault;
   if((fault = snd_pcm_hw_params_get_buffer_size_min(hwParams, minBuffer)) < 0)
     return fault;
@@ -222,7 +233,8 @@ static int SetHwParams(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap,
   return 0;
 }
 
-static int QueryDevice(const AlsaDevice& device, const XtFormat* format, XtBool* supports, double* min, double* max) {
+static int QueryDevice(const AlsaDevice& device, const XtFormat* format, 
+                       bool interleaved, XtBool* supports, double* min, double* max) {
 
   snd_pcm_t* pcm;
   AlsaLogDisabler disabler;
@@ -240,7 +252,7 @@ static int QueryDevice(const AlsaDevice& device, const XtFormat* format, XtBool*
   snd_pcm_hw_params_alloca(&hwParams);
   if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
     return 0;
-  if(SetHwParams(pcm, hwParams, device.info.mmap, format, &minBuffer, &maxBuffer) < 0)
+  if(SetHwParams(pcm, hwParams, device.info.mmap, interleaved, format, &minBuffer, &maxBuffer) < 0)
     return 0;
 
   *supports = XtTrue;
@@ -349,7 +361,7 @@ XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   double min, max;
   if(format->inputs > 0 && info.output || format->outputs > 0 && !info.output)
     return 0;
-  return QueryDevice(*this, format, supports, &min, &max);
+  return QueryDevice(*this, format, true, supports, &min, &max);
 }
 
 XtFault AlsaDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
@@ -357,7 +369,7 @@ XtFault AlsaDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
   XtBool supports;
   double frameSize = (format->inputs + format->outputs) * XtiGetSampleSize(format->mix.sample);
 
-  XT_VERIFY_ALSA(QueryDevice(*this, format, &supports, &buffer->min, &buffer->max));
+  XT_VERIFY_ALSA(QueryDevice(*this, format, true, &supports, &buffer->min, &buffer->max));
   buffer->current = (XtAlsaDefaultBufferBytes / frameSize) / format->mix.rate * 1000.0;
   if(buffer->current < buffer->min)
     buffer->current = buffer->min;
@@ -395,7 +407,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
                                XtStreamCallback callback, void* user, XtStream** stream) {
   
   snd_pcm_t* pcm;
-  int32_t frameSize;
+  int32_t channels;
   int32_t sampleSize;
   snd_pcm_uframes_t minBuffer;
   snd_pcm_uframes_t maxBuffer;
@@ -411,7 +423,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm, hwParams));
   {
     AlsaLogDisabler disabler;
-    XT_VERIFY_ALSA(SetHwParams(pcm, hwParams, info.mmap, format, &minBuffer, &maxBuffer));
+    XT_VERIFY_ALSA(SetHwParams(pcm, hwParams, info.mmap, interleaved, format, &minBuffer, &maxBuffer));
   }
 
   realBuffer = bufferSize / 1000.0 * format->mix.rate;
@@ -428,8 +440,8 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XT_VERIFY_ALSA(snd_pcm_sw_params(pcm, swParams));
 
   sampleSize = XtiGetSampleSize(format->mix.sample);
-  frameSize = (format->inputs + format->outputs) * sampleSize;
-  *stream = new AlsaStream(std::move(alsaPcm), info.output, info.mmap, realBuffer, frameSize);
+  channels = format->inputs + format->outputs;
+  *stream = new AlsaStream(std::move(alsaPcm), info.output, info.mmap, realBuffer, channels, sampleSize);
   return 0;
 }
 
@@ -491,50 +503,101 @@ void AlsaStream::ProcessBuffer(bool prefill) {
   time = timeStamp.tv_sec * 1000.0 + timeStamp.tv_usec / 1000.0;
   timeValid = timeStamp.tv_sec != 0 || timeStamp.tv_usec != 0;
 
-  if(!mmap) {
-    if(!output) {
-      if((sframes = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames)) < 0) {
-        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+  if(interleaved) {
+    if(!mmap) {
+      if(!output) {
+        if((sframes = snd_pcm_readi(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
+          if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+            return;
+          if((sframes = snd_pcm_readi(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
+            XT_VERIFY_STREAM_CALLBACK(sframes);
+            return;
+          }
+        }
+        ProcessCallback(&interleavedAudio[0], nullptr, sframes, time, position, timeValid, 0);
+      } else {
+        ProcessCallback(nullptr, &interleavedAudio[0], bufferFrames, time, position, timeValid, 0);
+        if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
+          if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+            return;
+          if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0)
+            XT_VERIFY_STREAM_CALLBACK(sframes);
+        }
+      }
+      processed += sframes;
+    } else {
+      uframes = bufferFrames;
+      if((fault = snd_pcm_mmap_begin(pcm.pcm, &areas, &offset, &uframes)) < 0) {
+        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
           return;
-        if((sframes = snd_pcm_readi(pcm.pcm, &audio[0], bufferFrames)) < 0) {
-          XT_VERIFY_STREAM_CALLBACK(sframes);
+        uframes = bufferFrames;
+        if((fault = snd_pcm_mmap_begin(pcm.pcm, &areas, &offset, &uframes)) < 0) {
+          XT_VERIFY_STREAM_CALLBACK(fault);
           return;
         }
       }
-      callback(this, &audio[0], nullptr, sframes, time, position, timeValid, 0, user);
-    } else {
-      callback(this, nullptr, &audio[0], bufferFrames, time, position, timeValid, 0, user);
-      if((sframes = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames)) < 0) {
-        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+      data = static_cast<char*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
+      if(!output)
+        ProcessCallback(data, nullptr, uframes, time, position, timeValid, 0);
+      else
+        ProcessCallback(nullptr, data, uframes, time, position, timeValid, 0);
+      if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
+        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
           return;
-        if((sframes = snd_pcm_writei(pcm.pcm, &audio[0], bufferFrames)) < 0)
-          XT_VERIFY_STREAM_CALLBACK(sframes);
+        if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
+          XT_VERIFY_STREAM_CALLBACK(fault);
+          return;
+        }
       }
+      processed += uframes;
     }
-    processed += sframes;
   } else {
-    uframes = bufferFrames;
-    if((fault = snd_pcm_mmap_begin(pcm.pcm, &areas, &offset, &uframes)) < 0) {
-      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
-        return;
+    if(!mmap) {
+      if(!output) {
+        if((sframes = snd_pcm_readn(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
+          if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+            return;
+          if((sframes = snd_pcm_readn(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
+            XT_VERIFY_STREAM_CALLBACK(sframes);
+            return;
+          }
+        }
+        ProcessCallback(&nonInterleavedAudio[0], nullptr, sframes, time, position, timeValid, 0);
+      } else {
+        ProcessCallback(nullptr, &nonInterleavedAudio[0], bufferFrames, time, position, timeValid, 0);
+        if((sframes = snd_pcm_writen(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
+          if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
+            return;
+          if((sframes = snd_pcm_writen(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0)
+            XT_VERIFY_STREAM_CALLBACK(sframes);
+        }
+      }
+      processed += sframes;
+    } else {
       uframes = bufferFrames;
       if((fault = snd_pcm_mmap_begin(pcm.pcm, &areas, &offset, &uframes)) < 0) {
-        XT_VERIFY_STREAM_CALLBACK(fault);
-        return;
+        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
+          return;
+        uframes = bufferFrames;
+        if((fault = snd_pcm_mmap_begin(pcm.pcm, &areas, &offset, &uframes)) < 0) {
+          XT_VERIFY_STREAM_CALLBACK(fault);
+          return;
+        }
       }
-    }
-    data = static_cast<char*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
-    if(!output)
-      callback(this, data, nullptr, uframes, time, position, timeValid, 0, user);
-    else
-      callback(this, nullptr, data, uframes, time, position, timeValid, 0, user);
-    if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
-      if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
-        return;
+      data = static_cast<char*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
+      if(!output)
+        ProcessCallback(data, nullptr, uframes, time, position, timeValid, 0);
+      else
+        ProcessCallback(nullptr, data, uframes, time, position, timeValid, 0);
       if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
-        XT_VERIFY_STREAM_CALLBACK(fault);
-        return;
+        if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
+          return;
+        if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
+          XT_VERIFY_STREAM_CALLBACK(fault);
+          return;
+        }
       }
+      processed += uframes;
     }
   }
 }
