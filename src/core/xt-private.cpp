@@ -136,15 +136,26 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
 void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double time, 
                                uint64_t position, XtBool timeValid, XtError error) {
 
-  if(interleaved && canInterleaved || !interleaved && canNonInterleaved)
-    userCallback(this, input, output, frames, time, position, timeValid, error, user);
-  else if(interleaved) {
+  void* inData;
+  void* outData;
+  bool haveInput = input != nullptr && frames > 0;
+  bool haveOutput = output != nullptr && frames > 0;
+
+  if(interleaved && canInterleaved || !interleaved && canNonInterleaved) {
+    inData = haveInput? input: nullptr;
+    outData = haveOutput? output: nullptr;
+    userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
+  } else if(interleaved) {
+    inData = haveInput? &inputInterleaved[0]: nullptr;
+    outData = haveOutput? &outputInterleaved[0]: nullptr;
     Interleave(&inputInterleaved[0], static_cast<void**>(input), frames, format.inputs, sampleSize);
-    userCallback(this, &inputInterleaved[0], &outputInterleaved[0], frames, time, position, timeValid, error, user);
+    userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     Deinterleave(static_cast<void**>(output), &outputInterleaved[0], frames, format.outputs, sampleSize);
   } else {
+    inData = haveInput? &inputNonInterleaved[0]: nullptr;
+    outData = haveOutput? &outputNonInterleaved[0]: nullptr;
     Deinterleave(&inputNonInterleaved[0], input, frames, format.inputs, sampleSize);
-    userCallback(this, &inputNonInterleaved[0], &outputNonInterleaved[0], frames, time, position, timeValid, error, user);
+    userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     Interleave(output, &outputNonInterleaved[0], frames, format.outputs, sampleSize);
   }
 }
