@@ -81,6 +81,7 @@
             this.streamType = new System.Windows.Forms.ComboBox();
             this.inputInterleaved = new System.Windows.Forms.Label();
             this.outputInterleaved = new System.Windows.Forms.Label();
+            this.streamInterleaved = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -278,7 +279,7 @@
             this.messages.Name = "messages";
             this.messages.ReadOnly = true;
             this.messages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messages.Size = new System.Drawing.Size(325, 457);
+            this.messages.Size = new System.Drawing.Size(325, 434);
             this.messages.TabIndex = 0;
             // 
             // isWin32
@@ -640,9 +641,22 @@
             this.outputInterleaved.TabIndex = 66;
             this.outputInterleaved.Text = "Both";
             // 
+            // streamInterleaved
+            // 
+            this.streamInterleaved.AutoSize = true;
+            this.streamInterleaved.Checked = true;
+            this.streamInterleaved.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.streamInterleaved.Location = new System.Drawing.Point(450, 452);
+            this.streamInterleaved.Name = "streamInterleaved";
+            this.streamInterleaved.Size = new System.Drawing.Size(79, 17);
+            this.streamInterleaved.TabIndex = 68;
+            this.streamInterleaved.Text = "Interleaved";
+            this.streamInterleaved.UseVisualStyleBackColor = true;
+            // 
             // XtGui
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.streamInterleaved);
             this.Controls.Add(this.streamType);
             this.Controls.Add(label14);
             this.Controls.Add(this.bufferSize);
@@ -699,5 +713,6 @@
         private System.Windows.Forms.ComboBox streamType;
         private System.Windows.Forms.Label outputInterleaved;
         private System.Windows.Forms.Label inputInterleaved;
+        private System.Windows.Forms.CheckBox streamInterleaved;
     }
 }

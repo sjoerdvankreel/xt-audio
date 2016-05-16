@@ -20,7 +20,7 @@ namespace Xt {
             block = new byte[maxFrames * frameSize];
         }
 
-        internal override void OnCallback(XtFormat format, Array input, Array output, int frames) {
+        internal override void OnCallback(XtFormat format, bool interleaved, Array input, Array output, int frames) {
 
             if (frames == 0)
                 return;

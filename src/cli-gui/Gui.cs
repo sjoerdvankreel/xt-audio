@@ -208,7 +208,7 @@ namespace Xt {
             bool inputSupported = inputDevice == null ? false : inputDevice.SupportsFormat(inputFormat);
             inputFormatSupported.Text = inputSupported.ToString();
             XtBuffer inputBuffer = !inputSupported ? null : inputDevice.GetBuffer(inputFormat);
-            inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}", 
+            inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
                 inputBuffer.min.ToString("N1"), inputBuffer.current.ToString("N1"), inputBuffer.max.ToString("N1"));
             inputMix.Text = inputDevice == null || inputDevice.GetMix() == null ? "N/A" : inputDevice.GetMix().ToString();
             inputInterleaved.Text = inputDevice == null
@@ -233,7 +233,7 @@ namespace Xt {
             bool outputSupported = outputDevice == null ? false : outputDevice.SupportsFormat(outputFormat);
             outputFormatSupported.Text = outputSupported.ToString();
             XtBuffer outputBuffer = !outputSupported ? null : outputDevice.GetBuffer(outputFormat);
-            outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}", 
+            outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
                 outputBuffer.min.ToString("N1"), outputBuffer.current.ToString("N1"), outputBuffer.max.ToString("N1"));
             outputMix.Text = outputDevice == null || outputDevice.GetMix() == null ? "N/A" : outputDevice.GetMix().ToString();
             outputInterleaved.Text = outputDevice == null
@@ -298,6 +298,13 @@ namespace Xt {
                 bool input = type != StreamType.Render;
                 bool output = type != StreamType.Capture;
 
+                if (type == StreamType.Capture && !streamInterleaved.Checked) {
+                    MessageBox.Show(this,
+                        "Select interleaved access to write a raw audio file.",
+                        "Non-interleaved access not supported for capture only.");
+                    return;
+                }
+
                 if (input && inputDevice.SelectedItem == null) {
                     MessageBox.Show(this,
                         "Select an input device.",
@@ -338,7 +345,8 @@ namespace Xt {
                     captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
                     CaptureCallback callback = new CaptureCallback(OnStreamError, AddMessage, captureFile);
                     XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
-                    inputStream = inputDevice.OpenStream(inputFormat, true, bufferSize.Value, callback.OnCallback, "capture-user-data");
+                    inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
+                        bufferSize.Value, callback.OnCallback, "capture-user-data");
                     callback.Init(inputStream.GetFormat(), inputStream.GetFrames());
                     inputStream.Start();
 
@@ -346,7 +354,8 @@ namespace Xt {
 
                     RenderCallback callback = new RenderCallback(OnStreamError, AddMessage);
                     XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    outputStream = outputDevice.OpenStream(outputFormat, true, bufferSize.Value, callback.OnCallback, "render-user-data");
+                    outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
+                        bufferSize.Value, callback.OnCallback, "render-user-data");
                     outputStream.Start();
 
                 } else if (inputDevice.SelectedItem == outputDevice.SelectedItem) {
@@ -356,7 +365,8 @@ namespace Xt {
                     duplexFormat.outMask = outputFormat.outMask;
                     FullDuplexCallback callback = new FullDuplexCallback(OnStreamError, AddMessage);
                     XtDevice duplexDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    outputStream = duplexDevice.OpenStream(duplexFormat, true, bufferSize.Value, callback.OnCallback, "duplex-user-data");
+                    outputStream = duplexDevice.OpenStream(duplexFormat, streamInterleaved.Checked,
+                        bufferSize.Value, callback.OnCallback, "duplex-user-data");
                     outputStream.Start();
 
                 } else {
@@ -366,8 +376,12 @@ namespace Xt {
                     XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
                     PlayThroughCaptureCallback inputCallback = new PlayThroughCaptureCallback(OnStreamError, AddMessage, buffer);
                     PlayThroughRenderCallback outputCallback = new PlayThroughRenderCallback(OnStreamError, AddMessage, buffer);
-                    inputStream = inputDevice.OpenStream(inputFormat, true, bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
-                    outputStream = outputDevice.OpenStream(outputFormat, true, bufferSize.Value, outputCallback.OnCallback, "render-user-data");
+                    inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
+                        bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
+                    outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
+                        bufferSize.Value, outputCallback.OnCallback, "render-user-data");
+                    inputCallback.Init(inputFormat, inputStream.GetFrames());
+                    outputCallback.Init(outputFormat, outputStream.GetFrames());
                     inputStream.Start();
                     outputStream.Start();
                 }

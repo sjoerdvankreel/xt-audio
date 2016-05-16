@@ -15,7 +15,7 @@ namespace Xt {
             this.onMessage = onMessage;
         }
 
-        internal abstract void OnCallback(XtFormat format, Array input, Array output, int frames);
+        internal abstract void OnCallback(XtFormat format, bool interleaved, Array input, Array output, int frames);
 
         internal virtual void OnMessage(string message) {
             onMessage.Invoke(message);
@@ -30,7 +30,8 @@ namespace Xt {
             }
 
             XtFormat format = stream.GetFormat();
-            OnCallback(format, input, output, frames);
+            bool interleaved = stream.IsInterleaved();
+            OnCallback(format, interleaved, input, output, frames);
             processed += frames;
             if (processed < format.mix.rate * 3)
                 return;
