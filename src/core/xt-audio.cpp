@@ -456,6 +456,8 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
   }
 
   if(!interleaved && !canNonInterleaved) {
+    (*stream)->inputNonInterleaved = std::vector<void*>(format->inputs, nullptr);
+    (*stream)->outputNonInterleaved = std::vector<void*>(format->outputs, nullptr);
     (*stream)->inputChannelsNonInterleaved = std::vector<std::vector<char>>(
       format->inputs, std::vector<char>(frames * attributes.size, '\0'));
     (*stream)->outputChannelsNonInterleaved = std::vector<std::vector<char>>(

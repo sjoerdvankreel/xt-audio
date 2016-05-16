@@ -70,7 +70,7 @@ struct AsioStream: public XtStream {
   XtStream(), issueOutputReady(true), 
   bufferSize(static_cast<long>(bufferSize)), device(d), 
   inputChannels(static_cast<size_t>(format.inputs), nullptr),
-  outputChannels(static_cast<size_t>(format.inputs), nullptr),
+  outputChannels(static_cast<size_t>(format.outputs), nullptr),
   buffers(buffers), runtime(std::make_unique<asmjit::JitRuntime>()) {}
 };
 
