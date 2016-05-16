@@ -38,7 +38,7 @@ namespace Xt {
 
                     XtBuffer buffer = device.GetBuffer(format);
                     using (FileStream recording = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write))
-                    using (XtStream stream = device.OpenStream(format, buffer.current, new XtStreamCallback(Capture), recording)) {
+                    using (XtStream stream = device.OpenStream(format, true, buffer.current, new XtStreamCallback(Capture), recording)) {
                         stream.Start();
                         Thread.Sleep(1000);
                         stream.Stop();

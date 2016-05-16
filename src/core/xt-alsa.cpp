@@ -391,7 +391,8 @@ XtFault AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
   return 0;
 }
 
-XtFault AlsaDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
+                               XtStreamCallback callback, void* user, XtStream** stream) {
   
   snd_pcm_t* pcm;
   int32_t frameSize;

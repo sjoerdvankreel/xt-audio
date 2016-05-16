@@ -336,7 +336,9 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   return S_OK;
 }
 
-XtFault WasapiDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
+                                 XtStreamCallback callback, void* user, XtStream** stream) {
+
   HRESULT hr;
   DWORD flags;
   UINT alignedSize;
@@ -506,7 +508,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     timeValid = (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) == 0;
     position = !timeValid? 0: wasapiPosition;
     time = !timeValid? 0: wasapiTime / XtWsHnsPerMs;
-    callback(this, data, nullptr, frames, time, position, timeValid, 0, user);
+    ProcessCallback(data, nullptr, frames, time, position, timeValid, 0);
     XT_VERIFY_STREAM_CALLBACK(capture->ReleaseBuffer(frames));
   }
   
@@ -535,7 +537,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->GetBuffer(frames, &data)))
       return;
-    callback(this, nullptr, data, frames, time, position, timeValid, 0, user);
+    ProcessCallback(nullptr, data, frames, time, position, timeValid, 0);
     XT_VERIFY_STREAM_CALLBACK(render->ReleaseBuffer(frames, 0));
   }
 }

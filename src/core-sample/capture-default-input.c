@@ -59,7 +59,8 @@ int CaptureMain(int argc, char** argv) {
     goto error;
 
   recording = fopen("xt-audio.raw", "wb");
-  if((err = XtDeviceOpenStream(device, &format, buffer.current, &CaptureCallback, recording, &stream)) != 0)
+  if((err = XtDeviceOpenStream(device, &format, XtFalse, 
+    buffer.current, &CaptureCallback, recording, &stream)) != 0)
     goto error;
 
   if((err = XtStreamStart(stream)) != 0)

@@ -90,7 +90,7 @@ namespace Xt {
             return XtNative.FreeStringFromUtf8(name);
         }
 
-        public XtStream OpenStream(XtFormat format, double bufferSize, XtStreamCallback callback, object user) {
+        public XtStream OpenStream(XtFormat format, bool interleaved, double bufferSize, XtStreamCallback callback, object user) {
             IntPtr s;
             XtStream stream = new XtStream(callback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);
@@ -98,7 +98,7 @@ namespace Xt {
             stream.monoCallback = new XtNative.StreamCallbackMono(stream.Callback);
             Delegate cbDelegate = Type.GetType("Mono.Runtime") != null ? (Delegate)stream.monoCallback : stream.netCallback;
             IntPtr cb = Marshal.GetFunctionPointerForDelegate(cbDelegate);
-            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, bufferSize, cb, IntPtr.Zero, out s));
+            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, interleaved, bufferSize, cb, IntPtr.Zero, out s));
             stream.Init(s);
             return stream;
         }

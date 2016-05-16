@@ -325,7 +325,8 @@ XtFault DSoundDevice::GetMix(XtMix** mix) const {
   return S_OK;
 }
 
-XtFault DSoundDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
+                                 XtStreamCallback callback, void* user, XtStream** stream) {
 
   HRESULT hr;
   int32_t frameSize;
@@ -418,9 +419,9 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
-      callback(this, nullptr, audio1, bufferFrames, 0.0, 0, XtFalse, DS_OK, user);
+      ProcessCallback(nullptr, audio1, bufferFrames, 0.0, 0, XtFalse, DS_OK);
     } else {
-      callback(this, nullptr, &buffer[0], bufferFrames, 0.0, 0, XtFalse, DS_OK, user);
+      ProcessCallback(nullptr, &buffer[0], bufferFrames, 0.0, 0, XtFalse, DS_OK);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
@@ -447,14 +448,14 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(capture->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
-      callback(this, audio1, nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK, user);
+      ProcessCallback(audio1, nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK);
       if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
         return;
     } else {
       CombineBufferParts(buffer, audio1, size1, audio2, size2);
       if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
         return;
-      callback(this, &buffer[0], nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK, user);
+      ProcessCallback(&buffer[0], nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK);
     }
     xtBytesProcessed += available;
   }
@@ -477,9 +478,9 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
-      callback(this, nullptr, audio1, available / frameSize, 0.0, 0, XtFalse, DS_OK, user);
+      ProcessCallback(nullptr, audio1, available / frameSize, 0.0, 0, XtFalse, DS_OK);
     } else {
-      callback(this, nullptr, &buffer[0], available / frameSize, 0.0, 0, XtFalse, DS_OK, user);
+      ProcessCallback(nullptr, &buffer[0], available / frameSize, 0.0, 0, XtFalse, DS_OK);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))

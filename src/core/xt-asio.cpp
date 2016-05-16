@@ -27,7 +27,6 @@
 static bool IsAsioSuccess(ASIOError e);
 static const double XtAsioNsPerMs = 1000000.0;
 static const int ASE_Format = ASE_NoMemory + 1;
-static size_t GetFrameSize(const XtFormat& format, bool output);
 
 #define XT_ASIO_CALL __cdecl
 #define XT_TO_UINT64(lo, hi) ((uint64_t)(lo) | ((uint64_t)(hi) << 32))
@@ -58,9 +57,9 @@ struct AsioStream: public XtStream {
   bool issueOutputReady;
   const long bufferSize;
   AsioDevice* const device;
+  std::vector<void*> inputChannels;
+  std::vector<void*> outputChannels;
   std::vector<ASIOBufferInfo> buffers;
-  std::vector<char> inputInterleaved;
-  std::vector<char> outputInterleaved;
   const std::unique_ptr<asmjit::JitRuntime> runtime;
   XT_IMPLEMENT_STREAM(Asio);
   XT_IMPLEMENT_STREAM_CONTROL();
@@ -69,22 +68,16 @@ struct AsioStream: public XtStream {
   AsioStream(AsioDevice* d, const XtFormat& format, 
     size_t bufferSize, const std::vector<ASIOBufferInfo>& buffers):
   XtStream(), issueOutputReady(true), 
-  bufferSize(static_cast<long>(bufferSize)), device(d), buffers(buffers),
-  inputInterleaved(GetFrameSize(format, false) * bufferSize, '\0'),
-  outputInterleaved(GetFrameSize(format, true) * bufferSize, '\0'),
-  runtime(std::make_unique<asmjit::JitRuntime>()) {}
+  bufferSize(static_cast<long>(bufferSize)), device(d), 
+  inputChannels(static_cast<size_t>(format.inputs), nullptr),
+  outputChannels(static_cast<size_t>(format.inputs), nullptr),
+  buffers(buffers), runtime(std::make_unique<asmjit::JitRuntime>()) {}
 };
 
 // ---- local ----
 
 static bool IsAsioSuccess(ASIOError e) {
   return e == ASE_OK || e == ASE_SUCCESS; 
-}
-
-static size_t GetFrameSize(const XtFormat& format, bool output) {
-  XtAttributes attrs;
-  XtAudioGetSampleAttributes(format.mix.sample, &attrs);
-  return (output? format.outputs: format.inputs) * attrs.size;
 }
 
 static bool ToAsioSample(XtSample sample, ASIOSampleType& asio) {
@@ -174,15 +167,11 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
 
   void* input;
   void* output;
-  void* channel;
   double time = 0.0;
   uint64_t position = 0;
   XtBool timeValid = XtFalse;
   AsioTimeInfo& info = asioTime->timeInfo;
   AsioStream* s = static_cast<AsioStream*>(ctx);
-  int32_t inputs = s->format.inputs;
-  int32_t outputs = s->format.outputs;
-  int32_t sampleSize = XtiGetSampleSize(s->format.mix.sample);
 
   if(info.flags & kSamplePositionValid && info.flags & kSystemTimeValid) {
     timeValid = XtTrue;
@@ -190,18 +179,13 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
     time = XT_TO_UINT64(info.systemTime.lo, info.systemTime.hi) / XtAsioNsPerMs;
   }
 
-  input = inputs > 0? &s->inputInterleaved[0]: nullptr;
-  output = outputs > 0? &s->outputInterleaved[0]: nullptr;
-  for(int32_t i = 0; i < inputs; i++) {
-    channel = s->buffers[i].buffers[index];
-    XtiInterleave(&s->inputInterleaved[0], channel, s->bufferSize, inputs, sampleSize, i);
-  }
-  s->callback(s, input, output, s->bufferSize, time, position, timeValid, ASE_OK, s->user);
-  for(int32_t o = 0; o < outputs; o++) {
-    channel = s->buffers[inputs + o].buffers[index];
-    XtiDeinterleave(channel, &s->outputInterleaved[0], s->bufferSize, outputs, sampleSize, o);
-  }
-
+  input = s->format.inputs > 0? &s->inputChannels[0]: nullptr;
+  output = s->format.outputs > 0? &s->outputChannels[0]: nullptr;
+  for(int32_t i = 0; i < s->format.inputs; i++)
+    s->inputChannels[i] = s->buffers[i].buffers[index];
+  for(int32_t i = 0; i < s->format.outputs; i++)
+    s->outputChannels[i] = s->buffers[s->format.inputs + i].buffers[index];
+  s->ProcessCallback(input, output, s->bufferSize, time, position, timeValid, ASE_OK);
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
   return nullptr; 
@@ -468,7 +452,8 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return ASE_OK;
 }
 
-XtFault AsioDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
+                               XtStreamCallback callback, void* user, XtStream** stream) {
   
   double wantedSize;
   long asioBufferSize;

@@ -57,7 +57,8 @@ int RenderMain(int argc, char** argv) {
 
   if((err = XtDeviceGetBuffer(device, &format, &buffer)) != 0)
     goto error;
-  if((err = XtDeviceOpenStream(device, &format, buffer.current, &RenderCallback, NULL, &stream)) != 0)
+  if((err = XtDeviceOpenStream(device, &format, XtTrue,
+    buffer.current, &RenderCallback, NULL, &stream)) != 0)
     goto error;
 
   if((err = XtStreamStart(stream)) != 0)

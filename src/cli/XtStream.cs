@@ -37,6 +37,10 @@ namespace Xt {
             return XtNative.XtStreamGetSystem(s);
         }
 
+        public bool IsInterleaved() {
+            return XtNative.XtStreamIsInterleaved(s);
+        }
+
         public void Stop() {
             XtNative.HandleError(XtNative.XtStreamStop(s));
         }

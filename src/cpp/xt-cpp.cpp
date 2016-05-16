@@ -342,11 +342,12 @@ Buffer Device::GetBuffer(const Format& format) const {
   return buffer;
 }
 
-std::unique_ptr<Stream> Device::OpenStream(const Format& format, double bufferSize, StreamCallback callback, void* user) {
+std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleaved, 
+                                           double bufferSize, StreamCallback callback, void* user) {
   XtStream* stream; 
   auto f = reinterpret_cast<const XtFormat*>(&format);
   std::unique_ptr<Stream> result(new Stream(callback, user));
-  HandleError(XtDeviceOpenStream(d, f, bufferSize, &StreamCallbackForwarder::Forward, result.get(), &stream));
+  HandleError(XtDeviceOpenStream(d, f, interleaved, bufferSize, &StreamCallbackForwarder::Forward, result.get(), &stream));
   result->s = stream;
   return result;
 }
@@ -366,6 +367,10 @@ void Stream::Stop() {
 
 void Stream::Start() { 
   HandleError(XtStreamStart(s));
+}
+
+bool Stream::IsInterleaved() const { 
+  return XtStreamIsInterleaved(s) != XtFalse;
 }
 
 int32_t Stream::GetFrames() const {

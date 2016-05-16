@@ -183,6 +183,7 @@ final class XtNative {
     static native long XtStreamGetFrames(Pointer s, IntByReference frames);
     static native long XtStreamGetLatency(Pointer s, XtLatency latency);
     static native Pointer XtStreamGetFormat(Pointer s);
+    static native boolean XtStreamIsInterleaved(Pointer s);
 
     static native int XtServiceGetSystem(Pointer s);
     static native String XtServiceGetName(Pointer s);
@@ -212,5 +213,5 @@ final class XtNative {
     static native long XtDeviceSupportsFormat(Pointer d, Format format, IntByReference supports);
     static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
     static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, PointerByReference name);
-    static native long XtDeviceOpenStream(Pointer d, Format format, double bufferSize, StreamCallback callback, Pointer user, PointerByReference stream);
+    static native long XtDeviceOpenStream(Pointer d, Format format, boolean interleaved, double bufferSize, StreamCallback callback, Pointer user, PointerByReference stream);
 }

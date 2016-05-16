@@ -37,7 +37,7 @@ public class RenderDefaultOutput {
                 }
 
                 XtBuffer buffer = device.getBuffer(format);
-                try (XtStream stream = device.openStream(format, buffer.current, RenderDefaultOutput::render, "user-data")) {
+                try (XtStream stream = device.openStream(format, true, buffer.current, RenderDefaultOutput::render, "user-data")) {
                     stream.start();
                     Thread.sleep(1000);
                     stream.stop();

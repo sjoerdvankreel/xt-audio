@@ -32,10 +32,6 @@ public final class XtStream implements XtCloseable {
         this.userCallback = userCallback;
     }
 
-    public XtSystem getSystem() {
-        return XtSystem.class.getEnumConstants()[XtNative.XtStreamGetSystem(s) - 1];
-    }
-
     public void stop() {
         XtNative.handleError(XtNative.XtStreamStop(s));
     }
@@ -43,9 +39,17 @@ public final class XtStream implements XtCloseable {
     public void start() {
         XtNative.handleError(XtNative.XtStreamStart(s));
     }
+    
+    public boolean isInterleaved() {
+        return XtNative.XtStreamIsInterleaved(s);
+    }
 
     public XtFormat getFormat() {
         return new XtNative.Format(XtNative.XtStreamGetFormat(s)).fromNative();
+    }
+
+    public XtSystem getSystem() {
+        return XtSystem.class.getEnumConstants()[XtNative.XtStreamGetSystem(s) - 1];
     }
 
     @Override

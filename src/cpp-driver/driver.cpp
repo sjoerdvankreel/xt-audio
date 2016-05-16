@@ -272,7 +272,7 @@ static bool StreamBufferSize(
 
   std::cout << "Streaming: " << service.GetName() << ": " << device.GetName();
   std::cout << " " << format << " " << bufferSize << "\n";
-  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, bufferSize, &OnStreamCallback, &context);
+  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, true, bufferSize, &OnStreamCallback, &context);
   frames = stream->GetFrames();
   std::cout << "Latency: " << stream->GetLatency() << "\n";
   std::cout << "Buffer: " << frames << " (" << (frames * 1000.0 / format.mix.rate) << " ms) \n";

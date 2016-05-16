@@ -190,6 +190,7 @@ public:
   void Start();
   System GetSystem() const;
   int32_t GetFrames() const;
+  bool IsInterleaved() const;
   Latency GetLatency() const;
   const Format& GetFormat() const;
 };
@@ -240,7 +241,8 @@ public:
   Buffer GetBuffer(const Format& format) const;
   bool SupportsFormat(const Format& format) const;
   std::string GetChannelName(bool output, int32_t index) const;
-  std::unique_ptr<Stream> OpenStream(const Format& format, double bufferSize, StreamCallback callback, void* user);
+  std::unique_ptr<Stream> OpenStream(const Format& format, bool interleaved, 
+                                     double bufferSize, StreamCallback callback, void* user);
 };
 
 } // namespace Xt

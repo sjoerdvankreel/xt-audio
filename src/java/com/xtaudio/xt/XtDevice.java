@@ -91,12 +91,12 @@ public final class XtDevice implements XtCloseable {
         return XtNative.wrapAndFreeString(name.getValue());
     }
 
-    public XtStream openStream(XtFormat format, double bufferSize, XtStreamCallback callback, Object user) {
+    public XtStream openStream(XtFormat format, boolean interleaved, double bufferSize, XtStreamCallback callback, Object user) {
         PointerByReference s = new PointerByReference();
         XtStream stream = new XtStream(callback, user);
         XtNative.Format formatNative = XtNative.Format.toNative(format);
         stream.nativeCallback = stream::callback;
-        XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, bufferSize, stream.nativeCallback, Pointer.NULL, s));
+        XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, interleaved, bufferSize, stream.nativeCallback, Pointer.NULL, s));
         stream.init(s.getValue());
         return stream;
     }

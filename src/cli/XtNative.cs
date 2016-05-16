@@ -175,6 +175,8 @@ namespace Xt {
         internal static extern ulong XtStreamGetLatency(IntPtr s, [In, Out] XtLatency latency);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtStreamGetFormat(IntPtr s);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern bool XtStreamIsInterleaved(IntPtr s);
 
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern XtSystem XtServiceGetSystem(IntPtr s);
@@ -231,6 +233,6 @@ namespace Xt {
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, out IntPtr name);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceOpenStream(IntPtr d, ref Format format, double bufferSize, IntPtr callback, IntPtr user, out IntPtr stream);
+        internal static extern ulong XtDeviceOpenStream(IntPtr d, ref Format format, bool interleaved, double bufferSize, IntPtr callback, IntPtr user, out IntPtr stream);
     }
 }

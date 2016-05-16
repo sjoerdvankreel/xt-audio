@@ -221,7 +221,7 @@ public class Driver {
         String recordFileName = String.format("xt-recording-%s-%s-%s-%s-%s.raw",
                 service, d, formatter.format(LocalDateTime.now()), format, bufferSize);
         System.console().printf("Streaming: %s: %s %s %s\n", service, d, format, bufferSize);
-        try (XtStream stream = d.openStream(format, bufferSize, Driver::onStreamCallback, context)) {
+        try (XtStream stream = d.openStream(format, true, bufferSize, Driver::onStreamCallback, context)) {
             int frames = stream.getFrames();
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
             context.buffer = ByteBuffer.allocate(frames * format.inputs * sampleSize);

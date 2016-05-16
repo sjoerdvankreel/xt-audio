@@ -20,6 +20,28 @@
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
 
+// ---- local ----
+
+static void Interleave(
+  void* dest, void** source, int32_t frames, int32_t channels, int32_t sampleSize) {
+
+  char* dst = static_cast<char*>(dest);
+  char** src = reinterpret_cast<char**>(source);
+  for(int32_t f = 0; f < frames; f++)
+    for(int32_t c = 0; c < channels; c++)
+      memcpy(&dst[(f * channels + c) * sampleSize], &src[c][f * sampleSize], sampleSize);
+}
+
+static void Deinterleave(
+  void** dest, void* source, int32_t frames, int32_t channels, int32_t sampleSize) {
+
+  char* src = static_cast<char*>(source);
+  char** dst = reinterpret_cast<char**>(dest);
+  for(int32_t f = 0; f < frames; f++)
+    for(int32_t c = 0; c < channels; c++)
+      memcpy(&dst[c][f * sampleSize], &src[(f * channels + c) * sampleSize], sampleSize);
+}
+ 
 // ---- internal ----
 
 char* XtiId = nullptr;
@@ -111,20 +133,18 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
   va_end(argCopy);
 }
 
-void XtiInterleave(
-  void* dest, void* source, int32_t frames, int32_t channels, int32_t sampleSize, int32_t channel) {
+void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double time, 
+                               uint64_t position, XtBool timeValid, XtError error) {
 
-  char* dst = static_cast<char*>(dest);
-  char* src = reinterpret_cast<char*>(source);
-  for(int32_t f = 0; f < frames; f++)
-    memcpy(&dst[(f * channels + channel) * sampleSize], &src[f * sampleSize], sampleSize);
-}
-
-void XtiDeinterleave(
-  void* dest, void* source, int32_t frames, int32_t channels, int32_t sampleSize, int32_t channel) {
-
-  char* src = static_cast<char*>(source);
-  char* dst = reinterpret_cast<char*>(dest);
-  for(int32_t f = 0; f < frames; f++)
-    memcpy(&dst[f * sampleSize], &src[(f * channels + channel) * sampleSize], sampleSize);
+  if(interleaved && canInterleaved || !interleaved && canNonInterleaved)
+    userCallback(this, input, output, frames, time, position, timeValid, error, user);
+  else if(interleaved) {
+    Interleave(&inputInterleaved[0], static_cast<void**>(input), frames, format.inputs, sampleSize);
+    userCallback(this, &inputInterleaved[0], &outputInterleaved[0], frames, time, position, timeValid, error, user);
+    Deinterleave(static_cast<void**>(output), &outputInterleaved[0], frames, format.outputs, sampleSize);
+  } else {
+    Deinterleave(&inputNonInterleaved[0], input, frames, format.inputs, sampleSize);
+    userCallback(this, &inputNonInterleaved[0], &outputNonInterleaved[0], frames, time, position, timeValid, error, user);
+    Interleave(output, &outputNonInterleaved[0], frames, format.outputs, sampleSize);
+  }
 }
