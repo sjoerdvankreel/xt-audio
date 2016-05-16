@@ -110,23 +110,23 @@ namespace Xt {
             switch (sample) {
                 case XtSample.UInt8:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy(new IntPtr(data[i]), (byte[])managed, 0, frames);
+                        Marshal.Copy(new IntPtr(data[i]), ((byte[][])managed)[i], 0, frames);
                     break;
                 case XtSample.Int16:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy(new IntPtr(data[i]), (short[])managed, 0, frames);
+                        Marshal.Copy(new IntPtr(data[i]), ((short[][])managed)[i], 0, frames);
                     break;
                 case XtSample.Int24:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy(new IntPtr(data[i]), (byte[])managed, 0, frames * 3);
+                        Marshal.Copy(new IntPtr(data[i]), ((byte[][])managed)[i], 0, frames * 3);
                     break;
                 case XtSample.Int32:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy(new IntPtr(data[i]), (int[])managed, 0, frames);
+                        Marshal.Copy(new IntPtr(data[i]), ((int[][])managed)[i], 0, frames);
                     break;
                 case XtSample.Float32:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy(new IntPtr(data[i]), (float[])managed, 0, frames);
+                        Marshal.Copy(new IntPtr(data[i]), ((float[][])managed)[i], 0, frames);
                     break;
                 default:
                     throw new ArgumentException();
@@ -138,23 +138,23 @@ namespace Xt {
             switch (sample) {
                 case XtSample.UInt8:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy((byte[])managed, 0, new IntPtr(data[i]), frames);
+                        Marshal.Copy(((byte[][])managed)[i], 0, new IntPtr(data[i]), frames);
                     break;
                 case XtSample.Int16:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy((short[])managed, 0, new IntPtr(data[i]), frames);
+                        Marshal.Copy(((short[][])managed)[i], 0, new IntPtr(data[i]), frames);
                     break;
                 case XtSample.Int24:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy((byte[])managed, 0, new IntPtr(data[i]), frames * 3);
+                        Marshal.Copy(((byte[][])managed)[i], 0, new IntPtr(data[i]), frames * 3);
                     break;
                 case XtSample.Int32:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy((int[])managed, 0, new IntPtr(data[i]), frames);
+                        Marshal.Copy(((int[][])managed)[i], 0, new IntPtr(data[i]), frames);
                     break;
                 case XtSample.Float32:
                     for (int i = 0; i < channels; i++)
-                        Marshal.Copy((float[])managed, 0, new IntPtr(data[i]), frames);
+                        Marshal.Copy(((float[][])managed)[i], 0, new IntPtr(data[i]), frames);
                     break;
                 default:
                     throw new ArgumentException();
