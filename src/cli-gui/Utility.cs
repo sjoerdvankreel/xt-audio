@@ -37,7 +37,7 @@ namespace Xt {
                     for (int f = 0; f < frames; f++)
                         for (int c = 0; c < channels; c++)
                             for (int i = 0; i < 3; i++)
-                                ((short[])target)[(f * channels + c) * 3 + i] = ((short[][])source)[c][f * 3 + i];
+                                ((byte[])target)[(f * channels + c) * 3 + i] = ((byte[][])source)[c][f * 3 + i];
                     break;
                 case XtSample.Int32:
                     for (int f = 0; f < frames; f++)
@@ -70,7 +70,7 @@ namespace Xt {
                     for (int f = 0; f < frames; f++)
                         for (int c = 0; c < channels; c++)
                             for (int i = 0; i < 3; i++)
-                                ((short[][])target)[c][f * 3 + i] = ((short[])source)[(f * channels + c) * 3 + i];
+                                ((byte[][])target)[c][f * 3 + i] = ((byte[])source)[(f * channels + c) * 3 + i];
                     break;
                 case XtSample.Int32:
                     for (int f = 0; f < frames; f++)
