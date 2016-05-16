@@ -298,13 +298,6 @@ namespace Xt {
                 bool input = type != StreamType.Render;
                 bool output = type != StreamType.Capture;
 
-                if (type == StreamType.Capture && !streamInterleaved.Checked) {
-                    MessageBox.Show(this,
-                        "Select interleaved access to write a raw audio file.",
-                        "Non-interleaved access not supported for capture only.");
-                    return;
-                }
-
                 if (input && inputDevice.SelectedItem == null) {
                     MessageBox.Show(this,
                         "Select an input device.",
