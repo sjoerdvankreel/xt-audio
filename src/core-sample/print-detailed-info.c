@@ -15,6 +15,7 @@ int PrintInfoMain(int argc, char** argv) {
   XtMix* mix;
   XtError err;
   int32_t s, d;
+  XtBool supports;
   char* text = NULL;
   int32_t count, channels;
   XtDevice* device = NULL;
@@ -97,6 +98,14 @@ int PrintInfoMain(int argc, char** argv) {
       if((err = XtDeviceGetChannelCount(device, XtTrue, &channels)) != 0)
         goto error;
       printf("    Output channels: %d\n", channels);
+
+      if((err = XtDeviceSupportsAccess(device, XtTrue, &supports)) != 0)
+        goto error;
+      printf("    Interleaved access: %d\n", supports);
+
+      if((err = XtDeviceSupportsAccess(device, XtFalse, &supports)) != 0)
+        goto error;
+      printf("    Non-interleaved access: %d\n", supports);
 
       XtDeviceDestroy(device);
       device = NULL;

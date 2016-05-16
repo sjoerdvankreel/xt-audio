@@ -271,6 +271,11 @@ XtFault JackDevice::GetName(char** name) const {
   return 0;
 }
 
+XtFault JackDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  *supports = !interleaved;
+  return 0;
+}
+
 XtFault JackDevice::GetMix(XtMix** mix) const {
   *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
   (*mix)->sample = XtSampleFloat32;

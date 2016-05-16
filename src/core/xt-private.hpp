@@ -78,6 +78,7 @@ const XtService* XtiService ## name = &Service ## name
   XtSystem GetSystem() const { return XtSystem ## name; }                  \
   XtFault GetChannelCount(XtBool output, int32_t* count) const;            \
   XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const;       \
+  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const;      \
   XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const;  \
   XtFault GetChannelName(XtBool output, int32_t index, char** name) const; \
   XtFault OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream)
@@ -133,6 +134,7 @@ struct XtDevice {
   virtual XtFault GetName(char** name) const = 0;
   virtual XtFault GetChannelCount(XtBool output, int32_t* count) const = 0;
   virtual XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const = 0;
+  virtual XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const = 0;
   virtual XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const = 0;
   virtual XtFault GetChannelName(XtBool output, int32_t index, char** name) const = 0;
   virtual XtFault OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) = 0;

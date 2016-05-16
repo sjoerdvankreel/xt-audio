@@ -314,6 +314,7 @@ XT_API XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtMix** mix);
 XT_API XtError XT_CALL XtDeviceGetName(const XtDevice* d, char** name);
 XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count);
 XT_API XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer);
+XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name);
 XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream);

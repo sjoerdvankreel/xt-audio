@@ -341,6 +341,14 @@ XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_
   return XtiCreateError(d->GetSystem(), d->GetChannelCount(output, count));
 }
 
+XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports) {
+  XT_ASSERT(d != nullptr);
+  XT_ASSERT(supports != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  *supports = XtFalse;
+  return XtiCreateError(d->GetSystem(), d->SupportsAccess(interleaved, supports));
+}
+
 XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer) {
   XtError error;
   XtBool supports;

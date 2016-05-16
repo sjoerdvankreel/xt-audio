@@ -344,6 +344,26 @@ XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char** name) co
   return 0;
 }
 
+XtFault AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  
+  snd_pcm_t* pcm;
+  AlsaLogDisabler disabler;
+  snd_pcm_hw_params_t* hwParams;
+  snd_pcm_stream_t stream = !info.output? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
+
+  if(snd_pcm_open(&pcm, info.name.c_str(), stream, 0) < 0) 
+    return 0;
+  AlsaPcm alsaPcm(pcm);
+  snd_pcm_hw_params_alloca(&hwParams);
+  if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
+    return 0;
+  *supports |= !info.mmap && interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED) >= 0;
+  *supports |= info.mmap && interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_INTERLEAVED) >= 0;
+  *supports |= !info.mmap && !interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_RW_NONINTERLEAVED) >= 0;
+  *supports |= info.mmap && !interleaved && snd_pcm_hw_params_test_access(pcm, hwParams, SND_PCM_ACCESS_MMAP_NONINTERLEAVED) >= 0;
+  return 0;
+}
+
 XtFault AlsaDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
   
   snd_pcm_t* pcm;

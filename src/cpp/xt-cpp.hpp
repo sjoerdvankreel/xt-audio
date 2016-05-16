@@ -236,6 +236,7 @@ public:
   std::string GetName() const;
   std::unique_ptr<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
+  bool SupportsAccess(bool interleaved) const;
   Buffer GetBuffer(const Format& format) const;
   bool SupportsFormat(const Format& format) const;
   std::string GetChannelName(bool output, int32_t index) const;

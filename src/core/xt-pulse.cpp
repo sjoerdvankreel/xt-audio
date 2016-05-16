@@ -173,6 +173,11 @@ XtFault PulseDevice::GetName(char** name) const {
   return PA_OK;
 }
 
+XtFault PulseDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  *supports = interleaved;
+  return PA_OK;
+}
+
 XtFault PulseDevice::GetMix(XtMix** mix) const {
   *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
   (*mix)->rate = XtPaDefaultRate;

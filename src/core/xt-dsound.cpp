@@ -252,6 +252,11 @@ XtFault DSoundDevice::GetName(char** name) const {
   return S_OK;
 }
 
+XtFault DSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  *supports = interleaved;
+  return S_OK;
+}
+
 XtFault DSoundDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
   buffer->min = XtDsMinBufferMs;
   buffer->max = XtDsMaxBufferMs;

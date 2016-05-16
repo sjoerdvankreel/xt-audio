@@ -261,6 +261,11 @@ XtFault WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const {
   return S_OK;
 }
 
+XtFault WasapiDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  *supports = interleaved;
+  return S_OK;
+}
+
 XtFault WasapiDevice::GetName(char** name) const {  
   HRESULT hr;
   XtwPropVariant n;

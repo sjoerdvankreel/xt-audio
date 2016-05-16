@@ -44,6 +44,8 @@ int PrintInfoMain(int argc, char** argv) {
           std::cout << "    Current mix: null\n";
         std::cout << "    Input channels: " << device->GetChannelCount(false) << "\n";
         std::cout << "    Output channels: " << device->GetChannelCount(true) << "\n";
+        std::cout << "    Interleaved access: " << device->SupportsAccess(true) << "\n";
+        std::cout << "    Non-interleaved access: " << device->SupportsAccess(false) << "\n";
       }
     }
   } catch(const Xt::Exception& e) {

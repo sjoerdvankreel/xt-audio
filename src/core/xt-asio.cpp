@@ -362,6 +362,11 @@ XtFault AsioDevice::GetName(char** name) const {
   return ASE_OK;
 }
 
+XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  *supports = !interleaved;
+  return ASE_OK;
+}
+
 XtFault AsioDevice::GetMix(XtMix** mix) const {
 
   XtSample sample;

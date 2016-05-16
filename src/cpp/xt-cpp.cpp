@@ -318,6 +318,12 @@ std::unique_ptr<Mix> Device::GetMix() const {
   return result;
 }
 
+bool Device::SupportsAccess(bool interleaved) const {
+  XtBool supports;
+  HandleError(XtDeviceSupportsAccess(d, interleaved, &supports));
+  return supports != XtFalse;    
+}
+
 std::string Device::GetChannelName(bool output, int32_t index) const {
   char* name;
   HandleError(XtDeviceGetChannelName(d, output, index, &name)); 

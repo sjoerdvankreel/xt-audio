@@ -103,6 +103,8 @@ static bool ListDevice(Xt::Device& device) {
   std::unique_ptr<Xt::Mix> mix = device.GetMix();
   if(mix)
     std::cout << "    Current: " << *mix.get() << "\n";
+  std::cout << "    Interleaved access: " << device.SupportsAccess(true) << "\n";
+  std::cout << "    Non-interleaved access: " << device.SupportsAccess(false) << "\n";
   ListChannels(device, false);
   ListChannels(device, true);
   ListFormats(device);
