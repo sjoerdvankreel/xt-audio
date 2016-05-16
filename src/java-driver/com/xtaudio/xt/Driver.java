@@ -99,6 +99,8 @@ public class Driver {
             System.console().printf("\t\tName: %s\n", d.getName());
             System.console().printf("\t\tSystem: %s\n", d.getSystem());
             System.console().printf("\t\tCurrent mix: %s\n", d.getMix());
+            System.console().printf("\t\tInterleaved access: %s\n", d.supportsAccess(true));
+            System.console().printf("\t\tNon-interleaved access: %s\n", d.supportsAccess(false));
             if (LIST_FULL) {
                 listChannels(d);
                 listFormats(d);

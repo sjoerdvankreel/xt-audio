@@ -210,6 +210,7 @@ final class XtNative {
     static native long XtDeviceGetChannelCount(Pointer d, boolean output, IntByReference count);
     static native long XtDeviceGetBuffer(Pointer d, Format format, XtBuffer buffer);
     static native long XtDeviceSupportsFormat(Pointer d, Format format, IntByReference supports);
+    static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
     static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, PointerByReference name);
     static native long XtDeviceOpenStream(Pointer d, Format format, double bufferSize, StreamCallback callback, Pointer user, PointerByReference stream);
 }

@@ -78,6 +78,12 @@ public final class XtDevice implements XtCloseable {
         XtNative.handleError(XtNative.XtDeviceSupportsFormat(d, XtNative.Format.toNative(format), supports));
         return supports.getValue() != 0;
     }
+    
+    public boolean supportsAccess(boolean interleaved) {
+        IntByReference supports = new IntByReference();
+        XtNative.handleError(XtNative.XtDeviceSupportsAccess(d, interleaved, supports));
+        return supports.getValue() != 0;
+    }
 
     public String getChannelName(boolean output, int index) {
         PointerByReference name = new PointerByReference();

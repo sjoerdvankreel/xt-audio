@@ -27,7 +27,7 @@ public class PrintDetailedInfo {
                 System.out.println("Service " + service.getName() + ":");
                 System.out.println("  System: " + service.getSystem());
                 System.out.println("  Device count: " + service.getDeviceCount());
-                System.out.println("  Capabilities: " + service.getCapabilities());
+                System.out.println("  Capabilities: " + XtPrint.capabilitiesToString(service.getCapabilities()));
                 
                 try (XtDevice defaultInput = service.openDefaultDevice(false)) {
                     System.out.println("  Default input: " + defaultInput);
@@ -43,6 +43,8 @@ public class PrintDetailedInfo {
                         System.out.println("    Current mix: " + device.getMix());
                         System.out.println("    Input channels: " + device.getChannelCount(false));
                         System.out.println("    Output channels: " + device.getChannelCount(true));
+                        System.out.println("    Interleaved access: " + device.supportsAccess(true));
+                        System.out.println("    Non-interleaved access: " + device.supportsAccess(false));
                     }
             }
         } catch (XtException e) {
