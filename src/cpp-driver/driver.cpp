@@ -183,6 +183,7 @@ static void OnStreamCallback(
 
   void* dest;
   double value;
+  bool interleaved = stream.IsInterleaved();
   const Xt::Format& format = stream.GetFormat();
   StreamContext& ctx = *static_cast<StreamContext*>(user);
   int32_t outputs = format.outputs;
@@ -197,22 +198,36 @@ static void OnStreamCallback(
 
   if(frames == 0)
     return;
-
-  if(format.outputs == 0)
-    ctx.recording.write(static_cast<const char*>(input), bufferSizeBytes);
-  else if(format.inputs != 0)
-    memcpy(output, input, bufferSizeBytes);
-  else 
+  if(format.outputs == 0) {
+    if(interleaved)
+      ctx.recording.write(static_cast<const char*>(input), bufferSizeBytes);
+    else
+      for(int32_t f = 0; f < frames; f++)
+        for(int32_t c = 0; c < format.inputs; c++)
+          ctx.recording.write(&((reinterpret_cast<char* const*>(input))[c][f * sampleSize]), sampleSize);
+  } else if(format.inputs != 0) {
+    if(interleaved)
+      memcpy(output, input, bufferSizeBytes);
+    else
+      for(int32_t c = 0; c < format.inputs; c++)
+        memcpy(reinterpret_cast<char**>(output)[c], 
+               reinterpret_cast<char* const*>(input)[c], 
+               frames * sampleSize);
+  } else {
     for(int32_t f = 0; f < frames; f++) {
       ctx.phase += ToneFrequency / format.mix.rate;
       if(ctx.phase > 1.0)
         ctx.phase = -1.0;
       value = sin(ctx.phase * M_PI) * 0.95;
       for(int32_t c = 0; c < format.outputs; c++) {
-        dest = &static_cast<unsigned char*>(output)[(f * outputs + c) * sampleSize];
+        if(interleaved)
+          dest = &static_cast<unsigned char*>(output)[(f * outputs + c) * sampleSize];
+        else
+          dest = &(reinterpret_cast<unsigned char* const*>(output)[c][f * sampleSize]);
         OutputSine(dest, format.mix.sample, value);
       }
     }
+  }
 
   if(ctx.start < 0.0)
     ctx.start = time;
@@ -226,8 +241,8 @@ static void OnStreamCallback(
   }
 }
 
-static std::string GetRecordFileName(
-    const Xt::Service& service, Xt::Device& device, const Xt::Format& format, double bufferSize) {
+static std::string GetRecordFileName(const Xt::Service& service, Xt::Device& device, 
+                                     const Xt::Format& format, double bufferSize, bool interleaved) {
 
   time_t t = time(0);
   tm* now = localtime(&t);
@@ -239,6 +254,7 @@ static std::string GetRecordFileName(
   result << "." << (now->tm_hour) << "." << (now->tm_min) << "." << (now->tm_sec);
   result << "-" << format;
   result << "-" << bufferSize;
+  result << "-" << interleaved;
   result << ".raw";
   return result.str();
 }
@@ -260,19 +276,19 @@ static bool StreamIteration(Xt::Stream& stream, int32_t iter) {
   return true;
 }
 
-static bool StreamBufferSize(
-  const Xt::Service& service, Xt::Device& device, const Xt::Format& format, double bufferSize) {
+static bool StreamAccessMode(const Xt::Service& service, Xt::Device& device, 
+                             const Xt::Format& format, double bufferSize, bool interleaved) {
 
   int32_t frames;
   StreamContext context;
   context.phase = 0.0;
   context.start = -1.0;
   context.processed = 0;
-  std::string fileName = GetRecordFileName(service, device, format, bufferSize);
+  std::string fileName = GetRecordFileName(service, device, format, bufferSize, interleaved);
 
   std::cout << "Streaming: " << service.GetName() << ": " << device.GetName();
-  std::cout << " " << format << " " << bufferSize << "\n";
-  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, true, bufferSize, &OnStreamCallback, &context);
+  std::cout << ", format: " << format << ", buffer: " << bufferSize << ", interleaved: " << interleaved<< "\n";
+  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, interleaved, bufferSize, &OnStreamCallback, &context);
   frames = stream->GetFrames();
   std::cout << "Latency: " << stream->GetLatency() << "\n";
   std::cout << "Buffer: " << frames << " (" << (frames * 1000.0 / format.mix.rate) << " ms) \n";
@@ -282,6 +298,16 @@ static bool StreamBufferSize(
   for(int32_t i = 0; i < StreamIterations; i++)
     if(!StreamIteration(*stream, i))
       return false;
+  return true;
+}
+
+static bool StreamBufferSize(const Xt::Service& service, Xt::Device& device, 
+                             const Xt::Format& format, double bufferSize) {
+
+  if(!StreamAccessMode(service, device, format, bufferSize, true))
+    return false;
+  if(!StreamAccessMode(service, device, format, bufferSize, false))
+    return false;
   return true;
 }
 
