@@ -152,7 +152,7 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
       device.description = device.name + " (Input) (R/W)";
       result.push_back(device);
       device.mmap = true;
-      device.description = device.name + " (Input) (Mmap)";
+      device.description = device.name + " (Input) (MMap)";
       result.push_back(device);
     }
     if(strstr(name.hint, "dsnoop") != name.hint && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))) {
@@ -160,7 +160,7 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
       device.description = device.name + " (Output) (R/W)";
       outputs.push_back(device);
       device.mmap = true;
-      device.description = device.name + " (Output) (Mmap)";
+      device.description = device.name + " (Output) (MMap)";
       outputs.push_back(device);
     }
   }
