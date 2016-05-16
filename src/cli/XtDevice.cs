@@ -71,6 +71,12 @@ namespace Xt {
             return result;
         }
 
+        public bool SupportsAccess(bool interleaved) {
+            bool supports;
+            XtNative.HandleError(XtNative.XtDeviceSupportsAccess(d, interleaved, out supports));
+            return supports;
+        }
+
         public bool SupportsFormat(XtFormat format) {
             bool supports;
             XtNative.Format native = XtNative.Format.ToNative(format);

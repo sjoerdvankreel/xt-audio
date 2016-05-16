@@ -223,6 +223,8 @@ namespace Xt {
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetChannelCount(IntPtr d, bool output, out int count);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern ulong XtDeviceSupportsAccess(IntPtr d, bool interleaved, out bool supports);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetBuffer(IntPtr d, ref Format format, [In, Out] XtBuffer buffer);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceSupportsFormat(IntPtr d, ref Format format, out bool supports);

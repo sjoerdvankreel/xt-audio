@@ -208,8 +208,16 @@ namespace Xt {
             bool inputSupported = inputDevice == null ? false : inputDevice.SupportsFormat(inputFormat);
             inputFormatSupported.Text = inputSupported.ToString();
             XtBuffer inputBuffer = !inputSupported ? null : inputDevice.GetBuffer(inputFormat);
-            inputBufferSizes.Text = !inputSupported ? "N/A" : XtPrint.BufferToString(inputBuffer);
+            inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}", 
+                inputBuffer.min.ToString("N1"), inputBuffer.current.ToString("N1"), inputBuffer.max.ToString("N1"));
             inputMix.Text = inputDevice == null || inputDevice.GetMix() == null ? "N/A" : inputDevice.GetMix().ToString();
+            inputInterleaved.Text = inputDevice == null
+                ? "N/A"
+                : inputDevice.SupportsAccess(true) && inputDevice.SupportsAccess(false)
+                ? "Both"
+                : inputDevice.SupportsAccess(false)
+                ? "False"
+                : "True";
             List<ChannelView> inputViews = new List<ChannelView>();
             if (inputDevice != null)
                 inputViews = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
@@ -225,8 +233,16 @@ namespace Xt {
             bool outputSupported = outputDevice == null ? false : outputDevice.SupportsFormat(outputFormat);
             outputFormatSupported.Text = outputSupported.ToString();
             XtBuffer outputBuffer = !outputSupported ? null : outputDevice.GetBuffer(outputFormat);
-            outputBufferSizes.Text = !outputSupported ? "N/A" : XtPrint.BufferToString(outputDevice.GetBuffer(outputFormat));
+            outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}", 
+                outputBuffer.min.ToString("N1"), outputBuffer.current.ToString("N1"), outputBuffer.max.ToString("N1"));
             outputMix.Text = outputDevice == null || outputDevice.GetMix() == null ? "N/A" : outputDevice.GetMix().ToString();
+            outputInterleaved.Text = outputDevice == null
+                ? "N/A"
+                : outputDevice.SupportsAccess(true) && outputDevice.SupportsAccess(false)
+                ? "Both"
+                : outputDevice.SupportsAccess(false)
+                ? "False"
+                : "True";
             List<ChannelView> outputViews = new List<ChannelView>();
             if (outputDevice != null)
                 outputViews = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))
