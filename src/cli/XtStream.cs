@@ -20,9 +20,152 @@ namespace Xt {
 
     public sealed class XtStream : IDisposable {
 
+        private static T[][] CreateNonInterleavedBuffer<T>(int channels, int elements) {
+            T[][] result = new T[channels][];
+            for (int i = 0; i < channels; i++)
+                result[i] = new T[elements];
+            return result;
+        }
+
+        private static Array CreateNonInterleavedBuffer(XtSample sample, int channels, int frames) {
+            switch (sample) {
+                case XtSample.UInt8:
+                    return CreateNonInterleavedBuffer<byte>(channels, frames);
+                case XtSample.Int16:
+                    return CreateNonInterleavedBuffer<short>(channels, frames);
+                case XtSample.Int24:
+                    return CreateNonInterleavedBuffer<byte>(channels, frames * 3);
+                case XtSample.Int32:
+                    return CreateNonInterleavedBuffer<int>(channels, frames);
+                case XtSample.Float32:
+                    return CreateNonInterleavedBuffer<float>(channels, frames);
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private static Array CreateInterleavedBuffer(XtSample sample, int channels, int frames) {
+            switch (sample) {
+                case XtSample.UInt8:
+                    return new byte[channels * frames];
+                case XtSample.Int16:
+                    return new short[channels * frames];
+                case XtSample.Int24:
+                    return new byte[channels * 3 * frames];
+                case XtSample.Int32:
+                    return new int[channels * frames];
+                case XtSample.Float32:
+                    return new float[channels * frames];
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private static void CopyInterleavedBufferFromNative(XtSample sample, IntPtr raw, Array managed, int channels, int frames) {
+            switch (sample) {
+                case XtSample.UInt8:
+                    Marshal.Copy(raw, (byte[])managed, 0, frames * channels);
+                    break;
+                case XtSample.Int16:
+                    Marshal.Copy(raw, (short[])managed, 0, frames * channels);
+                    break;
+                case XtSample.Int24:
+                    Marshal.Copy(raw, (byte[])managed, 0, frames * channels * 3);
+                    break;
+                case XtSample.Int32:
+                    Marshal.Copy(raw, (int[])managed, 0, frames * channels);
+                    break;
+                case XtSample.Float32:
+                    Marshal.Copy(raw, (float[])managed, 0, frames * channels);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private static void CopyInterleavedBufferToNative(XtSample sample, Array managed, IntPtr raw, int channels, int frames) {
+            switch (sample) {
+                case XtSample.UInt8:
+                    Marshal.Copy((byte[])managed, 0, raw, frames * channels);
+                    break;
+                case XtSample.Int16:
+                    Marshal.Copy((short[])managed, 0, raw, frames * channels);
+                    break;
+                case XtSample.Int24:
+                    Marshal.Copy((byte[])managed, 0, raw, frames * channels * 3);
+                    break;
+                case XtSample.Int32:
+                    Marshal.Copy((int[])managed, 0, raw, frames * channels);
+                    break;
+                case XtSample.Float32:
+                    Marshal.Copy((float[])managed, 0, raw, frames * channels);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private static unsafe void CopyNonInterleavedBufferFromNative(XtSample sample, IntPtr raw, Array managed, int channels, int frames) {
+            void** data = (void**)raw.ToPointer();
+            switch (sample) {
+                case XtSample.UInt8:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy(new IntPtr(data[i]), (byte[])managed, 0, frames);
+                    break;
+                case XtSample.Int16:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy(new IntPtr(data[i]), (short[])managed, 0, frames);
+                    break;
+                case XtSample.Int24:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy(new IntPtr(data[i]), (byte[])managed, 0, frames * 3);
+                    break;
+                case XtSample.Int32:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy(new IntPtr(data[i]), (int[])managed, 0, frames);
+                    break;
+                case XtSample.Float32:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy(new IntPtr(data[i]), (float[])managed, 0, frames);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        private static unsafe void CopyNonInterleavedBufferToNative(XtSample sample, Array managed, IntPtr raw, int channels, int frames) {
+            void** data = (void**)raw.ToPointer();
+            switch (sample) {
+                case XtSample.UInt8:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy((byte[])managed, 0, new IntPtr(data[i]), frames);
+                    break;
+                case XtSample.Int16:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy((short[])managed, 0, new IntPtr(data[i]), frames);
+                    break;
+                case XtSample.Int24:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy((byte[])managed, 0, new IntPtr(data[i]), frames * 3);
+                    break;
+                case XtSample.Int32:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy((int[])managed, 0, new IntPtr(data[i]), frames);
+                    break;
+                case XtSample.Float32:
+                    for (int i = 0; i < channels; i++)
+                        Marshal.Copy((float[])managed, 0, new IntPtr(data[i]), frames);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
         private IntPtr s;
-        private Array input;
-        private Array output;
+        private Array inputInterleaved;
+        private Array outputInterleaved;
+        private Array inputNonInterleaved;
+        private Array outputNonInterleaved;
         private readonly object user;
         private readonly XtStreamCallback callback;
         internal XtNative.StreamCallbackNet netCallback;
@@ -49,10 +192,6 @@ namespace Xt {
             XtNative.HandleError(XtNative.XtStreamStart(s));
         }
 
-        public XtFormat GetFormat() {
-            return ((XtNative.Format)Marshal.PtrToStructure(XtNative.XtStreamGetFormat(s), typeof(XtNative.Format))).FromNative();
-        }
-
         public void Dispose() {
             if (s != IntPtr.Zero)
                 XtNative.XtStreamDestroy(s);
@@ -71,34 +210,22 @@ namespace Xt {
             return latency;
         }
 
+        public XtFormat GetFormat() {
+            object native = Marshal.PtrToStructure(XtNative.XtStreamGetFormat(s), typeof(XtNative.Format));
+            return ((XtNative.Format)native).FromNative();
+        }
+
         internal void Init(IntPtr s) {
 
             this.s = s;
             int frames = GetFrames();
             XtFormat format = GetFormat();
-            switch (format.mix.sample) {
-                case XtSample.UInt8:
-                    input = new byte[format.inputs * frames];
-                    output = new byte[format.outputs * frames];
-                    break;
-                case XtSample.Int16:
-                    input = new short[format.inputs * frames];
-                    output = new short[format.outputs * frames];
-                    break;
-                case XtSample.Int24:
-                    input = new byte[format.inputs * 3 * frames];
-                    output = new byte[format.outputs * 3 * frames];
-                    break;
-                case XtSample.Int32:
-                    input = new int[format.inputs * frames];
-                    output = new int[format.outputs * frames];
-                    break;
-                case XtSample.Float32:
-                    input = new float[format.inputs * frames];
-                    output = new float[format.outputs * frames];
-                    break;
-                default:
-                    throw new ArgumentException();
+            if (IsInterleaved()) {
+                inputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.inputs, frames);
+                outputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.outputs, frames);
+            } else {
+                inputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
+                outputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
             }
         }
 
@@ -106,50 +233,27 @@ namespace Xt {
             double time, ulong position, bool timeValid, ulong error, IntPtr u) {
 
             XtFormat format = GetFormat();
-            Array inData = input == IntPtr.Zero ? null : this.input;
-            Array outData = output == IntPtr.Zero ? null : this.output;
+            bool interleaved = IsInterleaved();
+            Array inData = input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
+            Array outData = output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
 
             if (inData != null)
-                switch (format.mix.sample) {
-                    case XtSample.UInt8:
-                        Marshal.Copy(input, (byte[])inData, 0, frames * format.inputs);
-                        break;
-                    case XtSample.Int16:
-                        Marshal.Copy(input, (short[])inData, 0, frames * format.inputs);
-                        break;
-                    case XtSample.Int24:
-                        Marshal.Copy(input, (byte[])inData, 0, frames * format.inputs * 3);
-                        break;
-                    case XtSample.Int32:
-                        Marshal.Copy(input, (int[])inData, 0, frames * format.inputs);
-                        break;
-                    case XtSample.Float32:
-                        Marshal.Copy(input, (float[])inData, 0, frames * format.inputs);
-                        break;
-                }
+                if (interleaved)
+                    CopyInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+                else
+                    CopyNonInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+
             try {
                 callback(this, inData, outData, frames, time, position, timeValid, error, user);
             } catch (Exception e) {
                 Environment.FailFast("Exception caught in stream callback.", e);
             }
+
             if (outData != null)
-                switch (format.mix.sample) {
-                    case XtSample.UInt8:
-                        Marshal.Copy((byte[])outData, 0, output, frames * format.outputs);
-                        break;
-                    case XtSample.Int16:
-                        Marshal.Copy((short[])outData, 0, output, frames * format.outputs);
-                        break;
-                    case XtSample.Int24:
-                        Marshal.Copy((byte[])outData, 0, output, frames * format.outputs * 3);
-                        break;
-                    case XtSample.Int32:
-                        Marshal.Copy((int[])outData, 0, output, frames * format.outputs);
-                        break;
-                    case XtSample.Float32:
-                        Marshal.Copy((float[])outData, 0, output, frames * format.outputs);
-                        break;
-                }
+                if (interleaved)
+                    CopyInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
+                else
+                    CopyNonInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
         }
     }
 }
