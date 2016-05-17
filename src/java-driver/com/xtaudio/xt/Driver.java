@@ -1,5 +1,7 @@
 package com.xtaudio.xt;
 
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,12 +25,15 @@ public class Driver {
     private static final XtSample[] SAMPLES = XtSample.values();
     private static final int[] RATES = {22050, 44100, 48000, 96000};
 
+    private static native Pointer memcpy(Pointer dest, Pointer src, Pointer count);
+
     private static class StreamContext {
 
         double phase;
         double start;
         long processed;
         ByteBuffer buffer;
+        byte[] intermediate;
         FileOutputStream recording;
     }
 
@@ -53,6 +58,10 @@ public class Driver {
         else if (!readLine(""))
             return;
         try (XtAudio audio = new XtAudio("xt-java-driver", Pointer.NULL, Driver::onTrace, Driver::onFatal)) {
+            if (XtAudio.isWin32())
+                Native.register(NativeLibrary.getInstance("msvcrt"));
+            else
+                Native.register(NativeLibrary.getInstance("libc"));
             if (LIST && !list())
                 return;
             if (STREAM && !stream())
@@ -216,28 +225,39 @@ public class Driver {
     private static boolean streamBufferSize(XtService service, XtDevice d,
             XtFormat format, double bufferSize) throws Exception {
 
-        if (!streamAccessMode(service, d, format, bufferSize, true))
+        if (!streamRawMode(service, d, format, bufferSize, true))
             return false;
-        if (!streamAccessMode(service, d, format, bufferSize, false))
+        if (!streamRawMode(service, d, format, bufferSize, false))
+            return false;
+        return true;
+    }
+
+    private static boolean streamRawMode(XtService service, XtDevice d, XtFormat format,
+            double bufferSize, boolean interleaved) throws Exception {
+
+        if (!streamAccessMode(service, d, format, bufferSize, interleaved, false))
+            return false;
+        if (!streamAccessMode(service, d, format, bufferSize, interleaved, true))
             return false;
         return true;
     }
 
     private static boolean streamAccessMode(XtService service, XtDevice d, XtFormat format,
-            double bufferSize, boolean interleaved) throws Exception {
+            double bufferSize, boolean interleaved, boolean raw) throws Exception {
 
         StreamContext context = new StreamContext();
         context.phase = 0.0;
         context.start = -1.0;
         context.processed = 0;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss");
-        String recordFileName = String.format("xt-recording-%s-%s-%s-%s-%s-%s.raw",
-                service, d, formatter.format(LocalDateTime.now()), format, bufferSize, interleaved);
-        String fmtString = "Streaming: %s: %s, format %s, buffer %s, interleaved %s\n";
-        System.console().printf(fmtString, service, d, format, bufferSize, interleaved);
-        try (XtStream stream = d.openStream(format, interleaved, false, bufferSize, Driver::onStreamCallback, context)) {
+        String recordFileName = String.format("xt-recording-%s-%s-%s-%s-%s-%s-%s.raw",
+                service, d, formatter.format(LocalDateTime.now()), format, bufferSize, interleaved, raw);
+        String fmtString = "Streaming: %s: %s, format %s, buffer %s, interleaved %s, raw %s\n";
+        System.console().printf(fmtString, service, d, format, bufferSize, interleaved, raw);
+        try (XtStream stream = d.openStream(format, interleaved, raw, bufferSize, Driver::onStreamCallback, context)) {
             int frames = stream.getFrames();
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
+            context.intermediate = new byte[frames * format.inputs * sampleSize];
             context.buffer = ByteBuffer.allocate(frames * format.inputs * sampleSize).order(ByteOrder.LITTLE_ENDIAN);
             System.console().printf("Latency: %s\n", stream.getLatency());
             System.console().printf("Buffer: %s (%s ms)\n", frames, frames * 1000.0 / format.mix.rate);
@@ -262,6 +282,7 @@ public class Driver {
             double time, long position, boolean timeValid, long error, Object user) {
 
         double value;
+        boolean raw = stream.isRaw();
         boolean interleaved = stream.isInterleaved();
         StreamContext ctx = (StreamContext) user;
         XtFormat format = stream.getFormat();
@@ -280,30 +301,53 @@ public class Driver {
             return;
 
         if (format.outputs == 0)
-            if (interleaved)
-                writeRecording(ctx, format, input, 0, frames * format.inputs * sampleElements, bufferBytes);
+            if (!raw)
+                if (interleaved)
+                    writeRecording(ctx, format, input, 0, frames * format.inputs * sampleElements, bufferBytes);
+                else
+                    for (int f = 0; f < frames; f++)
+                        for (int c = 0; c < format.inputs; c++)
+                            writeRecording(ctx, format, Array.get(input, c), f * sampleElements, sampleElements, sampleSize);
+            else if (interleaved)
+                writeRecordingRaw(ctx, (Pointer) input, 0, bufferBytes);
             else
                 for (int f = 0; f < frames; f++)
                     for (int c = 0; c < format.inputs; c++)
-                        writeRecording(ctx, format, Array.get(input, c), f * sampleElements, sampleElements, sampleSize);
+                        writeRecordingRaw(ctx, ((Pointer) input).getPointer(c * Pointer.SIZE), f * sampleSize, sampleSize);
         else if (format.inputs != 0)
-            if (interleaved)
-                System.arraycopy(input, 0, output, 0, frames * format.inputs * sampleElements);
+            if (!raw)
+                if (interleaved)
+                    System.arraycopy(input, 0, output, 0, frames * format.inputs * sampleElements);
+                else
+                    for (int c = 0; c < format.inputs; c++)
+                        System.arraycopy(Array.get(input, c), 0, Array.get(output, c), 0, frames * sampleElements);
+            else if (interleaved)
+                memcpy((Pointer) output, (Pointer) input, new Pointer(frames * format.inputs * sampleSize));
             else
                 for (int c = 0; c < format.inputs; c++)
-                    System.arraycopy(Array.get(input, c), 0, Array.get(output, c), 0, frames * sampleElements);
+                    memcpy(
+                            ((Pointer) output).getPointer(c * Pointer.SIZE),
+                            ((Pointer) input).getPointer(c * Pointer.SIZE),
+                            new Pointer(frames * sampleSize));
         else
             for (int f = 0; f < frames; f++) {
                 ctx.phase += TONE_FREQUENCY / format.mix.rate;
                 if (ctx.phase > 1.0)
                     ctx.phase = -1.0;
                 value = Math.sin(ctx.phase * Math.PI) * 0.95;
-                if (interleaved)
+                if (!raw)
+                    if (interleaved)
+                        for (int c = 0; c < format.outputs; c++)
+                            outputSine(output, (f * outputs + c) * sampleElements, format.mix.sample, value);
+                    else
+                        for (int c = 0; c < format.outputs; c++)
+                            outputSine(Array.get(output, 0), f * sampleElements, format.mix.sample, value);
+                else if (interleaved)
                     for (int c = 0; c < format.outputs; c++)
-                        outputSine(output, (f * outputs + c) * sampleElements, format.mix.sample, value);
+                        outputSineRaw((Pointer) output, format.mix.sample, f * outputs + c, value);
                 else
                     for (int c = 0; c < format.outputs; c++)
-                        outputSine(Array.get(output, 0), f * sampleElements, format.mix.sample, value);
+                        outputSineRaw(((Pointer) output).getPointer(c * Pointer.SIZE), format.mix.sample, f, value);
             }
 
         if (ctx.start < 0.0)
@@ -342,6 +386,32 @@ public class Driver {
         }
     }
 
+    private static void outputSineRaw(Pointer dest, XtSample sample, int frame, double value) {
+        int ivalue;
+        switch (sample) {
+            case FLOAT32:
+                dest.setFloat(frame * 4, (float) value);
+                break;
+            case INT32:
+                dest.setInt(frame * 4, (int) (value * Integer.MAX_VALUE));
+                break;
+            case UINT8:
+                dest.setByte(frame, (byte) ((value + 1.0) / 2.0 * Byte.MAX_VALUE));
+                break;
+            case INT16:
+                dest.setShort(frame * 2, (short) (value * Short.MAX_VALUE));
+                break;
+            case INT24:
+                ivalue = (int) (value * Integer.MAX_VALUE);
+                dest.setByte(frame * 3, (byte) ((ivalue & 0x0000FF00) >> 8));
+                dest.setByte(frame * 3 + 1, (byte) ((ivalue & 0x00FF0000) >> 16));
+                dest.setByte(frame * 3 + 2, (byte) ((ivalue & 0xFF000000) >> 24));
+                break;
+            default:
+                assert (false);
+        }
+    }
+
     private static void writeRecording(StreamContext ctx, XtFormat format, Object input, int offset, int length, int bytes) {
 
         ctx.buffer.clear();
@@ -364,6 +434,17 @@ public class Driver {
         }
         try {
             ctx.recording.write(ctx.buffer.array(), 0, bytes);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static void writeRecordingRaw(StreamContext ctx, Pointer input, int offsetBytes, int lengthBytes) {
+        ctx.buffer.clear();
+        input.read(offsetBytes, ctx.intermediate, 0, lengthBytes);
+        ctx.buffer.put(ctx.intermediate, 0, lengthBytes);
+        try {
+            ctx.recording.write(ctx.buffer.array(), 0, lengthBytes);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
