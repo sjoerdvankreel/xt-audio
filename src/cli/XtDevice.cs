@@ -94,9 +94,9 @@ namespace Xt {
             IntPtr s;
             XtStream stream = new XtStream(callback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);
-            stream.netCallback = new XtNative.StreamCallbackNet(stream.Callback);
-            stream.monoCallback = new XtNative.StreamCallbackMono(stream.Callback);
-            Delegate cbDelegate = Type.GetType("Mono.Runtime") != null ? (Delegate)stream.monoCallback : stream.netCallback;
+            stream.win32Callback = new XtNative.StreamCallbackWin32(stream.Callback);
+            stream.linuxCallback = new XtNative.StreamCallbackLinux(stream.Callback);
+            Delegate cbDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT ? (Delegate)stream.win32Callback : stream.linuxCallback;
             IntPtr cb = Marshal.GetFunctionPointerForDelegate(cbDelegate);
             XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, interleaved, bufferSize, cb, IntPtr.Zero, out s));
             stream.Init(s);

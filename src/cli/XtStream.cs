@@ -168,8 +168,8 @@ namespace Xt {
         private Array outputNonInterleaved;
         private readonly object user;
         private readonly XtStreamCallback callback;
-        internal XtNative.StreamCallbackNet netCallback;
-        internal XtNative.StreamCallbackMono monoCallback;
+        internal XtNative.StreamCallbackWin32 win32Callback;
+        internal XtNative.StreamCallbackLinux linuxCallback;
 
         internal XtStream(XtStreamCallback callback, object user) {
             this.user = user;
