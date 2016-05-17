@@ -2,6 +2,7 @@ package com.xtaudio.xt;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import java.lang.reflect.Array;
 
 /* Copyright (C) 2015-2016 Sjoerd van Kreel.
  *
@@ -20,9 +21,143 @@ import com.sun.jna.ptr.IntByReference;
  */
 public final class XtStream implements XtCloseable {
 
+    private static Object createNonInterleavedBuffer(XtSample sample, int channels, int frames) {
+        switch (sample) {
+            case UINT8:
+                return Array.newInstance(byte.class, channels, frames);
+            case INT16:
+                return Array.newInstance(short.class, channels, frames);
+            case INT24:
+                return Array.newInstance(byte.class, channels, frames * 3);
+            case INT32:
+                return Array.newInstance(int.class, channels, frames);
+            case FLOAT32:
+                return Array.newInstance(float.class, channels, frames);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private static Object createInterleavedBuffer(XtSample sample, int channels, int frames) {
+        switch (sample) {
+            case UINT8:
+                return Array.newInstance(byte.class, channels * frames);
+            case INT16:
+                return Array.newInstance(short.class, channels * frames);
+            case INT24:
+                return Array.newInstance(byte.class, channels * frames * 3);
+            case INT32:
+                return Array.newInstance(int.class, channels * frames);
+            case FLOAT32:
+                return Array.newInstance(float.class, channels * frames);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private static void copyInterleavedBufferFromNative(XtSample sample, Pointer raw, Object managed, int channels, int frames) {
+        switch (sample) {
+            case UINT8:
+                raw.read(0, (byte[]) managed, 0, channels * frames);
+                break;
+            case INT16:
+                raw.read(0, (short[]) managed, 0, channels * frames);
+                break;
+            case INT24:
+                raw.read(0, (byte[]) managed, 0, channels * frames * 3);
+                break;
+            case INT32:
+                raw.read(0, (int[]) managed, 0, channels * frames);
+                break;
+            case FLOAT32:
+                raw.read(0, (float[]) managed, 0, channels * frames);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private static void copyInterleavedBufferToNative(XtSample sample, Object managed, Pointer raw, int channels, int frames) {
+        switch (sample) {
+            case UINT8:
+                raw.write(0, (byte[]) managed, 0, channels * frames);
+                break;
+            case INT16:
+                raw.write(0, (short[]) managed, 0, channels * frames);
+                break;
+            case INT24:
+                raw.write(0, (byte[]) managed, 0, channels * frames * 3);
+                break;
+            case INT32:
+                raw.write(0, (int[]) managed, 0, channels * frames);
+                break;
+            case FLOAT32:
+                raw.write(0, (float[]) managed, 0, channels * frames);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private static void copyNonInterleavedBufferFromNative(XtSample sample, Pointer raw, Object managed, int channels, int frames) {
+        switch (sample) {
+            case UINT8:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).read(0, ((byte[][]) managed)[i], 0, frames);
+                break;
+            case INT16:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).read(0, ((short[][]) managed)[i], 0, frames);
+                break;
+            case INT24:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).read(0, ((byte[][]) managed)[i], 0, frames * 3);
+                break;
+            case INT32:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).read(0, ((int[][]) managed)[i], 0, frames);
+                break;
+            case FLOAT32:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).read(0, ((float[][]) managed)[i], 0, frames);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private static void copyNonInterleavedBufferToNative(XtSample sample, Object managed, Pointer raw, int channels, int frames) {
+        switch (sample) {
+            case UINT8:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).write(0, ((byte[][]) managed)[i], 0, frames);
+                break;
+            case INT16:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).write(0, ((short[][]) managed)[i], 0, frames);
+                break;
+            case INT24:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).write(0, ((byte[][]) managed)[i], 0, frames * 3);
+                break;
+            case INT32:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).write(0, ((int[][]) managed)[i], 0, frames);
+                break;
+            case FLOAT32:
+                for (int i = 0; i < channels; i++)
+                    raw.getPointer(i).write(0, ((float[][]) managed)[i], 0, frames);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     private Pointer s;
-    private Object input;
-    private Object output;
+    private Object inputInterleaved;
+    private Object outputInterleaved;
+    private Object inputNonInterleaved;
+    private Object outputNonInterleaved;
     private final Object user;
     XtNative.StreamCallback nativeCallback;
     private final XtStreamCallback userCallback;
@@ -39,7 +174,7 @@ public final class XtStream implements XtCloseable {
     public void start() {
         XtNative.handleError(XtNative.XtStreamStart(s));
     }
-    
+
     public boolean isInterleaved() {
         return XtNative.XtStreamIsInterleaved(s);
     }
@@ -76,29 +211,12 @@ public final class XtStream implements XtCloseable {
         this.s = s;
         int frames = getFrames();
         XtFormat format = getFormat();
-        switch (format.mix.sample) {
-            case UINT8:
-                input = new byte[format.inputs * frames];
-                output = new byte[format.outputs * frames];
-                break;
-            case INT16:
-                input = new short[format.inputs * frames];
-                output = new short[format.outputs * frames];
-                break;
-            case INT24:
-                input = new byte[format.inputs * 3 * frames];
-                output = new byte[format.outputs * 3 * frames];
-                break;
-            case INT32:
-                input = new int[format.inputs * frames];
-                output = new int[format.outputs * frames];
-                break;
-            case FLOAT32:
-                input = new float[format.inputs * frames];
-                output = new float[format.outputs * frames];
-                break;
-            default:
-                throw new IllegalArgumentException();
+        if (isInterleaved()) {
+            inputInterleaved = createInterleavedBuffer(format.mix.sample, format.inputs, frames);
+            outputInterleaved = createInterleavedBuffer(format.mix.sample, format.outputs, frames);
+        } else {
+            inputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
+            outputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
         }
     }
 
@@ -106,27 +224,16 @@ public final class XtStream implements XtCloseable {
             double time, long position, boolean timeValid, long error, Pointer u) {
 
         XtFormat format = getFormat();
-        Object inData = input == null ? null : this.input;
-        Object outData = output == null ? null : this.output;
-        
+        boolean interleaved = isInterleaved();
+        Object inData = input == null ? null : interleaved ? inputInterleaved : inputNonInterleaved;
+        Object outData = output == null ? null : interleaved ? outputInterleaved : outputNonInterleaved;
+
         if (inData != null)
-            switch (format.mix.sample) {
-                case UINT8:
-                    input.read(0, (byte[]) inData, 0, frames * format.inputs);
-                    break;
-                case INT16:
-                    input.read(0, (short[]) inData, 0, frames * format.inputs);
-                    break;
-                case INT24:
-                    input.read(0, (byte[]) inData, 0, frames * format.inputs * 3);
-                    break;
-                case INT32:
-                    input.read(0, (int[]) inData, 0, frames * format.inputs);
-                    break;
-                case FLOAT32:
-                    input.read(0, (float[]) inData, 0, frames * format.inputs);
-                    break;
-            }
+            if (interleaved)
+                copyInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+            else
+                copyNonInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+
         try {
             userCallback.callback(this, inData, outData, frames, time, position, timeValid, error, user);
         } catch (Throwable t) {
@@ -135,23 +242,11 @@ public final class XtStream implements XtCloseable {
             t.printStackTrace();
             Runtime.getRuntime().halt(1);
         }
+
         if (outData != null)
-            switch (format.mix.sample) {
-                case UINT8:
-                    output.write(0, (byte[]) outData, 0, frames * format.outputs);
-                    break;
-                case INT16:
-                    output.write(0, (short[]) outData, 0, frames * format.outputs);
-                    break;
-                case INT24:
-                    output.write(0, (byte[]) outData, 0, frames * format.outputs * 3);
-                    break;
-                case INT32:
-                    output.write(0, (int[]) outData, 0, frames * format.outputs);
-                    break;
-                case FLOAT32:
-                    output.write(0, (float[]) outData, 0, frames * format.outputs);
-                    break;
-            }
+            if (interleaved)
+                copyInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
+            else
+                copyNonInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
     }
 }
