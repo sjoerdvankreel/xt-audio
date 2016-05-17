@@ -161,19 +161,26 @@ namespace Xt {
             }
         }
 
+        private readonly bool raw;
+        private readonly object user;
+        private readonly XtStreamCallback callback;
+
         private IntPtr s;
         private Array inputInterleaved;
         private Array outputInterleaved;
         private Array inputNonInterleaved;
         private Array outputNonInterleaved;
-        private readonly object user;
-        private readonly XtStreamCallback callback;
         internal XtNative.StreamCallbackWin32 win32Callback;
         internal XtNative.StreamCallbackLinux linuxCallback;
 
-        internal XtStream(XtStreamCallback callback, object user) {
+        internal XtStream(bool raw, XtStreamCallback callback, object user) {
+            this.raw = raw;
             this.user = user;
             this.callback = callback;
+        }
+
+        public bool IsRaw() {
+            return raw;
         }
 
         public XtSystem GetSystem() {
@@ -216,16 +223,17 @@ namespace Xt {
         }
 
         internal void Init(IntPtr s) {
-
             this.s = s;
-            int frames = GetFrames();
-            XtFormat format = GetFormat();
-            if (IsInterleaved()) {
-                inputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.inputs, frames);
-                outputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.outputs, frames);
-            } else {
-                inputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
-                outputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
+            if (!IsRaw()) {
+                int frames = GetFrames();
+                XtFormat format = GetFormat();
+                if (IsInterleaved()) {
+                    inputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.inputs, frames);
+                    outputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.outputs, frames);
+                } else {
+                    inputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
+                    outputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
+                }
             }
         }
 
@@ -234,14 +242,14 @@ namespace Xt {
 
             XtFormat format = GetFormat();
             bool interleaved = IsInterleaved();
-            Array inData = input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
-            Array outData = output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
+            object inData = raw? (object)input : input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
+            object outData = raw? (object)output : output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
 
-            if (inData != null)
+            if (!raw && inData != null)
                 if (interleaved)
-                    CopyInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+                    CopyInterleavedBufferFromNative(format.mix.sample, input, (Array)inData, format.inputs, frames);
                 else
-                    CopyNonInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+                    CopyNonInterleavedBufferFromNative(format.mix.sample, input, (Array)inData, format.inputs, frames);
 
             try {
                 callback(this, inData, outData, frames, time, position, timeValid, error, user);
@@ -249,11 +257,11 @@ namespace Xt {
                 Environment.FailFast("Exception caught in stream callback.", e);
             }
 
-            if (outData != null)
+            if (!raw && outData != null)
                 if (interleaved)
-                    CopyInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
+                    CopyInterleavedBufferToNative(format.mix.sample, (Array)outData, output, format.outputs, frames);
                 else
-                    CopyNonInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
+                    CopyNonInterleavedBufferToNative(format.mix.sample, (Array)outData, output, format.outputs, frames);
         }
     }
 }

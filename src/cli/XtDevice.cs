@@ -90,9 +90,9 @@ namespace Xt {
             return XtNative.FreeStringFromUtf8(name);
         }
 
-        public XtStream OpenStream(XtFormat format, bool interleaved, double bufferSize, XtStreamCallback callback, object user) {
+        public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize, XtStreamCallback callback, object user) {
             IntPtr s;
-            XtStream stream = new XtStream(callback, user);
+            XtStream stream = new XtStream(raw, callback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);
             stream.win32Callback = new XtNative.StreamCallbackWin32(stream.Callback);
             stream.linuxCallback = new XtNative.StreamCallbackLinux(stream.Callback);
