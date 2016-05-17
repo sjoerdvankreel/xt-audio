@@ -6,7 +6,7 @@ namespace Xt {
 
     public static class CaptureDefaultInput {
 
-        internal static void Capture(XtStream stream, Array input, Array output, int frames,
+        internal static void Capture(XtStream stream, object input, object output, int frames,
                 double time, ulong position, bool timeValid, ulong error, object user) {
 
             XtFormat format = stream.GetFormat();
@@ -38,7 +38,7 @@ namespace Xt {
 
                     XtBuffer buffer = device.GetBuffer(format);
                     using (FileStream recording = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write))
-                    using (XtStream stream = device.OpenStream(format, true, buffer.current, new XtStreamCallback(Capture), recording)) {
+                    using (XtStream stream = device.OpenStream(format, true, false, buffer.current, new XtStreamCallback(Capture), recording)) {
                         stream.Start();
                         Thread.Sleep(1000);
                         stream.Stop();

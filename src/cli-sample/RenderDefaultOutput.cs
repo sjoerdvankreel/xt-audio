@@ -7,7 +7,7 @@ namespace Xt {
 
         static readonly Random Rand = new Random();
 
-        static void Render(XtStream stream, Array input, Array output, int frames,
+        static void Render(XtStream stream, object input, object output, int frames,
                 double time, ulong position, bool timeValid, ulong error, Object user) {
 
             short[] buffer = (short[])output;
@@ -38,7 +38,7 @@ namespace Xt {
                     }
 
                     XtBuffer buffer = device.GetBuffer(format);
-                    using (XtStream stream = device.OpenStream(format, true, buffer.current, Render, "user-data")) {
+                    using (XtStream stream = device.OpenStream(format, true, false, buffer.current, Render, "user-data")) {
                         stream.Start();
                         Thread.Sleep(1000);
                         stream.Stop();
