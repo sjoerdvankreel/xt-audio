@@ -235,7 +235,7 @@ public class Driver {
                 service, d, formatter.format(LocalDateTime.now()), format, bufferSize, interleaved);
         String fmtString = "Streaming: %s: %s, format %s, buffer %s, interleaved %s\n";
         System.console().printf(fmtString, service, d, format, bufferSize, interleaved);
-        try (XtStream stream = d.openStream(format, interleaved, bufferSize, Driver::onStreamCallback, context)) {
+        try (XtStream stream = d.openStream(format, interleaved, false, bufferSize, Driver::onStreamCallback, context)) {
             int frames = stream.getFrames();
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
             context.buffer = ByteBuffer.allocate(frames * format.inputs * sampleSize).order(ByteOrder.LITTLE_ENDIAN);

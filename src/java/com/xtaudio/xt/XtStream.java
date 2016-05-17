@@ -153,18 +153,25 @@ public final class XtStream implements XtCloseable {
         }
     }
 
+    private final Object user;
+    private final boolean raw;
+    private final XtStreamCallback userCallback;
+
     private Pointer s;
     private Object inputInterleaved;
     private Object outputInterleaved;
     private Object inputNonInterleaved;
     private Object outputNonInterleaved;
-    private final Object user;
     XtNative.StreamCallback nativeCallback;
-    private final XtStreamCallback userCallback;
 
-    XtStream(XtStreamCallback userCallback, Object user) {
+    XtStream(boolean raw, XtStreamCallback userCallback, Object user) {
+        this.raw = raw;
         this.user = user;
         this.userCallback = userCallback;
+    }
+
+    public boolean isRaw() {
+        return raw;
     }
 
     public void stop() {
@@ -207,16 +214,17 @@ public final class XtStream implements XtCloseable {
     }
 
     void init(Pointer s) {
-
         this.s = s;
-        int frames = getFrames();
-        XtFormat format = getFormat();
-        if (isInterleaved()) {
-            inputInterleaved = createInterleavedBuffer(format.mix.sample, format.inputs, frames);
-            outputInterleaved = createInterleavedBuffer(format.mix.sample, format.outputs, frames);
-        } else {
-            inputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
-            outputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
+        if (!isRaw()) {
+            int frames = getFrames();
+            XtFormat format = getFormat();
+            if (isInterleaved()) {
+                inputInterleaved = createInterleavedBuffer(format.mix.sample, format.inputs, frames);
+                outputInterleaved = createInterleavedBuffer(format.mix.sample, format.outputs, frames);
+            } else {
+                inputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
+                outputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
+            }
         }
     }
 
@@ -225,10 +233,10 @@ public final class XtStream implements XtCloseable {
 
         XtFormat format = getFormat();
         boolean interleaved = isInterleaved();
-        Object inData = input == null ? null : interleaved ? inputInterleaved : inputNonInterleaved;
-        Object outData = output == null ? null : interleaved ? outputInterleaved : outputNonInterleaved;
+        Object inData = raw ? input : input == null ? null : interleaved ? inputInterleaved : inputNonInterleaved;
+        Object outData = raw ? output : output == null ? null : interleaved ? outputInterleaved : outputNonInterleaved;
 
-        if (inData != null)
+        if (!raw && inData != null)
             if (interleaved)
                 copyInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
             else
@@ -243,7 +251,7 @@ public final class XtStream implements XtCloseable {
             Runtime.getRuntime().halt(1);
         }
 
-        if (outData != null)
+        if (!raw && outData != null)
             if (interleaved)
                 copyInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
             else

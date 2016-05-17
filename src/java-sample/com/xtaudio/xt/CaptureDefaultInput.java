@@ -41,7 +41,7 @@ public class CaptureDefaultInput {
 
                 XtBuffer buffer = device.getBuffer(format);
                 try (FileOutputStream recording = new FileOutputStream("xt-audio.raw");
-                        XtStream stream = device.openStream(format, true, buffer.current, CaptureDefaultInput::capture, recording)) {
+                        XtStream stream = device.openStream(format, true, false, buffer.current, CaptureDefaultInput::capture, recording)) {
                     stream.start();
                     Thread.sleep(1000);
                     stream.stop();
