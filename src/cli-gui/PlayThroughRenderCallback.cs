@@ -23,18 +23,23 @@ namespace Xt {
             base.OnMessage(string.Format("Circular buffer fill factor: {0}.", fill));
         }
 
-        internal override void OnCallback(XtFormat format, bool interleaved, Array input, Array output, int frames) {
+        internal override void OnCallback(XtFormat format, bool interleaved,
+            bool raw, object input, object output, int frames) {
 
             if (frames == 0)
                 return;
-            Array outData = interleaved ? output : interleavedBuffer;
+            Array outData = !raw && interleaved ? (Array)output : interleavedBuffer;
             int frameSize = format.outputs * XtAudio.GetSampleAttributes(format.mix.sample).size;
             if (!buffer.Read(outData, frames * frameSize)) {
                 onMessage.Invoke("Warning: circular buffer is empty.");
                 Array.Clear(outData, 0, frames * (format.mix.sample == XtSample.Int24 ? 3 : 1));
             }
-            if (!interleaved)
-                Utility.Deinterleave(interleavedBuffer, output, format.mix.sample, format.outputs, frames);
+            if (!raw && !interleaved)
+                Utility.Deinterleave(interleavedBuffer, (Array)output, format.mix.sample, format.outputs, frames);
+            if (raw && interleaved)
+                Utility.Copy(interleavedBuffer, (IntPtr)output, format.mix.sample, format.outputs, frames);
+            if(raw && !interleaved)
+                Utility.Deinterleave(interleavedBuffer, (IntPtr)output, format.mix.sample, format.outputs, frames);
         }
     }
 }

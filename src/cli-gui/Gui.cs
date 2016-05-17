@@ -339,7 +339,7 @@ namespace Xt {
                     CaptureCallback callback = new CaptureCallback(OnStreamError, AddMessage, captureFile);
                     XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
                     inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
-                        bufferSize.Value, callback.OnCallback, "capture-user-data");
+                        streamRaw.Checked, bufferSize.Value, callback.OnCallback, "capture-user-data");
                     callback.Init(inputStream.GetFormat(), inputStream.GetFrames());
                     inputStream.Start();
 
@@ -348,7 +348,7 @@ namespace Xt {
                     RenderCallback callback = new RenderCallback(OnStreamError, AddMessage);
                     XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
                     outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
-                        bufferSize.Value, callback.OnCallback, "render-user-data");
+                        streamRaw.Checked, bufferSize.Value, callback.OnCallback, "render-user-data");
                     outputStream.Start();
 
                 } else if (inputDevice.SelectedItem == outputDevice.SelectedItem) {
@@ -359,7 +359,7 @@ namespace Xt {
                     FullDuplexCallback callback = new FullDuplexCallback(OnStreamError, AddMessage);
                     XtDevice duplexDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
                     outputStream = duplexDevice.OpenStream(duplexFormat, streamInterleaved.Checked,
-                        bufferSize.Value, callback.OnCallback, "duplex-user-data");
+                       streamRaw.Checked, bufferSize.Value, callback.OnCallback, "duplex-user-data");
                     outputStream.Start();
 
                 } else {
@@ -370,9 +370,9 @@ namespace Xt {
                     PlayThroughCaptureCallback inputCallback = new PlayThroughCaptureCallback(OnStreamError, AddMessage, buffer);
                     PlayThroughRenderCallback outputCallback = new PlayThroughRenderCallback(OnStreamError, AddMessage, buffer);
                     inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
-                        bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
+                       streamRaw.Checked, bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
                     outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
-                        bufferSize.Value, outputCallback.OnCallback, "render-user-data");
+                       streamRaw.Checked, bufferSize.Value, outputCallback.OnCallback, "render-user-data");
                     inputCallback.Init(inputFormat, inputStream.GetFrames());
                     outputCallback.Init(outputFormat, outputStream.GetFrames());
                     inputStream.Start();
