@@ -2,15 +2,21 @@ package com.xtaudio.xt;
 
 public class Sample {
 
-    public static void main(String[] args) {
-        
-        System.out.println("PrintDeviceNames:");        
-        PrintDeviceNames.main(args);
-        System.out.println("PrintDetailedInfo:");
-        PrintDetailedInfo.main(args);
-        System.out.println("CaptureDefaultInput:");
-        CaptureDefaultInput.main(args);
-        System.out.println("RenderDefaultOutput:");
-        RenderDefaultOutput.main(args);
+    public static void main(String[] args) throws Exception {
+
+        System.out.println("PrintSimple:");
+        PrintSimple.main(args);
+        System.out.println("PrintDetailed:");
+        PrintDetailed.main(args);
+        System.out.println("CaptureSimple:");
+        CaptureSimple.main(args);
+        System.out.println("RenderSimple:");
+        RenderSimple.main(args);
+        System.out.println("CaptureAdvanced:");
+        CaptureAdvanced.main(args);
+        System.out.println("RenderAdvanced:");
+        RenderAdvanced.main(args);
+        System.out.println("FullDuplex:");
+        FullDuplex.main(args);
     }
 }

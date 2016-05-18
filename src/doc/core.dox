@@ -362,6 +362,10 @@
   * (unsigned char*) for UInt8 and UInt24, (short*) for Int16, (int*) for Int32 and (float*) for Float32
   * interleaved access or (unsigned char**) for UInt8 and UInt24, (short**) for Int16, (int**)
   * for Int32 and (float**) for Float32 non-interleaved access.
+  *
+  * Note for languages that support exceptions: the stream callback should NEVER throw. 
+  * It is considered a fatal error if an exception propagates through the callback.
+  *
   * @see XtDeviceOpenStream
   * @see XtStreamStart
   * @see XtStreamGetFrames
