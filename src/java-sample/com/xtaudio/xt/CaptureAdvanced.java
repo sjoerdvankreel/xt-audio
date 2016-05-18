@@ -52,7 +52,7 @@ public class CaptureAdvanced {
             for (int f = 0; f < frames; f++)
                 for (int c = 0; c < channels; c++)
                     // Don't do this.
-                    ctx.out.write(((byte[][]) input)[c], frames * sampleSize, sampleSize);
+                    ctx.out.write(((byte[][]) input)[c], f * sampleSize, sampleSize);
         }
     }
 
@@ -66,7 +66,7 @@ public class CaptureAdvanced {
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
             for (int f = 0; f < frames; f++)
                 for (int c = 0; c < channels; c++) {
-                    ((Pointer) input).getPointer(c * Pointer.SIZE).read(frames * sampleSize, ctx.intermediate, 0, sampleSize);
+                    ((Pointer) input).getPointer(c * Pointer.SIZE).read(f * sampleSize, ctx.intermediate, 0, sampleSize);
                     // Don't do this.
                     ctx.out.write(ctx.intermediate, 0, sampleSize);
                 }

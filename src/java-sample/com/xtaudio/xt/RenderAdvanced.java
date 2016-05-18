@@ -117,20 +117,20 @@ public class RenderAdvanced {
                     stream.stop();
                 }
 
-                XtFormat sendToLeft = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 1L << 0);
-                try (XtStream stream = device.openStream(sendToLeft, true, false, buffer.current,
+                XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 1L << 0);
+                try (XtStream stream = device.openStream(sendTo0, true, false, buffer.current,
                         RenderAdvanced::renderInterleaved, null)) {
                     stream.start();
-                    System.out.println("Rendering channel mask, left channel...");
+                    System.out.println("Rendering channel mask, channel 0...");
                     readLine();
                     stream.stop();
                 }
 
-                XtFormat sendToRight = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 1L << 1);
-                try (XtStream stream = device.openStream(sendToRight, true, false, buffer.current,
+                XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 1L << 1);
+                try (XtStream stream = device.openStream(sendTo1, true, false, buffer.current,
                         RenderAdvanced::renderInterleaved, null)) {
                     stream.start();
-                    System.out.println("Rendering channel mask, right channel...");
+                    System.out.println("Rendering channel mask, channel 1...");
                     readLine();
                     stream.stop();
                 }
