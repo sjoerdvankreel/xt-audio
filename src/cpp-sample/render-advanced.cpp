@@ -56,7 +56,7 @@ int RenderAdvancedMain(int argc, char** argv) {
   Xt::Audio audio("", nullptr, nullptr, nullptr);
   std::unique_ptr< Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
   Xt::Format format(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 2, 0);
-  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
+  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
 
   if(!device) {
     std::cout << "No default device found.\n";
@@ -84,14 +84,14 @@ int RenderAdvancedMain(int argc, char** argv) {
   stream->Stop();
 
   Xt::Format sendTo0(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 0);
-  stream = device->OpenStream(format, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(sendTo0, true, buffer.current, RenderInterleaved, nullptr);
   stream->Start();
   std::cout << "Rendering channel mask, channel 0...\n";
   ReadLine();
   stream->Stop();
 
   Xt::Format sendTo1(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 1);
-  stream = device->OpenStream(format, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(sendTo1, true, buffer.current, RenderInterleaved, nullptr);
   stream->Start();
   std::cout << "Rendering channel mask, channel 1...\n";
   ReadLine();
