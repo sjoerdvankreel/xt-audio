@@ -54,19 +54,22 @@ struct DSoundStream: public XtwWin32Stream {
   int32_t previousDsPosition;
   const int32_t bufferFrames;
   const XtwWaitableTimer timer;
+  const CComPtr<IDirectSound> output;
+  const CComPtr<IDirectSoundCapture> input;
   const CComPtr<IDirectSoundBuffer> render;
   const CComPtr<IDirectSoundCaptureBuffer> capture;
   XT_IMPLEMENT_STREAM(DSound);
 
   ~DSoundStream() { Stop(); }
   DSoundStream(
+    CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
   frameSize(frameSize),
   buffer(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   xtBytesProcessed(0), dsBytesProcessed(0),
-  previousDsPosition(0), bufferFrames(bufferFrames),
-  timer(), render(render), capture(capture) {}
+  previousDsPosition(0), bufferFrames(bufferFrames), timer(),
+  output(output), input(input), render(render), capture(capture) {}
 
   void StopStream();
   void StartStream();
@@ -334,7 +337,9 @@ XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
   WAVEFORMATEXTENSIBLE wfx;
   DSBUFFERDESC renderDesc = { 0 };
   DSCBUFFERDESC captureDesc = { 0 };
+  CComPtr<IDirectSound> newOutput;
   CComPtr<IDirectSoundBuffer> render;
+  CComPtr<IDirectSoundCapture> newInput;
   CComPtr<IDirectSoundCaptureBuffer> capture;
 
   XT_ASSERT(XtwFormatToWfx(*format, wfx));
@@ -349,16 +354,19 @@ XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
     captureDesc.dwSize = sizeof(DSCBUFFERDESC);
     captureDesc.dwBufferBytes = bufferFrames * frameSize;
     captureDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
-    XT_VERIFY_COM(input->CreateCaptureBuffer(&captureDesc, &capture, nullptr));
+    XT_VERIFY_COM(DirectSoundCaptureCreate8(&guid, &newInput, nullptr));
+    XT_VERIFY_COM(newInput->CreateCaptureBuffer(&captureDesc, &capture, nullptr));
   } else {
     renderDesc.dwFlags = DSBCAPS_GLOBALFOCUS | DSBCAPS_TRUEPLAYPOSITION;
     renderDesc.dwSize = sizeof(DSBUFFERDESC);
     renderDesc.dwBufferBytes = bufferFrames * frameSize;
     renderDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
-    XT_VERIFY_COM(output->CreateSoundBuffer(&renderDesc, &render, nullptr));
+    XT_VERIFY_COM(DirectSoundCreate(&guid, &newOutput, nullptr));
+    XT_VERIFY_COM(newOutput->SetCooperativeLevel(static_cast<HWND>(XtwGetWindow()), DSSCL_PRIORITY));
+    XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
   }
 
-  *stream = new DSoundStream(capture, render, bufferFrames, frameSize);
+  *stream = new DSoundStream(newInput, newOutput, capture, render, bufferFrames, frameSize);
   return S_OK;
 }
 
