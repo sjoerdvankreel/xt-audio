@@ -67,7 +67,7 @@ namespace Xt {
                 int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
                 for (int f = 0; f < frames; f++)
                     for (int c = 0; c < channels; c++) {
-                        IntPtr source = new IntPtr(&((char**)(IntPtr)input)[c][f * sampleSize]);
+                        IntPtr source = new IntPtr(&(((byte**)(IntPtr)input)[c][f * sampleSize]));
                         Marshal.Copy(source, ctx.intermediate, 0, sampleSize);
                         // Don't do this.
                         ctx.recording.Write(ctx.intermediate, 0, sampleSize);

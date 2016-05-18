@@ -4,6 +4,7 @@ namespace Xt {
 
     public class Sample {
 
+        [STAThread]
         public static void Main(string[] args) {
 
             Console.WriteLine("PrintSimple:");
