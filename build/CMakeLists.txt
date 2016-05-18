@@ -17,13 +17,6 @@ if (NOT BUILD_SHARED_LIBS)
   target_include_directories (xt-cpp PRIVATE ${CORE_DIR})
   target_link_libraries (xt-cpp xt-core)
 
-# Core sample program.
-  set (CORE_SAMPLE_DIR "../src/core-sample")
-  file (GLOB CORE_SAMPLE_SRC "${CORE_SAMPLE_DIR}/*.*")
-  add_executable (xt-core-sample ${CORE_SAMPLE_SRC})
-  target_include_directories (xt-core-sample PRIVATE ${CORE_DIR})
-  target_link_libraries (xt-core-sample xt-core)
-
 # C++ driver program.
   set (CPP_DRIVER_DIR "../src/cpp-driver")
   file (GLOB CPP_DRIVER_SRC "${CPP_DRIVER_DIR}/*.*")

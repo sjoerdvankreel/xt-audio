@@ -52,17 +52,11 @@ do
       FT=../../temp/cpp-sample-linux-$XT_ARCH-${confs[$C]}-${libs[$L]}
       mkdir -p $FT
       cp xt-cpp-sample $FT || :
-      FT=../../temp/core-sample-linux-$XT_ARCH-${confs[$C]}-${libs[$L]}
-      mkdir -p $FT
-      cp xt-core-sample $FT || :
       if [ $C == 1 ]; then
         FD=../../dist/cpp-xt-linux-$XT_ARCH-${libs[$L]}
         mkdir -p $FD
         cp libxt-core.a $FD || :
         cp libxt-cpp.a $FD || :
-        FD=../../dist/core-sample-linux-$XT_ARCH-${libs[$L]}
-        mkdir -p $FD
-        cp xt-core-sample $FD
         FD=../../dist/cpp-sample-linux-$XT_ARCH-${libs[$L]}
         mkdir -p $FD
         cp xt-cpp-sample $FD
