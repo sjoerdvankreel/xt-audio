@@ -21,21 +21,21 @@ namespace Xt {
     public sealed class XtAudio : IDisposable {
 
         private static XtTraceCallback trace;
-        private static XtNative.TraceCallbackNet netTrace;
-        private static XtNative.TraceCallbackMono monoTrace;
+        private static XtNative.TraceCallbackWin32 win32Trace;
+        private static XtNative.TraceCallbackLinux linuxTrace;
         private static XtFatalCallback fatal;
-        private static XtNative.FatalCallbackNet netFatal;
-        private static XtNative.FatalCallbackMono monoFatal;
+        private static XtNative.FatalCallbackWin32 win32Fatal;
+        private static XtNative.FatalCallbackLinux linuxFatal;
 
         public XtAudio(string id, IntPtr window, XtTraceCallback trace, XtFatalCallback fatal) {
             XtAudio.trace = trace;
-            XtAudio.netTrace = trace == null ? null : new XtNative.TraceCallbackNet(trace);
-            XtAudio.monoTrace = trace == null ? null : new XtNative.TraceCallbackMono(trace);
+            XtAudio.win32Trace = trace == null ? null : new XtNative.TraceCallbackWin32(trace);
+            XtAudio.linuxTrace = trace == null ? null : new XtNative.TraceCallbackLinux(trace);
             XtAudio.fatal = fatal;
-            XtAudio.netFatal = fatal == null ? null : new XtNative.FatalCallbackNet(fatal);
-            XtAudio.monoFatal = fatal == null ? null : new XtNative.FatalCallbackMono(fatal);
-            Delegate traceDelegate = Type.GetType("Mono.Runtime") != null ? (Delegate)monoTrace : netTrace;
-            Delegate fatalDelegate = Type.GetType("Mono.Runtime") != null ? (Delegate)monoFatal : netFatal;
+            XtAudio.win32Fatal = fatal == null ? null : new XtNative.FatalCallbackWin32(fatal);
+            XtAudio.linuxFatal = fatal == null ? null : new XtNative.FatalCallbackLinux(fatal);
+            Delegate traceDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT ? (Delegate)win32Trace : linuxTrace;
+            Delegate fatalDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT ? (Delegate)win32Fatal : linuxFatal;
             IntPtr tracePtr = trace == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(traceDelegate);
             IntPtr fatalPtr = fatal == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(fatalDelegate);
             using (XtNative.Utf8Buffer buffer = new XtNative.Utf8Buffer(id))

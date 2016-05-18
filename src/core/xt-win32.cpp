@@ -198,7 +198,7 @@ bool XtwWin32Stream::VerifyStreamCallback(HRESULT hr, const char* file, int line
     return true;
   StopStream();
   XtiTrace(XtLevelError, file, line, func, expr);
-  callback(this, nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), hr), user);
+  ProcessCallback(nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), hr));
   EnterCriticalSection(&lock.cs);
   state = XtStreamStateStopped;
   XT_ASSERT(SetEvent(respondEvent.event));

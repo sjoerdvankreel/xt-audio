@@ -18,6 +18,6 @@ using System;
 namespace Xt {
 
     public delegate void XtStreamCallback(XtStream stream,
-        Array input, Array output, int frames, double time,
+        object input, object output, int frames, double time,
         ulong position, bool timeValid, ulong error, object user);
 }

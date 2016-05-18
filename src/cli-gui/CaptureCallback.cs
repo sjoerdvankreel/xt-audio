@@ -1,31 +1,41 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Xt {
 
     class CaptureCallback : StreamCallback {
 
-        internal byte[] block;
-        internal int frameSize;
+        private byte[] block;
+        private int frameSize;
+        private Array interleavedBuffer;
         private readonly FileStream stream;
 
-        internal CaptureCallback(XtFormat format, Action<string> onError, 
+        internal CaptureCallback(Action<string> onError,
             Action<string> onMessage, FileStream stream) :
-            base("Capture", format, onError, onMessage) {
+            base("Capture", onError, onMessage) {
             this.stream = stream;
         }
 
-        internal void Init(int maxFrames) {
+        internal void Init(XtFormat format, int maxFrames) {
             frameSize = format.inputs * XtAudio.GetSampleAttributes(format.mix.sample).size;
             block = new byte[maxFrames * frameSize];
+            interleavedBuffer = Utility.CreateInterleavedBuffer(format.mix.sample, format.inputs, maxFrames);
         }
 
-        internal override void OnCallback(Array input, Array output, int frames) {
+        internal override void OnCallback(XtFormat format, bool interleaved,
+            bool raw, object input, object output, int frames) {
 
-            if (frames > 0) {
-                Buffer.BlockCopy(input, 0, block, 0, frames * frameSize);
-                stream.Write(block, 0, frames * frameSize);
-            }
+            if (frames == 0)
+                return;
+            if (!raw && !interleaved)
+                Utility.Interleave((Array)input, interleavedBuffer, format.mix.sample, format.inputs, frames);
+            else if (raw && !interleaved)
+                Utility.Interleave((IntPtr)input, interleavedBuffer, format.mix.sample, format.inputs, frames);
+            else if (raw && interleaved)
+                Utility.Copy((IntPtr)input, interleavedBuffer, format.mix.sample, format.inputs, frames);
+            Buffer.BlockCopy(interleaved && !raw ? (Array)input : interleavedBuffer, 0, block, 0, frames * frameSize);
+            stream.Write(block, 0, frames * frameSize);
         }
     }
 }

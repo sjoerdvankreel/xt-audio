@@ -79,18 +79,24 @@ public final class XtDevice implements XtCloseable {
         return supports.getValue() != 0;
     }
 
+    public boolean supportsAccess(boolean interleaved) {
+        IntByReference supports = new IntByReference();
+        XtNative.handleError(XtNative.XtDeviceSupportsAccess(d, interleaved, supports));
+        return supports.getValue() != 0;
+    }
+
     public String getChannelName(boolean output, int index) {
         PointerByReference name = new PointerByReference();
         XtNative.handleError(XtNative.XtDeviceGetChannelName(d, output, index, name));
         return XtNative.wrapAndFreeString(name.getValue());
     }
 
-    public XtStream openStream(XtFormat format, double bufferSize, XtStreamCallback callback, Object user) {
+    public XtStream openStream(XtFormat format, boolean interleaved, boolean raw, double bufferSize, XtStreamCallback callback, Object user) {
         PointerByReference s = new PointerByReference();
-        XtStream stream = new XtStream(callback, user, format);
+        XtStream stream = new XtStream(raw, callback, user);
         XtNative.Format formatNative = XtNative.Format.toNative(format);
         stream.nativeCallback = stream::callback;
-        XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, bufferSize, stream.nativeCallback, Pointer.NULL, s));
+        XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, interleaved, bufferSize, stream.nativeCallback, Pointer.NULL, s));
         stream.init(s.getValue());
         return stream;
     }

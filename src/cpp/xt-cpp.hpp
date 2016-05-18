@@ -190,7 +190,9 @@ public:
   void Start();
   System GetSystem() const;
   int32_t GetFrames() const;
+  bool IsInterleaved() const;
   Latency GetLatency() const;
+  const Format& GetFormat() const;
 };
 
 class Service final {
@@ -235,10 +237,12 @@ public:
   std::string GetName() const;
   std::unique_ptr<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
+  bool SupportsAccess(bool interleaved) const;
   Buffer GetBuffer(const Format& format) const;
   bool SupportsFormat(const Format& format) const;
   std::string GetChannelName(bool output, int32_t index) const;
-  std::unique_ptr<Stream> OpenStream(const Format& format, double bufferSize, StreamCallback callback, void* user);
+  std::unique_ptr<Stream> OpenStream(const Format& format, bool interleaved, 
+                                     double bufferSize, StreamCallback callback, void* user);
 };
 
 } // namespace Xt

@@ -54,19 +54,22 @@ struct DSoundStream: public XtwWin32Stream {
   int32_t previousDsPosition;
   const int32_t bufferFrames;
   const XtwWaitableTimer timer;
+  const CComPtr<IDirectSound> output;
+  const CComPtr<IDirectSoundCapture> input;
   const CComPtr<IDirectSoundBuffer> render;
   const CComPtr<IDirectSoundCaptureBuffer> capture;
   XT_IMPLEMENT_STREAM(DSound);
 
   ~DSoundStream() { Stop(); }
   DSoundStream(
+    CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
   frameSize(frameSize),
   buffer(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   xtBytesProcessed(0), dsBytesProcessed(0),
-  previousDsPosition(0), bufferFrames(bufferFrames),
-  timer(), render(render), capture(capture) {}
+  previousDsPosition(0), bufferFrames(bufferFrames), timer(),
+  output(output), input(input), render(render), capture(capture) {}
 
   void StopStream();
   void StartStream();
@@ -252,6 +255,11 @@ XtFault DSoundDevice::GetName(char** name) const {
   return S_OK;
 }
 
+XtFault DSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  *supports = interleaved;
+  return S_OK;
+}
+
 XtFault DSoundDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
   buffer->min = XtDsMinBufferMs;
   buffer->max = XtDsMaxBufferMs;
@@ -320,7 +328,8 @@ XtFault DSoundDevice::GetMix(XtMix** mix) const {
   return S_OK;
 }
 
-XtFault DSoundDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
+                                 XtStreamCallback callback, void* user, XtStream** stream) {
 
   HRESULT hr;
   int32_t frameSize;
@@ -328,7 +337,9 @@ XtFault DSoundDevice::OpenStream(const XtFormat* format, double bufferSize, XtSt
   WAVEFORMATEXTENSIBLE wfx;
   DSBUFFERDESC renderDesc = { 0 };
   DSCBUFFERDESC captureDesc = { 0 };
+  CComPtr<IDirectSound> newOutput;
   CComPtr<IDirectSoundBuffer> render;
+  CComPtr<IDirectSoundCapture> newInput;
   CComPtr<IDirectSoundCaptureBuffer> capture;
 
   XT_ASSERT(XtwFormatToWfx(*format, wfx));
@@ -343,16 +354,19 @@ XtFault DSoundDevice::OpenStream(const XtFormat* format, double bufferSize, XtSt
     captureDesc.dwSize = sizeof(DSCBUFFERDESC);
     captureDesc.dwBufferBytes = bufferFrames * frameSize;
     captureDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
-    XT_VERIFY_COM(input->CreateCaptureBuffer(&captureDesc, &capture, nullptr));
+    XT_VERIFY_COM(DirectSoundCaptureCreate8(&guid, &newInput, nullptr));
+    XT_VERIFY_COM(newInput->CreateCaptureBuffer(&captureDesc, &capture, nullptr));
   } else {
     renderDesc.dwFlags = DSBCAPS_GLOBALFOCUS | DSBCAPS_TRUEPLAYPOSITION;
     renderDesc.dwSize = sizeof(DSBUFFERDESC);
     renderDesc.dwBufferBytes = bufferFrames * frameSize;
     renderDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
-    XT_VERIFY_COM(output->CreateSoundBuffer(&renderDesc, &render, nullptr));
+    XT_VERIFY_COM(DirectSoundCreate(&guid, &newOutput, nullptr));
+    XT_VERIFY_COM(newOutput->SetCooperativeLevel(static_cast<HWND>(XtwGetWindow()), DSSCL_PRIORITY));
+    XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
   }
 
-  *stream = new DSoundStream(capture, render, bufferFrames, frameSize);
+  *stream = new DSoundStream(newInput, newOutput, capture, render, bufferFrames, frameSize);
   return S_OK;
 }
 
@@ -410,11 +424,16 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     XT_ASSERT(waitResult == WAIT_OBJECT_0);
   }
   else if(render) {
-    callback(this, nullptr, &buffer[0], bufferFrames, 0.0, 0, XtFalse, DS_OK, user);
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0)))
       return;
-    SplitBufferParts(buffer, audio1, size1, audio2, size2);
-    XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2));
+    if(size2 == 0) {
+      ProcessCallback(nullptr, audio1, bufferFrames, 0.0, 0, XtFalse, DS_OK);
+    } else {
+      ProcessCallback(nullptr, &buffer[0], bufferFrames, 0.0, 0, XtFalse, DS_OK);
+      SplitBufferParts(buffer, audio1, size1, audio2, size2);
+    }
+    if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
+      return;
     xtBytesProcessed += bufferBytes;
     return;
   }
@@ -436,10 +455,16 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     }
     if(!XT_VERIFY_STREAM_CALLBACK(capture->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
-    CombineBufferParts(buffer, audio1, size1, audio2, size2);
-    if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
-      return;
-    callback(this, &buffer[0], nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK, user);
+    if(size2 == 0) {
+      ProcessCallback(audio1, nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK);
+      if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
+        return;
+    } else {
+      CombineBufferParts(buffer, audio1, size1, audio2, size2);
+      if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
+        return;
+      ProcessCallback(&buffer[0], nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK);
+    }
     xtBytesProcessed += available;
   }
 
@@ -458,11 +483,16 @@ void DSoundStream::ProcessBuffer(bool prefill) {
       XT_VERIFY_STREAM_CALLBACK(DSERR_BUFFERLOST);
       return;
     }
-    callback(this, nullptr, &buffer[0], available / frameSize, 0.0, 0, XtFalse, S_OK, user);
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
-    SplitBufferParts(buffer, audio1, size1, audio2, size2);
-    XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2));
+    if(size2 == 0) {
+      ProcessCallback(nullptr, audio1, available / frameSize, 0.0, 0, XtFalse, DS_OK);
+    } else {
+      ProcessCallback(nullptr, &buffer[0], available / frameSize, 0.0, 0, XtFalse, DS_OK);
+      SplitBufferParts(buffer, audio1, size1, audio2, size2);
+    }
+    if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
+      return;
     xtBytesProcessed += available;
   }
 }

@@ -48,35 +48,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\src\cli-sample\Sample.cs">
-      <Link>Sample.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\src\cli-sample\CaptureDefaultInput.cs">
-      <Link>CaptureDefaultInput.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\src\cli-sample\PrintDetailedInfo.cs">
-      <Link>PrintDetailedInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\src\cli-sample\PrintDeviceNames.cs">
-      <Link>PrintDeviceNames.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\src\cli-sample\RenderDefaultOutput.cs">
-      <Link>RenderDefaultOutput.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="cli.csproj">
       <Project>{248340ea-bf5f-44e6-abf3-f96fff755b99}</Project>
       <Name>cli</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\src\cli-sample\CaptureAdvanced.cs">
+      <Link>CaptureAdvanced.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\CaptureSimple.cs">
+      <Link>CaptureSimple.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\FullDuplex.cs">
+      <Link>FullDuplex.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\PrintDetailed.cs">
+      <Link>PrintDetailed.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\PrintSimple.cs">
+      <Link>PrintSimple.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\RenderAdvanced.cs">
+      <Link>RenderAdvanced.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\RenderSimple.cs">
+      <Link>RenderSimple.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\Sample.cs">
+      <Link>Sample.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

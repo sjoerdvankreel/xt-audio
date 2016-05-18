@@ -67,17 +67,6 @@ for /L %%A in (0, 1, 1) do (
         if %%C == 0 (
           copy !confs[%%C]!\xt-cpp-driver.pdb !FT!\xt-cpp-driver.pdb
         )
-        set FT=..\..\temp\core-sample-win32-!archs[%%A]!-!confs[%%C]!-!libs[%%L]!
-        if not exist !FT! (mkdir !FT!)
-        copy !confs[%%C]!\xt-core-sample.exe !FT!\xt-core-sample.exe
-        if %%C == 0 (
-          copy !confs[%%C]!\xt-core-sample.pdb !FT!\xt-core-sample.pdb
-        )
-        if %%C == 1 (
-          set FD=..\..\dist\core-sample-win32-!archs[%%A]!-!libs[%%L]!
-          if not exist !FD! (mkdir !FD!)
-          copy !FT! !FD!
-        )
         set FT=..\..\temp\cpp-sample-win32-!archs[%%A]!-!confs[%%C]!-!libs[%%L]!
         if not exist !FT! (mkdir !FT!)
         copy !confs[%%C]!\xt-cpp-sample.exe !FT!\xt-cpp-sample.exe

@@ -77,25 +77,25 @@ namespace Xt {
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void FatalCallbackNet();
+        internal delegate void FatalCallbackWin32();
 
         [SuppressUnmanagedCodeSecurity]
-        internal delegate void FatalCallbackMono();
-
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void TraceCallbackNet(XtLevel level, string message);
-
-        [SuppressUnmanagedCodeSecurity]
-        internal delegate void TraceCallbackMono(XtLevel level, string message);
+        internal delegate void FatalCallbackLinux();
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void StreamCallbackNet(IntPtr stream, IntPtr input, IntPtr output,
+        internal delegate void TraceCallbackWin32(XtLevel level, string message);
+
+        [SuppressUnmanagedCodeSecurity]
+        internal delegate void TraceCallbackLinux(XtLevel level, string message);
+
+        [SuppressUnmanagedCodeSecurity]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        internal delegate void StreamCallbackWin32(IntPtr stream, IntPtr input, IntPtr output,
             int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
 
         [SuppressUnmanagedCodeSecurity]
-        internal delegate void StreamCallbackMono(IntPtr stream, IntPtr input, IntPtr output,
+        internal delegate void StreamCallbackLinux(IntPtr stream, IntPtr input, IntPtr output,
             int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
 
         internal static void HandleError(ulong error) {
@@ -173,6 +173,10 @@ namespace Xt {
         internal static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtStreamGetLatency(IntPtr s, [In, Out] XtLatency latency);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern IntPtr XtStreamGetFormat(IntPtr s);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern bool XtStreamIsInterleaved(IntPtr s);
 
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern XtSystem XtServiceGetSystem(IntPtr s);
@@ -221,12 +225,14 @@ namespace Xt {
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetChannelCount(IntPtr d, bool output, out int count);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern ulong XtDeviceSupportsAccess(IntPtr d, bool interleaved, out bool supports);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetBuffer(IntPtr d, ref Format format, [In, Out] XtBuffer buffer);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceSupportsFormat(IntPtr d, ref Format format, out bool supports);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, out IntPtr name);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceOpenStream(IntPtr d, ref Format format, double bufferSize, IntPtr callback, IntPtr user, out IntPtr stream);
+        internal static extern ulong XtDeviceOpenStream(IntPtr d, ref Format format, bool interleaved, double bufferSize, IntPtr callback, IntPtr user, out IntPtr stream);
     }
 }

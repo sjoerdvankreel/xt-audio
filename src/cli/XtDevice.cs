@@ -71,6 +71,12 @@ namespace Xt {
             return result;
         }
 
+        public bool SupportsAccess(bool interleaved) {
+            bool supports;
+            XtNative.HandleError(XtNative.XtDeviceSupportsAccess(d, interleaved, out supports));
+            return supports;
+        }
+
         public bool SupportsFormat(XtFormat format) {
             bool supports;
             XtNative.Format native = XtNative.Format.ToNative(format);
@@ -84,15 +90,15 @@ namespace Xt {
             return XtNative.FreeStringFromUtf8(name);
         }
 
-        public XtStream OpenStream(XtFormat format, double bufferSize, XtStreamCallback callback, object user) {
+        public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize, XtStreamCallback callback, object user) {
             IntPtr s;
-            XtStream stream = new XtStream(callback, user, format);
+            XtStream stream = new XtStream(raw, callback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);
-            stream.netCallback = new XtNative.StreamCallbackNet(stream.Callback);
-            stream.monoCallback = new XtNative.StreamCallbackMono(stream.Callback);
-            Delegate cbDelegate = Type.GetType("Mono.Runtime") != null ? (Delegate)stream.monoCallback : stream.netCallback;
+            stream.win32Callback = new XtNative.StreamCallbackWin32(stream.Callback);
+            stream.linuxCallback = new XtNative.StreamCallbackLinux(stream.Callback);
+            Delegate cbDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT ? (Delegate)stream.win32Callback : stream.linuxCallback;
             IntPtr cb = Marshal.GetFunctionPointerForDelegate(cbDelegate);
-            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, bufferSize, cb, IntPtr.Zero, out s));
+            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, interleaved, bufferSize, cb, IntPtr.Zero, out s));
             stream.Init(s);
             return stream;
         }

@@ -71,10 +71,17 @@
  *
  * <b>Audio buffers</b>
  *
+ * When using interleaved access, the data passed to the callback is a pointer to a single array of samples,
+ * and the audio buffer contains alternating samples for each channel, e.g. [LRLRLR] for a stereo stream.
+ * When using non-interleaved access, there is one audio buffer for each channel, and the data passed to the
+ * callback is a pointer to an array of pointers each pointing to the audio buffer for a single channel,
+ * e.g. [LLL][RRR] for a stereo stream.
+ *
  * The input/output buffers passed to XtStreamCallback should be cast to the appropriate type before usage.
- * For C and C++ this means unsigned char*, short*, int* or float*. For Java and C# this means byte[], short[],
- * int[] or float[]. Applications should never write to the input buffer (this is enforced in C and C++ through
- * the use of const).
+ * For C and C++ (and Java and C# in raw mode) this means unsigned char*, short*, int* or float* for interleaved
+ * buffers, or unsigned char**, short**, int** or float** for non-interleaved buffers. For Java and C# this
+ * means byte[], short[], int[] or float[] for interleaved buffers or byte[][], short[][], int[][] or float[][]
+ * for non-interleaved buffers. Applications should never write to the input buffer.
  */
 
  /**
@@ -340,8 +347,8 @@
   *
   * @ingroup library
   * @param stream The audio stream. May be used to query buffer size and latencies only, do not call control methods from the callback.
-  * @param input The buffer containing (interleaved) data captured from the device, if any. May be NULL if frames == 0 or when no input channels are present.
-  * @param output The buffer where the application writes it's (interleaved) output, if any. May be NULL if frames == 0 or when no output channels are present.
+  * @param input The buffer containing data captured from the device, if any. May be NULL if frames == 0 or when no input channels are present.
+  * @param output The buffer where the application writes it's output, if any. May be NULL if frames == 0 or when no output channels are present.
   * @param frames The number of frames in the input and/or output buffer. It will never exceed XtStreamGetFrames.
   * @param time The stream timestamp. Only available on services which have the Time capability (see XtCapabilities), otherwise 0.
   * @param position The stream position. Only available on services which have the Time capability (see XtCapabilities), otherwise 0.
@@ -349,10 +356,16 @@
   * @param error If nonzero, indicates that an error occurred on the audio thread and that the stream will be stopped after the callback returns.
   * @param user The user data passed to XtDeviceOpenStream.
   *
-  * The audio callback will normally be called from a high priority thread.
-  * To prevent glitches the callback should not call any blocking methods (using locks, doing I/O etc).
-  * The input/output buffers should be cast to the appropriate datatype for the format used to open the stream,
-  * e.g. (unsigned char*) for UInt8 and UInt24, (short*) for Int16, (int*) for Int32 and (float*) for Float32.
+  * The audio callback will normally be called from a high priority thread. To prevent glitches the
+  * callback should not call any blocking methods (using locks, doing I/O etc). The input/output
+  * buffers should be cast to the appropriate datatype for the format used to open the stream, e.g.
+  * (unsigned char*) for UInt8 and UInt24, (short*) for Int16, (int*) for Int32 and (float*) for Float32
+  * interleaved access or (unsigned char**) for UInt8 and UInt24, (short**) for Int16, (int**)
+  * for Int32 and (float**) for Float32 non-interleaved access.
+  *
+  * Note for languages that support exceptions: the stream callback should NEVER throw. 
+  * It is considered a fatal error if an exception propagates through the callback.
+  *
   * @see XtDeviceOpenStream
   * @see XtStreamStart
   * @see XtStreamGetFrames
@@ -789,6 +802,21 @@
  */
 
 /**
+ * @fn XtError XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports)
+ * @brief Indicates whether the device supports the specified access mode.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param interleaved the desired access mode. True for interleaved, false for non-interleaved.
+ * @param supports on success, indicates whether the access mode is supported.
+ *
+ * When opening a stream using an access mode that is not supported by the device, the
+ * access mode will be emulated.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceOpenStream
+ */
+
+/**
  * @fn XtError XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name)
  * @brief Gets the name of a specific input/output channel.
  * @return 0 on success, a nonzero error code otherwise.
@@ -803,11 +831,12 @@
  */
 
 /**
- * @fn XtError XtDeviceOpenStream(XtDevice* d, const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream)
+ * @fn XtError XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream)
  * @brief Opens an audio stream on the given device.
  * @return 0 on success, a nonzero error code otherwise.
  * @param d the audio device.
  * @param format the audio format (must be supported).
+ * @param interleaved open the stream for interleaved access (true) or non-interleaved access (false).
  * @param bufferSize the desired buffer size in milliseconds (will be truncated to the supported range).
  * @param callback the application-defined stream callback.
  * @param user user data passed to the stream callback (may be NULL).
@@ -817,9 +846,13 @@
  *
  * The resulting stream must be closed using XtStreamDestroy.
  *
+ * When the requested interleaving mode is not supported by the device it will be emulated.
+ *
  * This function may only be called from the main thread.
  *
  * @see XtStreamDestroy
+ * @see XtDeviceSupportsFormat
+ * @see XtDeviceSupportsAccess
  */
 
 /**
@@ -863,6 +896,28 @@
  * @param s the audio stream.
  *
  * This function may be called from any thread.
+ */
+
+/**
+ * @fn const XtFormat* XtStreamGetFormat(const XtStream* s)
+ * @brief Get stream format.
+ * @return the audio format used to open the stream.
+ * @param s the audio stream.
+ *
+ * This function may be called from any thread.
+ *
+ * @see XtDeviceOpenStream
+ */
+
+/**
+ * @fn XtBool XtStreamIsInterleaved(const XtStream* s)
+ * @brief Indicates whether the stream is interleaved.
+ * @return the access mode used to open the stream.
+ * @param s the audio stream.
+ *
+ * This function may be called from any thread.
+ *
+ * @see XtDeviceOpenStream
  */
 
 /**

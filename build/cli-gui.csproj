@@ -86,6 +86,9 @@
     <Compile Include="..\src\cli-gui\StreamCallback.cs">
       <Link>StreamCallback.cs</Link>
     </Compile>
+    <Compile Include="..\src\cli-gui\Utility.cs">
+      <Link>Utility.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="cli.csproj">

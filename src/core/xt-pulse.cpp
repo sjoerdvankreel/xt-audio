@@ -173,6 +173,11 @@ XtFault PulseDevice::GetName(char** name) const {
   return PA_OK;
 }
 
+XtFault PulseDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+  *supports = interleaved;
+  return PA_OK;
+}
+
 XtFault PulseDevice::GetMix(XtMix** mix) const {
   *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
   (*mix)->rate = XtPaDefaultRate;
@@ -218,7 +223,8 @@ XtFault PulseDevice::SupportsFormat(const XtFormat* format, XtBool* supports) co
   return PA_OK;
 }
 
-XtFault PulseDevice::OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault PulseDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
+                                XtStreamCallback callback, void* user, XtStream** stream) {
 
   uint64_t mask;
   pa_simple* client;
@@ -279,7 +285,7 @@ void PulseStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_STREAM_CALLBACK(fault);
     return;
   }
-  callback(this, inData, outData, bufferFrames, 0.0, 0, XtFalse, 0, user);
+  ProcessCallback(inData, outData, bufferFrames, 0.0, 0, XtFalse, 0);
   if(output && pa_simple_write(client.simple, &audio[0], audio.size(), &fault) < 0)
     XT_VERIFY_STREAM_CALLBACK(fault);
 }

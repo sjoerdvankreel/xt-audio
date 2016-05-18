@@ -208,8 +208,16 @@ namespace Xt {
             bool inputSupported = inputDevice == null ? false : inputDevice.SupportsFormat(inputFormat);
             inputFormatSupported.Text = inputSupported.ToString();
             XtBuffer inputBuffer = !inputSupported ? null : inputDevice.GetBuffer(inputFormat);
-            inputBufferSizes.Text = !inputSupported ? "N/A" : XtPrint.BufferToString(inputBuffer);
+            inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
+                inputBuffer.min.ToString("N1"), inputBuffer.current.ToString("N1"), inputBuffer.max.ToString("N1"));
             inputMix.Text = inputDevice == null || inputDevice.GetMix() == null ? "N/A" : inputDevice.GetMix().ToString();
+            inputInterleaved.Text = inputDevice == null
+                ? "N/A"
+                : inputDevice.SupportsAccess(true) && inputDevice.SupportsAccess(false)
+                ? "Both"
+                : inputDevice.SupportsAccess(false)
+                ? "False"
+                : "True";
             List<ChannelView> inputViews = new List<ChannelView>();
             if (inputDevice != null)
                 inputViews = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
@@ -225,8 +233,16 @@ namespace Xt {
             bool outputSupported = outputDevice == null ? false : outputDevice.SupportsFormat(outputFormat);
             outputFormatSupported.Text = outputSupported.ToString();
             XtBuffer outputBuffer = !outputSupported ? null : outputDevice.GetBuffer(outputFormat);
-            outputBufferSizes.Text = !outputSupported ? "N/A" : XtPrint.BufferToString(outputDevice.GetBuffer(outputFormat));
+            outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
+                outputBuffer.min.ToString("N1"), outputBuffer.current.ToString("N1"), outputBuffer.max.ToString("N1"));
             outputMix.Text = outputDevice == null || outputDevice.GetMix() == null ? "N/A" : outputDevice.GetMix().ToString();
+            outputInterleaved.Text = outputDevice == null
+                ? "N/A"
+                : outputDevice.SupportsAccess(true) && outputDevice.SupportsAccess(false)
+                ? "Both"
+                : outputDevice.SupportsAccess(false)
+                ? "False"
+                : "True";
             List<ChannelView> outputViews = new List<ChannelView>();
             if (outputDevice != null)
                 outputViews = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))
@@ -320,17 +336,19 @@ namespace Xt {
                 if (type == StreamType.Capture) {
 
                     captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
-                    CaptureCallback callback = new CaptureCallback(inputFormat, OnStreamError, AddMessage, captureFile);
+                    CaptureCallback callback = new CaptureCallback(OnStreamError, AddMessage, captureFile);
                     XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
-                    inputStream = inputDevice.OpenStream(inputFormat, bufferSize.Value, callback.OnCallback, "capture-user-data");
-                    callback.Init(inputStream.GetFrames());
+                    inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
+                        streamRaw.Checked, bufferSize.Value, callback.OnCallback, "capture-user-data");
+                    callback.Init(inputStream.GetFormat(), inputStream.GetFrames());
                     inputStream.Start();
 
                 } else if (type == StreamType.Render) {
 
-                    RenderCallback callback = new RenderCallback(outputFormat, OnStreamError, AddMessage);
+                    RenderCallback callback = new RenderCallback(OnStreamError, AddMessage);
                     XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    outputStream = outputDevice.OpenStream(outputFormat, bufferSize.Value, callback.OnCallback, "render-user-data");
+                    outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
+                        streamRaw.Checked, bufferSize.Value, callback.OnCallback, "render-user-data");
                     outputStream.Start();
 
                 } else if (inputDevice.SelectedItem == outputDevice.SelectedItem) {
@@ -338,9 +356,10 @@ namespace Xt {
                     XtFormat duplexFormat = inputFormat;
                     duplexFormat.outputs = outputFormat.outputs;
                     duplexFormat.outMask = outputFormat.outMask;
-                    FullDuplexCallback callback = new FullDuplexCallback(duplexFormat, OnStreamError, AddMessage);
+                    FullDuplexCallback callback = new FullDuplexCallback(OnStreamError, AddMessage);
                     XtDevice duplexDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    outputStream = duplexDevice.OpenStream(duplexFormat, bufferSize.Value, callback.OnCallback, "duplex-user-data");
+                    outputStream = duplexDevice.OpenStream(duplexFormat, streamInterleaved.Checked,
+                       streamRaw.Checked, bufferSize.Value, callback.OnCallback, "duplex-user-data");
                     outputStream.Start();
 
                 } else {
@@ -348,10 +367,14 @@ namespace Xt {
                     ConcurrentRingBuffer buffer = new ConcurrentRingBuffer();
                     XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
                     XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    PlayThroughCaptureCallback inputCallback = new PlayThroughCaptureCallback(inputFormat, OnStreamError, AddMessage, buffer);
-                    PlayThroughRenderCallback outputCallback = new PlayThroughRenderCallback(outputFormat, OnStreamError, AddMessage, buffer);
-                    inputStream = inputDevice.OpenStream(inputFormat, bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
-                    outputStream = outputDevice.OpenStream(outputFormat, bufferSize.Value, outputCallback.OnCallback, "render-user-data");
+                    PlayThroughCaptureCallback inputCallback = new PlayThroughCaptureCallback(OnStreamError, AddMessage, buffer);
+                    PlayThroughRenderCallback outputCallback = new PlayThroughRenderCallback(OnStreamError, AddMessage, buffer);
+                    inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
+                       streamRaw.Checked, bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
+                    outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
+                       streamRaw.Checked, bufferSize.Value, outputCallback.OnCallback, "render-user-data");
+                    inputCallback.Init(inputFormat, inputStream.GetFrames());
+                    outputCallback.Init(outputFormat, outputStream.GetFrames());
                     inputStream.Start();
                     outputStream.Start();
                 }

@@ -314,9 +314,11 @@ XT_API XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtMix** mix);
 XT_API XtError XT_CALL XtDeviceGetName(const XtDevice* d, char** name);
 XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count);
 XT_API XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer);
+XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name);
-XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream);
+XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
+                                          XtStreamCallback callback, void* user, XtStream** stream);
 /** @} */
 
 /** 
@@ -327,6 +329,8 @@ XT_API void XT_CALL XtStreamDestroy(XtStream* s);
 XT_API XtError XT_CALL XtStreamStop(XtStream* s);
 XT_API XtError XT_CALL XtStreamStart(XtStream* s);
 XT_API XtSystem XT_CALL XtStreamGetSystem(const XtStream* s);
+XT_API XtBool XT_CALL XtStreamIsInterleaved(const XtStream* s);
+XT_API const XtFormat* XT_CALL XtStreamGetFormat(const XtStream* s);
 XT_API XtError XT_CALL XtStreamGetFrames(const XtStream* s, int32_t* frames);
 XT_API XtError XT_CALL XtStreamGetLatency(const XtStream* s, XtLatency* latency);
 /** @} */

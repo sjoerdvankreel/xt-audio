@@ -46,6 +46,8 @@
             System.Windows.Forms.Label label19;
             System.Windows.Forms.Label label9;
             System.Windows.Forms.Label label14;
+            System.Windows.Forms.Label label15;
+            System.Windows.Forms.Label label20;
             this.messages = new System.Windows.Forms.TextBox();
             this.isWin32 = new System.Windows.Forms.Label();
             this.version = new System.Windows.Forms.Label();
@@ -73,10 +75,14 @@
             this.start = new System.Windows.Forms.Button();
             this.stop = new System.Windows.Forms.Button();
             this.panel = new System.Windows.Forms.Panel();
+            this.outputInterleaved = new System.Windows.Forms.Label();
+            this.inputInterleaved = new System.Windows.Forms.Label();
             this.x64 = new System.Windows.Forms.Label();
             this.debug = new System.Windows.Forms.Label();
             this.bufferSize = new System.Windows.Forms.TrackBar();
             this.streamType = new System.Windows.Forms.ComboBox();
+            this.streamInterleaved = new System.Windows.Forms.CheckBox();
+            this.streamRaw = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -95,6 +101,8 @@
             label19 = new System.Windows.Forms.Label();
             label9 = new System.Windows.Forms.Label();
             label14 = new System.Windows.Forms.Label();
+            label15 = new System.Windows.Forms.Label();
+            label20 = new System.Windows.Forms.Label();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bufferSize)).BeginInit();
             this.SuspendLayout();
@@ -265,6 +273,24 @@
             label14.TabIndex = 66;
             label14.Text = "Buffer size (ms):";
             // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new System.Drawing.Point(306, 273);
+            label15.Name = "label15";
+            label15.Size = new System.Drawing.Size(66, 13);
+            label15.TabIndex = 63;
+            label15.Text = "Interleaved: ";
+            // 
+            // label20
+            // 
+            label20.AutoSize = true;
+            label20.Location = new System.Drawing.Point(306, 432);
+            label20.Name = "label20";
+            label20.Size = new System.Drawing.Size(66, 13);
+            label20.TabIndex = 64;
+            label20.Text = "Interleaved: ";
+            // 
             // messages
             // 
             this.messages.Location = new System.Drawing.Point(447, 12);
@@ -272,7 +298,7 @@
             this.messages.Name = "messages";
             this.messages.ReadOnly = true;
             this.messages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messages.Size = new System.Drawing.Size(325, 457);
+            this.messages.Size = new System.Drawing.Size(325, 434);
             this.messages.TabIndex = 0;
             // 
             // isWin32
@@ -412,9 +438,9 @@
             this.inputBufferSizes.AutoSize = true;
             this.inputBufferSizes.Location = new System.Drawing.Point(98, 273);
             this.inputBufferSizes.Name = "inputBufferSizes";
-            this.inputBufferSizes.Size = new System.Drawing.Size(225, 13);
+            this.inputBufferSizes.Size = new System.Drawing.Size(98, 13);
             this.inputBufferSizes.TabIndex = 45;
-            this.inputBufferSizes.Text = "Min: 3.0 ms, Max: 2000.0 ms, Current: 20.0 ms";
+            this.inputBufferSizes.Text = "3.0 / 20.0 / 2000.0";
             // 
             // inputControlPanel
             // 
@@ -441,9 +467,9 @@
             this.outputBufferSizes.AutoSize = true;
             this.outputBufferSizes.Location = new System.Drawing.Point(98, 432);
             this.outputBufferSizes.Name = "outputBufferSizes";
-            this.outputBufferSizes.Size = new System.Drawing.Size(225, 13);
+            this.outputBufferSizes.Size = new System.Drawing.Size(98, 13);
             this.outputBufferSizes.TabIndex = 54;
-            this.outputBufferSizes.Text = "Min: 3.0 ms, Max: 2000.0 ms, Current: 20.0 ms";
+            this.outputBufferSizes.Text = "3.0 / 20.0 / 2000.0";
             // 
             // outputMix
             // 
@@ -512,6 +538,10 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.outputInterleaved);
+            this.panel.Controls.Add(this.inputInterleaved);
+            this.panel.Controls.Add(label20);
+            this.panel.Controls.Add(label15);
             this.panel.Controls.Add(this.x64);
             this.panel.Controls.Add(this.debug);
             this.panel.Controls.Add(this.isWin32);
@@ -559,6 +589,24 @@
             this.panel.Size = new System.Drawing.Size(429, 548);
             this.panel.TabIndex = 64;
             // 
+            // outputInterleaved
+            // 
+            this.outputInterleaved.AutoSize = true;
+            this.outputInterleaved.Location = new System.Drawing.Point(378, 432);
+            this.outputInterleaved.Name = "outputInterleaved";
+            this.outputInterleaved.Size = new System.Drawing.Size(29, 13);
+            this.outputInterleaved.TabIndex = 66;
+            this.outputInterleaved.Text = "Both";
+            // 
+            // inputInterleaved
+            // 
+            this.inputInterleaved.AutoSize = true;
+            this.inputInterleaved.Location = new System.Drawing.Point(378, 273);
+            this.inputInterleaved.Name = "inputInterleaved";
+            this.inputInterleaved.Size = new System.Drawing.Size(29, 13);
+            this.inputInterleaved.TabIndex = 65;
+            this.inputInterleaved.Text = "Both";
+            // 
             // x64
             // 
             this.x64.AutoSize = true;
@@ -594,9 +642,33 @@
             this.streamType.Size = new System.Drawing.Size(121, 21);
             this.streamType.TabIndex = 67;
             // 
+            // streamInterleaved
+            // 
+            this.streamInterleaved.AutoSize = true;
+            this.streamInterleaved.Checked = true;
+            this.streamInterleaved.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.streamInterleaved.Location = new System.Drawing.Point(450, 452);
+            this.streamInterleaved.Name = "streamInterleaved";
+            this.streamInterleaved.Size = new System.Drawing.Size(79, 17);
+            this.streamInterleaved.TabIndex = 68;
+            this.streamInterleaved.Text = "Interleaved";
+            this.streamInterleaved.UseVisualStyleBackColor = true;
+            // 
+            // streamRaw
+            // 
+            this.streamRaw.AutoSize = true;
+            this.streamRaw.Location = new System.Drawing.Point(535, 452);
+            this.streamRaw.Name = "streamRaw";
+            this.streamRaw.Size = new System.Drawing.Size(48, 17);
+            this.streamRaw.TabIndex = 69;
+            this.streamRaw.Text = "Raw";
+            this.streamRaw.UseVisualStyleBackColor = true;
+            // 
             // XtGui
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.streamRaw);
+            this.Controls.Add(this.streamInterleaved);
             this.Controls.Add(this.streamType);
             this.Controls.Add(label14);
             this.Controls.Add(this.bufferSize);
@@ -651,5 +723,9 @@
         private System.Windows.Forms.Label x64;
         private System.Windows.Forms.Label debug;
         private System.Windows.Forms.ComboBox streamType;
+        private System.Windows.Forms.Label outputInterleaved;
+        private System.Windows.Forms.Label inputInterleaved;
+        private System.Windows.Forms.CheckBox streamInterleaved;
+        private System.Windows.Forms.CheckBox streamRaw;
     }
 }

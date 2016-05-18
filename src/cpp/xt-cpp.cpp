@@ -86,7 +86,7 @@ System Exception::GetSystem(uint64_t error) {
   return static_cast<System>(XtErrorGetSystem(error));
 }
 
-// ---- stream ----
+// ---- ostream ----
 
 std::ostream& operator<<(std::ostream& os, Level level) {
   return os << Print::LevelToString(level);
@@ -318,6 +318,12 @@ std::unique_ptr<Mix> Device::GetMix() const {
   return result;
 }
 
+bool Device::SupportsAccess(bool interleaved) const {
+  XtBool supports;
+  HandleError(XtDeviceSupportsAccess(d, interleaved, &supports));
+  return supports != XtFalse;    
+}
+
 std::string Device::GetChannelName(bool output, int32_t index) const {
   char* name;
   HandleError(XtDeviceGetChannelName(d, output, index, &name)); 
@@ -336,11 +342,12 @@ Buffer Device::GetBuffer(const Format& format) const {
   return buffer;
 }
 
-std::unique_ptr<Stream> Device::OpenStream(const Format& format, double bufferSize, StreamCallback callback, void* user) {
+std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleaved, 
+                                           double bufferSize, StreamCallback callback, void* user) {
   XtStream* stream; 
   auto f = reinterpret_cast<const XtFormat*>(&format);
   std::unique_ptr<Stream> result(new Stream(callback, user));
-  HandleError(XtDeviceOpenStream(d, f, bufferSize, &StreamCallbackForwarder::Forward, result.get(), &stream));
+  HandleError(XtDeviceOpenStream(d, f, interleaved, bufferSize, &StreamCallbackForwarder::Forward, result.get(), &stream));
   result->s = stream;
   return result;
 }
@@ -362,6 +369,10 @@ void Stream::Start() {
   HandleError(XtStreamStart(s));
 }
 
+bool Stream::IsInterleaved() const { 
+  return XtStreamIsInterleaved(s) != XtFalse;
+}
+
 int32_t Stream::GetFrames() const {
   int32_t frames;
   HandleError(XtStreamGetFrames(s, &frames));
@@ -370,6 +381,10 @@ int32_t Stream::GetFrames() const {
 
 System Stream::GetSystem() const {
   return static_cast<System>(XtStreamGetSystem(s)); 
+}
+
+const Format& Stream::GetFormat() const {
+  return *reinterpret_cast<const Format*>(XtStreamGetFormat(s));
 }
 
 Latency Stream::GetLatency() const {

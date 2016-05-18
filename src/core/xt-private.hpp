@@ -3,6 +3,7 @@
 
 #include "xt-audio.h"
 #include <string>
+#include <vector>
 #include <cstring>
 #include <cstdarg>
 
@@ -71,16 +72,18 @@ struct name ## Service: public XtService {                           \
 static const name ## Service Service ## name;                        \
 const XtService* XtiService ## name = &Service ## name
 
-#define XT_IMPLEMENT_DEVICE(name)                                          \
-  XtFault ShowControlPanel();                                              \
-  XtFault GetMix(XtMix** mix) const;                                       \
-  XtFault GetName(char** name) const;                                      \
-  XtSystem GetSystem() const { return XtSystem ## name; }                  \
-  XtFault GetChannelCount(XtBool output, int32_t* count) const;            \
-  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const;       \
-  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const;  \
-  XtFault GetChannelName(XtBool output, int32_t index, char** name) const; \
-  XtFault OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream)
+#define XT_IMPLEMENT_DEVICE(name)                                                   \
+  XtFault ShowControlPanel();                                                       \
+  XtFault GetMix(XtMix** mix) const;                                                \
+  XtFault GetName(char** name) const;                                               \
+  XtSystem GetSystem() const { return XtSystem ## name; }                           \
+  XtFault GetChannelCount(XtBool output, int32_t* count) const;                     \
+  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const;                \
+  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const;               \
+  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const;           \
+  XtFault GetChannelName(XtBool output, int32_t index, char** name) const;          \
+  XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, \
+                     XtStreamCallback callback, void* user, XtStream** stream)
 
 // ---- internal ----
 
@@ -100,18 +103,6 @@ extern XtFatalCallback XtiFatalCallback;
 
 // ---- forward ----
 
-struct XtStream {
-  void* user;
-  XtFormat format;
-  XtStreamCallback callback;
-  virtual ~XtStream() {};
-  virtual XtFault Stop() = 0;
-  virtual XtFault Start() = 0;
-  virtual XtSystem GetSystem() const = 0;
-  virtual XtFault GetFrames(int32_t* frames) const = 0;
-  virtual XtFault GetLatency(XtLatency* latency) const = 0;
-};
-
 struct XtService {
   virtual ~XtService() {};
   virtual XtSystem GetSystem() const = 0;
@@ -125,6 +116,31 @@ struct XtService {
   virtual XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const = 0;
 };
 
+struct XtStream {
+  void* user;
+  XtFormat format;
+  int32_t sampleSize;
+  XtBool interleaved;
+  XtBool canInterleaved;
+  XtBool canNonInterleaved;
+  XtStreamCallback userCallback;
+  std::vector<char> inputInterleaved;
+  std::vector<char> outputInterleaved;
+  std::vector<void*> inputNonInterleaved;
+  std::vector<void*> outputNonInterleaved;
+  std::vector<std::vector<char>> inputChannelsNonInterleaved;
+  std::vector<std::vector<char>> outputChannelsNonInterleaved;
+
+  virtual ~XtStream() {};
+  virtual XtFault Stop() = 0;
+  virtual XtFault Start() = 0;
+  virtual XtSystem GetSystem() const = 0;
+  virtual XtFault GetFrames(int32_t* frames) const = 0;
+  virtual XtFault GetLatency(XtLatency* latency) const = 0;
+  void ProcessCallback(void* input, void* output, int32_t frames, double time,
+                       uint64_t position, XtBool timeValid, XtError error);
+};
+
 struct XtDevice {
   virtual ~XtDevice() {};
   virtual XtFault ShowControlPanel() = 0;
@@ -133,9 +149,11 @@ struct XtDevice {
   virtual XtFault GetName(char** name) const = 0;
   virtual XtFault GetChannelCount(XtBool output, int32_t* count) const = 0;
   virtual XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const = 0;
+  virtual XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const = 0;
   virtual XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const = 0;
   virtual XtFault GetChannelName(XtBool output, int32_t index, char** name) const = 0;
-  virtual XtFault OpenStream(const XtFormat* format, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream) = 0;
+  virtual XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
+                             XtStreamCallback callback, void* user, XtStream** stream) = 0;
 };
 
 // ---- internal ----
@@ -153,7 +171,5 @@ bool XtiValidateFormat(XtSystem system, const XtFormat& format);
 void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, ...);
 void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, va_list arg);
-void XtiInterleave(void* dest, void* source, int32_t frames, int32_t channels, int32_t sampleSize, int32_t channel);
-void XtiDeinterleave(void* dest, void* source, int32_t frames, int32_t channels, int32_t sampleSize, int32_t channel);
 
 #endif // _XT_PRIVATE_HPP
