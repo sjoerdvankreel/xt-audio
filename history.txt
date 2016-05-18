@@ -1,0 +1,8 @@
+May 18, 2016 - V1.01.
+* Support ALSA in mmapped mode.
+* Support non-interleaved streaming.
+* Support raw buffers in Java/.NET APIs.
+* Allow access to the audio format directly from the stream.
+
+May 11, 2016 - V1.0.
+* Initial version.
