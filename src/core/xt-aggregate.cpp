@@ -200,6 +200,9 @@ XtSystem XtAggregate::GetSystem() const {
 }
 
 XtFault XtAggregate::Stop() {
+
+  // TODO: wait untill the callback has returned.
+
   XtFault fault;
   XtFault result = 0;
   for(size_t i = 0; i < streams.size(); i++)
