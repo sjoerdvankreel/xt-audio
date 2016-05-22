@@ -390,7 +390,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
     if(master == devices[i])
       result->masterIndex = i;
     thisCallback = master == devices[i]? XtiMasterCallback: XtiSlaveCallback;
-    if((error = XtDeviceOpenStream(devices[i], &format, interleaved, bufferSizes[i], thisCallback, &result->contexts[i], &thisStream)) != 0)
+    if((error = XtDeviceOpenStream(devices[i], &thisFormat, interleaved, bufferSizes[i], thisCallback, &result->contexts[i], &thisStream)) != 0)
       return error;
     result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
     if((error = XtStreamGetFrames(thisStream, &thisFrames)) != 0)

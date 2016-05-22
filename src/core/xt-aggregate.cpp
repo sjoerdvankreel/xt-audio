@@ -357,7 +357,7 @@ void XT_CALLBACK XtiMasterCallback(
     thisFormat = &aggregate->streams[i]->format;
     if(thisFormat->outputs > 0) {
       for(c = 0; c < thisFormat->outputs; c++)
-        Weave(ringOutput, appOutput, interleaved, thisFormat->inputs, format->outputs, totalChannels + c, c, frames, sampleSize);
+        Weave(ringOutput, appOutput, interleaved, thisFormat->outputs, format->outputs, totalChannels + c, c, frames, sampleSize);
       totalChannels += thisFormat->inputs;
       thisOutRing->Lock();
       if((written = thisOutRing->Write(ringOutput, frames)) < frames)
