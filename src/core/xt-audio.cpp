@@ -328,8 +328,9 @@ XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, Xt
 }
 
 XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, 
-                                         const double* bufferSizes, int32_t count, const XtMix* mix, XtBool interleaved, 
-                                         XtDevice* master, XtStreamCallback callback, void* user, XtStream** stream) {
+                                         const double* bufferSizes, int32_t count, const XtMix* mix,
+                                         XtBool interleaved, XtDevice* master, XtStreamCallback streamCallback, 
+                                         XtXRunCallback xRunCallback, void* user, XtStream** stream) {
 
   XT_ASSERT(count > 0);
   XT_ASSERT(s != nullptr);
@@ -338,9 +339,9 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   XT_ASSERT(master != nullptr);
   XT_ASSERT(devices != nullptr);
   XT_ASSERT(channels != nullptr);
-  XT_ASSERT(callback != nullptr);
   XT_ASSERT(bufferSizes != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(streamCallback != nullptr);
 
   const char* fmt = "Opening aggregate: service %s, count %d...";
   XT_TRACE(XtLevelInfo, fmt, XtServiceGetName(s), count);
@@ -352,10 +353,11 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   result->user = user;
   result->system = system;
   result->device = nullptr;
-  result->userCallback = callback;
   result->sampleSize = attrs.size;
   result->interleaved = interleaved;
+  result->xRunCallback = xRunCallback;
   result->canInterleaved = interleaved;
+  result->streamCallback = streamCallback;
   result->canNonInterleaved = !interleaved;
   result->inputRings = std::vector<XtRingBuffer>(count, XtRingBuffer());
   result->outputRings = std::vector<XtRingBuffer>(count, XtRingBuffer());
@@ -562,10 +564,13 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
     return XtiCreateError(d->GetSystem(), fault);
   }
 
+  /* TODO support xrun on regular streams */
+
   (*stream)->device = d;
   (*stream)->user = user;
   (*stream)->format = *format;
-  (*stream)->userCallback = callback;
+  (*stream)->xRunCallback = nullptr;
+  (*stream)->streamCallback = callback;
   (*stream)->interleaved = interleaved;
   (*stream)->sampleSize = attributes.size;
   (*stream)->canInterleaved = canInterleaved;

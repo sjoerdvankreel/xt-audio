@@ -265,6 +265,8 @@ typedef struct XtAttributes XtAttributes;
 
 typedef void (XT_CALLBACK *XtFatalCallback)(void);
 typedef void (XT_CALLBACK *XtTraceCallback)(XtLevel level, const char* message);
+typedef void (XT_CALLBACK *XtXRunCallback)(const XtStream* stream,
+  XtBool output, XtBool overflow, int32_t frames);
 typedef void (XT_CALLBACK *XtStreamCallback)(
   const XtStream* stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, XtBool timeValid, XtError error, void* user);
@@ -326,8 +328,9 @@ XT_API XtError XT_CALL XtServiceGetDeviceCount(const XtService* s, int32_t* coun
 XT_API XtError XT_CALL XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device);
 XT_API XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, XtDevice** device);
 XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, 
-                                                const double* bufferSizes, int32_t count, const XtMix* mix, XtBool interleaved, 
-                                                XtDevice* master, XtStreamCallback callback, void* user, XtStream** stream); 
+                                                const double* bufferSizes, int32_t count, const XtMix* mix,
+                                                XtBool interleaved, XtDevice* master, XtStreamCallback streamCallback, 
+                                                XtXRunCallback xRunCallback, void* user, XtStream** stream); 
 /** @} */
 
 /** 

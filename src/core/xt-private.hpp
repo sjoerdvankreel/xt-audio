@@ -161,7 +161,8 @@ struct XtStream {
   XtBool interleaved;
   XtBool canInterleaved;
   XtBool canNonInterleaved;
-  XtStreamCallback userCallback;
+  XtXRunCallback xRunCallback;
+  XtStreamCallback streamCallback;
   XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
