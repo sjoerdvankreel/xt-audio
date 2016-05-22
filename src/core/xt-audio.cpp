@@ -372,6 +372,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   XtFormat thisFormat = { 0 };
   XtStreamCallback thisCallback;
 
+  format.mix = *mix;
   for(int32_t i = 0; i < count; i++) {
     thisFormat.mix = *mix;
     thisFormat.inputs = channels[i].inputs;
