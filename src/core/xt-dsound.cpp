@@ -26,7 +26,7 @@
 
 static const int XtDsWakeUpsPerBuffer = 8;
 static const double XtDsMinBufferMs = 100.0;
-static const double XtDsMaxBufferMs = 2000.0;
+static const double XtDsMaxBufferMs = 5000.0;
 static const double XtDsDefaultBufferMs = 500.0;
 
 // ---- forward ----
