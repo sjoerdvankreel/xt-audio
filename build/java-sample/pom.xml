@@ -11,7 +11,7 @@
     </properties>
     <dependencies>
         <dependency>
-            <version>1.0.0</version>
+            <version>1.0.2</version>
             <groupId>com.xt-audio.xt</groupId>
             <artifactId>com.xt-audio.xt</artifactId>
         </dependency>
