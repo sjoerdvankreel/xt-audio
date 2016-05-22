@@ -163,6 +163,7 @@ namespace Xt {
 
         private readonly bool raw;
         private readonly object user;
+        private readonly XtDevice device;
         private readonly XtStreamCallback callback;
 
         private IntPtr s;
@@ -173,14 +174,19 @@ namespace Xt {
         internal XtNative.StreamCallbackWin32 win32Callback;
         internal XtNative.StreamCallbackLinux linuxCallback;
 
-        internal XtStream(bool raw, XtStreamCallback callback, object user) {
+        internal XtStream(XtDevice device, bool raw, XtStreamCallback callback, object user) {
             this.raw = raw;
             this.user = user;
+            this.device = device;
             this.callback = callback;
         }
 
         public bool IsRaw() {
             return raw;
+        }
+
+        public XtDevice GetDevice() {
+            return device;
         }
 
         public XtSystem GetSystem() {

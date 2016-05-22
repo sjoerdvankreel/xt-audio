@@ -351,6 +351,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   std::unique_ptr<XtAggregate> result(new XtAggregate);
   result->user = user;
   result->system = system;
+  result->device = nullptr;
   result->userCallback = callback;
   result->sampleSize = attrs.size;
   result->interleaved = interleaved;
@@ -561,6 +562,7 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
     return XtiCreateError(d->GetSystem(), fault);
   }
 
+  (*stream)->device = d;
   (*stream)->user = user;
   (*stream)->format = *format;
   (*stream)->userCallback = callback;
@@ -611,6 +613,11 @@ XtError XT_CALL XtStreamStart(XtStream* s) {
 XtSystem XT_CALL XtStreamGetSystem(const XtStream* s) {
   XT_ASSERT(s != nullptr);
   return s->GetSystem();
+}
+
+XtDevice* XT_CALL XtStreamGetDevice(const XtStream* s) {
+  XT_ASSERT(s != nullptr);
+  return s->device;
 }
 
 XtBool XT_CALL XtStreamIsInterleaved(const XtStream* s) {

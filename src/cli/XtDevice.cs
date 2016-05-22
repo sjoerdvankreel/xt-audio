@@ -92,7 +92,7 @@ namespace Xt {
 
         public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize, XtStreamCallback callback, object user) {
             IntPtr s;
-            XtStream stream = new XtStream(raw, callback, user);
+            XtStream stream = new XtStream(this, raw, callback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);
             stream.win32Callback = new XtNative.StreamCallbackWin32(stream.Callback);
             stream.linuxCallback = new XtNative.StreamCallbackLinux(stream.Callback);

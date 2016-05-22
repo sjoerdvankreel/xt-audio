@@ -156,6 +156,7 @@ struct XtService {
 struct XtStream {
   void* user;
   XtFormat format;
+  XtDevice* device;
   int32_t sampleSize;
   XtBool interleaved;
   XtBool canInterleaved;

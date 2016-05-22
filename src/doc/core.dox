@@ -930,6 +930,18 @@
  */
 
 /**
+ * @fn XtDevice* XtStreamGetDevice(const XtStream* s)
+ * @brief Get stream device.
+ * @return the device used to open the stream, or null for aggregate streams.
+ * @param s the audio stream.
+ *
+ * This function may be called from any thread.
+ *
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ */
+
+/**
  * @fn XtBool XtStreamIsInterleaved(const XtStream* s)
  * @brief Indicates whether the stream is interleaved.
  * @return the access mode used to open the stream.
