@@ -152,25 +152,6 @@ static snd_pcm_format_t ToAlsaSample(XtSample sample) {
   }
 }
 
-static bool AnyAccessMaskAvailable(char* device, snd_pcm_stream_t stream) {
-
-  snd_pcm_t* pcm;
-  AlsaLogDisabler disabler;
-  snd_pcm_hw_params_t* hwParams;
- 	snd_pcm_access_mask_t* accessMask;
-  snd_pcm_hw_params_alloca(&hwParams);
-  snd_pcm_access_mask_alloca(&accessMask);
-
-  if(snd_pcm_open(&pcm, device, stream, 0) < 0)
-    return false;
-  AlsaPcm alsaPcm(pcm);
-  if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
-    return false;
-  if(snd_pcm_hw_params_get_access_mask(hwParams, accessMask) < 0)
-    return false;
-  return !snd_pcm_access_mask_empty(accessMask);
-}
-
 static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
   AlsaHints hints;
   std::vector<AlsaDeviceInfo> result;
@@ -183,8 +164,7 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
       continue;
 
     if(strstr(name.hint, "dmix") != name.hint 
-      && (ioid.hint == nullptr || !strcmp("Input", ioid.hint)) 
-      && AnyAccessMaskAvailable(name.hint, SND_PCM_STREAM_CAPTURE)) {
+      && (ioid.hint == nullptr || !strcmp("Input", ioid.hint))) {
 
       AlsaDeviceInfo device = AlsaDeviceInfo();
       device.name = name.hint;
@@ -197,8 +177,7 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
     }
 
     if(strstr(name.hint, "dsnoop") != name.hint 
-      && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))
-      && AnyAccessMaskAvailable(name.hint, SND_PCM_STREAM_PLAYBACK)) {
+      && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))) {
 
       AlsaDeviceInfo device = AlsaDeviceInfo();
       device.name = name.hint;
