@@ -83,6 +83,7 @@
             this.streamType = new System.Windows.Forms.ComboBox();
             this.streamInterleaved = new System.Windows.Forms.CheckBox();
             this.streamRaw = new System.Windows.Forms.CheckBox();
+            this.outputMaster = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -664,9 +665,22 @@
             this.streamRaw.Text = "Raw";
             this.streamRaw.UseVisualStyleBackColor = true;
             // 
+            // outputMaster
+            // 
+            this.outputMaster.AutoSize = true;
+            this.outputMaster.Checked = true;
+            this.outputMaster.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.outputMaster.Location = new System.Drawing.Point(589, 452);
+            this.outputMaster.Name = "outputMaster";
+            this.outputMaster.Size = new System.Drawing.Size(92, 17);
+            this.outputMaster.TabIndex = 70;
+            this.outputMaster.Text = "Output master";
+            this.outputMaster.UseVisualStyleBackColor = true;
+            // 
             // XtGui
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.outputMaster);
             this.Controls.Add(this.streamRaw);
             this.Controls.Add(this.streamInterleaved);
             this.Controls.Add(this.streamType);
@@ -727,5 +741,6 @@
         private System.Windows.Forms.Label inputInterleaved;
         private System.Windows.Forms.CheckBox streamInterleaved;
         private System.Windows.Forms.CheckBox streamRaw;
+        private System.Windows.Forms.CheckBox outputMaster;
     }
 }

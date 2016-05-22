@@ -4,7 +4,7 @@ namespace Xt {
 
     class FullDuplexCallback : StreamCallback {
 
-        internal FullDuplexCallback(Action<string> onError, Action<string> onMessage) :
+        internal FullDuplexCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
             base("FullDuplex", onError, onMessage) {
         }
 

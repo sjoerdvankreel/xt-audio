@@ -54,17 +54,8 @@
     <Compile Include="..\src\cli-gui\CaptureCallback.cs">
       <Link>CaptureCallback.cs</Link>
     </Compile>
-    <Compile Include="..\src\cli-gui\ConcurrentRingBuffer.cs">
-      <Link>ConcurrentRingBuffer.cs</Link>
-    </Compile>
     <Compile Include="..\src\cli-gui\FullDuplexCallback.cs">
       <Link>FullDuplexCallback.cs</Link>
-    </Compile>
-    <Compile Include="..\src\cli-gui\PlayThroughCaptureCallback.cs">
-      <Link>PlayThroughCaptureCallback.cs</Link>
-    </Compile>
-    <Compile Include="..\src\cli-gui\PlayThroughRenderCallback.cs">
-      <Link>PlayThroughRenderCallback.cs</Link>
     </Compile>
     <Compile Include="..\src\cli-gui\RenderCallback.cs">
       <Link>RenderCallback.cs</Link>
@@ -91,6 +82,9 @@
     </Compile>
     <Compile Include="..\src\cli-gui\Utility.cs">
       <Link>Utility.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-gui\XRunCallback.cs">
+      <Link>XRunCallback.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

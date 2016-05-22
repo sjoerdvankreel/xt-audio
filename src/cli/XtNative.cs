@@ -201,11 +201,10 @@ namespace Xt {
         internal static extern ulong XtServiceOpenDefaultDevice(IntPtr s, bool output, out IntPtr device);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtServiceAggregateStream(IntPtr s,
-            [MarshalAs(UnmanagedType.LPArray)] IntPtr[] devices,
-            [MarshalAs(UnmanagedType.LPArray)] XtChannels[] channels,
-            [MarshalAs(UnmanagedType.LPArray)] double[] bufferSizes,
-            int count, XtMix mix, bool interleaved, IntPtr master,
-            IntPtr streamCallback, IntPtr xRunCallback, IntPtr user, out IntPtr stream);
+            [MarshalAs(UnmanagedType.LPArray)] IntPtr[] devices, IntPtr channels,
+            [MarshalAs(UnmanagedType.LPArray)] double[] bufferSizes, int count,
+            XtMix mix, bool interleaved, IntPtr master, IntPtr streamCallback,
+            IntPtr xRunCallback, IntPtr user, out IntPtr stream);
 
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern bool XtAudioIsWin32();

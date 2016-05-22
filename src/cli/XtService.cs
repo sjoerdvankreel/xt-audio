@@ -61,11 +61,12 @@ namespace Xt {
             return d == IntPtr.Zero ? null : new XtDevice(d);
         }
 
-        public XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels, 
+        public unsafe XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels,
             double[] bufferSizes, int count, XtMix mix, bool interleaved, bool raw,
             XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
 
             IntPtr str;
+            IntPtr channelsPtr = IntPtr.Zero;
             IntPtr xRunCallbackPtr = IntPtr.Zero;
             IntPtr[] ds = devices.Select(d => d.d).ToArray();
             XtStream stream = new XtStream(null, raw, streamCallback, xRunCallback, user);
@@ -83,8 +84,18 @@ namespace Xt {
                     : stream.linuxXRunCallback;
                 xRunCallbackPtr = Marshal.GetFunctionPointerForDelegate(xRunCallbackDelegate);
             }
-            XtNative.HandleError(XtNative.XtServiceAggregateStream(s, ds, channels, bufferSizes, count, 
-                mix, interleaved, master.d, streamCallbackPtr, xRunCallbackPtr, IntPtr.Zero, out str));
+
+            try {
+                int size = Marshal.SizeOf(typeof(XtChannels));
+                channelsPtr = Marshal.AllocHGlobal(count * size);
+                for (int i = 0; i < count; i++)
+                    Marshal.StructureToPtr(channels[i], new IntPtr((byte*)channelsPtr + i * size), false);
+                XtNative.HandleError(XtNative.XtServiceAggregateStream(s, ds, channelsPtr, bufferSizes, count,
+                    mix, interleaved, master.d, streamCallbackPtr, xRunCallbackPtr, IntPtr.Zero, out str));
+            } finally {
+                if (channelsPtr != IntPtr.Zero)
+                    Marshal.FreeHGlobal(channelsPtr);
+            }
             stream.Init(str);
             return stream;
         }

@@ -11,8 +11,8 @@ namespace Xt {
         private Array interleavedBuffer;
         private readonly FileStream stream;
 
-        internal CaptureCallback(Action<string> onError,
-            Action<string> onMessage, FileStream stream) :
+        internal CaptureCallback(Action<Func<string>> onError,
+            Action<Func<string>> onMessage, FileStream stream) :
             base("Capture", onError, onMessage) {
             this.stream = stream;
         }
