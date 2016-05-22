@@ -208,6 +208,29 @@ struct XtFormat {
   uint64_t outMask;
 };
 
+struct XtChannels {
+  /** @brief Input channel count. 
+    *
+    * @see XtFormat::inputs.
+    */
+  int32_t inputs;
+  /** @brief Input channel mask. 
+    *
+    * @see XtFormat::inMask.
+    */
+  uint64_t inMask;
+  /** @brief Output channel count. 
+    *
+    * @see XtFormat::outputs.
+    */
+  int32_t outputs;
+  /** @brief Output channel mask. 
+    *
+    * @see XtFormat::outMask.
+    */
+  uint64_t outMask;
+};
+
 struct XtBuffer {
   /** @brief Minimum size in milliseconds. */
   double min;
@@ -271,6 +294,7 @@ XT_API char* XT_CALL XtPrintMixToString(const XtMix* mix);
 XT_API char* XT_CALL XtPrintFormatToString(const XtFormat* format);
 XT_API char* XT_CALL XtPrintBufferToString(const XtBuffer* buffer);
 XT_API char* XT_CALL XtPrintLatencyToString(const XtLatency* latency);
+XT_API char* XT_CALL XtPrintChannelsToString(const XtChannels* channels);
 XT_API char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities);
 XT_API char* XT_CALL XtPrintAttributesToString(const XtAttributes* attributes);
 /** @} */

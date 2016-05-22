@@ -173,6 +173,7 @@ final class XtNative {
     static native Pointer XtPrintFormatToString(Format format);
     static native Pointer XtPrintBufferToString(XtBuffer buffer);
     static native Pointer XtPrintLatencyToString(XtLatency latency);
+    static native Pointer XtPrintChannelsToString(XtChannels channels);
     static native Pointer XtPrintCapabilitiesToString(int capabilities);
     static native Pointer XtPrintAttributesToString(XtAttributes attributes);
 

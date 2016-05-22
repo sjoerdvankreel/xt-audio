@@ -120,6 +120,19 @@ struct Format final {
   outputs(outputs), outMask(outMask){}
 };
 
+struct Channels final {
+  int32_t inputs;
+  uint64_t inMask;
+  int32_t outputs;
+  uint64_t outMask;
+  
+  Channels() = default;
+  Channels(int32_t inputs, uint64_t inMask, 
+    int32_t outputs, uint64_t outMask):
+  inputs(inputs), inMask(inMask), 
+  outputs(outputs), outMask(outMask){}
+};
+
 std::ostream& operator<<(std::ostream& os, Level level);
 std::ostream& operator<<(std::ostream& os, Cause cause);
 std::ostream& operator<<(std::ostream& os, Setup setup);
@@ -131,6 +144,7 @@ std::ostream& operator<<(std::ostream& os, const Format& format);
 std::ostream& operator<<(std::ostream& os, const Device& device);
 std::ostream& operator<<(std::ostream& os, const Service& service);
 std::ostream& operator<<(std::ostream& os, const Latency& latency);
+std::ostream& operator<<(std::ostream& os, const Channels& channels);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
 std::ostream& operator<<(std::ostream& os, const Exception& exception);
 std::ostream& operator<<(std::ostream& os, const Attributes& attributes);
@@ -170,6 +184,7 @@ public:
   static std::string FormatToString(const Format& format);
   static std::string BufferToString(const Buffer& buffer);
   static std::string LatencyToString(const Latency& latency);
+  static std::string ChannelsToString(const Channels& channels);
   static std::string CapabilitiesToString(Capabilities capabilities);
   static std::string AttributesToString(const Attributes& attributes);
 };

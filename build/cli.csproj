@@ -59,6 +59,9 @@
     <Compile Include="..\src\cli\XtCause.cs">
       <Link>XtCause.cs</Link>
     </Compile>
+    <Compile Include="..\src\cli\XtChannels.cs">
+      <Link>XtChannels.cs</Link>
+    </Compile>
     <Compile Include="..\src\cli\XtDevice.cs">
       <Link>XtDevice.cs</Link>
     </Compile>

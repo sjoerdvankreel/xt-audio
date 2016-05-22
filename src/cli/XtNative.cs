@@ -157,6 +157,8 @@ namespace Xt {
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintLatencyToString(XtLatency latency);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern IntPtr XtPrintChannelsToString(XtChannels channels);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintAttributesToString(XtAttributes attributes);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintCapabilitiesToString(XtCapabilities capabilities);

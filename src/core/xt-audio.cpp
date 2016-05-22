@@ -132,6 +132,14 @@ char* XT_CALL XtPrintLatencyToString(const XtLatency* latency) {
   return strdup(oss.str().c_str());
 }
 
+char* XT_CALL XtPrintChannelsToString(const XtChannels* channels) {
+  XT_ASSERT(channels != nullptr);
+  std::ostringstream oss;
+  oss << "[inputs: " << channels->inputs << " (" << channels->inMask << "), ";
+  oss << "outputs: " << channels->outputs << " (" << channels->outMask << ")]";
+  return strdup(oss.str().c_str());
+}
+
 char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
   std::ostringstream oss;
   if(capabilities == XtCapabilitiesNone)

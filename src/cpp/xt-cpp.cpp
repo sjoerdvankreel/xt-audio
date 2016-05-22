@@ -132,6 +132,10 @@ std::ostream& operator<<(std::ostream& os, const Latency& latency) {
   return os << Print::LatencyToString(latency);
 }
 
+std::ostream& operator<<(std::ostream& os, const Channels& channels) {
+  return os << Print::ChannelsToString(channels);
+}
+
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
   return os << Print::CapabilitiesToString(capabilities);
 }
@@ -184,6 +188,10 @@ std::string Print::BufferToString(const Buffer& buffer) {
 
 std::string Print::LatencyToString(const Latency& latency) {
   return WrapAndFreeCString(XtPrintLatencyToString(reinterpret_cast<const XtLatency*>(&latency)));
+}
+
+std::string Print::ChannelsToString(const Channels& channels) {
+  return WrapAndFreeCString(XtPrintChannelsToString(reinterpret_cast<const XtChannels*>(&channels)));
 }
 
 std::string Print::CapabilitiesToString(Capabilities capabilities) {

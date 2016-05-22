@@ -286,7 +286,19 @@
   * @see XtServiceGetCapabilities
   */
 
-/** 
+/**
+  * @struct XtChannels
+  * @brief Audio channel specification.
+  *
+  * See XtFormat for details on the members of this struct.
+  *
+  * @ingroup library
+  * @see XtFormat
+  * @see XtServiceAggregateStream
+  * @see XtPrintChannelsToString
+  */
+
+/**
   * @struct XtBuffer
   * @brief Device buffer size limits.
   *
@@ -339,7 +351,6 @@
   *
   * @see XtAudioInit
   */
-
 
 /**
   * @typedef typedef void (*XtStreamCallback)(const XtStream* stream, const void* input, void* output, int32_t frames, double time, uint64_t position, XtBool timeValid, XtError error, void* user)
@@ -502,6 +513,15 @@
  * @fn char* XtPrintLatencyToString(const XtLatency* latency)
  * @brief Convert latencies to a human-readable string.
  * @param latency the latency value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintChannelsToString(const XtChannels* channels)
+ * @brief Convert a channel specification to a human-readable string.
+ * @param channels the channel specification.
  * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
  *
  * This function may be called from any thread.
