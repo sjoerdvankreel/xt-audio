@@ -400,12 +400,12 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   }
   
   result->format = format;
-  result->frames = frames;
+  result->frames = frames * 3;
   InitStreamBuffers(result->weave, interleaved, !interleaved, &format, frames, attrs.size);
   InitStreamBuffers(result->intermediate, interleaved, !interleaved, &format, frames, attrs.size);
   for(int32_t i = 0; i < count; i++) {
-    result->inputRings[i] = XtRingBuffer(interleaved != XtFalse, frames, channels[i].inputs, attrs.size);
-    result->outputRings[i] = XtRingBuffer(interleaved != XtFalse, frames, channels[i].outputs, attrs.size);
+    result->inputRings[i] = XtRingBuffer(interleaved != XtFalse, frames * 3, channels[i].inputs, attrs.size);
+    result->outputRings[i] = XtRingBuffer(interleaved != XtFalse, frames * 3, channels[i].outputs, attrs.size);
   }
   
   fmt = "Opened aggregate: service %s, count %d...";
