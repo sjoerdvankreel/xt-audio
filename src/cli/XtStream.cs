@@ -164,21 +164,25 @@ namespace Xt {
         private readonly bool raw;
         private readonly object user;
         private readonly XtDevice device;
-        private readonly XtStreamCallback callback;
+        private readonly XtXRunCallback xRunCallback;
+        private readonly XtStreamCallback streamCallback;
 
         private IntPtr s;
         private Array inputInterleaved;
         private Array outputInterleaved;
         private Array inputNonInterleaved;
         private Array outputNonInterleaved;
-        internal XtNative.StreamCallbackWin32 win32Callback;
-        internal XtNative.StreamCallbackLinux linuxCallback;
+        internal XtNative.XRunCallbackWin32 win32XRunCallback;
+        internal XtNative.XRunCallbackLinux linuxXRunCallback;
+        internal XtNative.StreamCallbackWin32 win32StreamCallback;
+        internal XtNative.StreamCallbackLinux linuxStreamCallback;
 
-        internal XtStream(XtDevice device, bool raw, XtStreamCallback callback, object user) {
+        internal XtStream(XtDevice device, bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
             this.raw = raw;
             this.user = user;
             this.device = device;
-            this.callback = callback;
+            this.xRunCallback = xRunCallback;
+            this.streamCallback = streamCallback;
         }
 
         public bool IsRaw() {
@@ -243,13 +247,17 @@ namespace Xt {
             }
         }
 
-        internal void Callback(IntPtr stream, IntPtr input, IntPtr output, int frames,
-            double time, ulong position, bool timeValid, ulong error, IntPtr u) {
+        internal void XRunCallback(IntPtr stream, bool output, bool overflow, int frames) {
+            xRunCallback(this, output, overflow, frames);
+        }
+
+        internal void StreamCallback(IntPtr stream, IntPtr input, IntPtr output,
+            int frames, double time, ulong position, bool timeValid, ulong error, IntPtr u) {
 
             XtFormat format = GetFormat();
             bool interleaved = IsInterleaved();
-            object inData = raw? (object)input : input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
-            object outData = raw? (object)output : output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
+            object inData = raw ? (object)input : input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
+            object outData = raw ? (object)output : output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
 
             if (!raw && inData != null)
                 if (interleaved)
@@ -258,7 +266,7 @@ namespace Xt {
                     CopyNonInterleavedBufferFromNative(format.mix.sample, input, (Array)inData, format.inputs, frames);
 
             try {
-                callback(this, inData, outData, frames, time, position, timeValid, error, user);
+                streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
             } catch (Exception e) {
                 Environment.FailFast("Exception caught in stream callback.", e);
             }

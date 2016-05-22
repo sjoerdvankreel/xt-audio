@@ -98,6 +98,13 @@ namespace Xt {
         internal delegate void StreamCallbackLinux(IntPtr stream, IntPtr input, IntPtr output,
             int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
 
+        [SuppressUnmanagedCodeSecurity]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        internal delegate void XRunCallbackWin32(IntPtr stream, bool output, bool overflow, int frames);
+
+        [SuppressUnmanagedCodeSecurity]
+        internal delegate void XRunCallbackLinux(IntPtr stream, bool output, bool overflow, int frames);
+
         internal static void HandleError(ulong error) {
             if (error != 0)
                 throw new XtException(error);
@@ -192,6 +199,13 @@ namespace Xt {
         internal static extern ulong XtServiceOpenDevice(IntPtr s, int index, out IntPtr device);
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtServiceOpenDefaultDevice(IntPtr s, bool output, out IntPtr device);
+        [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
+        internal static extern ulong XtServiceAggregateStream(IntPtr s,
+            [MarshalAs(UnmanagedType.LPArray)] IntPtr[] devices,
+            [MarshalAs(UnmanagedType.LPArray)] XtChannels[] channels,
+            [MarshalAs(UnmanagedType.LPArray)] double[] bufferSizes,
+            int count, XtMix mix, bool interleaved, IntPtr master,
+            IntPtr streamCallback, IntPtr xRunCallback, IntPtr user, out IntPtr stream);
 
         [DllImport("xt-core.dll", CallingConvention = CallingConvention.StdCall)]
         internal static extern bool XtAudioIsWin32();

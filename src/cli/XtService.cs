@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 /* Copyright (C) 2015-2016 Sjoerd van Kreel.
  *
@@ -57,6 +59,34 @@ namespace Xt {
             IntPtr d;
             XtNative.HandleError(XtNative.XtServiceOpenDefaultDevice(s, output, out d));
             return d == IntPtr.Zero ? null : new XtDevice(d);
+        }
+
+        public XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels, 
+            double[] bufferSizes, int count, XtMix mix, bool interleaved, bool raw,
+            XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
+
+            IntPtr str;
+            IntPtr xRunCallbackPtr = IntPtr.Zero;
+            IntPtr[] ds = devices.Select(d => d.d).ToArray();
+            XtStream stream = new XtStream(null, raw, streamCallback, xRunCallback, user);
+            stream.win32StreamCallback = new XtNative.StreamCallbackWin32(stream.StreamCallback);
+            stream.linuxStreamCallback = new XtNative.StreamCallbackLinux(stream.StreamCallback);
+            Delegate streamCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
+                ? (Delegate)stream.win32StreamCallback
+                : stream.linuxStreamCallback;
+            IntPtr streamCallbackPtr = Marshal.GetFunctionPointerForDelegate(streamCallbackDelegate);
+            if (xRunCallback != null) {
+                stream.win32XRunCallback = new XtNative.XRunCallbackWin32(stream.XRunCallback);
+                stream.linuxXRunCallback = new XtNative.XRunCallbackLinux(stream.XRunCallback);
+                Delegate xRunCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
+                    ? (Delegate)stream.win32XRunCallback
+                    : stream.linuxXRunCallback;
+                xRunCallbackPtr = Marshal.GetFunctionPointerForDelegate(xRunCallbackDelegate);
+            }
+            XtNative.HandleError(XtNative.XtServiceAggregateStream(s, ds, channels, bufferSizes, count, 
+                mix, interleaved, master.d, streamCallbackPtr, xRunCallbackPtr, IntPtr.Zero, out str));
+            stream.Init(str);
+            return stream;
         }
     }
 }

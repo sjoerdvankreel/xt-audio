@@ -110,6 +110,9 @@
     <Compile Include="..\src\cli\XtTraceCallback.cs">
       <Link>XtTraceCallback.cs</Link>
     </Compile>
+    <Compile Include="..\src\cli\XtXRunCallback.cs">
+      <Link>XtXRunCallback.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\cli\App.config">
