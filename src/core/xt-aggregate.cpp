@@ -22,7 +22,7 @@ static void Weave(
     for(int32_t f = 0; f < frames; f++)
       memcpy(
         &di[(f * destChannels + destChannel) * sampleSize], 
-        &si[(f * sourceChannels + sourceChannel)], 
+        &si[(f * sourceChannels + sourceChannel) * sampleSize], 
         sampleSize);
   else
     for(int32_t f = 0; f < frames; f++)
@@ -64,19 +64,28 @@ sampleSize(sampleSize), interleaved(interleaved) {
   }
 }
 
-void XtRingBuffer::Clear() {
- XT_ASSERT(locked);
- begin = 0;
- end = 0;
- XT_ASSERT(locked);
-}
-
-void XtRingBuffer::Lock() {
+void XtRingBuffer::Lock() const {
   while(XtiCas(&locked, 1, 0) != 0);
 }
 
-void XtRingBuffer::Unlock() {
+void XtRingBuffer::Unlock() const {
   XT_ASSERT(XtiCas(&locked, 0, 1) == 1);
+}
+
+void XtRingBuffer::Clear() {
+  XT_ASSERT(locked);
+  begin = 0;
+  end = 0;
+  XT_ASSERT(locked);
+}
+
+int32_t XtRingBuffer::Full() const {
+  XT_ASSERT(locked);
+  int32_t result = end - begin;
+  if(result < 0)
+    result += frames;
+  return result;
+  XT_ASSERT(locked);
 }
 
 int32_t XtRingBuffer::Read(void* target, int32_t frames) {
@@ -199,6 +208,11 @@ XtSystem XtAggregate::GetSystem() const {
   return system;
 }
 
+XtFault XtAggregate::GetFrames(int32_t* frames) const {
+  *frames = this->frames;
+  return 0;
+}
+
 XtFault XtAggregate::Stop() {
 
   // TODO: wait untill the callback has returned.
@@ -228,19 +242,28 @@ XtFault XtAggregate::Start() {
   return 0;
 }
 
-XtFault XtAggregate::GetFrames(int32_t* frames) const {
-  *frames = this->frames;
-  return 0;
-}
-
 XtFault XtAggregate::GetLatency(XtLatency* latency) const {
+  int32_t full;
   XtFault fault;
-  if((fault = streams[masterIndex]->GetLatency(latency)) != 0)
-    return fault;
-  if(latency->input != 0.0)
-    latency->input += frames * 1000.0 / format.mix.rate;
-  if(latency->output != 0.0)
-    latency->output += frames * 1000.0 / format.mix.rate;
+  XtLatency local;
+  for(size_t i = 0; i < streams.size(); i++) {
+    if((fault = streams[i]->GetLatency(&local)) != 0)
+      return fault;
+    if(local.input == 0.0 && local.output == 0.0)
+      return 0;
+    if(local.input > 0.0) {
+      inputRings[i].Lock();
+      local.input += inputRings[i].Full() * 1000.0 / format.mix.rate;
+      inputRings[i].Unlock();
+      latency->input = local.input > latency->input? local.input: latency->input;
+    }      
+    if(local.output > 0.0) {
+      outputRings[i].Lock();
+      local.output += outputRings[i].Full() * 1000.0 / format.mix.rate;
+      outputRings[i].Unlock();
+      latency->output = local.output > latency->output? local.output: latency->output;
+    }      
+  }
   return 0;
 }
 

@@ -122,9 +122,10 @@ struct XtRingBuffer {
   XtRingBuffer(bool interleaved, int32_t frames, 
     int32_t channels, int32_t sampleSize);
 
-  void Lock();
   void Clear();
-  void Unlock();
+  void Lock() const;
+  void Unlock() const;
+  int32_t Full() const;
   int32_t Read(void* target, int32_t frames);
   int32_t Write(const void* source, int32_t frames);
 };
