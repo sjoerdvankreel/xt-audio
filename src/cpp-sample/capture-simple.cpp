@@ -37,6 +37,6 @@ int CaptureSimpleMain(int argc, char** argv) {
     usleep(1000 * 1000);
 #endif
     stream->Stop();
-    return 0;
   }
+  return 0;
 }
