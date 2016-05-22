@@ -4,6 +4,7 @@
 #include "xt-audio.h"
 #include <string>
 #include <vector>
+#include <memory>
 #include <cstring>
 #include <cstdarg>
 
@@ -87,6 +88,12 @@ const XtService* XtiService ## name = &Service ## name
 
 // ---- internal ----
 
+extern char* XtiId;
+struct XtAggregate;
+typedef uint32_t XtFault;
+extern XtTraceCallback XtiTraceCallback;
+extern XtFatalCallback XtiFatalCallback;
+
 enum XtStreamState {
   XtStreamStateStopped,
   XtStreamStateStarting,
@@ -96,10 +103,40 @@ enum XtStreamState {
   XtStreamStateClosed
 };
 
-typedef uint32_t XtFault;
-extern char* XtiId;
-extern XtTraceCallback XtiTraceCallback;
-extern XtFatalCallback XtiFatalCallback;
+struct XtAggregateContext {
+  int32_t index;
+  XtAggregate* stream;
+};
+
+struct XtRingBuffer {
+  int32_t end;
+  int32_t begin;
+  int32_t frames;
+  int32_t channels;
+  bool interleaved;
+  int32_t sampleSize;
+  mutable int32_t locked;
+  std::vector<std::vector<char>> blocks;
+
+  XtRingBuffer() {}
+  XtRingBuffer(bool interleaved, int32_t frames, 
+    int32_t channels, int32_t sampleSize);
+
+  void Lock();
+  void Clear();
+  void Unlock();
+  int32_t Read(void* target, int32_t frames);
+  int32_t Write(const void* source, int32_t frames);
+};
+
+struct XtIntermediateBuffers {
+  std::vector<char> inputInterleaved;
+  std::vector<char> outputInterleaved;
+  std::vector<void*> inputNonInterleaved;
+  std::vector<void*> outputNonInterleaved;
+  std::vector<std::vector<char>> inputChannelsNonInterleaved;
+  std::vector<std::vector<char>> outputChannelsNonInterleaved;
+};
 
 // ---- forward ----
 
@@ -124,12 +161,7 @@ struct XtStream {
   XtBool canInterleaved;
   XtBool canNonInterleaved;
   XtStreamCallback userCallback;
-  std::vector<char> inputInterleaved;
-  std::vector<char> outputInterleaved;
-  std::vector<void*> inputNonInterleaved;
-  std::vector<void*> outputNonInterleaved;
-  std::vector<std::vector<char>> inputChannelsNonInterleaved;
-  std::vector<std::vector<char>> outputChannelsNonInterleaved;
+  XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
   virtual XtFault Stop() = 0;
@@ -139,6 +171,24 @@ struct XtStream {
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
   void ProcessCallback(void* input, void* output, int32_t frames, double time,
                        uint64_t position, XtBool timeValid, XtError error);
+};
+
+struct XtAggregate: public XtStream {
+  int32_t frames;
+  XtSystem system;
+  int32_t masterIndex;
+  XtIntermediateBuffers weave;
+  std::vector<XtChannels> channels;
+  std::vector<XtRingBuffer> inputRings; 
+  std::vector<XtRingBuffer> outputRings;
+  std::vector<XtAggregateContext> contexts;
+  std::vector<std::unique_ptr<XtStream>> streams;
+
+  virtual XtFault Stop();
+  virtual XtFault Start();
+  virtual XtSystem GetSystem() const;
+  virtual XtFault GetFrames(int32_t* frames) const;
+  virtual XtFault GetLatency(XtLatency* latency) const;
 };
 
 struct XtDevice {
@@ -168,8 +218,16 @@ int32_t XtiGetSampleSize(XtSample sample);
 std::string XtiTryGetDeviceName(const XtDevice* d);
 XtError XtiCreateError(XtSystem system, XtFault fault);
 bool XtiValidateFormat(XtSystem system, const XtFormat& format);
+int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp);
 void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, ...);
 void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, va_list arg);
+
+void XT_CALLBACK XtiSlaveCallback(
+  const XtStream* stream, const void* input, void* output, int32_t frames,
+  double time, uint64_t position, XtBool timeValid, XtError error, void* user);
+void XT_CALLBACK XtiMasterCallback(
+  const XtStream* stream, const void* input, void* output, int32_t frames,
+  double time, uint64_t position, XtBool timeValid, XtError error, void* user);
 
 #endif // _XT_PRIVATE_HPP

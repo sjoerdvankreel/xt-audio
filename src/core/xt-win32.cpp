@@ -160,6 +160,10 @@ bool XtiCalledOnMainThread() {
   return currentThreadId == XtwMainThreadId;
 }
 
+int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
+  return InterlockedCompareExchange(reinterpret_cast<volatile long*>(dest), exch, comp);
+}
+
 void XtiInitPlatform(void* wnd) {
   XT_ASSERT(XtwMainThreadId == 0);
   XT_ASSERT((XtwMainThreadId = GetThreadId(GetCurrentThread())) != 0);

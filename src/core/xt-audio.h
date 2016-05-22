@@ -325,6 +325,9 @@ XT_API XtCapabilities XT_CALL XtServiceGetCapabilities(const XtService* s);
 XT_API XtError XT_CALL XtServiceGetDeviceCount(const XtService* s, int32_t* count);
 XT_API XtError XT_CALL XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device);
 XT_API XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, XtDevice** device);
+XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, 
+                                                const double* bufferSizes, int32_t count, const XtMix* mix, XtBool interleaved, 
+                                                XtDevice* master, XtStreamCallback callback, void* user, XtStream** stream); 
 /** @} */
 
 /** 

@@ -139,6 +139,10 @@ void XtiInitPlatform(void* wnd) {
   XtlInitialized = true;
 }
 
+int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
+  return __sync_val_compare_and_swap (dest, comp, exch);
+}
+
 bool XtiCalledOnMainThread() {
   return XtlInitialized && pthread_equal(pthread_self(), XtlMainThread);
 }

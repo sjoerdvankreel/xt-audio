@@ -146,20 +146,20 @@ void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double
     outData = haveOutput? output: nullptr;
     userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
   } else if(interleaved) {
-    inData = haveInput? &inputInterleaved[0]: nullptr;
-    outData = haveOutput? &outputInterleaved[0]: nullptr;
+    inData = haveInput? &intermediate.inputInterleaved[0]: nullptr;
+    outData = haveOutput? &intermediate.outputInterleaved[0]: nullptr;
     if(haveInput)
-      Interleave(&inputInterleaved[0], static_cast<void**>(input), frames, format.inputs, sampleSize);
+      Interleave(&intermediate.inputInterleaved[0], static_cast<void**>(input), frames, format.inputs, sampleSize);
     userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     if(haveOutput)
-      Deinterleave(static_cast<void**>(output), &outputInterleaved[0], frames, format.outputs, sampleSize);
+      Deinterleave(static_cast<void**>(output), &intermediate.outputInterleaved[0], frames, format.outputs, sampleSize);
   } else {
-    inData = haveInput? &inputNonInterleaved[0]: nullptr;
-    outData = haveOutput? &outputNonInterleaved[0]: nullptr;
+    inData = haveInput? &intermediate.inputNonInterleaved[0]: nullptr;
+    outData = haveOutput? &intermediate.outputNonInterleaved[0]: nullptr;
     if(haveInput)
-      Deinterleave(&inputNonInterleaved[0], input, frames, format.inputs, sampleSize);
+      Deinterleave(&intermediate.inputNonInterleaved[0], input, frames, format.inputs, sampleSize);
     userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     if(haveOutput)
-      Interleave(output, &outputNonInterleaved[0], frames, format.outputs, sampleSize);
+      Interleave(output, &intermediate.outputNonInterleaved[0], frames, format.outputs, sampleSize);
   }
 }

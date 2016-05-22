@@ -19,6 +19,31 @@
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
 
+// ---- local ----
+
+static void InitStreamBuffers(
+  XtIntermediateBuffers& buffers, XtBool interleaved, XtBool nonInterleaved,
+  const XtFormat* format, int32_t frames, int32_t sampleSize) {
+
+  if(interleaved) {
+    buffers.inputInterleaved = std::vector<char>(frames * format->inputs * sampleSize, '\0');
+    buffers.outputInterleaved = std::vector<char>(frames * format->outputs * sampleSize, '\0');
+  }
+
+  if(nonInterleaved) {
+    buffers.inputNonInterleaved = std::vector<void*>(format->inputs, nullptr);
+    buffers.outputNonInterleaved = std::vector<void*>(format->outputs, nullptr);
+    buffers.inputChannelsNonInterleaved = std::vector<std::vector<char>>(
+      format->inputs, std::vector<char>(frames * sampleSize, '\0'));
+    buffers.outputChannelsNonInterleaved = std::vector<std::vector<char>>(
+      format->outputs, std::vector<char>(frames * sampleSize, '\0'));
+    for(int32_t i = 0; i < format->inputs; i++)
+      buffers.inputNonInterleaved[i] = &(buffers.inputChannelsNonInterleaved[i][0]);
+    for(int32_t i = 0; i < format->outputs; i++)
+      buffers.outputNonInterleaved[i] = &(buffers.outputChannelsNonInterleaved[i][0]);
+  }
+}
+
 // ---- error ----
 
 uint32_t XT_CALL XtErrorGetFault(XtError error) {
@@ -302,6 +327,90 @@ XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, Xt
   return 0;
 }
 
+XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, 
+                                         const double* bufferSizes, int32_t count, const XtMix* mix, XtBool interleaved, 
+                                         XtDevice* master, XtStreamCallback callback, void* user, XtStream** stream) {
+
+  XT_ASSERT(count > 0);
+  XT_ASSERT(s != nullptr);
+  XT_ASSERT(mix != nullptr);
+  XT_ASSERT(stream != nullptr);
+  XT_ASSERT(master != nullptr);
+  XT_ASSERT(devices != nullptr);
+  XT_ASSERT(channels != nullptr);
+  XT_ASSERT(callback != nullptr);
+  XT_ASSERT(bufferSizes != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+
+  const char* fmt = "Opening aggregate: service %s, count %d...";
+  XT_TRACE(XtLevelInfo, fmt, XtServiceGetName(s), count);
+
+  XtAttributes attrs;
+  XtSystem system = XtServiceGetSystem(s);
+  XtAudioGetSampleAttributes(mix->sample, &attrs);
+  std::unique_ptr<XtAggregate> result(new XtAggregate);
+  result->user = user;
+  result->system = system;
+  result->userCallback = callback;
+  result->sampleSize = attrs.size;
+  result->interleaved = interleaved;
+  result->canInterleaved = interleaved;
+  result->canNonInterleaved = !interleaved;
+  result->inputRings = std::vector<XtRingBuffer>(count, XtRingBuffer());
+  result->outputRings = std::vector<XtRingBuffer>(count, XtRingBuffer());
+  result->contexts = std::vector<XtAggregateContext>(count, XtAggregateContext());
+
+  XtError error;
+  int32_t frames = 0;
+  int32_t thisFrames;
+  XtStream* thisStream;
+  XtFormat format = { 0 };
+  bool masterFound = false;
+  XtFormat thisFormat = { 0 };
+  XtStreamCallback thisCallback;
+
+  for(int32_t i = 0; i < count; i++) {
+    thisFormat.mix = *mix;
+    thisFormat.inputs = channels[i].inputs;
+    thisFormat.inMask = channels[i].inMask;
+    thisFormat.outputs = channels[i].outputs;
+    thisFormat.outMask = channels[i].outMask;
+
+    result->contexts[i].index = i;
+    result->contexts[i].stream = result.get();
+    result->channels.push_back(channels[i]);
+    format.inputs += channels[i].inputs;
+    format.outputs += channels[i].outputs;
+
+    XT_ASSERT(!masterFound || master != devices[i]);
+    masterFound |= master == devices[i];
+    if(master == devices[i])
+      result->masterIndex = i;
+    thisCallback = master == devices[i]? XtiMasterCallback: XtiSlaveCallback;
+    if((error = XtDeviceOpenStream(devices[i], &format, interleaved, bufferSizes[i], thisCallback, &result->contexts[i], &thisStream)) != 0)
+      return error;
+    result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
+    if((error = XtStreamGetFrames(thisStream, &thisFrames)) != 0)
+      return error;
+    frames = thisFrames > frames? thisFrames: frames;
+  }
+  
+  result->format = format;
+  result->frames = frames;
+  InitStreamBuffers(result->weave, interleaved, !interleaved, &format, frames, attrs.size);
+  InitStreamBuffers(result->intermediate, interleaved, !interleaved, &format, frames, attrs.size);
+  for(int32_t i = 0; i < count; i++) {
+    result->inputRings[i] = XtRingBuffer(interleaved != XtFalse, frames, channels[i].inputs, attrs.size);
+    result->outputRings[i] = XtRingBuffer(interleaved != XtFalse, frames, channels[i].outputs, attrs.size);
+  }
+  
+  fmt = "Opened aggregate: service %s, count %d...";
+  XT_TRACE(XtLevelInfo, fmt, XtServiceGetName(s), count);
+
+  *stream = result.release();
+  return 0;
+}
+
 // ---- device ----
 
 void XT_CALL XtDeviceDestroy(XtDevice* d) {
@@ -404,8 +513,10 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
   XtBool supports;
   XtSystem system;
   XtBool canInterleaved;
+  XtBool initInterleaved;
   XtAttributes attributes;
   XtBool canNonInterleaved;
+  XtBool initNonInterleaved;
 
   XT_ASSERT(d != nullptr);
   XT_ASSERT(bufferSize > 0.0);
@@ -457,25 +568,9 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
   (*stream)->sampleSize = attributes.size;
   (*stream)->canInterleaved = canInterleaved;
   (*stream)->canNonInterleaved = canNonInterleaved;
-
-  if(interleaved && !canInterleaved) {
-    (*stream)->inputInterleaved = std::vector<char>(frames * format->inputs * attributes.size, '\0');
-    (*stream)->outputInterleaved = std::vector<char>(frames * format->outputs * attributes.size, '\0');
-  }
-
-  if(!interleaved && !canNonInterleaved) {
-    (*stream)->inputNonInterleaved = std::vector<void*>(format->inputs, nullptr);
-    (*stream)->outputNonInterleaved = std::vector<void*>(format->outputs, nullptr);
-    (*stream)->inputChannelsNonInterleaved = std::vector<std::vector<char>>(
-      format->inputs, std::vector<char>(frames * attributes.size, '\0'));
-    (*stream)->outputChannelsNonInterleaved = std::vector<std::vector<char>>(
-      format->outputs, std::vector<char>(frames * attributes.size, '\0'));
-    for(int32_t i = 0; i < format->inputs; i++)
-      (*stream)->inputNonInterleaved[i] = &((*stream)->inputChannelsNonInterleaved[i][0]);
-    for(int32_t i = 0; i < format->outputs; i++)
-      (*stream)->outputNonInterleaved[i] = &((*stream)->outputChannelsNonInterleaved[i][0]);
-  }
-
+  initInterleaved =  interleaved && !canInterleaved;
+  initNonInterleaved = !interleaved && !canNonInterleaved;
+  InitStreamBuffers((*stream)->intermediate, initInterleaved, initNonInterleaved, format, frames, attributes.size);
   fmt = "Opened stream: device %s, bufferSize %f, format %s, interleaved %d.";
   XT_TRACE(XtLevelInfo, fmt, XtiTryGetDeviceName(d).c_str(), bufferSize, formatStdString.c_str(), interleaved);
   return 0;
