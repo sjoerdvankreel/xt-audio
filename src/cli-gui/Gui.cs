@@ -253,7 +253,7 @@ namespace Xt {
             outputChannels.DataSource = outputViews;
             outputChannels.SelectedItems.Clear();
 
-            bufferSize.Minimum = 0;
+            bufferSize.Minimum = 1;
             bufferSize.Maximum = 5000;
             bufferSize.Value = 1000;
             if (outputBuffer != null) {
