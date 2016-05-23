@@ -110,6 +110,7 @@ struct XtAggregateContext {
 
 struct XtRingBuffer {
   int32_t end;
+  int32_t full;
   int32_t begin;
   int32_t frames;
   int32_t channels;

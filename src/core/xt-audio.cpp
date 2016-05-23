@@ -400,7 +400,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   }
   
   result->format = format;
-  result->frames = frames * 3;
+  result->frames = frames * 2;
   InitStreamBuffers(result->weave, interleaved, !interleaved, &format, frames, attrs.size);
   InitStreamBuffers(result->intermediate, interleaved, !interleaved, &format, frames, attrs.size);
   for(int32_t i = 0; i < count; i++) {

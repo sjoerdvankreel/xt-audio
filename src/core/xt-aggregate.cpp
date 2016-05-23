@@ -51,7 +51,7 @@ static void ZeroBuffer(
 XtRingBuffer::XtRingBuffer(
   bool interleaved, int32_t frames, 
   int32_t channels, int32_t sampleSize):
-end(0), blocks(), begin(0), locked(0),
+end(0), full(0), blocks(), begin(0), locked(0),
 frames(frames), channels(channels),
 sampleSize(sampleSize), interleaved(interleaved) {
 
@@ -73,25 +73,24 @@ void XtRingBuffer::Unlock() const {
 }
 
 void XtRingBuffer::Clear() {
-  XT_ASSERT(locked);
-  begin = 0;
+  assert(locked);
   end = 0;
-  XT_ASSERT(locked);
+  full = 0;
+  begin = 0;
+  assert(locked);
 }
 
 int32_t XtRingBuffer::Full() const {
-  XT_ASSERT(locked);
-  int32_t result = end - begin;
-  if(result < 0)
-    result += frames;
+  int32_t result;
+  assert(locked);
+  result = full;
+  assert(locked);
   return result;
-  XT_ASSERT(locked);
 }
 
 int32_t XtRingBuffer::Read(void* target, int32_t frames) {
 
   int32_t i;
-  int32_t full;
   int32_t result;
   int32_t wrapSize;
   int32_t splitSize;
@@ -99,46 +98,44 @@ int32_t XtRingBuffer::Read(void* target, int32_t frames) {
   char* ilTarget = static_cast<char*>(target);
   char** niTarget = static_cast<char**>(target);
 
-  XT_ASSERT(locked);  
-  full = end - begin;
-  if(full < 0)
-    full += this->frames;
+  assert(locked);
+  assert(0 <= full && full <= this->frames);
   result = full > frames? frames: full;
   
-  if(target != nullptr)
-    if(end >= begin) {
-      if(interleaved)
-        memcpy(ilTarget, &(blocks[0][begin * frameSize]), result * frameSize);
-      else
-        for(i = 0; i < channels; i++)
-          memcpy(niTarget[i], &(blocks[i][begin * sampleSize]), result * sampleSize);
+  if(end > begin) {
+    if(interleaved)
+      memcpy(ilTarget, &(blocks[0][begin * frameSize]), result * frameSize);
+    else
+      for(i = 0; i < channels; i++)
+        memcpy(niTarget[i], &(blocks[i][begin * sampleSize]), result * sampleSize);
+  } else {
+    splitSize = result > this->frames - begin? this->frames - begin: result;
+    wrapSize = result - splitSize;
+    if(interleaved) {
+      memcpy(ilTarget, &(blocks[0][begin * frameSize]), splitSize * frameSize);
+      if(this->frames - begin < result)
+        memcpy(ilTarget + splitSize * frameSize, &(blocks[0][0]), wrapSize * frameSize);
     } else {
-      splitSize = result > this->frames - begin? this->frames - begin: result;
-      wrapSize = result - splitSize;
-      if(interleaved) {
-        memcpy(ilTarget, &(blocks[0][begin * frameSize]), splitSize * frameSize);
+      for(i = 0; i < channels; i++) {
+        memcpy(niTarget[i], &(blocks[i][begin * sampleSize]), splitSize * sampleSize);
         if(this->frames - begin < result)
-          memcpy(ilTarget + splitSize * frameSize, &(blocks[0][0]), wrapSize * frameSize);
-      } else {
-        for(i = 0; i < channels; i++) {
-          memcpy(niTarget[i], &(blocks[i][begin * sampleSize]), splitSize * sampleSize);
-          if(this->frames - begin < result)
-            memcpy(niTarget[i] + splitSize * sampleSize, &(blocks[i][0]), wrapSize * sampleSize);
-        }
+          memcpy(niTarget[i] + splitSize * sampleSize, &(blocks[i][0]), wrapSize * sampleSize);
       }
     }
+  }
 
+  full -= result;
   begin += result;
   if(begin >= this->frames)
     begin -= this->frames;
-  XT_ASSERT(locked);
+  assert(locked);
+  assert(0 <= full && full <= this->frames);
   return result;
 }
 
 int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
 
   int32_t i;
-  int32_t full;
   int32_t empty;
   int32_t result;
   int32_t wrapSize;
@@ -147,10 +144,8 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
   const char* ilSource = static_cast<const char*>(source);
   const char* const* niSource = static_cast<const char* const*>(source);
 
-  XT_ASSERT(locked);
-  full = end - begin;
-  if(full < 0)
-    full += this->frames;
+  assert(locked);
+  assert(0 <= full && full <= this->frames);
   empty = this->frames - full;
   result = empty > frames? frames: empty;
 
@@ -158,47 +153,30 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
     splitSize = result > this->frames - end? this->frames - end: result;
     wrapSize = result - splitSize;
     if(interleaved) {
-      if(source != nullptr)
-        memcpy(&(blocks[0][end * frameSize]), ilSource, splitSize * frameSize);
-      else
-        memset(&(blocks[0][end * frameSize]), 0, splitSize * frameSize);
+      memcpy(&(blocks[0][end * frameSize]), ilSource, splitSize * frameSize);
       if(this->frames - end < result)
-        if(source != nullptr)
-          memcpy(&(blocks[0][0]), ilSource + splitSize * frameSize, wrapSize * frameSize);
-        else
-          memset(&(blocks[0][0]), 0, wrapSize * frameSize);
+        memcpy(&(blocks[0][0]), ilSource + splitSize * frameSize, wrapSize * frameSize);
     } else {
       for(i = 0; i < channels; i++) {
-        if(source != nullptr)
-          memcpy(&(blocks[i][end * sampleSize]), niSource[i], splitSize * sampleSize);
-        else
-          memset(&(blocks[i][end * sampleSize]), 0, splitSize * sampleSize);
+        memcpy(&(blocks[i][end * sampleSize]), niSource[i], splitSize * sampleSize);
         if(this->frames - end < result)
-          if(source != nullptr)
-            memcpy(&(blocks[i][0]), niSource[i] + splitSize * sampleSize, wrapSize * sampleSize);
-          else
-            memset(&(blocks[i][0]), 0, wrapSize * sampleSize);
+          memcpy(&(blocks[i][0]), niSource[i] + splitSize * sampleSize, wrapSize * sampleSize);
       }
     }
   } else {
-    if(interleaved) {
-      if(source != nullptr)
-        memcpy(&(blocks[0][end * frameSize]), ilSource, result * frameSize);
-      else
-        memset(&(blocks[0][end * frameSize]), 0, result * frameSize);
-    } else {
+    if(interleaved)
+      memcpy(&(blocks[0][end * frameSize]), ilSource, result * frameSize);
+    else
       for(i = 0; i < channels; i++)
-        if(source != nullptr)
-          memcpy(&(blocks[i][end * sampleSize]), niSource[i], result * sampleSize);
-        else
-          memset(&(blocks[i][end * sampleSize]), 0, result * sampleSize);
-    }
+        memcpy(&(blocks[i][end * sampleSize]), niSource[i], result * sampleSize);
   }
 
   end += result;
+  full += result;
   if (end >= this->frames)
     end -= this->frames;
-  XT_ASSERT(locked);
+  assert(locked);
+  assert(0 <= full && full <= this->frames);
   return result;
 }
 
@@ -244,9 +222,8 @@ XtFault XtAggregate::Start() {
 }
 
 XtFault XtAggregate::GetLatency(XtLatency* latency) const {
-  int32_t full;
   XtFault fault;
-  XtLatency local;
+  XtLatency local = { 0 };
   for(size_t i = 0; i < streams.size(); i++) {
     if((fault = streams[i]->GetLatency(&local)) != 0)
       return fault;
@@ -287,8 +264,7 @@ void XT_CALLBACK XtiSlaveCallback(
 
   if(input != nullptr) {
     inputRing.Lock();
-    if((written = inputRing.Write(input, frames)) < frames)
-      inputRing.Read(nullptr, aggregate->frames / 2);
+    written = inputRing.Write(input, frames);
     inputRing.Unlock();
     if(written < frames && xRunCallback != nullptr)
       xRunCallback(stream, XtFalse, XtTrue, frames - written);
@@ -296,8 +272,7 @@ void XT_CALLBACK XtiSlaveCallback(
   
   if(output != nullptr) {
     outputRing.Lock();
-    if((read = outputRing.Read(output, frames)) < frames)
-      outputRing.Write(nullptr, aggregate->frames / 2);
+    read = outputRing.Read(output, frames);
     outputRing.Unlock();
     if(read < frames) {
       ZeroBuffer(output, aggregate->interleaved, read, channels.outputs, frames - read, aggregate->sampleSize);
@@ -361,8 +336,7 @@ void XT_CALLBACK XtiMasterCallback(
     thisFormat = &aggregate->streams[i]->format;
     if(thisFormat->inputs > 0) {
       thisInRing->Lock();
-      if((read = thisInRing->Read(ringInput, frames)) < frames)
-        thisInRing->Write(nullptr, aggregate->frames / 2);
+      read = thisInRing->Read(ringInput, frames);
       thisInRing->Unlock();
       if(read < frames) {
         ZeroBuffer(ringInput, interleaved, read, thisFormat->inputs, frames - read, sampleSize);
@@ -387,8 +361,7 @@ void XT_CALLBACK XtiMasterCallback(
         Weave(ringOutput, appOutput, interleaved, thisFormat->outputs, format->outputs, totalChannels + c, c, frames, sampleSize);
       totalChannels += thisFormat->inputs;
       thisOutRing->Lock();
-      if((written = thisOutRing->Write(ringOutput, frames)) < frames)
-        thisOutRing->Read(nullptr, aggregate->frames / 2);
+      written = thisOutRing->Write(ringOutput, frames);
       thisOutRing->Unlock();
       if(written < frames && xRunCallback != nullptr)
         xRunCallback(aggregate, XtTrue, XtTrue, frames - written);
