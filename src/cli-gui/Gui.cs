@@ -85,9 +85,10 @@ namespace Xt {
         }
 
         private void OnFatal() {
+            string trace = Environment.StackTrace;
+            string message = "A fatal error occurred." + Environment.NewLine + "StackTrace:" + Environment.NewLine + trace;
             Invoke(new Action(() => {
-                MessageBox.Show(this, "A fatal error occurred.", "Fatal error.",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, message, "Fatal error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.FailFast("Fatal error.");
             }));
         }
@@ -377,7 +378,7 @@ namespace Xt {
                     XRunCallback xRunCallback = new XRunCallback(AddMessage);
                     FullDuplexCallback streamCallback = new FullDuplexCallback(OnStreamError, AddMessage);
                     outputStream = ((XtService)service.SelectedItem).AggregateStream(
-                        devices, channels, bufferSizes, 2, outputFormat.mix, streamInterleaved.Checked, 
+                        devices, channels, bufferSizes, 2, outputFormat.mix, streamInterleaved.Checked,
                         streamRaw.Checked, master, streamCallback.OnCallback, xRunCallback.OnCallback, "duplex-user-data");
                     outputStream.Start();
                 }
