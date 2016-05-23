@@ -187,6 +187,7 @@ struct XtAggregate: public XtStream {
   std::vector<XtAggregateContext> contexts;
   std::vector<std::unique_ptr<XtStream>> streams;
 
+  virtual ~XtAggregate();
   virtual XtFault Stop();
   virtual XtFault Start();
   virtual XtSystem GetSystem() const;

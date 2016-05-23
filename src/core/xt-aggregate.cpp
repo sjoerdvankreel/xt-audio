@@ -204,6 +204,10 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
 
 // ---- aggregate ----
 
+XtAggregate::~XtAggregate() {
+  Stop();
+}
+
 XtSystem XtAggregate::GetSystem() const {
   return system;
 }
@@ -214,9 +218,6 @@ XtFault XtAggregate::GetFrames(int32_t* frames) const {
 }
 
 XtFault XtAggregate::Stop() {
-
-  // TODO: wait untill the callback has returned.
-
   XtFault fault;
   XtFault result = 0;
   for(size_t i = 0; i < streams.size(); i++)
