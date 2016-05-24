@@ -263,7 +263,11 @@ namespace Xt {
         }
 
         internal void XRunCallback(IntPtr stream, bool output, bool overflow, int frames, IntPtr user) {
-            xRunCallback(this, output, overflow, frames, this.user);
+            try {
+                xRunCallback(this, output, overflow, frames, this.user);
+            } catch (Exception e) {
+                Environment.FailFast("Exception caught in xrun callback.", e);
+            }
         }
 
         internal void StreamCallback(IntPtr stream, IntPtr input, IntPtr output,
