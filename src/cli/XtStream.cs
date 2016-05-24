@@ -262,8 +262,8 @@ namespace Xt {
             }
         }
 
-        internal void XRunCallback(IntPtr stream, bool output, bool overflow, int frames) {
-            xRunCallback(this, output, overflow, frames);
+        internal void XRunCallback(IntPtr stream, bool output, bool overflow, int frames, IntPtr user) {
+            xRunCallback(this, output, overflow, frames, this.user);
         }
 
         internal void StreamCallback(IntPtr stream, IntPtr input, IntPtr output,
