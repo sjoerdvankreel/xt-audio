@@ -158,7 +158,14 @@ enum XtCapabilities {
     * output channels, for example to specific speaker positions.
     * @see XtFormat
     */
-  XtCapabilitiesChannelMask = 0x8
+  XtCapabilitiesChannelMask = 0x8,
+
+  /** @brief Under/overflow detection.
+   *
+   * Streams support xrun detection and will invoke the 
+   * application's xrun callback when an under/overflow occurs.
+   */
+  XtCapabilitiesXRunDetection = 0x10
 };
 
 /** @cond */
@@ -266,7 +273,7 @@ typedef struct XtAttributes XtAttributes;
 typedef void (XT_CALLBACK *XtFatalCallback)(void);
 typedef void (XT_CALLBACK *XtTraceCallback)(XtLevel level, const char* message);
 typedef void (XT_CALLBACK *XtXRunCallback)(const XtStream* stream,
-  XtBool output, XtBool overflow, int32_t frames);
+  XtBool output, XtBool overflow, int32_t frames, void* user);
 typedef void (XT_CALLBACK *XtStreamCallback)(
   const XtStream* stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, XtBool timeValid, XtError error, void* user);
@@ -348,7 +355,7 @@ XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interlea
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name);
 XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
-                                          XtStreamCallback callback, void* user, XtStream** stream);
+                                          XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream);
 /** @} */
 
 /** 

@@ -1,5 +1,6 @@
 #include "xt-cpp.hpp"
 #include "xt-audio.h"
+#include <vector>
 
 /* Copyright (C) 2015-2016 Sjoerd van Kreel.
  *
@@ -29,7 +30,7 @@ static void HandleError(XtError e) {
     throw Exception(e); 
 }
 
-static void XT_CALL ForwardFatalCallback() {
+static void XT_CALLBACK ForwardFatalCallback() {
   if(fatal)
     fatal();
   throw std::logic_error("Fatal error.");
@@ -41,19 +42,26 @@ static std::string WrapAndFreeCString(char* cString) {
   return result;
 }
 
-static void XT_CALL 
+static void XT_CALLBACK
 ForwardTraceCallback(XtLevel level, const char* message) {
   if(trace)
     trace(static_cast<Xt::Level>(level), message);
 }
 
 struct StreamCallbackForwarder {
-  static void XT_CALL Forward(
+  static void XT_CALLBACK ForwardXRun(const XtStream* stream,
+    XtBool output, XtBool overflow, int32_t frames, void* user) {
+
+    auto s = static_cast<Stream*>(user);
+    s->xRunCallback(*s, output != XtFalse, overflow != XtFalse, frames, s->user);
+  }
+
+  static void XT_CALLBACK ForwardStream(
     const XtStream* stream, const void* input, void* output, int32_t frames,
     double time, uint64_t position, XtBool timeValid, XtError error, void* user) {
 
     auto s = static_cast<Stream*>(user);
-    s->callback(*s, input, output, frames, time, position, timeValid != XtFalse, error, s->user);
+    s->streamCallback(*s, input, output, frames, time, position, timeValid != XtFalse, error, s->user);
   }
 };
 
@@ -287,6 +295,26 @@ std::unique_ptr<Device> Service::OpenDefaultDevice(bool output) const{
   return std::unique_ptr<Device>(new Device(device));
 }
 
+std::unique_ptr<Stream> Service::AggregateStream(Device* devices, const Channels* channels, 
+                                                 const double* bufferSizes, int32_t count, 
+                                                 const Mix& mix, bool interleaved, Device& master, 
+                                                 StreamCallback streamCallback, XRunCallback xRunCallback, void* user) {
+
+
+  XtStream* stream; 
+  std::vector<XtDevice*> ds(count, nullptr);
+  for(int32_t i = 0; i < count; i++)
+    ds[i] = devices[i].d;
+  auto m = reinterpret_cast<const XtMix*>(&mix);
+  auto c = reinterpret_cast<const XtChannels*>(channels);
+  auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
+  auto forwardStream = &StreamCallbackForwarder::ForwardStream;
+  std::unique_ptr<Stream> result(new Stream(nullptr, streamCallback, xRunCallback, user));
+  HandleError(XtServiceAggregateStream(s, &ds[0], c, bufferSizes, count, m, interleaved, master.d, forwardStream, forwardXRun, result.get(), &stream));
+  result->s = stream;
+  return result;
+}
+
 // ---- device ----
 
 Device::~Device() { 
@@ -350,20 +378,27 @@ Buffer Device::GetBuffer(const Format& format) const {
   return buffer;
 }
 
-std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleaved, 
-                                           double bufferSize, StreamCallback callback, void* user) {
+std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleaved, double bufferSize,
+                                           StreamCallback streamCallback, XRunCallback xRunCallback, void* user) {
+
   XtStream* stream; 
   auto f = reinterpret_cast<const XtFormat*>(&format);
-  std::unique_ptr<Stream> result(new Stream(this, callback, user));
-  HandleError(XtDeviceOpenStream(d, f, interleaved, bufferSize, &StreamCallbackForwarder::Forward, result.get(), &stream));
+  auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
+  auto forwardStream = &StreamCallbackForwarder::ForwardStream;
+  std::unique_ptr<Stream> result(new Stream(this, streamCallback, xRunCallback, user));
+  HandleError(XtDeviceOpenStream(d, f, interleaved, bufferSize, forwardStream, forwardXRun, result.get(), &stream));
   result->s = stream;
   return result;
 }
 
 // ---- stream ----
 
-Stream::Stream(Device* d, StreamCallback callback, void* user):
-d(d), s(nullptr), callback(callback), user(user) {}
+Stream::Stream(Device* d, StreamCallback streamCallback, XRunCallback xRunCallback, void* user):
+d(d),
+s(nullptr),
+xRunCallback(xRunCallback),
+streamCallback(streamCallback), 
+user(user) {}
 
 Stream::~Stream() { 
   XtStreamDestroy(s);

@@ -64,14 +64,14 @@ int CaptureAdvancedMain(int argc, char** argv) {
   Xt::Buffer buffer = device->GetBuffer(format);
 
   std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
-  stream = device->OpenStream(format, true, buffer.current, CaptureInterleaved, &interleaved);
+  stream = device->OpenStream(format, true, buffer.current, CaptureInterleaved, nullptr, &interleaved);
   stream->Start();
   std::cout << "Capturing interleaved...\n";
   ReadLine();
   stream->Stop();
 
   std::ofstream nonInterleaved("xt-audio-non-interleaved.raw", std::ios::out | std::ios::binary);
-  stream = device->OpenStream(format, false, buffer.current, CaptureNonInterleaved, &nonInterleaved);
+  stream = device->OpenStream(format, false, buffer.current, CaptureNonInterleaved, nullptr, &nonInterleaved);
   stream->Start();
   std::cout << "Capturing non-interleaved...\n";
   ReadLine();

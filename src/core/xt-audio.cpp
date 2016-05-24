@@ -178,6 +178,8 @@ char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
     oss << "FullDuplex | ";
   if((capabilities & XtCapabilitiesChannelMask) != 0)
     oss << "ChannelMask | ";
+  if((capabilities & XtCapabilitiesXRunDetection) != 0)
+    oss << "XRunDetection | ";
   std::string result = oss.str();
   result = result.substr(0, result.size() - 3);
   result += "]";
@@ -391,7 +393,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
     if(master == devices[i])
       result->masterIndex = i;
     thisCallback = master == devices[i]? XtiMasterCallback: XtiSlaveCallback;
-    if((error = XtDeviceOpenStream(devices[i], &thisFormat, interleaved, bufferSizes[i], thisCallback, &result->contexts[i], &thisStream)) != 0)
+    if((error = XtDeviceOpenStream(devices[i], &thisFormat, interleaved, bufferSizes[i], thisCallback, xRunCallback, &result->contexts[i], &thisStream)) != 0)
       return error;
     result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
     if((error = XtStreamGetFrames(thisStream, &thisFrames)) != 0)
@@ -509,7 +511,7 @@ XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format
 }
 
 XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
-                                   XtStreamCallback callback, void* user, XtStream** stream) {
+                                   XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream) {
 
   XtError error;
   XtFault fault;
@@ -526,8 +528,8 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
   XT_ASSERT(bufferSize > 0.0);
   XT_ASSERT(format != nullptr);
   XT_ASSERT(stream != nullptr);
-  XT_ASSERT(callback != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(streamCallback != nullptr);
   XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
 
   const char* fmt;
@@ -558,22 +560,21 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
     return error;
   if((error = XtDeviceSupportsAccess(d, XtFalse, &canNonInterleaved)) != 0)
     return error;
-  if((fault = d->OpenStream(format, interleaved, bufferSize, callback, user, stream)) != 0)
+  if((fault = d->OpenStream(format, interleaved, bufferSize, streamCallback, user, stream)) != 0)
     return XtiCreateError(d->GetSystem(), fault);
   if((fault = (*stream)->GetFrames(&frames)) != 0) {
     XtStreamDestroy(*stream);
     return XtiCreateError(d->GetSystem(), fault);
   }
 
-  /* TODO support xrun on regular streams */
-
   (*stream)->device = d;
   (*stream)->user = user;
   (*stream)->format = *format;
   (*stream)->xRunCallback = nullptr;
-  (*stream)->streamCallback = callback;
   (*stream)->interleaved = interleaved;
+  (*stream)->xRunCallback = xRunCallback;
   (*stream)->sampleSize = attributes.size;
+  (*stream)->streamCallback = streamCallback;
   (*stream)->canInterleaved = canInterleaved;
   (*stream)->canNonInterleaved = canNonInterleaved;
   initInterleaved =  interleaved && !canInterleaved;

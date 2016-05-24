@@ -288,7 +288,7 @@ static bool StreamAccessMode(const Xt::Service& service, Xt::Device& device,
 
   std::cout << "Streaming: " << service.GetName() << ": " << device.GetName();
   std::cout << ", format: " << format << ", buffer: " << bufferSize << ", interleaved: " << interleaved<< "\n";
-  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, interleaved, bufferSize, &OnStreamCallback, &context);
+  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, interleaved, bufferSize, &OnStreamCallback, nullptr, &context);
   frames = stream->GetFrames();
   std::cout << "Latency: " << stream->GetLatency() << "\n";
   std::cout << "Buffer: " << frames << " (" << (frames * 1000.0 / format.mix.rate) << " ms) \n";

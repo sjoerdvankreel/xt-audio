@@ -76,7 +76,8 @@ enum Capabilities {
   CapabilitiesTime = 0x1,
   CapabilitiesLatency = 0x2,
   CapabilitiesFullDuplex = 0x4,
-  CapabilitiesChannelMask = 0x8
+  CapabilitiesChannelMask = 0x8,
+  CapabilitiesXRunDetection = 0x10
 };
 
 struct Buffer final {
@@ -151,6 +152,8 @@ std::ostream& operator<<(std::ostream& os, const Attributes& attributes);
 
 typedef void (*FatalCallback)();
 typedef void (*TraceCallback)(Level level, const std::string& message);
+typedef void (*XRunCallback)(const Stream& stream,
+  bool output, bool overflow, int32_t frames, void* user);
 typedef void (*StreamCallback)(
   const Stream& stream, const void* input, void* output, int32_t frames, 
   double time, uint64_t position, bool timeValid, uint64_t error, void* user);
@@ -193,12 +196,14 @@ class Stream final {
 private:
   XtStream* s;
   friend class Device;
+  friend class Service;
   friend struct StreamCallbackForwarder;
   
   Device* const d;
   void* const user;
-  const StreamCallback callback;
-  Stream(Device* d, StreamCallback callback, void* user);
+  const XRunCallback xRunCallback;
+  const StreamCallback streamCallback;
+  Stream(Device* d, StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
 
 public:
   ~Stream();
@@ -225,6 +230,10 @@ public:
   Capabilities GetCapabilities() const;
   std::unique_ptr<Device> OpenDevice(int32_t index) const;
   std::unique_ptr<Device> OpenDefaultDevice(bool output) const;
+  std::unique_ptr<Stream> AggregateStream(Device* devices, const Channels* channels, 
+                                          const double* bufferSizes, int32_t count, 
+                                          const Mix& mix, bool interleaved, Device& master, 
+                                          StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
 };
 
 class Audio final {
@@ -258,8 +267,8 @@ public:
   Buffer GetBuffer(const Format& format) const;
   bool SupportsFormat(const Format& format) const;
   std::string GetChannelName(bool output, int32_t index) const;
-  std::unique_ptr<Stream> OpenStream(const Format& format, bool interleaved, 
-                                     double bufferSize, StreamCallback callback, void* user);
+  std::unique_ptr<Stream> OpenStream(const Format& format, bool interleaved, double bufferSize, 
+                                     StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
 };
 
 } // namespace Xt

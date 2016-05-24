@@ -71,27 +71,27 @@ int RenderAdvancedMain(int argc, char** argv) {
   std::unique_ptr<Xt::Stream> stream;
   Xt::Buffer buffer = device->GetBuffer(format);
 
-  stream = device->OpenStream(format, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(format, true, buffer.current, RenderInterleaved, nullptr, nullptr);
   stream->Start();
   std::cout << "Rendering interleaved...\n";
   ReadLine();
   stream->Stop();
 
-  device->OpenStream(format, false, buffer.current, RenderNonInterleaved, nullptr);
+  device->OpenStream(format, false, buffer.current, RenderNonInterleaved, nullptr, nullptr);
   stream->Start();
   std::cout << "Rendering non-interleaved...\n";
   ReadLine();
   stream->Stop();
 
   Xt::Format sendTo0(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 0);
-  stream = device->OpenStream(sendTo0, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(sendTo0, true, buffer.current, RenderInterleaved, nullptr, nullptr);
   stream->Start();
   std::cout << "Rendering channel mask, channel 0...\n";
   ReadLine();
   stream->Stop();
 
   Xt::Format sendTo1(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 1);
-  stream = device->OpenStream(sendTo1, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(sendTo1, true, buffer.current, RenderInterleaved, nullptr, nullptr);
   stream->Start();
   std::cout << "Rendering channel mask, channel 1...\n";
   ReadLine();

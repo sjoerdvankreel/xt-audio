@@ -35,7 +35,7 @@ int RenderSimpleMain(int argc, char** argv) {
   if(device  && device->SupportsFormat(Format)) {
 
     Xt::Buffer buffer = device->GetBuffer(Format);
-    std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Render, nullptr);
+    std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Render, nullptr, nullptr);
     stream->Start();
 #if _WIN32
     Sleep(1000);
