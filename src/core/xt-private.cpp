@@ -133,6 +133,12 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
   va_end(argCopy);
 }
 
+// ---- stream ----
+
+void XtStream::RequestStop() {
+  XT_FAIL("Async stop request not supported on the current stream.");
+}
+
 void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double time, 
                                uint64_t position, XtBool timeValid, XtError error) {
 

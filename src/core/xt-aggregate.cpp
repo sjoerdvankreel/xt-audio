@@ -251,6 +251,7 @@ void XT_CALLBACK XtiSlaveCallback(
   const XtStream* stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, XtBool timeValid, XtError error, void* user) {
 
+  size_t i;
   int32_t read, written;
   auto ctx = static_cast<XtAggregateContext*>(user);
   int32_t index = ctx->index;
@@ -260,7 +261,13 @@ void XT_CALLBACK XtiSlaveCallback(
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
 
-  // TODO stop aggregate stream on error
+  if(error != 0) {
+    for(i = 0; i < aggregate->streams.size(); i++)
+      if(i != static_cast<size_t>(index))
+        aggregate->streams[i]->RequestStop();
+    aggregate->streamCallback(aggregate, nullptr, nullptr, 0, 0.0, 0, XtFalse, error, aggregate->user);
+    return;
+  }
 
   if(input != nullptr) {
     inputRing.Lock();
@@ -308,9 +315,10 @@ void XT_CALLBACK XtiMasterCallback(
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
 
-  // TODO stop aggregate stream on error
-
   XtiSlaveCallback(stream, input, output, frames, time, position, timeValid, error, user);
+  if(error != 0) {
+    return;
+  }
 
   ringInput = interleaved? 
     static_cast<void*>(&(aggregate->weave.inputInterleaved[0])):

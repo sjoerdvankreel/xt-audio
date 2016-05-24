@@ -58,6 +58,7 @@ struct XtlLinuxStream: public XtStream {
 
   XtlLinuxStream();
   ~XtlLinuxStream();
+  virtual void RequestStop();
   virtual void StopStream() = 0;
   virtual void StartStream() = 0;
   virtual void ProcessBuffer(bool prefill) = 0;

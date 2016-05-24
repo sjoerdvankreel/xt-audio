@@ -197,16 +197,20 @@ XtFault XtwWin32Stream::Stop() {
   return S_OK;
 }
 
-bool XtwWin32Stream::VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
-  if(SUCCEEDED(hr))
-    return true;
+void XtwWin32Stream::RequestStop() {
   StopStream();
-  XtiTrace(XtLevelError, file, line, func, expr);
-  ProcessCallback(nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), hr));
   EnterCriticalSection(&lock.cs);
   state = XtStreamStateStopped;
   XT_ASSERT(SetEvent(respondEvent.event));
   LeaveCriticalSection(&lock.cs);
+}
+
+bool XtwWin32Stream::VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
+  if(SUCCEEDED(hr))
+    return true;
+  RequestStop();
+  XtiTrace(XtLevelError, file, line, func, expr);
+  ProcessCallback(nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), hr));
   return false;
 }
 

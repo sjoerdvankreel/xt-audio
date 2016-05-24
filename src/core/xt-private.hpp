@@ -51,7 +51,7 @@ static_assert(sizeof(XtCapabilities) == 4, "sizeof(XtCapabilities) == 4");
 
 #define XT_IMPLEMENT_STREAM_CONTROL() \
   XtFault Stop();                     \
-  XtFault Start();
+  XtFault Start();                    
 
 #define XT_IMPLEMENT_STREAM(name)               \
   XtFault GetFrames(int32_t* frames) const;     \
@@ -168,6 +168,7 @@ struct XtStream {
   XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
+  virtual void RequestStop();
   virtual XtFault Stop() = 0;
   virtual XtFault Start() = 0;
   virtual XtSystem GetSystem() const = 0;

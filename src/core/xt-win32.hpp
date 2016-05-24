@@ -88,6 +88,7 @@ struct XtwWin32Stream: public XtStream {
 
   XtwWin32Stream();
   ~XtwWin32Stream();
+  virtual void RequestStop();
   virtual void StopStream() = 0;
   virtual void StartStream() = 0;
   virtual void ProcessBuffer(bool prefill) = 0;
