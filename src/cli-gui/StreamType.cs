@@ -5,5 +5,6 @@ namespace Xt {
         Capture,
         Render,
         Duplex,
+        Aggregate
     }
 }
