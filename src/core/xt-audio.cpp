@@ -388,7 +388,6 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
     format.inputs += channels[i].inputs;
     format.outputs += channels[i].outputs;
 
-    XT_ASSERT(!masterFound || master != devices[i]);
     masterFound |= master == devices[i];
     if(master == devices[i])
       result->masterIndex = i;
@@ -400,7 +399,8 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
       return error;
     frames = thisFrames > frames? thisFrames: frames;
   }
-  
+  XT_ASSERT(masterFound);
+
   result->format = format;
   result->frames = frames * 2;
   InitStreamBuffers(result->weave, interleaved, !interleaved, &format, frames, attrs.size);
