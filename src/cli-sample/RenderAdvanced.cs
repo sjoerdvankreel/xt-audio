@@ -84,7 +84,7 @@ namespace Xt {
                     XtBuffer buffer = device.GetBuffer(format);
 
                     using (XtStream stream = device.OpenStream(format, true, false,
-                        buffer.current, RenderInterleaved, null)) {
+                        buffer.current, RenderInterleaved, null, null)) {
                         stream.Start();
                         Console.WriteLine("Rendering interleaved...");
                         ReadLine();
@@ -92,7 +92,7 @@ namespace Xt {
                     }
 
                     using (XtStream stream = device.OpenStream(format, true, true,
-                        buffer.current, RenderInterleavedRaw, null)) {
+                        buffer.current, RenderInterleavedRaw, null, null)) {
                         stream.Start();
                         Console.WriteLine("Rendering interleaved, raw buffers...");
                         ReadLine();
@@ -100,7 +100,7 @@ namespace Xt {
                     }
 
                     using (XtStream stream = device.OpenStream(format, false, false,
-                        buffer.current, RenderNonInterleaved, null)) {
+                        buffer.current, RenderNonInterleaved, null, null)) {
                         stream.Start();
                         Console.WriteLine("Rendering non-interleaved...");
                         ReadLine();
@@ -108,7 +108,7 @@ namespace Xt {
                     }
 
                     using (XtStream stream = device.OpenStream(format, false, true,
-                        buffer.current, RenderNonInterleavedRaw, null)) {
+                        buffer.current, RenderNonInterleavedRaw, null, null)) {
                         stream.Start();
                         Console.WriteLine("Rendering non-interleaved, raw buffers...");
                         ReadLine();
@@ -117,7 +117,7 @@ namespace Xt {
 
                     XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 1, 1L << 0);
                     using (XtStream stream = device.OpenStream(sendTo0, true, false,
-                        buffer.current, RenderInterleaved, null)) {
+                        buffer.current, RenderInterleaved, null, null)) {
                         stream.Start();
                         Console.WriteLine("Rendering channel mask, channel 0...");
                         ReadLine();
@@ -126,7 +126,7 @@ namespace Xt {
 
                     XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 1, 1L << 1);
                     using (XtStream stream = device.OpenStream(sendTo1, true, false, buffer.current,
-                            RenderInterleaved, null)) {
+                            RenderInterleaved, null, null)) {
                         stream.Start();
                         Console.WriteLine("Rendering channel mask, channel 1...");
                         ReadLine();

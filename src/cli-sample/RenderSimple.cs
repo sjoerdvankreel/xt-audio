@@ -29,7 +29,7 @@ namespace Xt {
 
                         XtBuffer buffer = device.GetBuffer(Format);
                         using (XtStream stream = device.OpenStream(Format, true, false,
-                                buffer.current, Render, null)) {
+                                buffer.current, Render, null, null)) {
                             stream.Start();
                             Thread.Sleep(1000);
                             stream.Stop();

@@ -166,16 +166,19 @@ namespace Xt {
         private readonly XtDevice device;
         private readonly XtXRunCallback xRunCallback;
         private readonly XtStreamCallback streamCallback;
+        private readonly XtNative.XRunCallbackWin32 win32XRunCallback;
+        private readonly XtNative.XRunCallbackLinux linuxXRunCallback;
+        private readonly XtNative.StreamCallbackWin32 win32StreamCallback;
+        private readonly XtNative.StreamCallbackLinux linuxStreamCallback;
+
+        internal readonly IntPtr xRunCallbackPtr;
+        internal readonly IntPtr streamCallbackPtr;
 
         private IntPtr s;
         private Array inputInterleaved;
         private Array outputInterleaved;
         private Array inputNonInterleaved;
         private Array outputNonInterleaved;
-        internal XtNative.XRunCallbackWin32 win32XRunCallback;
-        internal XtNative.XRunCallbackLinux linuxXRunCallback;
-        internal XtNative.StreamCallbackWin32 win32StreamCallback;
-        internal XtNative.StreamCallbackLinux linuxStreamCallback;
 
         internal XtStream(XtDevice device, bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
             this.raw = raw;
@@ -183,6 +186,18 @@ namespace Xt {
             this.device = device;
             this.xRunCallback = xRunCallback;
             this.streamCallback = streamCallback;
+            this.win32StreamCallback = new XtNative.StreamCallbackWin32(StreamCallback);
+            this.linuxStreamCallback = new XtNative.StreamCallbackLinux(StreamCallback);
+            Delegate streamCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
+                ? (Delegate)win32StreamCallback : linuxStreamCallback;
+            streamCallbackPtr = Marshal.GetFunctionPointerForDelegate(streamCallbackDelegate);
+            if (xRunCallback != null) {
+                this.win32XRunCallback = new XtNative.XRunCallbackWin32(XRunCallback);
+                this.linuxXRunCallback = new XtNative.XRunCallbackLinux(XRunCallback);
+                Delegate xRunCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
+                    ? (Delegate)win32XRunCallback : linuxXRunCallback;
+                xRunCallbackPtr = Marshal.GetFunctionPointerForDelegate(xRunCallbackDelegate);
+            }
         }
 
         public bool IsRaw() {

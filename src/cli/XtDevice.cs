@@ -90,17 +90,14 @@ namespace Xt {
             return XtNative.FreeStringFromUtf8(name);
         }
 
-        public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize, XtStreamCallback callback, object user) {
+        public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize, 
+            XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
+
             IntPtr s;
-            XtStream stream = new XtStream(this, raw, callback, null, user);
+            XtStream stream = new XtStream(this, raw, streamCallback, xRunCallback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);
-            stream.win32StreamCallback = new XtNative.StreamCallbackWin32(stream.StreamCallback);
-            stream.linuxStreamCallback = new XtNative.StreamCallbackLinux(stream.StreamCallback);
-            Delegate cbDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
-                ? (Delegate)stream.win32StreamCallback 
-                : stream.linuxStreamCallback;
-            IntPtr cb = Marshal.GetFunctionPointerForDelegate(cbDelegate);
-            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, interleaved, bufferSize, cb, IntPtr.Zero, out s));
+            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, interleaved,
+                bufferSize, stream.streamCallbackPtr, stream.xRunCallbackPtr, IntPtr.Zero, out s));
             stream.Init(s);
             return stream;
         }

@@ -99,7 +99,7 @@ namespace Xt {
                     using (FileStream recording = new FileStream(
                         "xt-audio-interleaved.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, true, false,
-                        buffer.current, CaptureInterleaved, context)) {
+                        buffer.current, CaptureInterleaved, null, context)) {
 
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
@@ -112,7 +112,7 @@ namespace Xt {
                     using (FileStream recording = new FileStream(
                         "xt-audio-interleaved-raw.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, true, true,
-                        buffer.current, CaptureInterleavedRaw, context)) {
+                        buffer.current, CaptureInterleavedRaw, null, context)) {
 
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
@@ -125,7 +125,7 @@ namespace Xt {
                     using (FileStream recording = new FileStream(
                         "xt-audio-non-interleaved.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, false, false,
-                        buffer.current, CaptureNonInterleaved, context)) {
+                        buffer.current, CaptureNonInterleaved, null, context)) {
 
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
@@ -138,7 +138,7 @@ namespace Xt {
                     using (FileStream recording = new FileStream(
                         "xt-audio-non-interleaved-raw.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, false, true,
-                        buffer.current, CaptureNonInterleavedRaw, context)) {
+                        buffer.current, CaptureNonInterleavedRaw, null, context)) {
 
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];

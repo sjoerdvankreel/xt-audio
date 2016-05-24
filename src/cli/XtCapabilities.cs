@@ -24,6 +24,7 @@ namespace Xt {
         Time = 0x1,
         Latency = 0x2,
         FullDuplex = 0x4,
-        ChannelMask = 0x8
+        ChannelMask = 0x8,
+        XRunDetection = 0x10
     }
 }

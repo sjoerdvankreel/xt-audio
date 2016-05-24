@@ -28,7 +28,7 @@ namespace Xt {
                         using (FileStream recording = new FileStream(
                             "xt-audio.raw", FileMode.Create, FileAccess.Write))
                         using (XtStream stream = device.OpenStream(Format, true, false,
-                            buffer.current, Capture, recording)) {
+                            buffer.current, Capture, null, recording)) {
                             stream.Start();
                             Thread.Sleep(1000);
                             stream.Stop();

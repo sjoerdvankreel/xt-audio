@@ -67,31 +67,15 @@ namespace Xt {
 
             IntPtr str;
             IntPtr channelsPtr = IntPtr.Zero;
-            IntPtr xRunCallbackPtr = IntPtr.Zero;
             IntPtr[] ds = devices.Select(d => d.d).ToArray();
             XtStream stream = new XtStream(null, raw, streamCallback, xRunCallback, user);
-            stream.win32StreamCallback = new XtNative.StreamCallbackWin32(stream.StreamCallback);
-            stream.linuxStreamCallback = new XtNative.StreamCallbackLinux(stream.StreamCallback);
-            Delegate streamCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
-                ? (Delegate)stream.win32StreamCallback
-                : stream.linuxStreamCallback;
-            IntPtr streamCallbackPtr = Marshal.GetFunctionPointerForDelegate(streamCallbackDelegate);
-            if (xRunCallback != null) {
-                stream.win32XRunCallback = new XtNative.XRunCallbackWin32(stream.XRunCallback);
-                stream.linuxXRunCallback = new XtNative.XRunCallbackLinux(stream.XRunCallback);
-                Delegate xRunCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
-                    ? (Delegate)stream.win32XRunCallback
-                    : stream.linuxXRunCallback;
-                xRunCallbackPtr = Marshal.GetFunctionPointerForDelegate(xRunCallbackDelegate);
-            }
-
             try {
                 int size = Marshal.SizeOf(typeof(XtChannels));
                 channelsPtr = Marshal.AllocHGlobal(count * size);
                 for (int i = 0; i < count; i++)
                     Marshal.StructureToPtr(channels[i], new IntPtr((byte*)channelsPtr + i * size), false);
                 XtNative.HandleError(XtNative.XtServiceAggregateStream(s, ds, channelsPtr, bufferSizes, count,
-                    mix, interleaved, master.d, streamCallbackPtr, xRunCallbackPtr, IntPtr.Zero, out str));
+                    mix, interleaved, master.d, stream.streamCallbackPtr, stream.xRunCallbackPtr, IntPtr.Zero, out str));
             } finally {
                 if (channelsPtr != IntPtr.Zero)
                     Marshal.FreeHGlobal(channelsPtr);
