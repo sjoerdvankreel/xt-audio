@@ -164,6 +164,8 @@ enum XtCapabilities {
    *
    * Streams support xrun detection and will invoke the 
    * application's xrun callback when an under/overflow occurs.
+   *
+   * @see XtXRunCallback
    */
   XtCapabilitiesXRunDetection = 0x10
 };
