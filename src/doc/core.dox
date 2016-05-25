@@ -371,7 +371,7 @@
   * @param stream The audio stream. May be used to query buffer size and latencies only, do not call control methods from the callback.
   * @param output indicates whether the xrun occurred in an input or output stream. 
   * @param overflow indicates whether an underflow (false) or overflow (true) occurred.
-  * @param frames the xrun size.
+  * @param frames the xrun size, or 0 if unknown.
   * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
   *
   * The xrun callback will normally be called from a high priority thread. To prevent more 
