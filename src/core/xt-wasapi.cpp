@@ -507,7 +507,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(hr))
       return;
     if(((flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) != 0) && xRunCallback != nullptr)
-      xRunCallback(this, XtFalse, XtTrue, 0, user);
+      xRunCallback(aggregationIndex, XtFalse, XtTrue, 0, user);
     timeValid = (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) == 0;
     position = !timeValid? 0: wasapiPosition;
     time = !timeValid? 0: wasapiTime / XtWsHnsPerMs;

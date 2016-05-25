@@ -364,27 +364,29 @@
   * @see XtAudioInit
   */
   
-/** @typedef typedef void (*XtXRunCallback)(const XtStream* stream, XtBool output, XtBool overflow, int32_t frames, void* user)
+/** @typedef typedef void (*XtXRunCallback)(int32_t index, XtBool output, XtBool overflow, int32_t frames, void* user)
   * @brief Audio xrun callback.
   *
   * @ingroup library
-  * @param stream The audio stream. May be used to query buffer size and latencies only, do not call control methods from the callback.
-  * @param output indicates whether the xrun occurred in an input or output stream. 
+  * @param stream index the stream index.
+  * @param output indicates whether the xrun occurred in an input or output stream.
   * @param overflow indicates whether an underflow (false) or overflow (true) occurred.
   * @param frames the xrun size, or 0 if unknown.
   * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
   *
-  * The xrun callback will normally be called from a high priority thread. To prevent more 
+  * The xrun callback will normally be called from a high priority thread. To prevent more
   * glitches the callback should not call any blocking methods (using locks, doing I/O etc).
+  *
+  * The stream index will be 0 for regular streams, -1 for aggregate streams or the device
+  * index passed to XtServiceAggregateStream for underlying streams of aggregate streams.
   *
   * Note for languages that support exceptions: the xrun callback should NEVER throw.
   * It is considered a fatal error if an exception propagates through the callback.
   *
   * Note for aggregate streams: xruns which occur during stream aggregation are always reported
   * to the application regardless of whether the stream's service supports xrun detection (see XtCapabilities).
-  * When an xrun occurs on one of the underlying streams, the callback is invoked using the actual stream
-  * that caused the xrun. When an xrun occurs during stream aggregation the callback is invoked using
-  * the aggregate stream itself as the stream argument.
+  * When an xrun occurs on one of the underlying streams, the callback is invoked using the index of the
+  * actual stream that caused the xrun.
   *
   * @see XtDeviceOpenStream
   * @see XtStreamStart

@@ -274,7 +274,7 @@ typedef struct XtAttributes XtAttributes;
 
 typedef void (XT_CALLBACK *XtFatalCallback)(void);
 typedef void (XT_CALLBACK *XtTraceCallback)(XtLevel level, const char* message);
-typedef void (XT_CALLBACK *XtXRunCallback)(const XtStream* stream,
+typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index,
   XtBool output, XtBool overflow, int32_t frames, void* user);
 typedef void (XT_CALLBACK *XtStreamCallback)(
   const XtStream* stream, const void* input, void* output, int32_t frames,

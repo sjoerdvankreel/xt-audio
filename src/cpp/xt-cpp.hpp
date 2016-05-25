@@ -152,7 +152,7 @@ std::ostream& operator<<(std::ostream& os, const Attributes& attributes);
 
 typedef void (*FatalCallback)();
 typedef void (*TraceCallback)(Level level, const std::string& message);
-typedef void (*XRunCallback)(const Stream& stream,
+typedef void (*XRunCallback)(int32_t index,
   bool output, bool overflow, int32_t frames, void* user);
 typedef void (*StreamCallback)(
   const Stream& stream, const void* input, void* output, int32_t frames, 

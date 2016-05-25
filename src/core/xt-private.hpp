@@ -163,6 +163,7 @@ struct XtStream {
   XtBool interleaved;
   XtBool canInterleaved;
   XtBool canNonInterleaved;
+  int32_t aggregationIndex;
   XtXRunCallback xRunCallback;
   XtStreamCallback streamCallback;
   XtIntermediateBuffers intermediate;

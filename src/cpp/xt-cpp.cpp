@@ -49,11 +49,11 @@ ForwardTraceCallback(XtLevel level, const char* message) {
 }
 
 struct StreamCallbackForwarder {
-  static void XT_CALLBACK ForwardXRun(const XtStream* stream,
+  static void XT_CALLBACK ForwardXRun(int32_t index,
     XtBool output, XtBool overflow, int32_t frames, void* user) {
 
     auto s = static_cast<Stream*>(user);
-    s->xRunCallback(*s, output != XtFalse, overflow != XtFalse, frames, s->user);
+    s->xRunCallback(index, output != XtFalse, overflow != XtFalse, frames, s->user);
   }
 
   static void XT_CALLBACK ForwardStream(

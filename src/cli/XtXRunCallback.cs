@@ -17,5 +17,5 @@ using System;
  */
 namespace Xt {
 
-    public delegate void XtXRunCallback(XtStream stream, bool output, bool overflow, int frames, object user);
+    public delegate void XtXRunCallback(int index, bool output, bool overflow, int frames, object user);
 }
