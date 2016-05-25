@@ -63,10 +63,10 @@ struct WasapiStream: public XtwWin32Stream {
   XT_IMPLEMENT_STREAM(Wasapi);
 
   ~WasapiStream() { Stop(); }
-  WasapiStream(UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
+  WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
     CComPtr<IAudioClient> client, CComPtr<IAudioClient> loopback, CComPtr<IAudioCaptureClient> capture,
     CComPtr<IAudioRenderClient> render, const Options& options):
-  XtwWin32Stream(), mmcssHandle(), bufferFrames(bufferFrames),
+  XtwWin32Stream(secondary), mmcssHandle(), bufferFrames(bufferFrames),
   options(options), streamEvent(), clock(clock), clock2(clock2), 
   client(client), loopback(loopback), render(render), capture(capture) {}
 
@@ -338,7 +338,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
 }
 
 XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
-                                 XtStreamCallback callback, void* user, XtStream** stream) {
+                                 bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
 
   HRESULT hr;
   DWORD flags;
@@ -425,7 +425,7 @@ XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
     XT_VERIFY_COM(device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&loopbackClient)));
     XT_VERIFY_COM(loopbackClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, wasapiBufferSize, 0, pWfx, nullptr));
   }
-  result = std::make_unique<WasapiStream>(bufferFrames, clock, clock2, streamClient, loopbackClient, capture, render, this->options);
+  result = std::make_unique<WasapiStream>(secondary, bufferFrames, clock, clock2, streamClient, loopbackClient, capture, render, this->options);
   if(this->options.loopback)
     XT_VERIFY_COM(loopbackClient->SetEventHandle(result->streamEvent.event));
   else

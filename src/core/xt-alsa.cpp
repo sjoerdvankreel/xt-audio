@@ -109,8 +109,9 @@ struct AlsaStream: public XtlLinuxStream {
   XT_IMPLEMENT_STREAM(Alsa);
 
   ~AlsaStream() { Stop(); }
-  AlsaStream(AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
+  AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
              int32_t bufferFrames, int32_t channels, int32_t sampleSize):
+  XtlLinuxStream(secondary),
   mmap(mmap), 
   output(output),
   pcm(std::move(p)), 
@@ -417,7 +418,7 @@ XtFault AlsaDevice::SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams
 }
 
 XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               XtStreamCallback callback, void* user, XtStream** stream) {
+                               bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
   
   XtFault fault;
   snd_pcm_t* pcm;
@@ -456,7 +457,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
 
   sampleSize = XtiGetSampleSize(format->mix.sample);
   channels = format->inputs + format->outputs;
-  *stream = new AlsaStream(std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
+  *stream = new AlsaStream(secondary, std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
   return 0;
 }
 

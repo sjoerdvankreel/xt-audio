@@ -184,11 +184,17 @@ void XtiInitPlatform(void* wnd) {
 
 // ---- win32 ----
 
-XtwWin32Stream::XtwWin32Stream():
-state(XtStreamStateStopped), lock(), respondEvent(), controlEvent() {
-  HANDLE thread = CreateThread(nullptr, 0, &Win32StreamCallback, this, 0, nullptr);
-  XT_ASSERT(thread != nullptr);
-  CloseHandle(thread);
+XtwWin32Stream::XtwWin32Stream(bool secondary):
+XtManagedStream(secondary),
+state(XtStreamStateStopped), 
+lock(),
+respondEvent(),
+controlEvent() {
+  if(!secondary) {
+    HANDLE thread = CreateThread(nullptr, 0, &Win32StreamCallback, this, 0, nullptr);
+    XT_ASSERT(thread != nullptr);
+    CloseHandle(thread);
+  }
 }
 
 XtwWin32Stream::~XtwWin32Stream() {

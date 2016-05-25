@@ -73,8 +73,8 @@ struct PulseStream: public XtlLinuxStream {
   XT_IMPLEMENT_STREAM(Pulse);
 
   ~PulseStream() { Stop(); }
-  PulseStream(XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
-  output(output), client(std::move(c)), 
+  PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
+  XtlLinuxStream(secondary), output(output), client(std::move(c)), 
   audio(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   bufferFrames(bufferFrames) 
   { XT_ASSERT(client.simple != nullptr); }
@@ -224,7 +224,7 @@ XtFault PulseDevice::SupportsFormat(const XtFormat* format, XtBool* supports) co
 }
 
 XtFault PulseDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
-                                XtStreamCallback callback, void* user, XtStream** stream) {
+                                bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
 
   uint64_t mask;
   pa_simple* client;
@@ -255,7 +255,7 @@ XtFault PulseDevice::OpenStream(const XtFormat* format, XtBool interleaved, doub
   if((client = pa_simple_new(nullptr, XtiId, dir, nullptr, 
     XtiId, &spec, &map, nullptr, &fault)) == nullptr)
     return fault;
-  *stream = new PulseStream(XtPaSimple(client), output, bufferFrames, frameSize);
+  *stream = new PulseStream(secondary, XtPaSimple(client), output, bufferFrames, frameSize);
   return PA_OK;
 }
 

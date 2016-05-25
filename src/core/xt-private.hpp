@@ -84,7 +84,7 @@ const XtService* XtiService ## name = &Service ## name
   XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const;           \
   XtFault GetChannelName(XtBool output, int32_t index, char** name) const;          \
   XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, \
-                     XtStreamCallback callback, void* user, XtStream** stream)
+                     bool secondary, XtStreamCallback callback, void* user, XtStream** stream)
 
 // ---- internal ----
 
@@ -169,6 +169,7 @@ struct XtStream {
   XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
+  virtual bool IsManaged();
   virtual void RequestStop();
   virtual XtFault Stop() = 0;
   virtual XtFault Start() = 0;
@@ -177,6 +178,16 @@ struct XtStream {
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
   void ProcessCallback(void* input, void* output, int32_t frames, double time,
                        uint64_t position, XtBool timeValid, XtError error);
+};
+
+struct XtManagedStream: public XtStream {
+  const bool secondary;
+  XtManagedStream(bool secondary);
+  virtual ~XtManagedStream() {};
+  virtual bool IsManaged();
+  virtual void StopStream() = 0;
+  virtual void StartStream() = 0;
+  virtual void ProcessBuffer(bool prefill) = 0;
 };
 
 struct XtAggregate: public XtStream {
@@ -212,7 +223,7 @@ struct XtDevice {
   virtual XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const = 0;
   virtual XtFault GetChannelName(XtBool output, int32_t index, char** name) const = 0;
   virtual XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                             XtStreamCallback callback, void* user, XtStream** stream) = 0;
+                             bool secondary, XtStreamCallback callback, void* user, XtStream** stream) = 0;
 };
 
 // ---- internal ----

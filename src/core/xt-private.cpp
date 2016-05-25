@@ -135,6 +135,18 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
 
 // ---- stream ----
 
+XtManagedStream::XtManagedStream(bool secondary):
+secondary(secondary) {
+}
+
+bool XtManagedStream::IsManaged() {
+  return true;
+}
+
+bool XtStream::IsManaged() {
+  return false;
+}
+
 void XtStream::RequestStop() {
   XT_FAIL("Async stop request not supported on the current stream.");
 }

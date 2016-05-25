@@ -189,10 +189,16 @@ XtCause XtlPosixErrorToCause(XtFault fault) {
   }
 }
 
-XtlLinuxStream::XtlLinuxStream():
-lock(), state(XtStreamStateStopped), respondCv(), controlCv() {
-  pthread_t thread;
-  XT_ASSERT(pthread_create(&thread, nullptr, &LinuxStreamCallback, this) == 0);
+XtlLinuxStream::XtlLinuxStream(bool secondary):
+XtManagedStream(secondary),
+lock(),
+state(XtStreamStateStopped),
+respondCv(), 
+controlCv() {
+  if(!secondary) {
+    pthread_t thread;
+    XT_ASSERT(pthread_create(&thread, nullptr, &LinuxStreamCallback, this) == 0);
+  }
 }
 
 XtlLinuxStream::~XtlLinuxStream() {

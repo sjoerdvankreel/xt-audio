@@ -463,7 +463,7 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
 }
 
 XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               XtStreamCallback callback, void* user, XtStream** stream) {
+                               bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
   
   double wantedSize;
   long asioBufferSize;

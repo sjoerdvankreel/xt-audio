@@ -321,7 +321,7 @@ XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
 }
 
 XtFault JackDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               XtStreamCallback callback, void* user, XtStream** stream) {
+                               bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
   
   XtFault fault;
   jack_client_t* c;

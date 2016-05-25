@@ -79,19 +79,16 @@ struct XtwEvent {
   XtwEvent(): event() { XT_ASSERT((event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
 };
 
-struct XtwWin32Stream: public XtStream {
+struct XtwWin32Stream: public XtManagedStream {
   XtStreamState state;
   XtwCriticalSection lock;
   const XtwEvent respondEvent;
   const XtwEvent controlEvent;
   XT_IMPLEMENT_STREAM_CONTROL();
 
-  XtwWin32Stream();
+  XtwWin32Stream(bool secondary);
   ~XtwWin32Stream();
   virtual void RequestStop();
-  virtual void StopStream() = 0;
-  virtual void StartStream() = 0;
-  virtual void ProcessBuffer(bool prefill) = 0;
   bool VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr);
 };
 

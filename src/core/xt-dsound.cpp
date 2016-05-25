@@ -61,11 +61,11 @@ struct DSoundStream: public XtwWin32Stream {
   XT_IMPLEMENT_STREAM(DSound);
 
   ~DSoundStream() { Stop(); }
-  DSoundStream(
+  DSoundStream(bool secondary,
     CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
-  frameSize(frameSize),
+  XtwWin32Stream(secondary), frameSize(frameSize),
   buffer(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   xtBytesProcessed(0), dsBytesProcessed(0),
   previousDsPosition(0), bufferFrames(bufferFrames), timer(),
@@ -329,7 +329,7 @@ XtFault DSoundDevice::GetMix(XtMix** mix) const {
 }
 
 XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                                 XtStreamCallback callback, void* user, XtStream** stream) {
+                                 bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
 
   HRESULT hr;
   int32_t frameSize;
@@ -366,7 +366,7 @@ XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
     XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
   }
 
-  *stream = new DSoundStream(newInput, newOutput, capture, render, bufferFrames, frameSize);
+  *stream = new DSoundStream(secondary, newInput, newOutput, capture, render, bufferFrames, frameSize);
   return S_OK;
 }
 

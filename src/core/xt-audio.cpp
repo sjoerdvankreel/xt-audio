@@ -44,6 +44,82 @@ static void InitStreamBuffers(
   }
 }
 
+static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, bool secondary,
+                                  XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream) {
+
+  XtError error;
+  XtFault fault;
+  int32_t frames;
+  XtBool supports;
+  XtSystem system;
+  XtBool canInterleaved;
+  XtBool initInterleaved;
+  XtAttributes attributes;
+  XtBool canNonInterleaved;
+  XtBool initNonInterleaved;
+
+  XT_ASSERT(d != nullptr);
+  XT_ASSERT(bufferSize > 0.0);
+  XT_ASSERT(format != nullptr);
+  XT_ASSERT(stream != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(streamCallback != nullptr);
+  XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
+
+  const char* fmt;
+  char* formatCString;
+  std::string formatStdString;
+  double rate = format->mix.rate;
+  uint64_t inMask = format->inMask;
+  int32_t inputs = format->inputs;
+  uint64_t outMask = format->outMask;
+  int32_t outputs = format->outputs;
+  XtSample sample = format->mix.sample;
+
+  XtAudioGetSampleAttributes(sample, &attributes);
+
+  *stream = nullptr;
+  system = XtDeviceGetSystem(d);
+  formatCString = XtPrintFormatToString(format);
+  formatStdString = formatCString;
+  XtAudioFree(formatCString);
+  fmt = "Opening stream: device %s, bufferSize %f, format %s, interleaved %d...";
+  XT_TRACE(XtLevelInfo, fmt, XtiTryGetDeviceName(d).c_str(), bufferSize, formatStdString.c_str(), interleaved);
+  
+  if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
+    return error;
+  if(!supports)
+    return XtiCreateError(system, XtAudioGetServiceBySystem(system)->GetFormatFault());
+  if((error = XtDeviceSupportsAccess(d, XtTrue, &canInterleaved)) != 0)
+    return error;
+  if((error = XtDeviceSupportsAccess(d, XtFalse, &canNonInterleaved)) != 0)
+    return error;
+  if((fault = d->OpenStream(format, interleaved, bufferSize, secondary, streamCallback, user, stream)) != 0)
+    return XtiCreateError(d->GetSystem(), fault);
+  if((fault = (*stream)->GetFrames(&frames)) != 0) {
+    XtStreamDestroy(*stream);
+    return XtiCreateError(d->GetSystem(), fault);
+  }
+
+  (*stream)->device = d;
+  (*stream)->user = user;
+  (*stream)->format = *format;
+  (*stream)->aggregationIndex = 0;
+  (*stream)->xRunCallback = nullptr;
+  (*stream)->interleaved = interleaved;
+  (*stream)->xRunCallback = xRunCallback;
+  (*stream)->sampleSize = attributes.size;
+  (*stream)->streamCallback = streamCallback;
+  (*stream)->canInterleaved = canInterleaved;
+  (*stream)->canNonInterleaved = canNonInterleaved;
+  initInterleaved =  interleaved && !canInterleaved;
+  initNonInterleaved = !interleaved && !canNonInterleaved;
+  InitStreamBuffers((*stream)->intermediate, initInterleaved, initNonInterleaved, format, frames, attributes.size);
+  fmt = "Opened stream: device %s, bufferSize %f, format %s, interleaved %d.";
+  XT_TRACE(XtLevelInfo, fmt, XtiTryGetDeviceName(d).c_str(), bufferSize, formatStdString.c_str(), interleaved);
+  return 0;
+}
+
 // ---- error ----
 
 uint32_t XT_CALL XtErrorGetFault(XtError error) {
@@ -394,7 +470,8 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
     if(master == devices[i])
       result->masterIndex = i;
     thisCallback = master == devices[i]? XtiMasterCallback: XtiSlaveCallback;
-    if((error = XtDeviceOpenStream(devices[i], &thisFormat, interleaved, bufferSizes[i], thisCallback, xRunCallback, &result->contexts[i], &thisStream)) != 0)
+    if((error = OpenStreamInternal(devices[i], &thisFormat, interleaved, bufferSizes[i], 
+      master != devices[i], thisCallback, xRunCallback, &result->contexts[i], &thisStream)) != 0)
       return error;
     result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
     thisStream->aggregationIndex = i;
@@ -516,77 +593,7 @@ XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format
 XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
                                    XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream) {
 
-  XtError error;
-  XtFault fault;
-  int32_t frames;
-  XtBool supports;
-  XtSystem system;
-  XtBool canInterleaved;
-  XtBool initInterleaved;
-  XtAttributes attributes;
-  XtBool canNonInterleaved;
-  XtBool initNonInterleaved;
-
-  XT_ASSERT(d != nullptr);
-  XT_ASSERT(bufferSize > 0.0);
-  XT_ASSERT(format != nullptr);
-  XT_ASSERT(stream != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(streamCallback != nullptr);
-  XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
-
-  const char* fmt;
-  char* formatCString;
-  std::string formatStdString;
-  double rate = format->mix.rate;
-  uint64_t inMask = format->inMask;
-  int32_t inputs = format->inputs;
-  uint64_t outMask = format->outMask;
-  int32_t outputs = format->outputs;
-  XtSample sample = format->mix.sample;
-
-  XtAudioGetSampleAttributes(sample, &attributes);
-
-  *stream = nullptr;
-  system = XtDeviceGetSystem(d);
-  formatCString = XtPrintFormatToString(format);
-  formatStdString = formatCString;
-  XtAudioFree(formatCString);
-  fmt = "Opening stream: device %s, bufferSize %f, format %s, interleaved %d...";
-  XT_TRACE(XtLevelInfo, fmt, XtiTryGetDeviceName(d).c_str(), bufferSize, formatStdString.c_str(), interleaved);
-  
-  if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
-    return error;
-  if(!supports)
-    return XtiCreateError(system, XtAudioGetServiceBySystem(system)->GetFormatFault());
-  if((error = XtDeviceSupportsAccess(d, XtTrue, &canInterleaved)) != 0)
-    return error;
-  if((error = XtDeviceSupportsAccess(d, XtFalse, &canNonInterleaved)) != 0)
-    return error;
-  if((fault = d->OpenStream(format, interleaved, bufferSize, streamCallback, user, stream)) != 0)
-    return XtiCreateError(d->GetSystem(), fault);
-  if((fault = (*stream)->GetFrames(&frames)) != 0) {
-    XtStreamDestroy(*stream);
-    return XtiCreateError(d->GetSystem(), fault);
-  }
-
-  (*stream)->device = d;
-  (*stream)->user = user;
-  (*stream)->format = *format;
-  (*stream)->aggregationIndex = 0;
-  (*stream)->xRunCallback = nullptr;
-  (*stream)->interleaved = interleaved;
-  (*stream)->xRunCallback = xRunCallback;
-  (*stream)->sampleSize = attributes.size;
-  (*stream)->streamCallback = streamCallback;
-  (*stream)->canInterleaved = canInterleaved;
-  (*stream)->canNonInterleaved = canNonInterleaved;
-  initInterleaved =  interleaved && !canInterleaved;
-  initNonInterleaved = !interleaved && !canNonInterleaved;
-  InitStreamBuffers((*stream)->intermediate, initInterleaved, initNonInterleaved, format, frames, attributes.size);
-  fmt = "Opened stream: device %s, bufferSize %f, format %s, interleaved %d.";
-  XT_TRACE(XtLevelInfo, fmt, XtiTryGetDeviceName(d).c_str(), bufferSize, formatStdString.c_str(), interleaved);
-  return 0;
+  return OpenStreamInternal(d, format, interleaved, bufferSize, false, streamCallback, xRunCallback, user, stream);
 }
 
 // ---- stream ----
