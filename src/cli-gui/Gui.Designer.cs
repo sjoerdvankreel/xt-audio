@@ -48,8 +48,6 @@
             System.Windows.Forms.Label label14;
             System.Windows.Forms.Label label15;
             System.Windows.Forms.Label label20;
-            System.Windows.Forms.Label label9123;
-            System.Windows.Forms.Label label27846;
             System.Windows.Forms.Label label21;
             this.messages = new System.Windows.Forms.TextBox();
             this.isWin32 = new System.Windows.Forms.Label();
@@ -109,8 +107,6 @@
             label14 = new System.Windows.Forms.Label();
             label15 = new System.Windows.Forms.Label();
             label20 = new System.Windows.Forms.Label();
-            label9123 = new System.Windows.Forms.Label();
-            label27846 = new System.Windows.Forms.Label();
             label21 = new System.Windows.Forms.Label();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bufferSize)).BeginInit();
@@ -685,42 +681,22 @@
             this.outputMaster.Text = "Output master";
             this.outputMaster.UseVisualStyleBackColor = true;
             // 
-            // label9123
-            // 
-            label9123.AutoSize = true;
-            label9123.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            label9123.Location = new System.Drawing.Point(447, 401);
-            label9123.Name = "label9123";
-            label9123.Size = new System.Drawing.Size(40, 13);
-            label9123.TabIndex = 71;
-            label9123.Text = "Input:";
-            // 
-            // label27846
-            // 
-            label27846.AutoSize = true;
-            label27846.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            label27846.Location = new System.Drawing.Point(447, 428);
-            label27846.Name = "label27846";
-            label27846.Size = new System.Drawing.Size(53, 13);
-            label27846.TabIndex = 72;
-            label27846.Text = "Output: ";
-            // 
             // secondaryInput
             // 
             this.secondaryInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.secondaryInput.FormattingEnabled = true;
-            this.secondaryInput.Location = new System.Drawing.Point(506, 398);
+            this.secondaryInput.Location = new System.Drawing.Point(447, 398);
             this.secondaryInput.Name = "secondaryInput";
-            this.secondaryInput.Size = new System.Drawing.Size(266, 21);
+            this.secondaryInput.Size = new System.Drawing.Size(325, 21);
             this.secondaryInput.TabIndex = 73;
             // 
             // secondaryOutput
             // 
             this.secondaryOutput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.secondaryOutput.FormattingEnabled = true;
-            this.secondaryOutput.Location = new System.Drawing.Point(506, 425);
+            this.secondaryOutput.Location = new System.Drawing.Point(447, 425);
             this.secondaryOutput.Name = "secondaryOutput";
-            this.secondaryOutput.Size = new System.Drawing.Size(266, 21);
+            this.secondaryOutput.Size = new System.Drawing.Size(325, 21);
             this.secondaryOutput.TabIndex = 74;
             // 
             // label21
@@ -729,9 +705,9 @@
             label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             label21.Location = new System.Drawing.Point(447, 374);
             label21.Name = "label21";
-            label21.Size = new System.Drawing.Size(231, 13);
+            label21.Size = new System.Drawing.Size(305, 13);
             label21.TabIndex = 75;
-            label21.Text = "Stream aggregation secondary devices:";
+            label21.Text = "Stream aggregation secondary input/output devices:";
             // 
             // XtGui
             // 
@@ -739,8 +715,6 @@
             this.Controls.Add(label21);
             this.Controls.Add(this.secondaryOutput);
             this.Controls.Add(this.secondaryInput);
-            this.Controls.Add(label27846);
-            this.Controls.Add(label9123);
             this.Controls.Add(this.outputMaster);
             this.Controls.Add(this.streamRaw);
             this.Controls.Add(this.streamInterleaved);
