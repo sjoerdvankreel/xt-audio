@@ -5,6 +5,7 @@ namespace Xt {
         Capture,
         Render,
         Duplex,
-        Aggregate
+        Aggregate,
+        Latency
     }
 }

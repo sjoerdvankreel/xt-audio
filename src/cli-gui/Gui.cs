@@ -305,8 +305,8 @@ namespace Xt {
             try {
 
                 StreamType type = (StreamType)streamType.SelectedItem;
-                bool input = type == StreamType.Capture || type == StreamType.Duplex;
-                bool output = type == StreamType.Render || type == StreamType.Duplex;
+                bool input = type == StreamType.Capture || type == StreamType.Duplex || type == StreamType.Latency;
+                bool output = type == StreamType.Render || type == StreamType.Duplex || type == StreamType.Latency;
                 XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
                 XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
                 XtDevice secondaryInputDevice = ((DeviceView)this.secondaryInput.SelectedItem).device;
@@ -391,7 +391,7 @@ namespace Xt {
                         bufferSize.Value, callback.OnCallback, xRunCallback.OnCallback, "duplex-user-data");
                     outputStream.Start();
 
-                } else {
+                } else if (type == StreamType.Aggregate) {
 
                     List<XtDevice> devices = new List<XtDevice>();
                     List<double> bufferSizes = new List<double>();
@@ -433,6 +433,31 @@ namespace Xt {
                         bufferSizesArray, devicesArray.Length, outputFormat.mix, streamInterleaved.Checked, streamRaw.Checked,
                         master, streamCallback.OnCallback, xRunCallback.OnCallback, "aggregate-user-data");
                     streamCallback.Init(outputStream.GetFrames());
+                    outputStream.Start();
+
+                } else if (inputDevice == outputDevice) {
+
+                    XtFormat duplexFormat = inputFormat;
+                    duplexFormat.outputs = outputFormat.outputs;
+                    duplexFormat.outMask = outputFormat.outMask;
+                    LatencyCallback callback = new LatencyCallback(OnStreamError, AddMessage);
+                    outputStream = outputDevice.OpenStream(duplexFormat, streamInterleaved.Checked, streamRaw.Checked,
+                        bufferSize.Value, callback.OnCallback, xRunCallback.OnCallback, "latency-user-data");
+                    outputStream.Start();
+
+                } else {
+
+                    XtDevice[] devices = new XtDevice[] { inputDevice, outputDevice };
+                    double[] bufferSizes = new double[] { bufferSize.Value, bufferSize.Value };
+                    XtChannels[] channels = new XtChannels[] {
+                        new XtChannels(inputFormat.inputs, inputFormat.inMask, 0, 0),
+                        new XtChannels(0, 0, outputFormat.outputs, outputFormat.outMask)
+                    };
+                    XtDevice master = outputMaster.Checked ? outputDevice : inputDevice;
+                    LatencyCallback callback = new LatencyCallback(OnStreamError, AddMessage);
+                    outputStream = ((XtService)service.SelectedItem).AggregateStream(devices, channels,
+                        bufferSizes, devices.Length, outputFormat.mix, streamInterleaved.Checked, streamRaw.Checked,
+                        master, callback.OnCallback, xRunCallback.OnCallback, "latency-user-data");
                     outputStream.Start();
                 }
 

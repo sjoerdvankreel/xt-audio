@@ -60,6 +60,9 @@
     <Compile Include="..\src\cli-gui\FullDuplexCallback.cs">
       <Link>FullDuplexCallback.cs</Link>
     </Compile>
+    <Compile Include="..\src\cli-gui\LatencyCallback.cs">
+      <Link>LatencyCallback.cs</Link>
+    </Compile>
     <Compile Include="..\src\cli-gui\RenderCallback.cs">
       <Link>RenderCallback.cs</Link>
     </Compile>
