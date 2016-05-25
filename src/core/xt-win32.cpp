@@ -198,25 +198,36 @@ controlEvent() {
 }
 
 XtwWin32Stream::~XtwWin32Stream() {
-  SendWin32StreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
+  if(!secondary)
+    SendWin32StreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
 }
 
 XtFault XtwWin32Stream::Start() {
-  SendWin32StreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  if(!secondary)
+    SendWin32StreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  else {
+    ProcessBuffer(true);
+    StartStream();
+  }
   return S_OK;
 }
 
 XtFault XtwWin32Stream::Stop() {
-  SendWin32StreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
+  if(secondary)
+    StopStream();
+  else
+    SendWin32StreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
   return S_OK;
 }
 
 void XtwWin32Stream::RequestStop() {
   StopStream();
-  EnterCriticalSection(&lock.cs);
-  state = XtStreamStateStopped;
-  XT_ASSERT(SetEvent(respondEvent.event));
-  LeaveCriticalSection(&lock.cs);
+  if(!secondary) {
+    EnterCriticalSection(&lock.cs);
+    state = XtStreamStateStopped;
+    XT_ASSERT(SetEvent(respondEvent.event));
+    LeaveCriticalSection(&lock.cs);
+  }
 }
 
 bool XtwWin32Stream::VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr) {

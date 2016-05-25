@@ -200,9 +200,12 @@ XtFault XtAggregate::Stop() {
   XtError result = 0;
   XtiCas(&running, 0, 1);
   while(XtiCas(&insideCallbackCount, 0, 0) != 0);
+  if((error = XtStreamStop(streams[masterIndex].get())) != 0)
+    result = error;
   for(size_t i = 0; i < streams.size(); i++)
-    if((error = XtStreamStop(streams[i].get())) != 0)
-      result = error;
+    if(i != static_cast<size_t>(masterIndex))
+      if((error = XtStreamStop(streams[i].get())) != 0)
+        result = error;
   return XtErrorGetFault(result);
 }
 
@@ -217,10 +220,15 @@ XtFault XtAggregate::Start() {
     outputRings[i].Unlock();
   }
   for(size_t i = 0; i < streams.size(); i++)
-    if((error = XtStreamStart(streams[i].get()) != 0)) {
-      Stop();
-      return XtErrorGetFault(error);
-    }
+    if(i != static_cast<size_t>(masterIndex))
+      if((error = XtStreamStart(streams[i].get()) != 0)) {
+        Stop();
+        return XtErrorGetFault(error);
+      }
+  if((error = XtStreamStart(streams[masterIndex].get()) != 0)) {
+    Stop();
+    return XtErrorGetFault(error);
+  }
   XtiCas(&running, 1, 0);
   return 0;
 }
@@ -327,6 +335,11 @@ void XT_CALLBACK XtiMasterCallback(
   XtRingBuffer& inputRing = aggregate->inputRings[index];
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
+
+  if(aggregate->streams[aggregate->masterIndex]->IsManaged())
+    for(i = 0; i < aggregate->streams.size(); i++)
+      if(i != static_cast<size_t>(aggregate->masterIndex))
+        static_cast<XtManagedStream*>(aggregate->streams[i].get())->ProcessBuffer(false);
 
   XtiSlaveCallback(stream, input, output, frames, time, position, timeValid, error, user);
   if(error != 0) {

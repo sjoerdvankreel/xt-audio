@@ -202,25 +202,36 @@ controlCv() {
 }
 
 XtlLinuxStream::~XtlLinuxStream() {
-  SendLinuxStreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
+  if(!secondary) 
+    SendLinuxStreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
 }
 
 XtFault XtlLinuxStream::Start() {
-  SendLinuxStreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  if(!secondary)
+    SendLinuxStreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  else {
+    ProcessBuffer(true);
+    StartStream();
+  }
   return 0;
 }
 
 XtFault XtlLinuxStream::Stop() {
-  SendLinuxStreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
+  if(secondary)
+    StopStream();
+  else
+    SendLinuxStreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
   return 0;
 }
 
 void XtlLinuxStream::RequestStop() {
   StopStream();
-  XT_ASSERT(pthread_mutex_lock(&lock.m) == 0);
-  state = XtStreamStateStopped;
-  XT_ASSERT(pthread_cond_signal(&respondCv.cv) == 0);
-  XT_ASSERT(pthread_mutex_unlock(&lock.m) == 0);
+  if(!secondary) {
+    XT_ASSERT(pthread_mutex_lock(&lock.m) == 0);
+    state = XtStreamStateStopped;
+    XT_ASSERT(pthread_cond_signal(&respondCv.cv) == 0);
+    XT_ASSERT(pthread_mutex_unlock(&lock.m) == 0);
+  }
 }
 
 bool XtlLinuxStream::VerifyStreamCallback(int error, const char* file, int line, const char* func, const char* expr) {

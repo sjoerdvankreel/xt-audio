@@ -440,14 +440,18 @@ void WasapiStream::StopStream() {
   XT_ASSERT(SUCCEEDED(client->Stop()));
   if(loopback)
     XT_ASSERT(SUCCEEDED(loopback->Stop()));
-  XT_ASSERT(AvRevertMmThreadCharacteristics(mmcssHandle));
-  mmcssHandle = nullptr;
+  if(!secondary) {
+    XT_ASSERT(AvRevertMmThreadCharacteristics(mmcssHandle));
+    mmcssHandle = nullptr;
+  }
 }
 
 void WasapiStream::StartStream() {
-  DWORD taskIndex = 0;
-  const wchar_t* mmcssTaskName = options.exclusive? L"Pro Audio": L"Audio";
-  XT_ASSERT((mmcssHandle = AvSetMmThreadCharacteristicsW(mmcssTaskName, &taskIndex)) != nullptr);
+  if(!secondary) {
+    DWORD taskIndex = 0;
+    const wchar_t* mmcssTaskName = options.exclusive? L"Pro Audio": L"Audio";
+    XT_ASSERT((mmcssHandle = AvSetMmThreadCharacteristicsW(mmcssTaskName, &taskIndex)) != nullptr);
+  }
   XT_ASSERT(SUCCEEDED(client->Start()));
   if(loopback)
     XT_ASSERT(SUCCEEDED(loopback->Start()));
@@ -491,7 +495,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   XtBool timeValid = XtFalse;
   DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
 
-  if(!prefill) {
+  if(!prefill && !secondary) {
     waitResult = WaitForSingleObject(streamEvent.event, bufferMillis);
     if(waitResult == WAIT_TIMEOUT)
       return;

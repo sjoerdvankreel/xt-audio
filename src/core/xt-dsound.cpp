@@ -386,9 +386,11 @@ void DSoundStream::StopStream() {
     XT_ASSERT(SUCCEEDED(capture->Stop()));
   else
     XT_ASSERT(SUCCEEDED(render->Stop()));
-  XT_ASSERT(CancelWaitableTimer(timer.timer));
-  XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, format.mix.rate) / 2) == TIMERR_NOERROR);
-  XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
+  if(!secondary) {
+    XT_ASSERT(CancelWaitableTimer(timer.timer));
+    XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, format.mix.rate) / 2) == TIMERR_NOERROR);
+    XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
+  }
   xtBytesProcessed = 0;
   dsBytesProcessed = 0;
   previousDsPosition = 0;
@@ -399,9 +401,11 @@ void DSoundStream::StartStream() {
   due.QuadPart = -1;
   UINT timerPeriod = GetTimerPeriod(bufferFrames, format.mix.rate);
   long lTimerPeriod = timerPeriod;
-  XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL));
-  XT_ASSERT(timeBeginPeriod(timerPeriod / 2) == TIMERR_NOERROR);
-  XT_ASSERT(SetWaitableTimer(timer.timer, &due, lTimerPeriod, nullptr, nullptr, TRUE));
+  if(!secondary) {
+    XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL));
+    XT_ASSERT(timeBeginPeriod(timerPeriod / 2) == TIMERR_NOERROR);
+    XT_ASSERT(SetWaitableTimer(timer.timer, &due, lTimerPeriod, nullptr, nullptr, TRUE));
+  }
   if(capture)
     XT_ASSERT(SUCCEEDED(capture->Start(DSCBSTART_LOOPING)));
   else
@@ -417,7 +421,7 @@ void DSoundStream::ProcessBuffer(bool prefill) {
   DWORD size1, size2, read, write, lockPosition, waitResult;
   DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
 
-  if(!prefill) {
+  if(!prefill && !secondary) {
     waitResult = WaitForSingleObject(timer.timer, bufferMillis);
     if(waitResult == WAIT_TIMEOUT)
       return;
