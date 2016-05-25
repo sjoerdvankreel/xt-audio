@@ -27,8 +27,9 @@ static const int32_t XtPaMinRate = 1;
 static const int32_t XtPaMaxRate = 192000;
 static const int32_t XtPaDefaultRate = 44100;
 static const int32_t XtPaDefaultChannels = 2;
-static const double XtPaMinBufferSize = 20.0;
+static const double XtPaMinBufferSize = 1.0;
 static const double XtPaMaxBufferSize = 2000.0;
+static const double XtPaDefaultBufferSize = 80.0;
 static const XtFault XtPaErrFormat = PA_ERR_MAX + 1;
 static const XtSample XtPaDefaultSample = XtSampleInt16;
 
@@ -193,7 +194,7 @@ XtFault PulseDevice::GetChannelCount(XtBool output, int32_t* count) const {
 XtFault PulseDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {  
   buffer->min = XtPaMinBufferSize;
   buffer->max = XtPaMaxBufferSize;
-  buffer->current = XtPaMinBufferSize;
+  buffer->current = XtPaDefaultBufferSize;
   return PA_OK;
 }
 
