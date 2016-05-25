@@ -169,6 +169,12 @@ static XtFault CreatePorts(jack_client_t* client, uint32_t channels, uint64_t ma
   return 0;
 }
 
+static int XRunCallback(void* arg) {
+  JackStream* s = static_cast<JackStream*>(arg);
+  if(s->xRunCallback != nullptr)
+    s->xRunCallback(s->aggregationIndex, s->user);
+}
+
 static int ProcessCallback(jack_nframes_t frames, void* arg) {
   
   void* input;
@@ -224,7 +230,8 @@ XtCapabilities JackService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 
     XtCapabilitiesFullDuplex | 
-    XtCapabilitiesChannelMask);
+    XtCapabilitiesChannelMask | 
+    XtCapabilitiesXRunDetection);
 }
 
 XtCause JackService::GetFaultCause(XtFault fault) const {
@@ -345,6 +352,8 @@ XtFault JackDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   bufferFrames = jack_get_buffer_size(streamClient.client);
   result.reset(new JackStream(std::move(streamClient), std::move(inputs), std::move(outputs), 
     format->inputs, format->outputs, bufferFrames, sampleSize));
+  if((fault = jack_set_xrun_callback(c, &XRunCallback, result.get())) != 0)
+    return fault;
   if((fault = jack_set_process_callback(c, &ProcessCallback, result.get())) != 0)
     return fault;
   *stream = result.release();
