@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\src\cli-gui\AggregateCallback.cs">
+      <Link>AggregateCallback.cs</Link>
+    </Compile>
     <Compile Include="..\src\cli-gui\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>

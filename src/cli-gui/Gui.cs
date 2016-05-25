@@ -334,10 +334,10 @@ namespace Xt {
                 }
 
                 if (type == StreamType.Aggregate
-                    && inputDevice == null && outputDevice == null
-                    && secondaryInputDevice == null && secondaryOutputDevice == null) {
+                    && (inputDevice == null && secondaryInputDevice == null
+                     || outputDevice == null && secondaryOutputDevice == null)) {
                     MessageBox.Show(this,
-                        "For aggregate operation, select at least 1 device.",
+                        "For aggregate operation, select at least 1 input and 1 output device.",
                         "Invalid aggregate device.");
                     return;
                 }
@@ -428,10 +428,11 @@ namespace Xt {
                         secondaryInputDevice != null ? secondaryInputDevice :
                         outputDevice != null ? outputDevice : secondaryOutputDevice);
 
-                    FullDuplexCallback streamCallback = new FullDuplexCallback(OnStreamError, AddMessage);
+                    AggregateCallback streamCallback = new AggregateCallback(OnStreamError, AddMessage);
                     outputStream = ((XtService)service.SelectedItem).AggregateStream(devicesArray, channelsArray,
                         bufferSizesArray, devicesArray.Length, outputFormat.mix, streamInterleaved.Checked, streamRaw.Checked,
                         master, streamCallback.OnCallback, xRunCallback.OnCallback, "aggregate-user-data");
+                    streamCallback.Init(outputStream.GetFrames());
                     outputStream.Start();
                 }
 
