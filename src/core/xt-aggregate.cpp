@@ -200,6 +200,8 @@ XtFault XtAggregate::Stop() {
   XtError result = 0;
   XtiCas(&running, 0, 1);
   while(XtiCas(&insideCallbackCount, 0, 0) != 0);
+  if(masterIndex == -1)
+    return 0;
   if((error = XtStreamStop(streams[masterIndex].get())) != 0)
     result = error;
   for(size_t i = 0; i < streams.size(); i++)

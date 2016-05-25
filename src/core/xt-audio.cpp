@@ -430,6 +430,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   result->user = user;
   result->running = 0;
   result->system = system;
+  result->masterIndex = -1;
   result->device = nullptr;
   result->aggregationIndex = -1;
   result->insideCallbackCount = 0;
