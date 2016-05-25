@@ -160,6 +160,14 @@ bool XtiCalledOnMainThread() {
   return currentThreadId == XtwMainThreadId;
 }
 
+int32_t XtiLockIncr(volatile int32_t* dest) {
+  return InterlockedIncrement(reinterpret_cast<volatile long*>(dest));
+}
+
+int32_t XtiLockDecr(volatile int32_t* dest) {
+  return InterlockedDecrement(reinterpret_cast<volatile long*>(dest));
+}
+
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
   return InterlockedCompareExchange(reinterpret_cast<volatile long*>(dest), exch, comp);
 }

@@ -47,7 +47,6 @@ static void InitStreamBuffers(
 // ---- error ----
 
 uint32_t XT_CALL XtErrorGetFault(XtError error) {
-  XT_ASSERT(error != 0);
   return static_cast<XtFault>(error & 0x00000000FFFFFFFF);
 }
 
@@ -353,8 +352,10 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   XtAudioGetSampleAttributes(mix->sample, &attrs);
   std::unique_ptr<XtAggregate> result(new XtAggregate);
   result->user = user;
+  result->running = 0;
   result->system = system;
   result->device = nullptr;
+  result->insideCallbackCount = 0;
   result->sampleSize = attrs.size;
   result->interleaved = interleaved;
   result->xRunCallback = xRunCallback;
