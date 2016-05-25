@@ -100,10 +100,10 @@ namespace Xt {
 
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void XRunCallbackWin32(int index, bool output, bool overflow, int frames, IntPtr user);
+        internal delegate void XRunCallbackWin32(int index, IntPtr user);
 
         [SuppressUnmanagedCodeSecurity]
-        internal delegate void XRunCallbackLinux(int index, bool output, bool overflow, int frames, IntPtr user);
+        internal delegate void XRunCallbackLinux(int index, IntPtr user);
 
         internal static void HandleError(ulong error) {
             if (error != 0)

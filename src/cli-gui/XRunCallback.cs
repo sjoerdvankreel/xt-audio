@@ -9,12 +9,8 @@ namespace Xt {
             this.onMessage = onMessage;
         }
 
-        internal void OnCallback(int index, bool output, bool overflow, int frames, object user) {
-            onMessage(() => string.Format(
-                "{0} {1} of size {2} on stream {3}, user: {4}.",
-                output ? "Output" : "Input",
-                overflow ? "overflow" : "underflow",
-                frames, index, user));
+        internal void OnCallback(int index, object user) {
+            onMessage(() => string.Format("XRun on stream {0}, user: {1}", index, user));
         }
     }
 }

@@ -293,7 +293,7 @@ void XT_CALLBACK XtiSlaveCallback(
         written = inputRing.Write(input, frames);
         inputRing.Unlock();
         if(written < frames && xRunCallback != nullptr)
-          xRunCallback(-1, XtFalse, XtTrue, frames - written, aggregate->user);
+          xRunCallback(-1, aggregate->user);
       }
   
       if(output != nullptr) {
@@ -303,7 +303,7 @@ void XT_CALLBACK XtiSlaveCallback(
         if(read < frames) {
           ZeroBuffer(output, aggregate->interleaved, read, channels.outputs, frames - read, aggregate->sampleSize);
           if(xRunCallback != nullptr)
-            xRunCallback(-1, XtTrue, XtFalse, frames - read, aggregate->user);
+            xRunCallback(-1, aggregate->user);
         }
       }
     }
@@ -382,7 +382,7 @@ void XT_CALLBACK XtiMasterCallback(
       if(read < frames) {
         ZeroBuffer(ringInput, interleaved, read, thisFormat->inputs, frames - read, sampleSize);
         if(xRunCallback != nullptr)
-          xRunCallback(-1, XtFalse, XtFalse, frames - read, aggregate->user);
+          xRunCallback(-1, aggregate->user);
       }
       for(c = 0; c < thisFormat->inputs; c++)
         Weave(appInput, ringInput, interleaved, format->inputs, thisFormat->inputs, totalChannels + c, c, frames, sampleSize);
@@ -405,7 +405,7 @@ void XT_CALLBACK XtiMasterCallback(
       written = thisOutRing->Write(ringOutput, frames);
       thisOutRing->Unlock();
       if(written < frames && xRunCallback != nullptr)
-        xRunCallback(-1, XtTrue, XtTrue, frames - written, aggregate->user);
+        xRunCallback(-1, aggregate->user);
     }
   }
 
