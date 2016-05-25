@@ -178,7 +178,8 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
 
   if(XtiCas(&s->running, 1, 1) != 1)
     return nullptr;
-  XtiCas(&s->insideCallback, 1, 0);
+  if(XtiCas(&s->insideCallback, 1, 0) != 0)
+    return nullptr;
 
   if(info.flags & kSamplePositionValid && info.flags & kSystemTimeValid) {
     timeValid = XtTrue;
@@ -196,8 +197,7 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
 
-  XtiCas(&s->insideCallback, 0, 1);
-
+  XT_ASSERT(XtiCas(&s->insideCallback, 0, 1) == 1);
   return nullptr; 
 }
 
