@@ -77,7 +77,8 @@ std::string XtiTryGetDeviceName(const XtDevice* d) {
 XtError XtiCreateError(XtSystem system, XtFault fault) {
   if(fault == 0)
     return 0;
-  XT_TRACE(XtLevelError, "Fault: system %d, code %u.", system, fault);
+  const char* code = XtAudioGetServiceBySystem(system)->GetFaultText(fault);
+  XT_TRACE(XtLevelError, "Fault: system %d, code %u (%s).", system, fault, code);
   return static_cast<uint64_t>(system) << 32ULL | fault;
 }
 
