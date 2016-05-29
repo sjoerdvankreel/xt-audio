@@ -197,19 +197,17 @@ private:
   friend class Device;
   friend class Service;
   friend struct StreamCallbackForwarder;
-  
-  Device* const d;
+
   void* const user;
   const XRunCallback xRunCallback;
   const StreamCallback streamCallback;
-  Stream(Device* d, StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
+  Stream(StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
 
 public:
   ~Stream();
   void Stop();
   void Start();
   System GetSystem() const;
-  Device* GetDevice() const;
   int32_t GetFrames() const;
   bool IsInterleaved() const;
   Latency GetLatency() const;

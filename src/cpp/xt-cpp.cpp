@@ -308,7 +308,7 @@ std::unique_ptr<Stream> Service::AggregateStream(Device* devices, const Channels
   auto c = reinterpret_cast<const XtChannels*>(channels);
   auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
   auto forwardStream = &StreamCallbackForwarder::ForwardStream;
-  std::unique_ptr<Stream> result(new Stream(nullptr, streamCallback, xRunCallback, user));
+  std::unique_ptr<Stream> result(new Stream(streamCallback, xRunCallback, user));
   HandleError(XtServiceAggregateStream(s, &ds[0], c, bufferSizes, count, m, interleaved, master.d, forwardStream, forwardXRun, result.get(), &stream));
   result->s = stream;
   return result;
@@ -384,7 +384,7 @@ std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleave
   auto f = reinterpret_cast<const XtFormat*>(&format);
   auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
   auto forwardStream = &StreamCallbackForwarder::ForwardStream;
-  std::unique_ptr<Stream> result(new Stream(this, streamCallback, xRunCallback, user));
+  std::unique_ptr<Stream> result(new Stream(streamCallback, xRunCallback, user));
   HandleError(XtDeviceOpenStream(d, f, interleaved, bufferSize, forwardStream, forwardXRun, result.get(), &stream));
   result->s = stream;
   return result;
@@ -392,8 +392,7 @@ std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleave
 
 // ---- stream ----
 
-Stream::Stream(Device* d, StreamCallback streamCallback, XRunCallback xRunCallback, void* user):
-d(d),
+Stream::Stream(StreamCallback streamCallback, XRunCallback xRunCallback, void* user):
 s(nullptr),
 xRunCallback(xRunCallback),
 streamCallback(streamCallback), 
@@ -409,10 +408,6 @@ void Stream::Stop() {
 
 void Stream::Start() { 
   HandleError(XtStreamStart(s));
-}
-
-Device* Stream::GetDevice() const {
-  return d;
 }
 
 bool Stream::IsInterleaved() const { 

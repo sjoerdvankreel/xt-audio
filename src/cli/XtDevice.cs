@@ -94,7 +94,7 @@ namespace Xt {
             XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
 
             IntPtr s;
-            XtStream stream = new XtStream(this, raw, streamCallback, xRunCallback, user);
+            XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);
             XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, interleaved,
                 bufferSize, stream.streamCallbackPtr, stream.xRunCallbackPtr, IntPtr.Zero, out s));

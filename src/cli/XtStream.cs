@@ -163,7 +163,6 @@ namespace Xt {
 
         private readonly bool raw;
         private readonly object user;
-        private readonly XtDevice device;
         private readonly XtXRunCallback xRunCallback;
         private readonly XtStreamCallback streamCallback;
         private readonly XtNative.XRunCallbackWin32 win32XRunCallback;
@@ -180,10 +179,9 @@ namespace Xt {
         private Array inputNonInterleaved;
         private Array outputNonInterleaved;
 
-        internal XtStream(XtDevice device, bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
+        internal XtStream(bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
             this.raw = raw;
             this.user = user;
-            this.device = device;
             this.xRunCallback = xRunCallback;
             this.streamCallback = streamCallback;
             this.win32StreamCallback = new XtNative.StreamCallbackWin32(StreamCallback);
@@ -202,10 +200,6 @@ namespace Xt {
 
         public bool IsRaw() {
             return raw;
-        }
-
-        public XtDevice GetDevice() {
-            return device;
         }
 
         public XtSystem GetSystem() {

@@ -155,7 +155,6 @@ public final class XtStream implements XtCloseable {
 
     private final Object user;
     private final boolean raw;
-    private final XtDevice device;
     private final XtStreamCallback userCallback;
 
     private Pointer s;
@@ -165,19 +164,14 @@ public final class XtStream implements XtCloseable {
     private Object outputNonInterleaved;
     XtNative.StreamCallback nativeCallback;
 
-    XtStream(XtDevice device, boolean raw, XtStreamCallback userCallback, Object user) {
+    XtStream(boolean raw, XtStreamCallback userCallback, Object user) {
         this.raw = raw;
         this.user = user;
-        this.device = device;
         this.userCallback = userCallback;
     }
 
     public boolean isRaw() {
         return raw;
-    }
-    
-    public XtDevice getDevice() {
-        return device;
     }
 
     public void stop() {

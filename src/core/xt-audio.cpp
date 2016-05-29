@@ -101,7 +101,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
     return XtiCreateError(d->GetSystem(), fault);
   }
 
-  (*stream)->device = d;
   (*stream)->user = user;
   (*stream)->format = *format;
   (*stream)->aggregationIndex = 0;
@@ -431,7 +430,6 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   result->running = 0;
   result->system = system;
   result->masterIndex = -1;
-  result->device = nullptr;
   result->aggregationIndex = -1;
   result->insideCallbackCount = 0;
   result->sampleSize = attrs.size;
@@ -632,11 +630,6 @@ XtError XT_CALL XtStreamStart(XtStream* s) {
 XtSystem XT_CALL XtStreamGetSystem(const XtStream* s) {
   XT_ASSERT(s != nullptr);
   return s->GetSystem();
-}
-
-XtDevice* XT_CALL XtStreamGetDevice(const XtStream* s) {
-  XT_ASSERT(s != nullptr);
-  return s->device;
 }
 
 XtBool XT_CALL XtStreamIsInterleaved(const XtStream* s) {
