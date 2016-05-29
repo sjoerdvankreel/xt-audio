@@ -61,4 +61,19 @@ public final class XtService {
         XtNative.handleError(XtNative.XtServiceOpenDefaultDevice(s, output, d));
         return d.getValue() == null ? null : new XtDevice(d.getValue());
     }
+
+    public XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
+            boolean interleaved, boolean raw, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
+
+        PointerByReference str = new PointerByReference();
+        XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
+        XtDevice.ByReference[] ds = new XtDevice.ByReference[count];
+        for (int d = 0; d < count; d++)
+            ds[d] = new XtDevice.ByReference(devices[d].d);
+        XtNative.Mix nativeMix = XtNative.Mix.toNative(mix);
+        XtNative.handleError(XtNative.XtServiceAggregateStream(s, ds, channels, bufferSizes, count,
+                nativeMix, interleaved, master, streamCallback, xRunCallback, null, str));
+        stream.init(str.getValue());
+        return stream;
+    }
 }

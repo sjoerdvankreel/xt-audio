@@ -96,7 +96,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-interleaved.raw");
                         XtStream stream = device.openStream(format, true, false, buffer.current,
-                                CaptureAdvanced::captureInterleaved, context)) {
+                                CaptureAdvanced::captureInterleaved, null, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -107,7 +107,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-interleaved-raw.raw");
                         XtStream stream = device.openStream(format, true, true, buffer.current,
-                                CaptureAdvanced::captureInterleavedRaw, context)) {
+                                CaptureAdvanced::captureInterleavedRaw, null, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -118,7 +118,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved.raw");
                         XtStream stream = device.openStream(format, false, false, buffer.current,
-                                CaptureAdvanced::captureNonInterleaved, context)) {
+                                CaptureAdvanced::captureNonInterleaved, null, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -129,7 +129,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved-raw.raw");
                         XtStream stream = device.openStream(format, false, true, buffer.current,
-                                CaptureAdvanced::captureNonInterleavedRaw, context)) {
+                                CaptureAdvanced::captureNonInterleavedRaw, null, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();

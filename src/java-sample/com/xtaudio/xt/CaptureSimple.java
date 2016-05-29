@@ -25,7 +25,7 @@ public class CaptureSimple {
                     XtBuffer buffer = device.getBuffer(FORMAT);
                     try (FileOutputStream recording = new FileOutputStream("xt-audio.raw");
                             XtStream stream = device.openStream(FORMAT, true, false,
-                                    buffer.current, CaptureSimple::capture, recording)) {
+                                    buffer.current, CaptureSimple::capture, null, recording)) {
                         stream.start();
                         Thread.sleep(1000);
                         stream.stop();

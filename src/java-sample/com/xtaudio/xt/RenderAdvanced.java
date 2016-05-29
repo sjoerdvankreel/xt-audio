@@ -86,7 +86,7 @@ public class RenderAdvanced {
                 XtBuffer buffer = device.getBuffer(format);
 
                 try (XtStream stream = device.openStream(format, true, false, buffer.current,
-                        RenderAdvanced::renderInterleaved, null)) {
+                        RenderAdvanced::renderInterleaved, null, null)) {
                     stream.start();
                     System.out.println("Rendering interleaved...");
                     readLine();
@@ -94,7 +94,7 @@ public class RenderAdvanced {
                 }
 
                 try (XtStream stream = device.openStream(format, true, true, buffer.current,
-                        RenderAdvanced::renderInterleavedRaw, null)) {
+                        RenderAdvanced::renderInterleavedRaw, null, null)) {
                     stream.start();
                     System.out.println("Rendering interleaved, raw buffers...");
                     readLine();
@@ -102,7 +102,7 @@ public class RenderAdvanced {
                 }
 
                 try (XtStream stream = device.openStream(format, false, false, buffer.current,
-                        RenderAdvanced::renderNonInterleaved, null)) {
+                        RenderAdvanced::renderNonInterleaved, null, null)) {
                     stream.start();
                     System.out.println("Rendering non-interleaved...");
                     readLine();
@@ -110,7 +110,7 @@ public class RenderAdvanced {
                 }
 
                 try (XtStream stream = device.openStream(format, false, true, buffer.current,
-                        RenderAdvanced::renderNonInterleavedRaw, null)) {
+                        RenderAdvanced::renderNonInterleavedRaw, null, null)) {
                     stream.start();
                     System.out.println("Rendering non-interleaved, raw buffers...");
                     readLine();
@@ -119,7 +119,7 @@ public class RenderAdvanced {
 
                 XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 1L << 0);
                 try (XtStream stream = device.openStream(sendTo0, true, false, buffer.current,
-                        RenderAdvanced::renderInterleaved, null)) {
+                        RenderAdvanced::renderInterleaved, null, null)) {
                     stream.start();
                     System.out.println("Rendering channel mask, channel 0...");
                     readLine();
@@ -128,7 +128,7 @@ public class RenderAdvanced {
 
                 XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 1L << 1);
                 try (XtStream stream = device.openStream(sendTo1, true, false, buffer.current,
-                        RenderAdvanced::renderInterleaved, null)) {
+                        RenderAdvanced::renderInterleaved, null, null)) {
                     stream.start();
                     System.out.println("Rendering channel mask, channel 1...");
                     readLine();
