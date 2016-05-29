@@ -427,7 +427,8 @@ void DSoundStream::ProcessBuffer(bool prefill) {
       return;
     XT_ASSERT(waitResult == WAIT_OBJECT_0);
   }
-  else if(render) {
+  
+  if(prefill && render) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
@@ -442,7 +443,7 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     return;
   }
 
-  if(capture) {
+  if(capture && !prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(capture->GetCurrentPosition(&write, &read)))
       return;
     gap = WrapAround(write - read, bufferBytes);
@@ -472,7 +473,7 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     xtBytesProcessed += available;
   }
 
-  if(render) {
+  if(render && !prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->GetCurrentPosition(&read, &write)))
       return;
     gap = WrapAround(write - read, bufferBytes);
