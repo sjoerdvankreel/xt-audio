@@ -157,6 +157,7 @@ struct XtService {
 
 struct XtStream {
   void* user;
+  bool aggregated;
   XtFormat format;
   int32_t sampleSize;
   XtBool interleaved;
@@ -175,6 +176,7 @@ struct XtStream {
   virtual XtSystem GetSystem() const = 0;
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
+  void ProcessXRun();
   void ProcessCallback(void* input, void* output, int32_t frames, double time,
                        uint64_t position, XtBool timeValid, XtError error);
 };

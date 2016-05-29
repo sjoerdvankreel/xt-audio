@@ -103,6 +103,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
 
   (*stream)->user = user;
   (*stream)->format = *format;
+  (*stream)->aggregated = false;
   (*stream)->aggregationIndex = 0;
   (*stream)->xRunCallback = nullptr;
   (*stream)->interleaved = interleaved;
@@ -430,6 +431,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   result->running = 0;
   result->system = system;
   result->masterIndex = -1;
+  result->aggregated = false;
   result->aggregationIndex = -1;
   result->insideCallbackCount = 0;
   result->sampleSize = attrs.size;
@@ -473,6 +475,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
       master != devices[i], thisCallback, xRunCallback, &result->contexts[i], &thisStream)) != 0)
       return error;
     result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
+    thisStream->aggregated = true;
     thisStream->aggregationIndex = i;
     if((error = XtStreamGetFrames(thisStream, &thisFrames)) != 0)
       return error;

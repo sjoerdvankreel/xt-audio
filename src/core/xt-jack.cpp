@@ -170,9 +170,7 @@ static XtFault CreatePorts(jack_client_t* client, uint32_t channels, uint64_t ma
 }
 
 static int XRunCallback(void* arg) {
-  JackStream* s = static_cast<JackStream*>(arg);
-  if(s->xRunCallback != nullptr)
-    s->xRunCallback(s->aggregationIndex, s->user);
+  static_cast<JackStream*>(arg)->ProcessXRun();
 }
 
 static int ProcessCallback(jack_nframes_t frames, void* arg) {

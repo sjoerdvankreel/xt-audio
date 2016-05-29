@@ -527,8 +527,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
     if(!output) {
       if(alsaInterleaved) {
         if((sframes = snd_pcm_readi(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
-          if(sframes == -EPIPE && xRunCallback != nullptr)
-            xRunCallback(aggregationIndex, user);
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_readi(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
@@ -539,8 +539,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
         ProcessCallback(&interleavedAudio[0], nullptr, sframes, time, position, timeValid, 0);
       } else {
         if((sframes = snd_pcm_readn(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
-          if(sframes == -EPIPE && xRunCallback != nullptr)
-            xRunCallback(aggregationIndex, user);
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_readn(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
@@ -554,8 +554,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       if(alsaInterleaved) {
         ProcessCallback(nullptr, &interleavedAudio[0], bufferFrames, time, position, timeValid, 0);
         if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
-          if(sframes == -EPIPE && xRunCallback != nullptr)
-            xRunCallback(aggregationIndex, user);
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0)
@@ -564,8 +564,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       } else {
         ProcessCallback(nullptr, &nonInterleavedAudio[0], bufferFrames, time, position, timeValid, 0);
         if((sframes = snd_pcm_writen(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
-          if(sframes == -EPIPE && xRunCallback != nullptr)
-            xRunCallback(aggregationIndex, user);
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_writen(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0)
@@ -598,8 +598,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
     else
       ProcessCallback(nullptr, data, uframes, time, position, timeValid, 0);
     fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes);
-    if(fault >= 0 && fault != uframes && xRunCallback != nullptr)
-      xRunCallback(aggregationIndex, user);
+    if(fault >= 0 && fault != uframes)
+      ProcessXRun();
     if(fault < 0) {
       if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
         return;

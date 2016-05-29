@@ -39,11 +39,12 @@ static void ZeroBuffer(
 
   int32_t ss = sampleSize;
   int32_t fs = channels * ss;
-  if(interleaved)
-    memset(static_cast<char*>(buffer) + posFrames * fs, 0, frames * fs);
-  else
-    for(int32_t i = 0; i < channels; i++)
-      memset(static_cast<char**>(buffer)[i] + posFrames * ss, 0, frames * ss);
+  if(frames > 0)
+    if(interleaved)
+      memset(static_cast<char*>(buffer) + posFrames * fs, 0, frames * fs);
+    else
+      for(int32_t i = 0; i < channels; i++)
+        memset(static_cast<char**>(buffer)[i] + posFrames * ss, 0, frames * ss);
 }
 
 // ---- ring buffer ----

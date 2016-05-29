@@ -152,6 +152,15 @@ void XtStream::RequestStop() {
   XT_FAIL("Async stop request not supported on the current stream.");
 }
 
+void XtStream::ProcessXRun() {
+  if(xRunCallback == nullptr)
+    return;
+  if(aggregated)
+    xRunCallback(aggregationIndex, static_cast<XtAggregateContext*>(user)->stream->user);
+  else
+    xRunCallback(0, user);
+}
+
 void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double time, 
                                uint64_t position, XtBool timeValid, XtError error) {
 
