@@ -29,6 +29,7 @@ namespace Xt {
         }
 
         private XtAudio audio;
+        private TextWriter log;
         private XtStream inputStream;
         private XtStream outputStream;
         private FileStream captureFile;
@@ -60,11 +61,11 @@ namespace Xt {
         }
 
         private void OnTrace(XtLevel level, string message) {
-            AddMessage(() => string.Format("{0}: {1}", level, message));
+            AddMessage(() => string.Format("{0}: {1}", level, message), level != XtLevel.Info);
         }
 
         private void OnStreamError(Func<string> error) {
-            AddMessage(error);
+            AddMessage(error, true);
             BeginInvoke(new Action(() => Stop()));
         }
 
@@ -98,11 +99,20 @@ namespace Xt {
             Stop();
             ClearDevices();
             audio.Dispose();
+            log.Dispose();
         }
 
         private void AddMessage(Func<string> message) {
+            AddMessage(message, false);
+        }
+
+        private void AddMessage(Func<string> message, bool error) {
             messages.BeginInvoke(new Action(() => {
-                messages.Text += string.Format("{0} {1}{2}", DateTime.Now, message(), Environment.NewLine);
+                string msg = message();
+                log.WriteLine(msg);
+                if (error)
+                    log.Flush();
+                messages.Text += string.Format("{0} {1}{2}", DateTime.Now, msg, Environment.NewLine);
                 if (messages.Text.Length > 4000)
                     messages.Text = messages.Text.Substring(messages.Text.Length - 4000);
                 messages.SelectionStart = messages.TextLength;
@@ -130,6 +140,8 @@ namespace Xt {
         protected override void OnShown(EventArgs e) {
 
             base.OnShown(e);
+            log = new StreamWriter("xt-audio.log");
+
             audio = new XtAudio("XT-Gui", Handle, OnTrace, OnFatal);
             debug.Text = "Debug: False";
 #if DEBUG
