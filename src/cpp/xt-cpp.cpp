@@ -294,7 +294,7 @@ std::unique_ptr<Device> Service::OpenDefaultDevice(bool output) const{
   return std::unique_ptr<Device>(new Device(device));
 }
 
-std::unique_ptr<Stream> Service::AggregateStream(Device* devices, const Channels* channels, 
+std::unique_ptr<Stream> Service::AggregateStream(Device** devices, const Channels* channels, 
                                                  const double* bufferSizes, int32_t count, 
                                                  const Mix& mix, bool interleaved, Device& master, 
                                                  StreamCallback streamCallback, XRunCallback xRunCallback, void* user) {
@@ -303,7 +303,7 @@ std::unique_ptr<Stream> Service::AggregateStream(Device* devices, const Channels
   XtStream* stream; 
   std::vector<XtDevice*> ds(count, nullptr);
   for(int32_t i = 0; i < count; i++)
-    ds[i] = devices[i].d;
+    ds[i] = devices[i]->d;
   auto m = reinterpret_cast<const XtMix*>(&mix);
   auto c = reinterpret_cast<const XtChannels*>(channels);
   auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;

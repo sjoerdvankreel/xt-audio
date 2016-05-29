@@ -227,7 +227,7 @@ public:
   Capabilities GetCapabilities() const;
   std::unique_ptr<Device> OpenDevice(int32_t index) const;
   std::unique_ptr<Device> OpenDefaultDevice(bool output) const;
-  std::unique_ptr<Stream> AggregateStream(Device* devices, const Channels* channels, 
+  std::unique_ptr<Stream> AggregateStream(Device** devices, const Channels* channels, 
                                           const double* bufferSizes, int32_t count, 
                                           const Mix& mix, bool interleaved, Device& master, 
                                           StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
