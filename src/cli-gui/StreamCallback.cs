@@ -40,9 +40,9 @@ namespace Xt {
             processed = 0;
             XtLatency latency = stream.GetLatency();
             string formatString = "Stream {1}:{0}\tinput latency:{2}{0}\toutput latency:{3}{0}\t" +
-                "buffer frames:{4}{0}\ttime:{5}{0}\tposition:{6}{0}\ttimeValid:{7}{0}\tuser:{8}.";
+                "buffer frames:{4}{0}\tcurrent frames:{5}{0}\ttime:{6}{0}\tposition:{7}{0}\ttimeValid:{8}{0}\tuser:{9}.";
             OnMessage(() => string.Format(formatString, Environment.NewLine, name, latency.input,
-                latency.output, stream.GetFrames(), time, position, timeValid, user));
+                latency.output, stream.GetFrames(), frames, time, position, timeValid, user));
         }
     }
 }
