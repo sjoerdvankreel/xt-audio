@@ -21,6 +21,11 @@ public class CaptureAdvanced {
         int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
         return frames * format.inputs * sampleSize;
     }
+    
+    static void xRun(int index, Object user) {
+        // Don't do this.
+        System.out.println("XRun on device " + index + ".");
+    }
 
     static void captureInterleaved(XtStream stream, Object input, Object output, int frames,
             double time, long position, boolean timeValid, long error, Object user) throws Exception {
@@ -96,7 +101,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-interleaved.raw");
                         XtStream stream = device.openStream(format, true, false, buffer.current,
-                                CaptureAdvanced::captureInterleaved, null, context)) {
+                                CaptureAdvanced::captureInterleaved, CaptureAdvanced::xRun, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -107,7 +112,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-interleaved-raw.raw");
                         XtStream stream = device.openStream(format, true, true, buffer.current,
-                                CaptureAdvanced::captureInterleavedRaw, null, context)) {
+                                CaptureAdvanced::captureInterleavedRaw, CaptureAdvanced::xRun, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -118,7 +123,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved.raw");
                         XtStream stream = device.openStream(format, false, false, buffer.current,
-                                CaptureAdvanced::captureNonInterleaved, null, context)) {
+                                CaptureAdvanced::captureNonInterleaved, CaptureAdvanced::xRun, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -129,7 +134,7 @@ public class CaptureAdvanced {
 
                 try (FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved-raw.raw");
                         XtStream stream = device.openStream(format, false, true, buffer.current,
-                                CaptureAdvanced::captureNonInterleavedRaw, null, context)) {
+                                CaptureAdvanced::captureNonInterleavedRaw, CaptureAdvanced::xRun, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
