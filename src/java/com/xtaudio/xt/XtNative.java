@@ -114,6 +114,9 @@ final class XtNative {
         }
     }
 
+    public static class ChannelsByValue extends XtChannels implements Structure.ByValue {
+    }
+
     static interface XRunCallback extends StdCallLibrary.StdCallCallback {
 
         void callback(int index, Pointer user);
@@ -197,11 +200,11 @@ final class XtNative {
     static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
     static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);
     static native long XtServiceOpenDefaultDevice(Pointer s, boolean output, PointerByReference device);
-    static native long XtServiceAggregateStream(Pointer s, XtDevice.ByReference[] devices, XtChannels[] channels,
-            double[] bufferSizes, int count, Mix mix,
-            boolean interleaved, XtDevice master, XtStreamCallback streamCallback,
-            XtXRunCallback xRunCallback, Pointer user, PointerByReference stream);
-    
+    static native long XtServiceAggregateStream(Pointer s, Pointer devices,
+            Pointer channels, double[] bufferSizes, int count, Mix mix,
+            boolean interleaved, Pointer master, StreamCallback streamCallback,
+            XRunCallback xRunCallback, Pointer user, PointerByReference stream);
+
     static native boolean XtAudioIsWin32();
     static native void XtAudioTerminate();
     static native void XtAudioFree(Pointer p);

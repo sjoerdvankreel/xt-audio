@@ -22,13 +22,6 @@ import com.sun.jna.ptr.PointerByReference;
  */
 public class XtDevice implements XtCloseable {
 
-    static class ByReference extends XtDevice implements Structure.ByReference {
-
-        public ByReference(Pointer d) {
-            super(d);
-        }
-    }
-
     Pointer d;
 
     XtDevice() {

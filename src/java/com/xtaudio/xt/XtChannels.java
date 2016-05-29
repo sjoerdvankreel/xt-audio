@@ -1,5 +1,6 @@
 package com.xtaudio.xt;
 
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
@@ -19,8 +20,8 @@ import java.util.List;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
-public final class XtChannels extends Structure {
-    
+public class XtChannels extends Structure {
+
     public int inputs;
     public long inMask;
     public int outputs;
@@ -28,7 +29,7 @@ public final class XtChannels extends Structure {
 
     public XtChannels() {
     }
-    
+
     public XtChannels(int inputs, long inMask, int outputs, long outMask) {
         this.inputs = inputs;
         this.inMask = inMask;
@@ -36,11 +37,15 @@ public final class XtChannels extends Structure {
         this.outMask = outMask;
     }
 
+    void doUseMemory(Pointer m, int offset) {
+        super.useMemory(m, offset);
+    }
+
     @Override
     public String toString() {
         return XtPrint.channelsToString(this);
     }
-    
+
     @Override
     protected List getFieldOrder() {
         return Arrays.asList("inputs", "inMask", "outputs", "outMask");
