@@ -18,5 +18,7 @@ public class Sample {
         RenderAdvanced.main(args);
         System.out.println("FullDuplex:");
         FullDuplex.main(args);
+        System.out.println("Aggregate:");
+        Aggregate.main(args);
     }
 }

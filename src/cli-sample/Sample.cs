@@ -21,6 +21,8 @@ namespace Xt {
             RenderAdvanced.Main(args);
             Console.WriteLine("FullDuplex:");
             FullDuplex.Main(args);
+            Console.WriteLine("Aggregate:");
+            Aggregate.Main(args);
         }
     }
 }
