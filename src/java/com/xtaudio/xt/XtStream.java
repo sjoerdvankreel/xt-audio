@@ -239,6 +239,7 @@ public final class XtStream implements XtCloseable {
         } catch (Throwable t) {
             if (XtAudio.trace != null)
                 XtAudio.trace.callback(XtLevel.FATAL, String.format("Exception caught in xrun callback: %s.", t));
+            System.out.println(t);
             t.printStackTrace();
             Runtime.getRuntime().halt(1);
         }
@@ -263,6 +264,7 @@ public final class XtStream implements XtCloseable {
         } catch (Throwable t) {
             if (XtAudio.trace != null)
                 XtAudio.trace.callback(XtLevel.FATAL, String.format("Exception caught in stream callback: %s.", t));
+            System.out.println(t);
             t.printStackTrace();
             Runtime.getRuntime().halt(1);
         }

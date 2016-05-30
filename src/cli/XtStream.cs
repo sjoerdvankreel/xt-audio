@@ -260,7 +260,11 @@ namespace Xt {
             try {
                 xRunCallback(index, this.user);
             } catch (Exception e) {
-                Environment.FailFast("Exception caught in xrun callback.", e);
+                if (XtAudio.trace != null)
+                    XtAudio.trace(XtLevel.Fatal, string.Format("Exception caught in xrun callback: {0}.", e));
+                Console.WriteLine(e);
+                Console.WriteLine(e.StackTrace);
+                Environment.FailFast("Exception caught in stream callback.", e);
             }
         }
 
@@ -281,6 +285,10 @@ namespace Xt {
             try {
                 streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
             } catch (Exception e) {
+                if (XtAudio.trace != null)
+                    XtAudio.trace(XtLevel.Fatal, string.Format("Exception caught in xrun callback: {0}.", e));
+                Console.WriteLine(e);
+                Console.WriteLine(e.StackTrace);
                 Environment.FailFast("Exception caught in stream callback.", e);
             }
 

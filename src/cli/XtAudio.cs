@@ -20,7 +20,7 @@ namespace Xt {
 
     public sealed class XtAudio : IDisposable {
 
-        private static XtTraceCallback trace;
+        internal static XtTraceCallback trace;
         private static XtNative.TraceCallbackWin32 win32Trace;
         private static XtNative.TraceCallbackLinux linuxTrace;
         private static XtFatalCallback fatal;
