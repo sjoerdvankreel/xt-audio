@@ -1,3 +1,7 @@
+May 30, 2016 - V1.02.
+* Support xrun detection.
+* Support stream aggregation.
+
 May 18, 2016 - V1.01.
 * Removed core API samples.
 * Support ALSA in mmapped mode.
