@@ -29,19 +29,17 @@ public class Aggregate {
             try (XtDevice input = service.openDefaultDevice(false);
                     XtDevice output = service.openDefaultDevice(true)) {
                 if (input != null && input.supportsFormat(inputFormat)
-                        && output != null && output.supportsFormat(outputFormat)) {
-                    XtBuffer buffer = input.getBuffer(inputFormat);
+                        && output != null && output.supportsFormat(outputFormat))
                     try (XtStream stream = service.aggregateStream(
                             new XtDevice[]{input, output},
                             new XtChannels[]{inputChannels, outputChannels},
-                            new double[]{buffer.min, buffer.min},
+                            new double[]{30.0, 30.0},
                             2, mix, true, false, output, Aggregate::aggregate, Aggregate::xRun, "user-data")) {
                         stream.start();
                         System.out.println("Streaming aggregate, press any key to continue...");
                         System.console().readLine();
                         stream.stop();
                     }
-                }
             }
         }
     }

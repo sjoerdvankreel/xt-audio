@@ -41,13 +41,12 @@ int AggregateMain(int argc, char** argv) {
   if(input && input->SupportsFormat(inputFormat)
     && output && output->SupportsFormat(outputFormat)) {
 
-    Xt::Buffer buffer = input->GetBuffer(inputFormat);
     devices[0] = input.get();
     devices[1] = output.get();
     channels[0] = inputChannels;
     channels[1] = outputChannels;
-    bufferSizes[0] = buffer.min;
-    bufferSizes[1] = buffer.min;
+    bufferSizes[0] = 30.0;
+    bufferSizes[1] = 30.0;
     std::unique_ptr<Xt::Stream> stream = service->AggregateStream(devices, channels,
       bufferSizes, 2, mix, true, *output, Aggregate, XRun, const_cast<char*>("user-data"));
     stream->Start();
