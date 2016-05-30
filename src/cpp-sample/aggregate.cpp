@@ -20,7 +20,8 @@ static void Aggregate(
 
   const Xt::Format& format = stream.GetFormat();
   Xt::Attributes attrs = Xt::Audio::GetSampleAttributes(format.mix.sample);
-  memcpy(output, input, frames * format.inputs * attrs.size);
+  if(frames > 0)
+    memcpy(output, input, frames * format.inputs * attrs.size);
 }
 
 int AggregateMain(int argc, char** argv) {

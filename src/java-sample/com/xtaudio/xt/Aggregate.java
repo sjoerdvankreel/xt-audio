@@ -14,7 +14,9 @@ public class Aggregate {
 
     static void aggregate(XtStream stream, Object input, Object output, int frames, double time,
             long position, boolean timeValid, long error, Object user) throws Exception {
-        System.arraycopy(input, 0, output, 0, frames * stream.getFormat().inputs);
+
+        if (frames > 0)
+            System.arraycopy(input, 0, output, 0, frames * stream.getFormat().inputs);
     }
 
     public static void main(String[] args) throws Exception {

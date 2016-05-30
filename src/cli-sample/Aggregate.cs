@@ -18,7 +18,8 @@ namespace Xt {
                 ulong position, bool timeValid, ulong error, object user) {
             XtFormat format = stream.GetFormat();
             XtAttributes attrs = XtAudio.GetSampleAttributes(format.mix.sample);
-            Buffer.BlockCopy((Array)input, 0, (Array)output, 0, frames * format.inputs * attrs.size);
+            if (frames > 0)
+                Buffer.BlockCopy((Array)input, 0, (Array)output, 0, frames * format.inputs * attrs.size);
         }
 
         public static void Main(string[] args) {
