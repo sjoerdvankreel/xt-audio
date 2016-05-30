@@ -53,6 +53,10 @@
             return XtNative.FreeStringFromUtf8(XtNative.XtPrintLatencyToString(latency));
         }
 
+        public static string ChannelsToString(XtChannels channels) {
+            return XtNative.FreeStringFromUtf8(XtNative.XtPrintChannelsToString(channels));
+        }
+
         public static string AttributesToString(XtAttributes attributes) {
             return XtNative.FreeStringFromUtf8(XtNative.XtPrintAttributesToString(attributes));
         }

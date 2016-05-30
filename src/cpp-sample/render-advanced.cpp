@@ -27,6 +27,11 @@ static float NextSine(double sampleRate) {
   return (float)sin(phase * M_PI);
 }
 
+static void XRun(int index, void* user) {
+  // Don't do this.
+  std::cout << "XRun on stream " << index << ", user = " << static_cast<char*>(user) << ".\n";
+}
+
 static void RenderInterleaved(
   const Xt::Stream& stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
@@ -71,27 +76,27 @@ int RenderAdvancedMain(int argc, char** argv) {
   std::unique_ptr<Xt::Stream> stream;
   Xt::Buffer buffer = device->GetBuffer(format);
 
-  stream = device->OpenStream(format, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(format, true, buffer.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering interleaved...\n";
   ReadLine();
   stream->Stop();
 
-  device->OpenStream(format, false, buffer.current, RenderNonInterleaved, nullptr);
+  device->OpenStream(format, false, buffer.current, RenderNonInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering non-interleaved...\n";
   ReadLine();
   stream->Stop();
 
   Xt::Format sendTo0(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 0);
-  stream = device->OpenStream(sendTo0, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(sendTo0, true, buffer.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering channel mask, channel 0...\n";
   ReadLine();
   stream->Stop();
 
   Xt::Format sendTo1(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 1);
-  stream = device->OpenStream(sendTo1, true, buffer.current, RenderInterleaved, nullptr);
+  stream = device->OpenStream(sendTo1, true, buffer.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering channel mask, channel 1...\n";
   ReadLine();

@@ -49,18 +49,16 @@ struct XtlCondition {
   XtlCondition(): cv() { XT_ASSERT(pthread_cond_init(&cv, nullptr) == 0); }
 };
 
-struct XtlLinuxStream: public XtStream {
+struct XtlLinuxStream: public XtManagedStream {
   XtlMutex lock;
   XtStreamState state;
   XtlCondition respondCv;
   XtlCondition controlCv;
   XT_IMPLEMENT_STREAM_CONTROL();
 
-  XtlLinuxStream();
+  XtlLinuxStream(bool secondary);
   ~XtlLinuxStream();
-  virtual void StopStream() = 0;
-  virtual void StartStream() = 0;
-  virtual void ProcessBuffer(bool prefill) = 0;
+  virtual void RequestStop();
   bool VerifyStreamCallback(int error, const char* file, int line, const char* func, const char* expr);
 };
 

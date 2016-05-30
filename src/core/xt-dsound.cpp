@@ -26,7 +26,7 @@
 
 static const int XtDsWakeUpsPerBuffer = 8;
 static const double XtDsMinBufferMs = 100.0;
-static const double XtDsMaxBufferMs = 2000.0;
+static const double XtDsMaxBufferMs = 5000.0;
 static const double XtDsDefaultBufferMs = 500.0;
 
 // ---- forward ----
@@ -61,11 +61,11 @@ struct DSoundStream: public XtwWin32Stream {
   XT_IMPLEMENT_STREAM(DSound);
 
   ~DSoundStream() { Stop(); }
-  DSoundStream(
+  DSoundStream(bool secondary,
     CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
-  frameSize(frameSize),
+  XtwWin32Stream(secondary), frameSize(frameSize),
   buffer(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   xtBytesProcessed(0), dsBytesProcessed(0),
   previousDsPosition(0), bufferFrames(bufferFrames), timer(),
@@ -329,7 +329,7 @@ XtFault DSoundDevice::GetMix(XtMix** mix) const {
 }
 
 XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                                 XtStreamCallback callback, void* user, XtStream** stream) {
+                                 bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
 
   HRESULT hr;
   int32_t frameSize;
@@ -366,7 +366,7 @@ XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
     XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
   }
 
-  *stream = new DSoundStream(newInput, newOutput, capture, render, bufferFrames, frameSize);
+  *stream = new DSoundStream(secondary, newInput, newOutput, capture, render, bufferFrames, frameSize);
   return S_OK;
 }
 
@@ -386,9 +386,11 @@ void DSoundStream::StopStream() {
     XT_ASSERT(SUCCEEDED(capture->Stop()));
   else
     XT_ASSERT(SUCCEEDED(render->Stop()));
-  XT_ASSERT(CancelWaitableTimer(timer.timer));
-  XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, format.mix.rate) / 2) == TIMERR_NOERROR);
-  XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
+  if(!secondary) {
+    XT_ASSERT(CancelWaitableTimer(timer.timer));
+    XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, format.mix.rate) / 2) == TIMERR_NOERROR);
+    XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
+  }
   xtBytesProcessed = 0;
   dsBytesProcessed = 0;
   previousDsPosition = 0;
@@ -399,9 +401,11 @@ void DSoundStream::StartStream() {
   due.QuadPart = -1;
   UINT timerPeriod = GetTimerPeriod(bufferFrames, format.mix.rate);
   long lTimerPeriod = timerPeriod;
-  XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL));
-  XT_ASSERT(timeBeginPeriod(timerPeriod / 2) == TIMERR_NOERROR);
-  XT_ASSERT(SetWaitableTimer(timer.timer, &due, lTimerPeriod, nullptr, nullptr, TRUE));
+  if(!secondary) {
+    XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL));
+    XT_ASSERT(timeBeginPeriod(timerPeriod / 2) == TIMERR_NOERROR);
+    XT_ASSERT(SetWaitableTimer(timer.timer, &due, lTimerPeriod, nullptr, nullptr, TRUE));
+  }
   if(capture)
     XT_ASSERT(SUCCEEDED(capture->Start(DSCBSTART_LOOPING)));
   else
@@ -417,13 +421,14 @@ void DSoundStream::ProcessBuffer(bool prefill) {
   DWORD size1, size2, read, write, lockPosition, waitResult;
   DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
 
-  if(!prefill) {
+  if(!prefill && !secondary) {
     waitResult = WaitForSingleObject(timer.timer, bufferMillis);
     if(waitResult == WAIT_TIMEOUT)
       return;
     XT_ASSERT(waitResult == WAIT_OBJECT_0);
   }
-  else if(render) {
+  
+  if(prefill && render) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
@@ -438,7 +443,7 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     return;
   }
 
-  if(capture) {
+  if(capture && !prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(capture->GetCurrentPosition(&write, &read)))
       return;
     gap = WrapAround(write - read, bufferBytes);
@@ -468,7 +473,7 @@ void DSoundStream::ProcessBuffer(bool prefill) {
     xtBytesProcessed += available;
   }
 
-  if(render) {
+  if(render && !prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->GetCurrentPosition(&read, &write)))
       return;
     gap = WrapAround(write - read, bufferBytes);

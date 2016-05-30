@@ -6,10 +6,10 @@ namespace Xt {
 
         int processed;
         protected string name;
-        protected readonly Action<string> onError;
-        protected readonly Action<string> onMessage;
+        protected readonly Action<Func<string>> onError;
+        protected readonly Action<Func<string>> onMessage;
 
-        internal StreamCallback(string name, Action<string> onError, Action<string> onMessage) {
+        internal StreamCallback(string name, Action<Func<string>> onError, Action<Func<string>> onMessage) {
             this.name = name;
             this.onError = onError;
             this.onMessage = onMessage;
@@ -18,7 +18,7 @@ namespace Xt {
         internal abstract void OnCallback(XtFormat format, bool interleaved,
             bool raw, object input, object output, int frames);
 
-        internal virtual void OnMessage(string message) {
+        internal virtual void OnMessage(Func<string> message) {
             onMessage.Invoke(message);
         }
 
@@ -26,7 +26,7 @@ namespace Xt {
             double time, ulong position, bool timeValid, ulong error, object user) {
 
             if (error != 0) {
-                onError("Stream callback error: " + XtPrint.ErrorToString(error));
+                onError(() => "Stream callback error: " + XtPrint.ErrorToString(error));
                 return;
             }
 
@@ -40,9 +40,9 @@ namespace Xt {
             processed = 0;
             XtLatency latency = stream.GetLatency();
             string formatString = "Stream {1}:{0}\tinput latency:{2}{0}\toutput latency:{3}{0}\t" +
-                "buffer frames:{4}{0}\ttime:{5}{0}\tposition:{6}{0}\ttimeValid:{7}{0}\tuser:{8}.";
-            OnMessage(string.Format(formatString, Environment.NewLine, name, latency.input,
-                latency.output, stream.GetFrames(), time, position, timeValid, user));
+                "buffer frames:{4}{0}\tcurrent frames:{5}{0}\ttime:{6}{0}\tposition:{7}{0}\ttimeValid:{8}{0}\tuser:{9}.";
+            OnMessage(() => string.Format(formatString, Environment.NewLine, name, latency.input,
+                latency.output, stream.GetFrames(), frames, time, position, timeValid, user));
         }
     }
 }

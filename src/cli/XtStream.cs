@@ -163,20 +163,39 @@ namespace Xt {
 
         private readonly bool raw;
         private readonly object user;
-        private readonly XtStreamCallback callback;
+        private readonly XtXRunCallback xRunCallback;
+        private readonly XtStreamCallback streamCallback;
+        private readonly XtNative.XRunCallbackWin32 win32XRunCallback;
+        private readonly XtNative.XRunCallbackLinux linuxXRunCallback;
+        private readonly XtNative.StreamCallbackWin32 win32StreamCallback;
+        private readonly XtNative.StreamCallbackLinux linuxStreamCallback;
+
+        internal readonly IntPtr xRunCallbackPtr;
+        internal readonly IntPtr streamCallbackPtr;
 
         private IntPtr s;
         private Array inputInterleaved;
         private Array outputInterleaved;
         private Array inputNonInterleaved;
         private Array outputNonInterleaved;
-        internal XtNative.StreamCallbackWin32 win32Callback;
-        internal XtNative.StreamCallbackLinux linuxCallback;
 
-        internal XtStream(bool raw, XtStreamCallback callback, object user) {
+        internal XtStream(bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
             this.raw = raw;
             this.user = user;
-            this.callback = callback;
+            this.xRunCallback = xRunCallback;
+            this.streamCallback = streamCallback;
+            this.win32StreamCallback = new XtNative.StreamCallbackWin32(StreamCallback);
+            this.linuxStreamCallback = new XtNative.StreamCallbackLinux(StreamCallback);
+            Delegate streamCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
+                ? (Delegate)win32StreamCallback : linuxStreamCallback;
+            streamCallbackPtr = Marshal.GetFunctionPointerForDelegate(streamCallbackDelegate);
+            if (xRunCallback != null) {
+                this.win32XRunCallback = new XtNative.XRunCallbackWin32(XRunCallback);
+                this.linuxXRunCallback = new XtNative.XRunCallbackLinux(XRunCallback);
+                Delegate xRunCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
+                    ? (Delegate)win32XRunCallback : linuxXRunCallback;
+                xRunCallbackPtr = Marshal.GetFunctionPointerForDelegate(xRunCallbackDelegate);
+            }
         }
 
         public bool IsRaw() {
@@ -237,13 +256,25 @@ namespace Xt {
             }
         }
 
-        internal void Callback(IntPtr stream, IntPtr input, IntPtr output, int frames,
-            double time, ulong position, bool timeValid, ulong error, IntPtr u) {
+        internal void XRunCallback(int index, IntPtr user) {
+            try {
+                xRunCallback(index, this.user);
+            } catch (Exception e) {
+                if (XtAudio.trace != null)
+                    XtAudio.trace(XtLevel.Fatal, string.Format("Exception caught in xrun callback: {0}.", e));
+                Console.WriteLine(e);
+                Console.WriteLine(e.StackTrace);
+                Environment.FailFast("Exception caught in stream callback.", e);
+            }
+        }
+
+        internal void StreamCallback(IntPtr stream, IntPtr input, IntPtr output,
+            int frames, double time, ulong position, bool timeValid, ulong error, IntPtr u) {
 
             XtFormat format = GetFormat();
             bool interleaved = IsInterleaved();
-            object inData = raw? (object)input : input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
-            object outData = raw? (object)output : output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
+            object inData = raw ? (object)input : input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
+            object outData = raw ? (object)output : output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
 
             if (!raw && inData != null)
                 if (interleaved)
@@ -252,8 +283,12 @@ namespace Xt {
                     CopyNonInterleavedBufferFromNative(format.mix.sample, input, (Array)inData, format.inputs, frames);
 
             try {
-                callback(this, inData, outData, frames, time, position, timeValid, error, user);
+                streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
             } catch (Exception e) {
+                if (XtAudio.trace != null)
+                    XtAudio.trace(XtLevel.Fatal, string.Format("Exception caught in xrun callback: {0}.", e));
+                Console.WriteLine(e);
+                Console.WriteLine(e.StackTrace);
                 Environment.FailFast("Exception caught in stream callback.", e);
             }
 

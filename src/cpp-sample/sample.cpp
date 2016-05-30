@@ -7,6 +7,7 @@ extern int RenderSimpleMain(int argc, char** argv);
 extern int CaptureAdvancedMain(int argc, char** argv);
 extern int RenderAdvancedMain(int argc, char** argv);
 extern int FullDuplexMain(int argc, char** argv);
+extern int AggregateMain(int argc, char** argv);
 
 int main(int argc, char** argv) {
   std::cout << "PrintSimpleMain:\n";
@@ -23,5 +24,7 @@ int main(int argc, char** argv) {
   RenderAdvancedMain(argc, argv);
   std::cout << "FullDuplexMain:\n";
   FullDuplexMain(argc, argv);
+  std::cout << "AggregateMain:\n";
+  AggregateMain(argc, argv);
   return 0;
 }

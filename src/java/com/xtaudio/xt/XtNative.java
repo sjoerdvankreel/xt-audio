@@ -114,6 +114,14 @@ final class XtNative {
         }
     }
 
+    public static class ChannelsByValue extends XtChannels implements Structure.ByValue {
+    }
+
+    static interface XRunCallback extends StdCallLibrary.StdCallCallback {
+
+        void callback(int index, Pointer user);
+    }
+
     static interface TraceCallback extends StdCallLibrary.StdCallCallback {
 
         void callback(int level, String message);
@@ -173,6 +181,7 @@ final class XtNative {
     static native Pointer XtPrintFormatToString(Format format);
     static native Pointer XtPrintBufferToString(XtBuffer buffer);
     static native Pointer XtPrintLatencyToString(XtLatency latency);
+    static native Pointer XtPrintChannelsToString(XtChannels channels);
     static native Pointer XtPrintCapabilitiesToString(int capabilities);
     static native Pointer XtPrintAttributesToString(XtAttributes attributes);
 
@@ -191,6 +200,10 @@ final class XtNative {
     static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
     static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);
     static native long XtServiceOpenDefaultDevice(Pointer s, boolean output, PointerByReference device);
+    static native long XtServiceAggregateStream(Pointer s, Pointer devices,
+            Pointer channels, double[] bufferSizes, int count, Mix mix,
+            boolean interleaved, Pointer master, StreamCallback streamCallback,
+            XRunCallback xRunCallback, Pointer user, PointerByReference stream);
 
     static native boolean XtAudioIsWin32();
     static native void XtAudioTerminate();
@@ -213,5 +226,5 @@ final class XtNative {
     static native long XtDeviceSupportsFormat(Pointer d, Format format, IntByReference supports);
     static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
     static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, PointerByReference name);
-    static native long XtDeviceOpenStream(Pointer d, Format format, boolean interleaved, double bufferSize, StreamCallback callback, Pointer user, PointerByReference stream);
+    static native long XtDeviceOpenStream(Pointer d, Format format, boolean interleaved, double bufferSize, StreamCallback streamCallback, XRunCallback xRunCallback, Pointer user, PointerByReference stream);
 }

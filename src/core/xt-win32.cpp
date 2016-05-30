@@ -160,6 +160,18 @@ bool XtiCalledOnMainThread() {
   return currentThreadId == XtwMainThreadId;
 }
 
+int32_t XtiLockIncr(volatile int32_t* dest) {
+  return InterlockedIncrement(reinterpret_cast<volatile long*>(dest));
+}
+
+int32_t XtiLockDecr(volatile int32_t* dest) {
+  return InterlockedDecrement(reinterpret_cast<volatile long*>(dest));
+}
+
+int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
+  return InterlockedCompareExchange(reinterpret_cast<volatile long*>(dest), exch, comp);
+}
+
 void XtiInitPlatform(void* wnd) {
   XT_ASSERT(XtwMainThreadId == 0);
   XT_ASSERT((XtwMainThreadId = GetThreadId(GetCurrentThread())) != 0);
@@ -172,37 +184,58 @@ void XtiInitPlatform(void* wnd) {
 
 // ---- win32 ----
 
-XtwWin32Stream::XtwWin32Stream():
-state(XtStreamStateStopped), lock(), respondEvent(), controlEvent() {
-  HANDLE thread = CreateThread(nullptr, 0, &Win32StreamCallback, this, 0, nullptr);
-  XT_ASSERT(thread != nullptr);
-  CloseHandle(thread);
+XtwWin32Stream::XtwWin32Stream(bool secondary):
+XtManagedStream(secondary),
+state(XtStreamStateStopped), 
+lock(),
+respondEvent(),
+controlEvent() {
+  if(!secondary) {
+    HANDLE thread = CreateThread(nullptr, 0, &Win32StreamCallback, this, 0, nullptr);
+    XT_ASSERT(thread != nullptr);
+    CloseHandle(thread);
+  }
 }
 
 XtwWin32Stream::~XtwWin32Stream() {
-  SendWin32StreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
+  if(!secondary)
+    SendWin32StreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
 }
 
 XtFault XtwWin32Stream::Start() {
-  SendWin32StreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  if(!secondary)
+    SendWin32StreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  else {
+    ProcessBuffer(true);
+    StartStream();
+  }
   return S_OK;
 }
 
 XtFault XtwWin32Stream::Stop() {
-  SendWin32StreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
+  if(secondary)
+    StopStream();
+  else
+    SendWin32StreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
   return S_OK;
+}
+
+void XtwWin32Stream::RequestStop() {
+  StopStream();
+  if(!secondary) {
+    EnterCriticalSection(&lock.cs);
+    state = XtStreamStateStopped;
+    XT_ASSERT(SetEvent(respondEvent.event));
+    LeaveCriticalSection(&lock.cs);
+  }
 }
 
 bool XtwWin32Stream::VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
   if(SUCCEEDED(hr))
     return true;
-  StopStream();
+  RequestStop();
   XtiTrace(XtLevelError, file, line, func, expr);
   ProcessCallback(nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), hr));
-  EnterCriticalSection(&lock.cs);
-  state = XtStreamStateStopped;
-  XT_ASSERT(SetEvent(respondEvent.event));
-  LeaveCriticalSection(&lock.cs);
   return false;
 }
 

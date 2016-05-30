@@ -25,4 +25,5 @@ public final class XtCapabilities {
     public static final int LATENCY = 0x2;
     public static final int FULL_DUPLEX = 0x4;
     public static final int CHANNEL_MASK = 0x8;
+    public static final int XRUN_DETECTION = 0x10;
 }

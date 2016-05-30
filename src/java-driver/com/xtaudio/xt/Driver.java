@@ -31,6 +31,7 @@ public class Driver {
 
         double phase;
         double start;
+        int xRunCount;
         long processed;
         ByteBuffer buffer;
         byte[] intermediate;
@@ -245,16 +246,27 @@ public class Driver {
     private static boolean streamAccessMode(XtService service, XtDevice d, XtFormat format,
             double bufferSize, boolean interleaved, boolean raw) throws Exception {
 
+        int channelCount;
+        boolean thisDeviceIsInput;
         StreamContext context = new StreamContext();
         context.phase = 0.0;
         context.start = -1.0;
         context.processed = 0;
+        double bufferSizes[] = new double[2];
+        XtDevice[] devices = new XtDevice[2];
+        XtChannels[] channels = new XtChannels[2];
+        channels[0] = new XtChannels();
+        channels[1] = new XtChannels();
+        XtFormat otherFormat = new XtFormat();
+        XtDevice otherDevice;
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss");
         String recordFileName = String.format("xt-recording-%s-%s-%s-%s-%s-%s-%s.raw",
                 service, d, formatter.format(LocalDateTime.now()), format, bufferSize, interleaved, raw);
         String fmtString = "Streaming: %s: %s, format %s, buffer %s, interleaved %s, raw %s\n";
         System.console().printf(fmtString, service, d, format, bufferSize, interleaved, raw);
-        try (XtStream stream = d.openStream(format, interleaved, raw, bufferSize, Driver::onStreamCallback, context)) {
+
+        try (XtStream stream = d.openStream(format, interleaved, raw, bufferSize, Driver::onStreamCallback, Driver::onXRunCallback, context)) {
             int frames = stream.getFrames();
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
             context.intermediate = new byte[frames * format.inputs * sampleSize];
@@ -263,19 +275,61 @@ public class Driver {
             System.console().printf("Buffer: %s (%s ms)\n", frames, frames * 1000.0 / format.mix.rate);
             if (format.outputs == 0)
                 context.recording = new FileOutputStream(recordFileName);
-            if (!AUTO && AUTO_STREAM_MILLIS == -1 && !readLine("Waiting for stream to start...\n"))
+            if (!streamOnce(stream))
                 return false;
-            stream.start();
-            if (!AUTO && AUTO_STREAM_MILLIS == -1 && !readLine("Waiting for stream to stop...\n"))
-                return false;
-            if (AUTO || AUTO_STREAM_MILLIS != -1)
-                Thread.sleep(AUTO ? AUTO_MILLIS : AUTO_STREAM_MILLIS);
-            stream.stop();
-            return true;
         } finally {
             if (context.recording != null)
                 context.recording.close();
         }
+
+        if ((service.getCapabilities() & XtCapabilities.FULL_DUPLEX) == 0) {
+            thisDeviceIsInput = d.getChannelCount(false) != 0;
+            channelCount = thisDeviceIsInput ? format.inputs : format.outputs;
+            otherDevice = service.openDefaultDevice(thisDeviceIsInput);
+            if (otherDevice == null)
+                return true;
+            devices[0] = thisDeviceIsInput ? d : otherDevice;
+            devices[1] = thisDeviceIsInput ? otherDevice : d;
+            channels[0].inputs = channelCount;
+            channels[1].outputs = channelCount;
+            bufferSizes[0] = bufferSize;
+            bufferSizes[1] = bufferSize;
+            otherFormat.mix = format.mix;
+            otherFormat.inputs = thisDeviceIsInput ? 0 : channelCount;
+            otherFormat.outputs = thisDeviceIsInput ? channelCount : 0;
+            if (otherDevice.supportsFormat(otherFormat)) {
+                System.out.println(String.format("Streaming aggregate, other device = %s ...", otherDevice.getName()));
+                try (XtStream aggregate = service.aggregateStream(
+                        devices, channels, bufferSizes, 2, format.mix, interleaved, raw,
+                        d, Driver::onStreamCallback, Driver::onXRunCallback, context)) {
+                    if (!streamOnce(aggregate))
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean streamOnce(XtStream stream) {
+        if (!AUTO && AUTO_STREAM_MILLIS == -1 && !readLine("Waiting for stream to start...\n"))
+            return false;
+        stream.start();
+        if (!AUTO && AUTO_STREAM_MILLIS == -1 && !readLine("Waiting for stream to stop...\n"))
+            return false;
+        if (AUTO || AUTO_STREAM_MILLIS != -1)
+            try {
+                Thread.sleep(AUTO ? AUTO_MILLIS : AUTO_STREAM_MILLIS);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        stream.stop();
+        return true;
+    }
+
+    private static void onXRunCallback(int index, Object user) {
+        StreamContext ctx = (StreamContext) user;
+        ctx.xRunCount++;
+        System.out.println(String.format("XRun on index %s, count = %s.", index, ctx.xRunCount));
     }
 
     private static void onStreamCallback(XtStream stream, Object input, Object output, int frames,

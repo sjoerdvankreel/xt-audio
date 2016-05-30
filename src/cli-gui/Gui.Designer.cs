@@ -48,6 +48,7 @@
             System.Windows.Forms.Label label14;
             System.Windows.Forms.Label label15;
             System.Windows.Forms.Label label20;
+            System.Windows.Forms.Label label21;
             this.messages = new System.Windows.Forms.TextBox();
             this.isWin32 = new System.Windows.Forms.Label();
             this.version = new System.Windows.Forms.Label();
@@ -83,6 +84,9 @@
             this.streamType = new System.Windows.Forms.ComboBox();
             this.streamInterleaved = new System.Windows.Forms.CheckBox();
             this.streamRaw = new System.Windows.Forms.CheckBox();
+            this.outputMaster = new System.Windows.Forms.CheckBox();
+            this.secondaryInput = new System.Windows.Forms.ComboBox();
+            this.secondaryOutput = new System.Windows.Forms.ComboBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -103,6 +107,7 @@
             label14 = new System.Windows.Forms.Label();
             label15 = new System.Windows.Forms.Label();
             label20 = new System.Windows.Forms.Label();
+            label21 = new System.Windows.Forms.Label();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bufferSize)).BeginInit();
             this.SuspendLayout();
@@ -298,7 +303,7 @@
             this.messages.Name = "messages";
             this.messages.ReadOnly = true;
             this.messages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messages.Size = new System.Drawing.Size(325, 434);
+            this.messages.Size = new System.Drawing.Size(325, 353);
             this.messages.TabIndex = 0;
             // 
             // isWin32
@@ -664,9 +669,53 @@
             this.streamRaw.Text = "Raw";
             this.streamRaw.UseVisualStyleBackColor = true;
             // 
+            // outputMaster
+            // 
+            this.outputMaster.AutoSize = true;
+            this.outputMaster.Checked = true;
+            this.outputMaster.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.outputMaster.Location = new System.Drawing.Point(589, 452);
+            this.outputMaster.Name = "outputMaster";
+            this.outputMaster.Size = new System.Drawing.Size(92, 17);
+            this.outputMaster.TabIndex = 70;
+            this.outputMaster.Text = "Output master";
+            this.outputMaster.UseVisualStyleBackColor = true;
+            // 
+            // secondaryInput
+            // 
+            this.secondaryInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.secondaryInput.FormattingEnabled = true;
+            this.secondaryInput.Location = new System.Drawing.Point(447, 398);
+            this.secondaryInput.Name = "secondaryInput";
+            this.secondaryInput.Size = new System.Drawing.Size(325, 21);
+            this.secondaryInput.TabIndex = 73;
+            // 
+            // secondaryOutput
+            // 
+            this.secondaryOutput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.secondaryOutput.FormattingEnabled = true;
+            this.secondaryOutput.Location = new System.Drawing.Point(447, 425);
+            this.secondaryOutput.Name = "secondaryOutput";
+            this.secondaryOutput.Size = new System.Drawing.Size(325, 21);
+            this.secondaryOutput.TabIndex = 74;
+            // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label21.Location = new System.Drawing.Point(447, 374);
+            label21.Name = "label21";
+            label21.Size = new System.Drawing.Size(305, 13);
+            label21.TabIndex = 75;
+            label21.Text = "Stream aggregation secondary input/output devices:";
+            // 
             // XtGui
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(label21);
+            this.Controls.Add(this.secondaryOutput);
+            this.Controls.Add(this.secondaryInput);
+            this.Controls.Add(this.outputMaster);
             this.Controls.Add(this.streamRaw);
             this.Controls.Add(this.streamInterleaved);
             this.Controls.Add(this.streamType);
@@ -727,5 +776,8 @@
         private System.Windows.Forms.Label inputInterleaved;
         private System.Windows.Forms.CheckBox streamInterleaved;
         private System.Windows.Forms.CheckBox streamRaw;
+        private System.Windows.Forms.CheckBox outputMaster;
+        private System.Windows.Forms.ComboBox secondaryInput;
+        private System.Windows.Forms.ComboBox secondaryOutput;
     }
 }

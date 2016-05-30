@@ -29,6 +29,7 @@ namespace Xt {
         }
 
         private XtAudio audio;
+        private TextWriter log;
         private XtStream inputStream;
         private XtStream outputStream;
         private FileStream captureFile;
@@ -60,11 +61,11 @@ namespace Xt {
         }
 
         private void OnTrace(XtLevel level, string message) {
-            AddMessage(string.Format("{0}: {1}", level, message));
+            AddMessage(() => string.Format("{0}: {1}", level, message), level != XtLevel.Info);
         }
 
-        private void OnStreamError(string error) {
-            AddMessage(error);
+        private void OnStreamError(Func<string> error) {
+            AddMessage(error, true);
             BeginInvoke(new Action(() => Stop()));
         }
 
@@ -85,9 +86,10 @@ namespace Xt {
         }
 
         private void OnFatal() {
+            string trace = Environment.StackTrace;
+            string message = "A fatal error occurred." + Environment.NewLine + "StackTrace:" + Environment.NewLine + trace;
             Invoke(new Action(() => {
-                MessageBox.Show(this, "A fatal error occurred.", "Fatal error.",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, message, "Fatal error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.FailFast("Fatal error.");
             }));
         }
@@ -97,11 +99,20 @@ namespace Xt {
             Stop();
             ClearDevices();
             audio.Dispose();
+            log.Dispose();
         }
 
-        private void AddMessage(string message) {
+        private void AddMessage(Func<string> message) {
+            AddMessage(message, false);
+        }
+
+        private void AddMessage(Func<string> message, bool error) {
             messages.BeginInvoke(new Action(() => {
-                messages.Text += string.Format("{0} {1}{2}", DateTime.Now, message, Environment.NewLine);
+                string msg = message();
+                log.WriteLine(msg);
+                if (error)
+                    log.Flush();
+                messages.Text += string.Format("{0} {1}{2}", DateTime.Now, msg, Environment.NewLine);
                 if (messages.Text.Length > 4000)
                     messages.Text = messages.Text.Substring(messages.Text.Length - 4000);
                 messages.SelectionStart = messages.TextLength;
@@ -129,6 +140,8 @@ namespace Xt {
         protected override void OnShown(EventArgs e) {
 
             base.OnShown(e);
+            log = new StreamWriter("xt-audio.log");
+
             audio = new XtAudio("XT-Gui", Handle, OnTrace, OnFatal);
             debug.Text = "Debug: False";
 #if DEBUG
@@ -179,13 +192,22 @@ namespace Xt {
                 deviceViews.Add(view);
             }
 
-            inputDevice.DataSource = (from v in deviceViews
-                                      where v.defaultInput || v.device.GetChannelCount(false) > 0
-                                      select v).ToList();
+            List<DeviceView> inputViews = (from v in deviceViews
+                                           where v.defaultInput || v.device.GetChannelCount(false) > 0
+                                           select v).ToList();
+            inputViews.Insert(0, new DeviceView());
 
-            outputDevice.DataSource = (from v in deviceViews
-                                       where v.defaultOutput || v.device.GetChannelCount(true) > 0
-                                       select v).ToList();
+            List<DeviceView> outputViews = (from v in deviceViews
+                                            where v.defaultOutput || v.device.GetChannelCount(true) > 0
+                                            select v).ToList();
+            outputViews.Insert(0, new DeviceView());
+
+            inputDevice.DataSource = new List<DeviceView>(inputViews);
+            outputDevice.DataSource = new List<DeviceView>(outputViews);
+            secondaryInput.DataSource = new List<DeviceView>(inputViews);
+            secondaryOutput.DataSource = new List<DeviceView>(outputViews);
+            inputDevice.SelectedIndex = inputViews.Count == 1 ? 0 : 1;
+            outputDevice.SelectedIndex = outputViews.Count == 1 ? 0 : 1;
 
             system.Text = s.GetSystem().ToString();
             capabilities.Text = XtPrint.CapabilitiesToString(s.GetCapabilities());
@@ -252,7 +274,7 @@ namespace Xt {
             outputChannels.DataSource = outputViews;
             outputChannels.SelectedItems.Clear();
 
-            bufferSize.Minimum = 0;
+            bufferSize.Minimum = 1;
             bufferSize.Maximum = 5000;
             bufferSize.Value = 1000;
             if (outputBuffer != null) {
@@ -295,22 +317,44 @@ namespace Xt {
             try {
 
                 StreamType type = (StreamType)streamType.SelectedItem;
-                bool input = type != StreamType.Render;
-                bool output = type != StreamType.Capture;
+                bool input = type == StreamType.Capture || type == StreamType.Duplex || type == StreamType.Latency;
+                bool output = type == StreamType.Render || type == StreamType.Duplex || type == StreamType.Latency;
+                XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
+                XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
+                XtDevice secondaryInputDevice = ((DeviceView)this.secondaryInput.SelectedItem).device;
+                XtDevice secondaryOutputDevice = ((DeviceView)this.secondaryOutput.SelectedItem).device;
 
-                if (input && inputDevice.SelectedItem == null) {
+                if (input && inputDevice == null) {
                     MessageBox.Show(this,
                         "Select an input device.",
                         "Invalid input device.");
                     return;
                 }
 
-                if (output && outputDevice.SelectedItem == null) {
+                if (output && outputDevice == null) {
                     MessageBox.Show(this,
                         "Select an output device.",
                         "Invalid output device.");
                     return;
                 }
+
+                if (type == StreamType.Duplex && outputDevice != inputDevice) {
+                    MessageBox.Show(this,
+                        "For duplex operation, input and output device must be the same.",
+                        "Invalid duplex device.");
+                    return;
+                }
+
+                if (type == StreamType.Aggregate
+                    && (inputDevice == null && secondaryInputDevice == null
+                     || outputDevice == null && secondaryOutputDevice == null)) {
+                    MessageBox.Show(this,
+                        "For aggregate operation, select at least 1 input and 1 output device.",
+                        "Invalid aggregate device.");
+                    return;
+                }
+
+                XRunCallback xRunCallback = new XRunCallback(AddMessage);
 
                 XtFormat inputFormat = GetFormat(false);
                 inputFormat.inputs = (int)channelCount.SelectedItem;
@@ -337,45 +381,95 @@ namespace Xt {
 
                     captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
                     CaptureCallback callback = new CaptureCallback(OnStreamError, AddMessage, captureFile);
-                    XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
-                    inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
-                        streamRaw.Checked, bufferSize.Value, callback.OnCallback, "capture-user-data");
+                    inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked, streamRaw.Checked,
+                        bufferSize.Value, callback.OnCallback, xRunCallback.OnCallback, "capture-user-data");
                     callback.Init(inputStream.GetFormat(), inputStream.GetFrames());
                     inputStream.Start();
 
                 } else if (type == StreamType.Render) {
 
                     RenderCallback callback = new RenderCallback(OnStreamError, AddMessage);
-                    XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
-                        streamRaw.Checked, bufferSize.Value, callback.OnCallback, "render-user-data");
+                    outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked, streamRaw.Checked,
+                        bufferSize.Value, callback.OnCallback, xRunCallback.OnCallback, "render-user-data");
                     outputStream.Start();
 
-                } else if (inputDevice.SelectedItem == outputDevice.SelectedItem) {
+                } else if (type == StreamType.Duplex) {
 
                     XtFormat duplexFormat = inputFormat;
                     duplexFormat.outputs = outputFormat.outputs;
                     duplexFormat.outMask = outputFormat.outMask;
                     FullDuplexCallback callback = new FullDuplexCallback(OnStreamError, AddMessage);
-                    XtDevice duplexDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    outputStream = duplexDevice.OpenStream(duplexFormat, streamInterleaved.Checked,
-                       streamRaw.Checked, bufferSize.Value, callback.OnCallback, "duplex-user-data");
+                    outputStream = outputDevice.OpenStream(duplexFormat, streamInterleaved.Checked, streamRaw.Checked,
+                        bufferSize.Value, callback.OnCallback, xRunCallback.OnCallback, "duplex-user-data");
+                    outputStream.Start();
+
+                } else if (type == StreamType.Aggregate) {
+
+                    List<XtDevice> devices = new List<XtDevice>();
+                    List<double> bufferSizes = new List<double>();
+                    List<XtChannels> channels = new List<XtChannels>();
+                    if (inputDevice != null) {
+                        devices.Add(inputDevice);
+                        bufferSizes.Add(bufferSize.Value);
+                        channels.Add(new XtChannels(inputFormat.inputs, inputFormat.inMask, 0, 0));
+                    }
+                    if (outputDevice != null) {
+                        devices.Add(outputDevice);
+                        bufferSizes.Add(bufferSize.Value);
+                        channels.Add(new XtChannels(0, 0, outputFormat.outputs, outputFormat.outMask));
+                    }
+                    if (secondaryInputDevice != null) {
+                        devices.Add(secondaryInputDevice);
+                        bufferSizes.Add(bufferSize.Value);
+                        channels.Add(new XtChannels(inputFormat.inputs, inputFormat.inMask, 0, 0));
+                    }
+                    if (secondaryOutputDevice != null) {
+                        devices.Add(secondaryOutputDevice);
+                        bufferSizes.Add(bufferSize.Value);
+                        channels.Add(new XtChannels(0, 0, outputFormat.outputs, outputFormat.outMask));
+                    }
+
+                    XtDevice[] devicesArray = devices.ToArray();
+                    double[] bufferSizesArray = bufferSizes.ToArray();
+                    XtChannels[] channelsArray = channels.ToArray();
+                    XtDevice master = outputMaster.Checked ?
+                        (outputDevice != null ? outputDevice :
+                        secondaryOutputDevice != null ? secondaryOutputDevice :
+                        inputDevice != null ? inputDevice : secondaryInputDevice) :
+                        (inputDevice != null ? inputDevice :
+                        secondaryInputDevice != null ? secondaryInputDevice :
+                        outputDevice != null ? outputDevice : secondaryOutputDevice);
+
+                    AggregateCallback streamCallback = new AggregateCallback(OnStreamError, AddMessage);
+                    outputStream = ((XtService)service.SelectedItem).AggregateStream(devicesArray, channelsArray,
+                        bufferSizesArray, devicesArray.Length, outputFormat.mix, streamInterleaved.Checked, streamRaw.Checked,
+                        master, streamCallback.OnCallback, xRunCallback.OnCallback, "aggregate-user-data");
+                    streamCallback.Init(outputStream.GetFrames());
+                    outputStream.Start();
+
+                } else if (inputDevice == outputDevice) {
+
+                    XtFormat duplexFormat = inputFormat;
+                    duplexFormat.outputs = outputFormat.outputs;
+                    duplexFormat.outMask = outputFormat.outMask;
+                    LatencyCallback callback = new LatencyCallback(OnStreamError, AddMessage);
+                    outputStream = outputDevice.OpenStream(duplexFormat, streamInterleaved.Checked, streamRaw.Checked,
+                        bufferSize.Value, callback.OnCallback, xRunCallback.OnCallback, "latency-user-data");
                     outputStream.Start();
 
                 } else {
 
-                    ConcurrentRingBuffer buffer = new ConcurrentRingBuffer();
-                    XtDevice inputDevice = ((DeviceView)this.inputDevice.SelectedItem).device;
-                    XtDevice outputDevice = ((DeviceView)this.outputDevice.SelectedItem).device;
-                    PlayThroughCaptureCallback inputCallback = new PlayThroughCaptureCallback(OnStreamError, AddMessage, buffer);
-                    PlayThroughRenderCallback outputCallback = new PlayThroughRenderCallback(OnStreamError, AddMessage, buffer);
-                    inputStream = inputDevice.OpenStream(inputFormat, streamInterleaved.Checked,
-                       streamRaw.Checked, bufferSize.Value, inputCallback.OnCallback, "capture-user-data");
-                    outputStream = outputDevice.OpenStream(outputFormat, streamInterleaved.Checked,
-                       streamRaw.Checked, bufferSize.Value, outputCallback.OnCallback, "render-user-data");
-                    inputCallback.Init(inputFormat, inputStream.GetFrames());
-                    outputCallback.Init(outputFormat, outputStream.GetFrames());
-                    inputStream.Start();
+                    XtDevice[] devices = new XtDevice[] { inputDevice, outputDevice };
+                    double[] bufferSizes = new double[] { bufferSize.Value, bufferSize.Value };
+                    XtChannels[] channels = new XtChannels[] {
+                        new XtChannels(inputFormat.inputs, inputFormat.inMask, 0, 0),
+                        new XtChannels(0, 0, outputFormat.outputs, outputFormat.outMask)
+                    };
+                    XtDevice master = outputMaster.Checked ? outputDevice : inputDevice;
+                    LatencyCallback callback = new LatencyCallback(OnStreamError, AddMessage);
+                    outputStream = ((XtService)service.SelectedItem).AggregateStream(devices, channels,
+                        bufferSizes, devices.Length, outputFormat.mix, streamInterleaved.Checked, streamRaw.Checked,
+                        master, callback.OnCallback, xRunCallback.OnCallback, "latency-user-data");
                     outputStream.Start();
                 }
 

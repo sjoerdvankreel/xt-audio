@@ -29,7 +29,7 @@ int CaptureSimpleMain(int argc, char** argv) {
 
     Xt::Buffer buffer = device->GetBuffer(Format);
     std::ofstream recording("xt-audio.raw", std::ios::out | std::ios::binary);
-    std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Capture, &recording);
+    std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Capture, nullptr, &recording);
     stream->Start();
 #if _WIN32
     Sleep(1000);
@@ -37,6 +37,6 @@ int CaptureSimpleMain(int argc, char** argv) {
     usleep(1000 * 1000);
 #endif
     stream->Stop();
-    return 0;
   }
+  return 0;
 }

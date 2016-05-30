@@ -7,7 +7,7 @@ namespace Xt {
         private double phase;
         private static readonly double Frequency = 660.0;
 
-        internal RenderCallback(Action<string> onError, Action<string> onMessage) :
+        internal RenderCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
             base("Render", onError, onMessage) {
         }
 

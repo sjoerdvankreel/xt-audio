@@ -109,8 +109,9 @@ struct AlsaStream: public XtlLinuxStream {
   XT_IMPLEMENT_STREAM(Alsa);
 
   ~AlsaStream() { Stop(); }
-  AlsaStream(AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
+  AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
              int32_t bufferFrames, int32_t channels, int32_t sampleSize):
+  XtlLinuxStream(secondary),
   mmap(mmap), 
   output(output),
   pcm(std::move(p)), 
@@ -152,25 +153,6 @@ static snd_pcm_format_t ToAlsaSample(XtSample sample) {
   }
 }
 
-static bool AnyAccessMaskAvailable(char* device, snd_pcm_stream_t stream) {
-
-  snd_pcm_t* pcm;
-  AlsaLogDisabler disabler;
-  snd_pcm_hw_params_t* hwParams;
- 	snd_pcm_access_mask_t* accessMask;
-  snd_pcm_hw_params_alloca(&hwParams);
-  snd_pcm_access_mask_alloca(&accessMask);
-
-  if(snd_pcm_open(&pcm, device, stream, 0) < 0)
-    return false;
-  AlsaPcm alsaPcm(pcm);
-  if(snd_pcm_hw_params_any(pcm, hwParams) < 0)
-    return false;
-  if(snd_pcm_hw_params_get_access_mask(hwParams, accessMask) < 0)
-    return false;
-  return !snd_pcm_access_mask_empty(accessMask);
-}
-
 static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
   AlsaHints hints;
   std::vector<AlsaDeviceInfo> result;
@@ -183,8 +165,7 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
       continue;
 
     if(strstr(name.hint, "dmix") != name.hint 
-      && (ioid.hint == nullptr || !strcmp("Input", ioid.hint)) 
-      && AnyAccessMaskAvailable(name.hint, SND_PCM_STREAM_CAPTURE)) {
+      && (ioid.hint == nullptr || !strcmp("Input", ioid.hint))) {
 
       AlsaDeviceInfo device = AlsaDeviceInfo();
       device.name = name.hint;
@@ -197,8 +178,7 @@ static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
     }
 
     if(strstr(name.hint, "dsnoop") != name.hint 
-      && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))
-      && AnyAccessMaskAvailable(name.hint, SND_PCM_STREAM_PLAYBACK)) {
+      && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))) {
 
       AlsaDeviceInfo device = AlsaDeviceInfo();
       device.name = name.hint;
@@ -310,7 +290,10 @@ XtCause AlsaService::GetFaultCause(XtFault fault) const {
 }
 
 XtCapabilities AlsaService::GetCapabilities() const {
-  return static_cast<XtCapabilities>(XtCapabilitiesTime | XtCapabilitiesLatency);
+  return static_cast<XtCapabilities>(
+    XtCapabilitiesTime |
+    XtCapabilitiesLatency |
+    XtCapabilitiesXRunDetection);
 }
 
 XtFault AlsaService::GetDeviceCount(int32_t* count) const {
@@ -438,7 +421,7 @@ XtFault AlsaDevice::SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams
 }
 
 XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               XtStreamCallback callback, void* user, XtStream** stream) {
+                               bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
   
   XtFault fault;
   snd_pcm_t* pcm;
@@ -477,7 +460,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
 
   sampleSize = XtiGetSampleSize(format->mix.sample);
   channels = format->inputs + format->outputs;
-  *stream = new AlsaStream(std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
+  *stream = new AlsaStream(secondary, std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
   return 0;
 }
 
@@ -544,6 +527,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
     if(!output) {
       if(alsaInterleaved) {
         if((sframes = snd_pcm_readi(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_readi(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
@@ -554,6 +539,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
         ProcessCallback(&interleavedAudio[0], nullptr, sframes, time, position, timeValid, 0);
       } else {
         if((sframes = snd_pcm_readn(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_readn(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
@@ -567,6 +554,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       if(alsaInterleaved) {
         ProcessCallback(nullptr, &interleavedAudio[0], bufferFrames, time, position, timeValid, 0);
         if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0)
@@ -575,6 +564,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       } else {
         ProcessCallback(nullptr, &nonInterleavedAudio[0], bufferFrames, time, position, timeValid, 0);
         if((sframes = snd_pcm_writen(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
+          if(sframes == -EPIPE)
+            ProcessXRun();
           if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, sframes, 1)))
             return;
           if((sframes = snd_pcm_writen(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0)
@@ -606,7 +597,10 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       ProcessCallback(data, nullptr, uframes, time, position, timeValid, 0);
     else
       ProcessCallback(nullptr, data, uframes, time, position, timeValid, 0);
-    if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {
+    fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes);
+    if(fault >= 0 && fault != uframes)
+      ProcessXRun();
+    if(fault < 0) {
       if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_recover(pcm.pcm, fault, 1)))
         return;
       if((fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes)) < 0) {

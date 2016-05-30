@@ -54,6 +54,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\src\cli-sample\Aggregate.cs">
+      <Link>Aggregate.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli-sample\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\src\cli-sample\CaptureAdvanced.cs">
       <Link>CaptureAdvanced.cs</Link>
     </Compile>

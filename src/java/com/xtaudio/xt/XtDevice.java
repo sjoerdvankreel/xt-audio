@@ -1,6 +1,7 @@
 package com.xtaudio.xt;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -19,9 +20,13 @@ import com.sun.jna.ptr.PointerByReference;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
-public final class XtDevice implements XtCloseable {
+public class XtDevice implements XtCloseable {
 
-    private Pointer d;
+    Pointer d;
+
+    XtDevice() {
+
+    }
 
     XtDevice(Pointer d) {
         this.d = d;
@@ -91,12 +96,14 @@ public final class XtDevice implements XtCloseable {
         return XtNative.wrapAndFreeString(name.getValue());
     }
 
-    public XtStream openStream(XtFormat format, boolean interleaved, boolean raw, double bufferSize, XtStreamCallback callback, Object user) {
+    public XtStream openStream(XtFormat format, boolean interleaved, boolean raw, double bufferSize,
+            XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
+
         PointerByReference s = new PointerByReference();
-        XtStream stream = new XtStream(raw, callback, user);
+        XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
         XtNative.Format formatNative = XtNative.Format.toNative(format);
-        stream.nativeCallback = stream::callback;
-        XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, interleaved, bufferSize, stream.nativeCallback, Pointer.NULL, s));
+        XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, interleaved, bufferSize,
+                stream.nativeStreamCallback, xRunCallback == null ? null : stream.nativeXRunCallback, null, s));
         stream.init(s.getValue());
         return stream;
     }

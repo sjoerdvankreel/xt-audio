@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\src\cli\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\src\cli\XtAttributes.cs">
       <Link>XtAttributes.cs</Link>
     </Compile>
@@ -55,6 +58,9 @@
     </Compile>
     <Compile Include="..\src\cli\XtCause.cs">
       <Link>XtCause.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli\XtChannels.cs">
+      <Link>XtChannels.cs</Link>
     </Compile>
     <Compile Include="..\src\cli\XtDevice.cs">
       <Link>XtDevice.cs</Link>
@@ -103,6 +109,9 @@
     </Compile>
     <Compile Include="..\src\cli\XtTraceCallback.cs">
       <Link>XtTraceCallback.cs</Link>
+    </Compile>
+    <Compile Include="..\src\cli\XtXRunCallback.cs">
+      <Link>XtXRunCallback.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

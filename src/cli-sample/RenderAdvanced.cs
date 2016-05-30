@@ -19,6 +19,11 @@ namespace Xt {
             return (float)Math.Sin(phase * Math.PI);
         }
 
+        static void XRun(int index, object user) {
+            // Don't do this.
+            Console.WriteLine("XRun on device " + index + ", user = " + user + ".");
+        }
+
         static void RenderInterleaved(XtStream stream, object input, object output,
             int frames, double time, ulong position, bool timeValid, ulong error, object user) {
 
@@ -84,7 +89,7 @@ namespace Xt {
                     XtBuffer buffer = device.GetBuffer(format);
 
                     using (XtStream stream = device.OpenStream(format, true, false,
-                        buffer.current, RenderInterleaved, null)) {
+                        buffer.current, RenderInterleaved, XRun, "user-data")) {
                         stream.Start();
                         Console.WriteLine("Rendering interleaved...");
                         ReadLine();
@@ -92,7 +97,7 @@ namespace Xt {
                     }
 
                     using (XtStream stream = device.OpenStream(format, true, true,
-                        buffer.current, RenderInterleavedRaw, null)) {
+                        buffer.current, RenderInterleavedRaw, XRun, "user-data")) {
                         stream.Start();
                         Console.WriteLine("Rendering interleaved, raw buffers...");
                         ReadLine();
@@ -100,7 +105,7 @@ namespace Xt {
                     }
 
                     using (XtStream stream = device.OpenStream(format, false, false,
-                        buffer.current, RenderNonInterleaved, null)) {
+                        buffer.current, RenderNonInterleaved, XRun, "user-data")) {
                         stream.Start();
                         Console.WriteLine("Rendering non-interleaved...");
                         ReadLine();
@@ -108,7 +113,7 @@ namespace Xt {
                     }
 
                     using (XtStream stream = device.OpenStream(format, false, true,
-                        buffer.current, RenderNonInterleavedRaw, null)) {
+                        buffer.current, RenderNonInterleavedRaw, XRun, "user-data")) {
                         stream.Start();
                         Console.WriteLine("Rendering non-interleaved, raw buffers...");
                         ReadLine();
@@ -117,7 +122,7 @@ namespace Xt {
 
                     XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 1, 1L << 0);
                     using (XtStream stream = device.OpenStream(sendTo0, true, false,
-                        buffer.current, RenderInterleaved, null)) {
+                        buffer.current, RenderInterleaved, XRun, "user-data")) {
                         stream.Start();
                         Console.WriteLine("Rendering channel mask, channel 0...");
                         ReadLine();
@@ -126,7 +131,7 @@ namespace Xt {
 
                     XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 1, 1L << 1);
                     using (XtStream stream = device.OpenStream(sendTo1, true, false, buffer.current,
-                            RenderInterleaved, null)) {
+                            RenderInterleaved, XRun, "user-data")) {
                         stream.Start();
                         Console.WriteLine("Rendering channel mask, channel 1...");
                         ReadLine();

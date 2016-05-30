@@ -57,6 +57,8 @@ struct AsioStream: public XtStream {
   bool issueOutputReady;
   const long bufferSize;
   AsioDevice* const device;
+  volatile int32_t running;
+  volatile int32_t insideCallback;
   std::vector<void*> inputChannels;
   std::vector<void*> outputChannels;
   std::vector<ASIOBufferInfo> buffers;
@@ -68,7 +70,8 @@ struct AsioStream: public XtStream {
   AsioStream(AsioDevice* d, const XtFormat& format, 
     size_t bufferSize, const std::vector<ASIOBufferInfo>& buffers):
   XtStream(), issueOutputReady(true), 
-  bufferSize(static_cast<long>(bufferSize)), device(d), 
+  bufferSize(static_cast<long>(bufferSize)), 
+  device(d), running(0), insideCallback(0),
   inputChannels(static_cast<size_t>(format.inputs), nullptr),
   outputChannels(static_cast<size_t>(format.outputs), nullptr),
   buffers(buffers), runtime(std::make_unique<asmjit::JitRuntime>()) {}
@@ -173,6 +176,11 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   AsioTimeInfo& info = asioTime->timeInfo;
   AsioStream* s = static_cast<AsioStream*>(ctx);
 
+  if(XtiCas(&s->running, 1, 1) != 1)
+    return nullptr;
+  if(XtiCas(&s->insideCallback, 1, 0) != 0)
+    return nullptr;
+
   if(info.flags & kSamplePositionValid && info.flags & kSystemTimeValid) {
     timeValid = XtTrue;
     position = XT_TO_UINT64(info.samplePosition.lo, info.samplePosition.hi);
@@ -188,6 +196,8 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   s->ProcessCallback(input, output, s->bufferSize, time, position, timeValid, ASE_OK);
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
+
+  XT_ASSERT(XtiCas(&s->insideCallback, 0, 1) == 1);
   return nullptr; 
 }
 
@@ -287,7 +297,7 @@ XtFault AsioService::OpenDefaultDevice(XtBool output, XtDevice** device) const  
   if(AsioDriverList().asioGetNumDev() == 0)
     return ASE_OK;
   error = XtServiceOpenDevice(this, 0, device);
-  return error == 0? ASE_OK: XtErrorGetFault(error);
+  return XtErrorGetFault(error);
 }
 
 XtCause AsioService::GetFaultCause(XtFault fault) const {
@@ -453,7 +463,7 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
 }
 
 XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               XtStreamCallback callback, void* user, XtStream** stream) {
+                               bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
   
   double wantedSize;
   long asioBufferSize;
@@ -496,10 +506,13 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
 // ---- stream ----
 
 XtFault AsioStream::Stop() {
+  XtiCas(&running, 0, 1);
+  while(XtiCas(&insideCallback, 1, 1) == 1);
   return device->asio->stop();
 }
 
 XtFault AsioStream::Start() {
+  XtiCas(&running, 1, 0);
   return device->asio->start();
 }
 

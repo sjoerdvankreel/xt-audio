@@ -27,8 +27,9 @@ static const int32_t XtPaMinRate = 1;
 static const int32_t XtPaMaxRate = 192000;
 static const int32_t XtPaDefaultRate = 44100;
 static const int32_t XtPaDefaultChannels = 2;
-static const double XtPaMinBufferSize = 80.0;
+static const double XtPaMinBufferSize = 1.0;
 static const double XtPaMaxBufferSize = 2000.0;
+static const double XtPaDefaultBufferSize = 80.0;
 static const XtFault XtPaErrFormat = PA_ERR_MAX + 1;
 static const XtSample XtPaDefaultSample = XtSampleInt16;
 
@@ -73,8 +74,8 @@ struct PulseStream: public XtlLinuxStream {
   XT_IMPLEMENT_STREAM(Pulse);
 
   ~PulseStream() { Stop(); }
-  PulseStream(XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
-  output(output), client(std::move(c)), 
+  PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
+  XtlLinuxStream(secondary), output(output), client(std::move(c)), 
   audio(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   bufferFrames(bufferFrames) 
   { XT_ASSERT(client.simple != nullptr); }
@@ -193,7 +194,7 @@ XtFault PulseDevice::GetChannelCount(XtBool output, int32_t* count) const {
 XtFault PulseDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {  
   buffer->min = XtPaMinBufferSize;
   buffer->max = XtPaMaxBufferSize;
-  buffer->current = XtPaMinBufferSize;
+  buffer->current = XtPaDefaultBufferSize;
   return PA_OK;
 }
 
@@ -224,7 +225,7 @@ XtFault PulseDevice::SupportsFormat(const XtFormat* format, XtBool* supports) co
 }
 
 XtFault PulseDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
-                                XtStreamCallback callback, void* user, XtStream** stream) {
+                                bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
 
   uint64_t mask;
   pa_simple* client;
@@ -255,7 +256,7 @@ XtFault PulseDevice::OpenStream(const XtFormat* format, XtBool interleaved, doub
   if((client = pa_simple_new(nullptr, XtiId, dir, nullptr, 
     XtiId, &spec, &map, nullptr, &fault)) == nullptr)
     return fault;
-  *stream = new PulseStream(XtPaSimple(client), output, bufferFrames, frameSize);
+  *stream = new PulseStream(secondary, XtPaSimple(client), output, bufferFrames, frameSize);
   return PA_OK;
 }
 

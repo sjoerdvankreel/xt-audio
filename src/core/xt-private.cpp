@@ -77,7 +77,8 @@ std::string XtiTryGetDeviceName(const XtDevice* d) {
 XtError XtiCreateError(XtSystem system, XtFault fault) {
   if(fault == 0)
     return 0;
-  XT_TRACE(XtLevelError, "Fault: system %d, code %u.", system, fault);
+  const char* code = XtAudioGetServiceBySystem(system)->GetFaultText(fault);
+  XT_TRACE(XtLevelError, "Fault: system %d, code %u (%s).", system, fault, code);
   return static_cast<uint64_t>(system) << 32ULL | fault;
 }
 
@@ -133,6 +134,33 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
   va_end(argCopy);
 }
 
+// ---- stream ----
+
+XtManagedStream::XtManagedStream(bool secondary):
+secondary(secondary) {
+}
+
+bool XtManagedStream::IsManaged() {
+  return true;
+}
+
+bool XtStream::IsManaged() {
+  return false;
+}
+
+void XtStream::RequestStop() {
+  XT_FAIL("Async stop request not supported on the current stream.");
+}
+
+void XtStream::ProcessXRun() {
+  if(xRunCallback == nullptr)
+    return;
+  if(aggregated)
+    xRunCallback(aggregationIndex, static_cast<XtAggregateContext*>(user)->stream->user);
+  else
+    xRunCallback(0, user);
+}
+
 void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double time, 
                                uint64_t position, XtBool timeValid, XtError error) {
 
@@ -144,22 +172,22 @@ void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double
   if(interleaved && canInterleaved || !interleaved && canNonInterleaved) {
     inData = haveInput? input: nullptr;
     outData = haveOutput? output: nullptr;
-    userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
+    streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
   } else if(interleaved) {
-    inData = haveInput? &inputInterleaved[0]: nullptr;
-    outData = haveOutput? &outputInterleaved[0]: nullptr;
+    inData = haveInput? &intermediate.inputInterleaved[0]: nullptr;
+    outData = haveOutput? &intermediate.outputInterleaved[0]: nullptr;
     if(haveInput)
-      Interleave(&inputInterleaved[0], static_cast<void**>(input), frames, format.inputs, sampleSize);
-    userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
+      Interleave(&intermediate.inputInterleaved[0], static_cast<void**>(input), frames, format.inputs, sampleSize);
+    streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     if(haveOutput)
-      Deinterleave(static_cast<void**>(output), &outputInterleaved[0], frames, format.outputs, sampleSize);
+      Deinterleave(static_cast<void**>(output), &intermediate.outputInterleaved[0], frames, format.outputs, sampleSize);
   } else {
-    inData = haveInput? &inputNonInterleaved[0]: nullptr;
-    outData = haveOutput? &outputNonInterleaved[0]: nullptr;
+    inData = haveInput? &intermediate.inputNonInterleaved[0]: nullptr;
+    outData = haveOutput? &intermediate.outputNonInterleaved[0]: nullptr;
     if(haveInput)
-      Deinterleave(&inputNonInterleaved[0], input, frames, format.inputs, sampleSize);
-    userCallback(this, inData, outData, frames, time, position, timeValid, error, user);
+      Deinterleave(&intermediate.inputNonInterleaved[0], input, frames, format.inputs, sampleSize);
+    streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     if(haveOutput)
-      Interleave(output, &outputNonInterleaved[0], frames, format.outputs, sampleSize);
+      Interleave(output, &intermediate.outputNonInterleaved[0], frames, format.outputs, sampleSize);
   }
 }

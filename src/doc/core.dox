@@ -43,7 +43,7 @@
  * 2. Select service (XtAudioGetServiceByIndex/XtAudioGetServiceBySetup/XtAudioGetServiceBySystem)
  * 3. Select device (XtServiceOpenDevice/XtServiceOpenDefaultDevice)
  * 4. Test format and buffer size support (XtDeviceSupportsFormat/XtDeviceGetBuffer)
- * 5. Open a stream (XtDeviceOpenStream)
+ * 5. Open a stream (XtDeviceOpenStream/XtServiceAggregateStream)
  * 6. Start running (XtStreamStart)
  * 7. Stop running (XtStreamStop)
  * 8. Cleanup stream (XtStreamDestroy)
@@ -82,6 +82,17 @@
  * buffers, or unsigned char**, short**, int** or float** for non-interleaved buffers. For Java and C# this
  * means byte[], short[], int[] or float[] for interleaved buffers or byte[][], short[][], int[][] or float[][]
  * for non-interleaved buffers. Applications should never write to the input buffer.
+ *
+ * <b>Stream aggregation</b>
+ *
+ * XT-Audio allows an application to open an audio stream on more than one device. This is primarily intended
+ * to emulate full-duplex operation on systems which don't natively support it, but may be used to aggregate
+ * any number of input, output and/or full-duplex streams. The resulting stream's channel count will be equal
+ * to the total number of channels requested for each of the underlying streams. Aggregate streams introduce
+ * an intermediate buffer to keep underlying streams in sync, and as such (and unlike anything else in XT-Audio)
+ * they actually add latency to a running stream. Aggregate streams are created using XtServiceAggregateStream
+ * instead of XtDeviceOpenStream. Other than that, the stream interface (including callback functions) is 
+ * exactly the same as for regular audio streams.
  */
 
  /**
@@ -286,7 +297,19 @@
   * @see XtServiceGetCapabilities
   */
 
-/** 
+/**
+  * @struct XtChannels
+  * @brief Audio channel specification.
+  *
+  * See XtFormat for details on the members of this struct.
+  *
+  * @ingroup library
+  * @see XtFormat
+  * @see XtServiceAggregateStream
+  * @see XtPrintChannelsToString
+  */
+
+/**
   * @struct XtBuffer
   * @brief Device buffer size limits.
   *
@@ -294,6 +317,7 @@
   * @see XtDeviceGetBuffer
   * @see XtDeviceOpenStream
   * @see XtPrintBufferToString
+  * @see XtServiceAggregateStream
   */
 
 /** 
@@ -339,7 +363,34 @@
   *
   * @see XtAudioInit
   */
-
+  
+/** @typedef typedef void (*XtXRunCallback)(int32_t index, void* user)
+  * @brief Audio xrun callback.
+  *
+  * @ingroup library
+  * @param stream index the stream index.
+  * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
+  *
+  * The xrun callback will normally be called from a high priority thread. To prevent more
+  * glitches the callback should not call any blocking methods (using locks, doing I/O etc).
+  *
+  * The stream index will be 0 for regular streams, -1 for aggregate streams or the device
+  * index passed to XtServiceAggregateStream for underlying streams of aggregate streams.
+  *
+  * Note for languages that support exceptions: the xrun callback should NEVER throw.
+  * It is considered a fatal error if an exception propagates through the callback.
+  *
+  * Note for aggregate streams: xruns which occur during stream aggregation are always reported
+  * to the application regardless of whether the stream's service supports xrun detection (see XtCapabilities).
+  * When an xrun occurs on one of the underlying streams, the callback is invoked using the index of the
+  * actual stream that caused the xrun.
+  *
+  * @see XtDeviceOpenStream
+  * @see XtStreamStart
+  * @see XtStreamCallback
+  * @see XtServiceGetCapabilities
+  * @see XtServiceAggregateStream
+  */
 
 /**
   * @typedef typedef void (*XtStreamCallback)(const XtStream* stream, const void* input, void* output, int32_t frames, double time, uint64_t position, XtBool timeValid, XtError error, void* user)
@@ -354,7 +405,7 @@
   * @param position The stream position. Only available on services which have the Time capability (see XtCapabilities), otherwise 0.
   * @param timeValid Indicates whether the time and position parameters are valid. Only available on services which have the Time capability (see XtCapabilities), otherwise false. Even on services which support time and position info this parameter may be false sometimes, for example during stream startup/shutdown or when a glitch occurred.
   * @param error If nonzero, indicates that an error occurred on the audio thread and that the stream will be stopped after the callback returns.
-  * @param user The user data passed to XtDeviceOpenStream.
+  * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
   *
   * The audio callback will normally be called from a high priority thread. To prevent glitches the
   * callback should not call any blocking methods (using locks, doing I/O etc). The input/output
@@ -363,13 +414,21 @@
   * interleaved access or (unsigned char**) for UInt8 and UInt24, (short**) for Int16, (int**)
   * for Int32 and (float**) for Float32 non-interleaved access.
   *
-  * Note for languages that support exceptions: the stream callback should NEVER throw. 
+  * For regular streams, the number of input and output channels equal the channel counts specified in the format passed to XtDeviceOpenStream.
+  * For aggregate streams, the number of input and output channels is the sum of inputs and outputs passed in the channels array passed to XtServiceAggregateStream.
+  * The order of channels in the stream is the same as the order of devices and channels passed to XtServiceAggregateStream.
+  * For example, when opening a stream on 3 devices using (0 inputs, 2 outputs) on device 1, (2 inputs, 2 outputs) on device 2 and (2 inputs, 0 outputs) on device 3,
+  * the input channel order will be (device2:0, device2:1, device3:0, device3:1) and the output channel order will be (device1:0, device1:1, device2:0, device2:1).
+  *
+  * Note for languages that support exceptions: the stream callback should NEVER throw.
   * It is considered a fatal error if an exception propagates through the callback.
   *
+  * @see XtXRunCallback
   * @see XtDeviceOpenStream
   * @see XtStreamStart
   * @see XtStreamGetFrames
   * @see XtServiceGetCapabilities
+  * @see XtServiceAggregateStream
   */
 
 /**
@@ -502,6 +561,15 @@
  * @fn char* XtPrintLatencyToString(const XtLatency* latency)
  * @brief Convert latencies to a human-readable string.
  * @param latency the latency value.
+ * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn char* XtPrintChannelsToString(const XtChannels* channels)
+ * @brief Convert a channel specification to a human-readable string.
+ * @param channels the channel specification.
  * @return a pointer to a dynamically allocated string, use XtAudioFree to release the returned string.
  *
  * This function may be called from any thread.
@@ -700,6 +768,45 @@
  */
 
 /**
+ * @fn XtError XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, const double* bufferSizes, int32_t count, const XtMix* mix, XtBool interleaved, XtDevice* master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream);
+ * @brief Opens an aggregate audio stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param devices pointer to an array of [count] devices.
+ * @param channels pointer to an array of [count] channel specifications.
+ * @param bufferSizes pointer to an array of [count] buffer sizes in milliseconds.
+ * @param count number of elements in the devices, channels, and bufferSizes arrays.
+ * @param mix the mix format, to be used by all streams in the aggregated stream.
+ * @param interleaved open the stream for interleaved access (true) or non-interleaved access (false).
+ * @param master the master device, will be used for synchronization.
+ * @param streamCallback the application-defined stream callback.
+ * @param xRunCallback the application-defined xrun callback (may be NULL).
+ * @param user user data passed to the stream callback (may be NULL).
+ * @param stream on success, receives a pointer to the opened audio stream. On error, *stream will be NULL.
+ *
+ * Opens an aggregated audio stream on [count] devices. Each underlying stream is opened by 
+ * calling XtDeviceOpenStream, passing in the Nth device, Nth buffer size and the combination
+ * of the specified mix format and the Nth channel specification as the audio format.
+ *
+ * Aggregate streams use an intermediate buffer to keep underlying streams in sync.
+ * The total latency overhead of the aggregate stream is bounded by the largest
+ * buffer size of any of the underlying streams times a constant factor.
+ *
+ * Use XtDeviceGetBuffer to query supported buffer sizes.
+ *
+ * The resulting stream must be closed using XtStreamDestroy.
+ *
+ * When the requested interleaving mode is not supported by any device it will be emulated.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamDestroy
+ * @see XtDeviceOpenStream
+ * @see XtDeviceSupportsFormat
+ * @see XtDeviceSupportsAccess
+ */
+
+/**
  * @fn void XtDeviceDestroy(XtDevice* d)
  * @brief Destroys an audio device.
  * @param d the audio service.
@@ -786,6 +893,7 @@
  * This function may only be called from the main thread.
  * @see XtDeviceOpenStream
  * @see XtDeviceSupportsFormat
+ * @see XtServiceAggregateStream
  */
 
 /**
@@ -799,6 +907,7 @@
  * This function may only be called from the main thread.
  * @see XtDeviceOpenStream
  * @see XtDeviceGetBuffer
+ * @see XtServiceAggregateStream
  */
 
 /**
@@ -814,6 +923,7 @@
  *
  * This function may only be called from the main thread.
  * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
  */
 
 /**
@@ -831,14 +941,15 @@
  */
 
 /**
- * @fn XtError XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, XtStreamCallback callback, void* user, XtStream** stream)
+ * @fn XtError XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream)
  * @brief Opens an audio stream on the given device.
  * @return 0 on success, a nonzero error code otherwise.
  * @param d the audio device.
  * @param format the audio format (must be supported).
  * @param interleaved open the stream for interleaved access (true) or non-interleaved access (false).
  * @param bufferSize the desired buffer size in milliseconds (will be truncated to the supported range).
- * @param callback the application-defined stream callback.
+ * @param streamCallback the application-defined stream callback.
+ * @param xRunCallback the application-defined xrun callback (may be NULL).
  * @param user user data passed to the stream callback (may be NULL).
  * @param stream on success, receives a pointer to the opened audio stream. On error, *stream will be NULL.
  *
@@ -853,6 +964,7 @@
  * @see XtStreamDestroy
  * @see XtDeviceSupportsFormat
  * @see XtDeviceSupportsAccess
+ * @see XtServiceAggregateStream
  */
 
 /**
@@ -904,9 +1016,13 @@
  * @return the audio format used to open the stream.
  * @param s the audio stream.
  *
+ * Note: for aggregate streams this format will contain the total number of input and output channels 
+ * passed to XtServiceAggregateStream. Channel masks for aggregate streams will always be 0.
+ *
  * This function may be called from any thread.
  *
  * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
  */
 
 /**
@@ -918,6 +1034,7 @@
  * This function may be called from any thread.
  *
  * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
  */
 
 /**
@@ -941,6 +1058,8 @@
  * @param latency on success, receives the current input/output latency in milliseconds. When the service does not support latency information, latency->input and latency->output will be 0.
  *
  * This value may change during the lifetime of the stream.
+ * For aggregate streams, the maximum input and output latencies of any underlying stream, plus the latency of the aggregation buffer is reported.
+ * When any of the underlying streams does not support latency info, the latency of the entire aggregated stream is reported as unknown.
  *
  * This function may be called from any thread (to allow invocation from the stream callback).
  *

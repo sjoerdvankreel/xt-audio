@@ -139,6 +139,18 @@ void XtiInitPlatform(void* wnd) {
   XtlInitialized = true;
 }
 
+int32_t XtiLockIncr(volatile int32_t* dest) {
+  return __sync_add_and_fetch(dest, 1);
+}
+
+int32_t XtiLockDecr(volatile int32_t* dest) {
+  return __sync_sub_and_fetch(dest, 1);
+}
+
+int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
+  return __sync_val_compare_and_swap(dest, comp, exch);
+}
+
 bool XtiCalledOnMainThread() {
   return XtlInitialized && pthread_equal(pthread_self(), XtlMainThread);
 }
@@ -177,36 +189,57 @@ XtCause XtlPosixErrorToCause(XtFault fault) {
   }
 }
 
-XtlLinuxStream::XtlLinuxStream():
-lock(), state(XtStreamStateStopped), respondCv(), controlCv() {
-  pthread_t thread;
-  XT_ASSERT(pthread_create(&thread, nullptr, &LinuxStreamCallback, this) == 0);
+XtlLinuxStream::XtlLinuxStream(bool secondary):
+XtManagedStream(secondary),
+lock(),
+state(XtStreamStateStopped),
+respondCv(), 
+controlCv() {
+  if(!secondary) {
+    pthread_t thread;
+    XT_ASSERT(pthread_create(&thread, nullptr, &LinuxStreamCallback, this) == 0);
+  }
 }
 
 XtlLinuxStream::~XtlLinuxStream() {
-  SendLinuxStreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
+  if(!secondary) 
+    SendLinuxStreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
 }
 
 XtFault XtlLinuxStream::Start() {
-  SendLinuxStreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  if(!secondary)
+    SendLinuxStreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+  else {
+    ProcessBuffer(true);
+    StartStream();
+  }
   return 0;
 }
 
 XtFault XtlLinuxStream::Stop() {
-  SendLinuxStreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
+  if(secondary)
+    StopStream();
+  else
+    SendLinuxStreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
   return 0;
+}
+
+void XtlLinuxStream::RequestStop() {
+  StopStream();
+  if(!secondary) {
+    XT_ASSERT(pthread_mutex_lock(&lock.m) == 0);
+    state = XtStreamStateStopped;
+    XT_ASSERT(pthread_cond_signal(&respondCv.cv) == 0);
+    XT_ASSERT(pthread_mutex_unlock(&lock.m) == 0);
+  }
 }
 
 bool XtlLinuxStream::VerifyStreamCallback(int error, const char* file, int line, const char* func, const char* expr) {
   if(error == 0)
     return true;
-  StopStream();
+  RequestStop();
   XtiTrace(XtLevelError, file, line, func, expr);
   ProcessCallback(nullptr, nullptr, 0, 0.0, 0, XtFalse, XtiCreateError(XtStreamGetSystem(this), error));
-  XT_ASSERT(pthread_mutex_lock(&lock.m) == 0);
-  state = XtStreamStateStopped;
-  XT_ASSERT(pthread_cond_signal(&respondCv.cv) == 0);
-  XT_ASSERT(pthread_mutex_unlock(&lock.m) == 0);
   return false;
 }
 

@@ -158,7 +158,16 @@ enum XtCapabilities {
     * output channels, for example to specific speaker positions.
     * @see XtFormat
     */
-  XtCapabilitiesChannelMask = 0x8
+  XtCapabilitiesChannelMask = 0x8,
+
+  /** @brief Under/overflow detection.
+   *
+   * Streams support xrun detection and will invoke the 
+   * application's xrun callback when an under/overflow occurs.
+   *
+   * @see XtXRunCallback
+   */
+  XtCapabilitiesXRunDetection = 0x10
 };
 
 /** @cond */
@@ -208,6 +217,29 @@ struct XtFormat {
   uint64_t outMask;
 };
 
+struct XtChannels {
+  /** @brief Input channel count. 
+    *
+    * @see XtFormat::inputs.
+    */
+  int32_t inputs;
+  /** @brief Input channel mask. 
+    *
+    * @see XtFormat::inMask.
+    */
+  uint64_t inMask;
+  /** @brief Output channel count. 
+    *
+    * @see XtFormat::outputs.
+    */
+  int32_t outputs;
+  /** @brief Output channel mask. 
+    *
+    * @see XtFormat::outMask.
+    */
+  uint64_t outMask;
+};
+
 struct XtBuffer {
   /** @brief Minimum size in milliseconds. */
   double min;
@@ -241,6 +273,7 @@ typedef struct XtAttributes XtAttributes;
 /** @endcond */
 
 typedef void (XT_CALLBACK *XtFatalCallback)(void);
+typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
 typedef void (XT_CALLBACK *XtTraceCallback)(XtLevel level, const char* message);
 typedef void (XT_CALLBACK *XtStreamCallback)(
   const XtStream* stream, const void* input, void* output, int32_t frames,
@@ -271,6 +304,7 @@ XT_API char* XT_CALL XtPrintMixToString(const XtMix* mix);
 XT_API char* XT_CALL XtPrintFormatToString(const XtFormat* format);
 XT_API char* XT_CALL XtPrintBufferToString(const XtBuffer* buffer);
 XT_API char* XT_CALL XtPrintLatencyToString(const XtLatency* latency);
+XT_API char* XT_CALL XtPrintChannelsToString(const XtChannels* channels);
 XT_API char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities);
 XT_API char* XT_CALL XtPrintAttributesToString(const XtAttributes* attributes);
 /** @} */
@@ -301,6 +335,10 @@ XT_API XtCapabilities XT_CALL XtServiceGetCapabilities(const XtService* s);
 XT_API XtError XT_CALL XtServiceGetDeviceCount(const XtService* s, int32_t* count);
 XT_API XtError XT_CALL XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device);
 XT_API XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, XtDevice** device);
+XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, 
+                                                const double* bufferSizes, int32_t count, const XtMix* mix,
+                                                XtBool interleaved, XtDevice* master, XtStreamCallback streamCallback, 
+                                                XtXRunCallback xRunCallback, void* user, XtStream** stream); 
 /** @} */
 
 /** 
@@ -318,7 +356,7 @@ XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interlea
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name);
 XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
-                                          XtStreamCallback callback, void* user, XtStream** stream);
+                                          XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream);
 /** @} */
 
 /** 

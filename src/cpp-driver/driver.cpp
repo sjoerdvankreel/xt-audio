@@ -29,6 +29,7 @@ static const Xt::Level Tracelevel = Xt::Level::Info;
 struct StreamContext {
   double phase;
   double start;
+  int32_t xRunCount; 
   uint64_t processed;
   std::ofstream recording;
 };
@@ -177,6 +178,13 @@ static void OutputSine(void* dest, Xt::Sample sample, double value) {
   }
 }
 
+static void OnXRunCallback(int32_t index, void* user) {
+    StreamContext* ctx = static_cast<StreamContext*>(user);
+    ctx->xRunCount++;
+    std::cout << "XRun on index " << index 
+              << ", count = " << ctx->xRunCount << "\n";
+}
+
 static void OnStreamCallback(
   const Xt::Stream& stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
@@ -276,19 +284,28 @@ static bool StreamIteration(Xt::Stream& stream, int32_t iter) {
   return true;
 }
 
-static bool StreamAccessMode(const Xt::Service& service, Xt::Device& device, 
+static bool StreamAccessMode(Xt::Service& service, Xt::Device& device, 
                              const Xt::Format& format, double bufferSize, bool interleaved) {
 
   int32_t frames;
+  int32_t channelCount;
+  bool thisDeviceIsInput;
   StreamContext context;
   context.phase = 0.0;
   context.start = -1.0;
   context.processed = 0;
+  context.xRunCount = 0;
+  double bufferSizes[2];
+  Xt::Device* devices[2];
+  Xt::Channels channels[2];
+  Xt::Format otherFormat = Xt::Format();
+  std::unique_ptr<Xt::Device> otherDevice;
   std::string fileName = GetRecordFileName(service, device, format, bufferSize, interleaved);
 
+  memset(channels, 0, sizeof(channels));
   std::cout << "Streaming: " << service.GetName() << ": " << device.GetName();
   std::cout << ", format: " << format << ", buffer: " << bufferSize << ", interleaved: " << interleaved<< "\n";
-  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, interleaved, bufferSize, &OnStreamCallback, &context);
+  std::unique_ptr<Xt::Stream> stream = device.OpenStream(format, interleaved, bufferSize, &OnStreamCallback, &OnXRunCallback, &context);
   frames = stream->GetFrames();
   std::cout << "Latency: " << stream->GetLatency() << "\n";
   std::cout << "Buffer: " << frames << " (" << (frames * 1000.0 / format.mix.rate) << " ms) \n";
@@ -298,10 +315,38 @@ static bool StreamAccessMode(const Xt::Service& service, Xt::Device& device,
   for(int32_t i = 0; i < StreamIterations; i++)
     if(!StreamIteration(*stream, i))
       return false;
+  stream.reset(nullptr);
+
+  if((service.GetCapabilities() & Xt::CapabilitiesFullDuplex) == 0) {
+    thisDeviceIsInput = device.GetChannelCount(false) != 0;
+    channelCount = thisDeviceIsInput? format.inputs: format.outputs;
+    otherDevice = service.OpenDefaultDevice(thisDeviceIsInput);
+    if(!otherDevice)
+      return true;
+    devices[0] = thisDeviceIsInput? &device: otherDevice.get();
+    devices[1] = thisDeviceIsInput? otherDevice.get(): &device;
+    channels[0].inputs = channelCount;
+    channels[1].outputs = channelCount;
+    bufferSizes[0] = bufferSize;
+    bufferSizes[1] = bufferSize;
+    otherFormat.mix = format.mix;
+    otherFormat.inputs = thisDeviceIsInput? 0: channelCount;
+    otherFormat.outputs = thisDeviceIsInput? channelCount: 0;
+    if(otherDevice->SupportsFormat(otherFormat)) {
+      std::cout << "Streaming aggregate, other device = " << otherDevice->GetName() << " ...\n";
+      std::unique_ptr<Xt::Stream> aggregate = service.AggregateStream(
+          devices, channels, bufferSizes, 2, format.mix, interleaved, 
+          device, &OnStreamCallback, &OnXRunCallback, &context);
+      for(int32_t i = 0; i < StreamIterations; i++)
+        if(!StreamIteration(*aggregate, i))
+          return false;
+    }
+  }
+  
   return true;
 }
 
-static bool StreamBufferSize(const Xt::Service& service, Xt::Device& device, 
+static bool StreamBufferSize(Xt::Service& service, Xt::Device& device, 
                              const Xt::Format& format, double bufferSize) {
 
   if(!StreamAccessMode(service, device, format, bufferSize, true))
@@ -311,7 +356,7 @@ static bool StreamBufferSize(const Xt::Service& service, Xt::Device& device,
   return true;
 }
 
-static bool StreamFormat(const Xt::Service& service, Xt::Device& device, const Xt::Format& format) {
+static bool StreamFormat(Xt::Service& service, Xt::Device& device, const Xt::Format& format) {
   Xt::Buffer buffer = device.GetBuffer(format);
   if(!StreamBufferSize(service, device, format, buffer.min))
     return false;
@@ -322,7 +367,7 @@ static bool StreamFormat(const Xt::Service& service, Xt::Device& device, const X
   return true;
 }
 
-static bool StreamDevice(const Xt::Service& service, Xt::Device& device) {
+static bool StreamDevice(Xt::Service& service, Xt::Device& device) {
   for(int32_t r = 0; r < sizeof(Rates) / sizeof(Rates[0]); r++)
     for(int32_t s = 0; s < sizeof(Samples) / sizeof(Samples[0]); s++) {
       int32_t maxOutputs = 0;

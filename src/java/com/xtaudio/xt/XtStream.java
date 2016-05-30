@@ -155,19 +155,24 @@ public final class XtStream implements XtCloseable {
 
     private final Object user;
     private final boolean raw;
-    private final XtStreamCallback userCallback;
+    private final XtXRunCallback userXRunCallback;
+    private final XtStreamCallback userStreamCallback;
 
     private Pointer s;
     private Object inputInterleaved;
     private Object outputInterleaved;
     private Object inputNonInterleaved;
     private Object outputNonInterleaved;
-    XtNative.StreamCallback nativeCallback;
+    final XtNative.XRunCallback nativeXRunCallback;
+    final XtNative.StreamCallback nativeStreamCallback;
 
-    XtStream(boolean raw, XtStreamCallback userCallback, Object user) {
+    XtStream(boolean raw, XtStreamCallback userStreamCallback, XtXRunCallback userXRunCallback, Object user) {
         this.raw = raw;
         this.user = user;
-        this.userCallback = userCallback;
+        this.userXRunCallback = userXRunCallback;
+        this.userStreamCallback = userStreamCallback;
+        this.nativeXRunCallback = this::xRunCallback;
+        this.nativeStreamCallback = this::streamCallback;
     }
 
     public boolean isRaw() {
@@ -228,7 +233,19 @@ public final class XtStream implements XtCloseable {
         }
     }
 
-    void callback(Pointer stream, Pointer input, Pointer output, int frames,
+    void xRunCallback(int index, Pointer user) {
+        try {
+            userXRunCallback.callback(index, this.user);
+        } catch (Throwable t) {
+            if (XtAudio.trace != null)
+                XtAudio.trace.callback(XtLevel.FATAL, String.format("Exception caught in xrun callback: %s.", t));
+            System.out.println(t);
+            t.printStackTrace();
+            Runtime.getRuntime().halt(1);
+        }
+    }
+
+    void streamCallback(Pointer stream, Pointer input, Pointer output, int frames,
             double time, long position, boolean timeValid, long error, Pointer u) {
 
         XtFormat format = getFormat();
@@ -243,10 +260,11 @@ public final class XtStream implements XtCloseable {
                 copyNonInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
 
         try {
-            userCallback.callback(this, inData, outData, frames, time, position, timeValid, error, user);
+            userStreamCallback.callback(this, inData, outData, frames, time, position, timeValid, error, user);
         } catch (Throwable t) {
             if (XtAudio.trace != null)
                 XtAudio.trace.callback(XtLevel.FATAL, String.format("Exception caught in stream callback: %s.", t));
+            System.out.println(t);
             t.printStackTrace();
             Runtime.getRuntime().halt(1);
         }

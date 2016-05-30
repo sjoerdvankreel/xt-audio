@@ -10,7 +10,7 @@
         public override string ToString() {
 
             bool isDefault = defaultInput || defaultOutput;
-            return (isDefault ? "Default: " : (index + ": ")) + device.ToString();
+            return device == null ? "[None]" : (isDefault ? "Default: " : (index + ": ")) + device.ToString();
         }
     }
 }

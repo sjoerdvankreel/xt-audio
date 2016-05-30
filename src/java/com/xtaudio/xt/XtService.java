@@ -1,5 +1,7 @@
 package com.xtaudio.xt;
 
+import com.sun.jna.Memory;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -60,5 +62,24 @@ public final class XtService {
         PointerByReference d = new PointerByReference();
         XtNative.handleError(XtNative.XtServiceOpenDefaultDevice(s, output, d));
         return d.getValue() == null ? null : new XtDevice(d.getValue());
+    }
+
+    public XtStream aggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
+            boolean interleaved, boolean raw, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
+
+        PointerByReference str = new PointerByReference();
+        XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
+        XtNative.Mix nativeMix = XtNative.Mix.toNative(mix);
+        Pointer ds = new Memory(count * Pointer.SIZE);
+        Pointer cs = new Memory(count * Native.getNativeSize(XtNative.ChannelsByValue.class));
+        for (int d = 0; d < count; d++) {
+            ds.setPointer(d * Pointer.SIZE, devices[d].d);
+            channels[d].doUseMemory(cs, d * Native.getNativeSize(XtNative.ChannelsByValue.class));
+            channels[d].write();
+        }
+        XtNative.handleError(XtNative.XtServiceAggregateStream(s, ds, cs, bufferSizes, count, nativeMix, interleaved, master.d,
+                stream.nativeStreamCallback, xRunCallback == null ? null : stream.nativeXRunCallback, null, str));
+        stream.init(str.getValue());
+        return stream;
     }
 }

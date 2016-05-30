@@ -19,6 +19,11 @@ static int GetBufferSize(const Xt::Stream& stream, int frames) {
   return frames * format.inputs * sampleSize;
 }
 
+static void XRun(int index, void* user) {
+  // Don't do this.
+  std::cout << "XRun on stream " << index << ".\n";
+}
+
 static void CaptureInterleaved(
   const Xt::Stream& stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
@@ -64,14 +69,14 @@ int CaptureAdvancedMain(int argc, char** argv) {
   Xt::Buffer buffer = device->GetBuffer(format);
 
   std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
-  stream = device->OpenStream(format, true, buffer.current, CaptureInterleaved, &interleaved);
+  stream = device->OpenStream(format, true, buffer.current, CaptureInterleaved, XRun, &interleaved);
   stream->Start();
   std::cout << "Capturing interleaved...\n";
   ReadLine();
   stream->Stop();
 
   std::ofstream nonInterleaved("xt-audio-non-interleaved.raw", std::ios::out | std::ios::binary);
-  stream = device->OpenStream(format, false, buffer.current, CaptureNonInterleaved, &nonInterleaved);
+  stream = device->OpenStream(format, false, buffer.current, CaptureNonInterleaved, XRun, &nonInterleaved);
   stream->Start();
   std::cout << "Capturing non-interleaved...\n";
   ReadLine();
