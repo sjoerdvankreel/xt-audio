@@ -1,3 +1,6 @@
+June 15, 2016 - V1.0.3.
+* CLI-Gui bugfix.
+
 May 30, 2016 - V1.02.
 * Support xrun detection.
 * Support stream aggregation.
