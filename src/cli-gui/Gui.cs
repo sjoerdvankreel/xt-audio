@@ -308,8 +308,13 @@ namespace Xt {
             stop.Enabled = false;
             panel.Enabled = true;
             start.Enabled = true;
+            streamRaw.Enabled = true;
             bufferSize.Enabled = true;
             streamType.Enabled = true;
+            outputMaster.Enabled = true;
+            secondaryInput.Enabled = true;
+            secondaryOutput.Enabled = true;
+            streamInterleaved.Enabled = true;
         }
 
         private void OnStart(object sender, EventArgs ea) {
@@ -476,8 +481,13 @@ namespace Xt {
                 stop.Enabled = true;
                 panel.Enabled = false;
                 start.Enabled = false;
+                streamRaw.Enabled = false;
                 bufferSize.Enabled = false;
                 streamType.Enabled = false;
+                outputMaster.Enabled = false;
+                secondaryInput.Enabled = false;
+                secondaryOutput.Enabled = false;
+                streamInterleaved.Enabled = false;
 
             } catch (XtException e) {
                 Stop();
