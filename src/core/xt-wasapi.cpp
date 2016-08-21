@@ -43,10 +43,11 @@ struct WasapiDevice: public XtDevice {
   const Options options;
   const CComPtr<IMMDevice> device;
   const CComPtr<IAudioClient> client;
+  const CComPtr<IAudioClient3> client3;
   XT_IMPLEMENT_DEVICE(Wasapi);
   
-  WasapiDevice(CComPtr<IMMDevice> d, CComPtr<IAudioClient> c, const Options& o):
-  XtDevice(), options(o), device(d), client(c) {}
+  WasapiDevice(CComPtr<IMMDevice> d, CComPtr<IAudioClient> c, CComPtr<IAudioClient3> c3, const Options& o):
+  XtDevice(), options(o), device(d), client(c), client3(c3) {}
 };
 
 struct WasapiStream: public XtwWin32Stream {
@@ -188,6 +189,7 @@ XtFault WasapiService::OpenDefaultDevice(XtBool output, XtDevice** device) const
   Options options;
   CComPtr<IMMDevice> d;
   CComPtr<IAudioClient> client;
+  CComPtr<IAudioClient3> client3;
   CComPtr<IMMDeviceEnumerator> enumerator;
 
   *device = nullptr;
@@ -200,7 +202,12 @@ XtFault WasapiService::OpenDefaultDevice(XtBool output, XtDevice** device) const
     return 0;
   XT_VERIFY_COM(hr);
   XT_VERIFY_COM(d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client)));
-  *device = new WasapiDevice(d, client, options);
+  if(!options.loopback) {
+    hr = client.QueryInterface(&client3);
+    if(hr != E_NOINTERFACE)
+      XT_VERIFY_COM(hr);
+  }
+  *device = new WasapiDevice(d, client, client3, options);
   return S_OK;
 }
 
@@ -209,7 +216,8 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
   CComPtr<IMMDevice> d;
   UINT inCount, outCount;
   Options options = { 0 };
-  CComPtr<IAudioClient> client;
+  CComPtr<IAudioClient> client;  
+  CComPtr<IAudioClient3> client3;
   CComPtr<IMMDeviceCollection> inputs, outputs;
   uint32_t uindex = static_cast<uint32_t>(index);
 
@@ -242,7 +250,12 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
   }
 
   XT_VERIFY_COM(d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client)));
-  *device = new WasapiDevice(d, client, options);
+  if(!options.loopback) {
+    hr = client.QueryInterface(&client3);
+    if(hr != E_NOINTERFACE)
+      XT_VERIFY_COM(hr);
+  }
+  *device = new WasapiDevice(d, client, client3, options);
   return S_OK;
 }
 
@@ -284,11 +297,15 @@ XtFault WasapiDevice::GetName(char** name) const {
 XtFault WasapiDevice::GetMix(XtMix** mix) const {  
   HRESULT hr;
   XtFormat match;
+  UINT32 currentFrames;
   CComHeapPtr<WAVEFORMATEX> wfx;
 
   if(options.exclusive)
     return S_OK;
-  XT_VERIFY_COM(client->GetMixFormat(&wfx));
+  if(!client3)
+    XT_VERIFY_COM(client->GetMixFormat(&wfx));
+  else
+    XT_VERIFY_COM(client3->GetCurrentSharedModeEnginePeriod(&wfx, &currentFrames));
   if(XtwWfxToFormat(*wfx, options.output, match)) {
     *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
     (*mix)->rate = match.mix.rate;
@@ -300,19 +317,30 @@ XtFault WasapiDevice::GetMix(XtMix** mix) const {
 
 XtFault WasapiDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {  
   HRESULT hr;
+  WAVEFORMATEXTENSIBLE wfx;
   REFERENCE_TIME engine, hardware;
+  UINT32 default_, fundamental, min, max;
 
-  XT_VERIFY_COM(client->GetDevicePeriod(&engine, &hardware));
   if(options.exclusive) {
+    XT_VERIFY_COM(client->GetDevicePeriod(&engine, &hardware));
     buffer->max = XtWsMaxExclusiveBufferMs;
     buffer->min = hardware / XtWsHnsPerMs;
     buffer->current = hardware / XtWsHnsPerMs;
     return S_OK;
-  } 
-  buffer->max = XtWsMaxSharedBufferMs;
-  buffer->min = engine / XtWsHnsPerMs;
-  buffer->current = engine / XtWsHnsPerMs;
-  return S_OK;
+  } else if(!client3) {
+    XT_VERIFY_COM(client->GetDevicePeriod(&engine, &hardware));
+    buffer->max = XtWsMaxSharedBufferMs;
+    buffer->min = engine / XtWsHnsPerMs;
+    buffer->current = engine / XtWsHnsPerMs;
+    return S_OK;
+  } else {
+    XT_ASSERT(XtwFormatToWfx(*format, wfx));
+    XT_VERIFY_COM(client3->GetSharedModeEnginePeriod(reinterpret_cast<const WAVEFORMATEX*>(&wfx), &default_, &fundamental, &min, &max));
+    buffer->min = min * 1000.0 / format->mix.rate;
+    buffer->max = max * 1000.0 / format->mix.rate;
+    buffer->current = default_ * 1000.0 / format->mix.rate;
+    return S_OK;
+  }
 }
 
 XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {  
@@ -351,12 +379,15 @@ XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
   CComPtr<IAudioClock2> clock2;
   REFERENCE_TIME wasapiBufferSize;
   REFERENCE_TIME engine, hardware;
-  CComPtr<IAudioClient> streamClient;
   CComPtr<IAudioRenderClient> render;
   REFERENCE_TIME minBuffer, maxBuffer;
+  CComPtr<IAudioClient> streamClient;
+  CComPtr<IAudioClient3> streamClient3;
   CComPtr<IAudioCaptureClient> capture;
   std::unique_ptr<WasapiStream> result;
   CComPtr<IAudioClient> loopbackClient;
+  CComPtr<IAudioClient3> loopbackClient3;
+  UINT32 min, max, default_, fundamental;
   auto pWfx = reinterpret_cast<WAVEFORMATEX*>(&wfx);
   auto pStreamClient = reinterpret_cast<void**>(&streamClient);
 
@@ -411,7 +442,18 @@ XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
   } else {
     mode = AUDCLNT_SHAREMODE_SHARED;
     flags = this->options.loopback? AUDCLNT_STREAMFLAGS_LOOPBACK: AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
-    XT_VERIFY_COM(streamClient->Initialize(mode, flags, wasapiBufferSize, 0, pWfx, nullptr));
+    if(!client3) {
+      XT_VERIFY_COM(streamClient->Initialize(mode, flags, wasapiBufferSize, 0, pWfx, nullptr));
+    } else {
+      XT_VERIFY_COM(streamClient.QueryInterface(&streamClient3));
+      XT_VERIFY_COM(streamClient3->GetSharedModeEnginePeriod(pWfx, &default_, &fundamental, &min, &max));
+      bufferFrames = bufferSize / 1000.0 * format->mix.rate;
+      if(bufferFrames < min)
+        bufferFrames = min;
+      if(bufferFrames > max)
+        bufferFrames = max;
+      XT_VERIFY_COM(streamClient3->InitializeSharedAudioStream(flags, bufferFrames, pWfx, nullptr));
+    }
   }
 
   XT_VERIFY_COM(streamClient->GetBufferSize(&bufferFrames));
@@ -423,7 +465,12 @@ XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
     XT_VERIFY_COM(streamClient->GetService(__uuidof(IAudioCaptureClient), reinterpret_cast<void**>(&capture)));
   if(this->options.loopback) {
     XT_VERIFY_COM(device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&loopbackClient)));
-    XT_VERIFY_COM(loopbackClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, wasapiBufferSize, 0, pWfx, nullptr));
+    if(!client3) {
+      XT_VERIFY_COM(loopbackClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, wasapiBufferSize, 0, pWfx, nullptr));
+    } else {
+      XT_VERIFY_COM(loopbackClient.QueryInterface(&loopbackClient3));
+      XT_VERIFY_COM(loopbackClient3->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, bufferFrames, pWfx, nullptr));
+    }
   }
   result = std::make_unique<WasapiStream>(secondary, bufferFrames, clock, clock2, streamClient, loopbackClient, capture, render, this->options);
   if(this->options.loopback)
