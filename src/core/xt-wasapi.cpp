@@ -447,7 +447,7 @@ XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
     } else {
       XT_VERIFY_COM(streamClient.QueryInterface(&streamClient3));
       XT_VERIFY_COM(streamClient3->GetSharedModeEnginePeriod(pWfx, &default_, &fundamental, &min, &max));
-      bufferFrames = bufferSize / 1000.0 * format->mix.rate;
+      bufferFrames = static_cast<UINT32>(bufferSize / 1000.0 * format->mix.rate);
       if(bufferFrames < min)
         bufferFrames = min;
       if(bufferFrames > max)
