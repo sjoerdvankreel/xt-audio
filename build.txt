@@ -26,9 +26,9 @@ Building XT-Audio
 * On windows:
 cd build && build.bat path\to\asiosdk path\to\asmjit
 * On x86 linux:
-cd build && export XT_ARCH=x86 && /.build.sh
+cd build && export XT_ARCH=x86 && ./build.sh
 * On x64 linux:
-cd build && export XT_ARCH=x64 && /.build.sh
+cd build && export XT_ARCH=x64 && ./build.sh
 
 Running the build will produce 3 folders:
 * Scratch: working directory with all project files and binaries produced by individual targets
