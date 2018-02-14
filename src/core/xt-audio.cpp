@@ -291,7 +291,7 @@ void XT_CALL XtAudioFree(void* ptr) {
 }
 
 const char* XT_CALL XtAudioGetVersion(void) {
-  return "1.0.4";
+  return "1.0.5";
 }
 
 const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {

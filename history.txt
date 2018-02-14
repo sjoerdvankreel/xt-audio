@@ -1,3 +1,6 @@
+February 14, 2018 - V1.0.5.
+* ASIO related bugfix.
+
 August 21, 2016 - V1.0.4.
 * Support low-latency shared mode WASAPI.
 

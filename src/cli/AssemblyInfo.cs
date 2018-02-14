@@ -16,4 +16,4 @@ using System.Reflection;
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
 
-[assembly: AssemblyVersion("1.0.4.*")]
+[assembly: AssemblyVersion("1.0.5.*")]
