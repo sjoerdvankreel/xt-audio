@@ -56,6 +56,7 @@ struct AsioDevice: public XtDevice {
 struct AsioStream: public XtStream {
   bool issueOutputReady;
   const long bufferSize;
+  ASIOCallbacks callbacks;
   AsioDevice* const device;
   volatile int32_t running;
   volatile int32_t insideCallback;
@@ -71,7 +72,7 @@ struct AsioStream: public XtStream {
     size_t bufferSize, const std::vector<ASIOBufferInfo>& buffers):
   XtStream(), issueOutputReady(true), 
   bufferSize(static_cast<long>(bufferSize)), 
-  device(d), running(0), insideCallback(0),
+  callbacks(), device(d), running(0), insideCallback(0),
   inputChannels(static_cast<size_t>(format.inputs), nullptr),
   outputChannels(static_cast<size_t>(format.outputs), nullptr),
   buffers(buffers), runtime(std::make_unique<asmjit::JitRuntime>()) {}
@@ -468,7 +469,6 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   double wantedSize;
   long asioBufferSize;
   ASIOSampleRate rate;
-  ASIOCallbacks callbacks;
   std::vector<ASIOBufferInfo> buffers;
   long min, max, preferred, granularity;
 
@@ -493,11 +493,11 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   CreateBufferInfos(buffers, ASIOTrue, format->inputs, format->inMask);
   CreateBufferInfos(buffers, ASIOFalse, format->outputs, format->outMask);
   auto result = std::make_unique<AsioStream>(this, *format, asioBufferSize, buffers);
-  callbacks.asioMessage = &AsioMessage;
-  callbacks.sampleRateDidChange = &SampleRateDidChange;
-  callbacks.bufferSwitch = JitBufferSwitch(result->runtime.get(), &BufferSwitch, result.get());
-  callbacks.bufferSwitchTimeInfo = JitBufferSwitchTimeInfo(result->runtime.get(), &BufferSwitchTimeInfo, result.get());
-  XT_VERIFY_ASIO(asio->createBuffers(&result->buffers[0], static_cast<long>(buffers.size()), asioBufferSize, &callbacks));
+  result->callbacks.asioMessage = &AsioMessage;
+  result->callbacks.sampleRateDidChange = &SampleRateDidChange;
+  result->callbacks.bufferSwitch = JitBufferSwitch(result->runtime.get(), &BufferSwitch, result.get());
+  result->callbacks.bufferSwitchTimeInfo = JitBufferSwitchTimeInfo(result->runtime.get(), &BufferSwitchTimeInfo, result.get());
+  XT_VERIFY_ASIO(asio->createBuffers(&result->buffers[0], static_cast<long>(buffers.size()), asioBufferSize, &result->callbacks));
   streamOpen = true;
   *stream = result.release();
   return ASE_OK;
