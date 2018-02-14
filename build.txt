@@ -9,7 +9,7 @@ Building XT-Audio
 ** msbuild on PATH
 ** doxygen on PATH
 ** java sdk on PATH
-** coreflags on PATH
+** corflags on PATH
 ** asmjit (library source)
 ** asiosdk (library source)
 ** sandcastle helpfile builder
@@ -23,7 +23,7 @@ Building XT-Audio
 ** pulseaudio development libraries
 
 * All machines should be able to acces the xt-audio/build directory.
-* On windows:
+* On windows (preferably msbuild command prompt):
 cd build && build.bat path\to\asiosdk path\to\asmjit
 * On x86 linux:
 cd build && export XT_ARCH=x86 && ./build.sh
