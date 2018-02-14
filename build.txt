@@ -24,7 +24,7 @@ Building XT-Audio
 
 * All machines should be able to acces the xt-audio/build directory.
 * On windows (preferably msbuild command prompt):
-cd build && build.bat path\to\asiosdk path\to\asmjit
+cd build && build.bat path/to/asiosdk path/to/asmjit (note the forward slashes).
 * On x86 linux:
 cd build && export XT_ARCH=x86 && ./build.sh
 * On x64 linux:
