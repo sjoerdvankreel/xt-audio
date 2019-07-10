@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <string>
+#include <ostream>
 #include <stdexcept>
 
 struct XtStream;

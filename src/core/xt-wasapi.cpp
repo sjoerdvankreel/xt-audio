@@ -6,6 +6,7 @@
 #include <functiondiscoverykeys_devpkey.h>
 #include <avrt.h>
 #include <memory>
+#include <cmath>
 
 /* Copyright (C) 2015-2017 Sjoerd van Kreel.
  *
