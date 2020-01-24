@@ -818,7 +818,7 @@
 
 /**
  * @fn XtError XtDeviceShowControlPanel(XtDevice* d)
- * @brief Show the device specific control pabel.
+ * @brief Show the device specific control panel.
  * @return 0 on success, a nonzero error code otherwise.
  * @param d the audio device.
  *
