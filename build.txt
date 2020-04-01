@@ -1,7 +1,7 @@
 Building XT-Audio
 
 * Windows dependencies: asmjit (source), steinberg asio sdk (source), msvcrt
-* Linux dependencies: libasound-dev, libjack-jackd2-dev, libpulse-dev, libpulse-simple
+* Linux dependencies: libasound-dev, libjack-jackd2-dev, libpulse-dev
 
 * Have a windows box or vm ready with:
 ** mvn on PATH
@@ -22,7 +22,7 @@ Building XT-Audio
 ** jack development libraries
 ** pulseaudio development libraries
 
-* All machines should be able to acces the xt-audio/build directory.
+* All machines should be able to access the xt-audio directory.
 * On windows (preferably msbuild command prompt):
 cd build && build.bat path/to/asiosdk path/to/asmjit (note the forward slashes).
 * On x86 linux:
