@@ -4,7 +4,7 @@ import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
 
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
