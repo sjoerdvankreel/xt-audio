@@ -292,11 +292,11 @@ char* XT_CALL XtPrintErrorToString(XtError error) {
 // ---- audio ----
 
 void XT_CALL XtAudioFree(void* ptr) {
-  free(ptr); 
+  free(ptr);
 }
 
 const char* XT_CALL XtAudioGetVersion(void) {
-  return "1.0.5";
+  return "1.0.6";
 }
 
 const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {
