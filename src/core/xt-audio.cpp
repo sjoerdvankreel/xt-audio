@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iomanip>
 
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
