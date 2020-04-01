@@ -6,5 +6,5 @@ cd ../dist/cli-sample
 xt-cli-sample.exe
 cd %build%
 cd ../dist/java-sample
-java -jar com.xt-audio.xt.sample-1.0.2.jar
+java -jar com.xt-audio.xt.sample-1.0.6.jar
 cd %build%
