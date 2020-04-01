@@ -119,7 +119,7 @@ struct XtRingBuffer {
   mutable int32_t locked;
   std::vector<std::vector<char>> blocks;
 
-  XtRingBuffer() {}
+  XtRingBuffer();
   XtRingBuffer(bool interleaved, int32_t frames, 
     int32_t channels, int32_t sampleSize);
 

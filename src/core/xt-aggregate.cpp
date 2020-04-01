@@ -65,6 +65,10 @@ static void ZeroBuffer(
 
 // ---- ring buffer ----
 
+XtRingBuffer::XtRingBuffer(): 
+end(), full(), begin(), frames(), channels(), 
+interleaved(), sampleSize(), locked(), blocks() {}
+
 XtRingBuffer::XtRingBuffer(
   bool interleaved, int32_t frames, 
   int32_t channels, int32_t sampleSize):

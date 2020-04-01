@@ -18,8 +18,9 @@ set libs[0]=static
 set libs[1]=shared
 set confs[0]=debug
 set confs[1]=release
-set gens[0]="Visual Studio 14 2015"
-set gens[1]="Visual Studio 14 2015 Win64"
+set vsarchs[0]=Win32
+set vsarchs[1]=x64
+set generator="Visual Studio 16 2019"
 
 REM Build native projects.
 REM For core library, all combinations of x86/64, debug/release, shared/static.
@@ -30,7 +31,7 @@ for /L %%A in (0, 1, 1) do (
     set FS=win32-!archs[%%A]!-!libs[%%L]!
     if not exist !FS! (mkdir !FS!)
     cd !FS!
-    cmake ..\..\build -G!gens[%%A]! -DXT_ASIOSDK_DIR=%1 -DXT_ASMJIT_DIR=%2 -DBUILD_SHARED_LIBS=!types[%%L]!
+    cmake ..\..\build -G %generator% -A!vsarchs[%%A]! -DXT_ASIOSDK_DIR=%1 -DXT_ASMJIT_DIR=%2 -DBUILD_SHARED_LIBS=!types[%%L]!
     if !errorlevel! neq 0 exit /b !errorlevel!
     for /L %%C in (0, 1, 1) do (
       msbuild xt-audio.sln /p:Configuration=!confs[%%C]!

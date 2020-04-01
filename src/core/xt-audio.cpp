@@ -1,3 +1,8 @@
+// Don't warn about posix-compliant strdup() and friends.
+#ifndef _CRT_NONSTDC_NO_DEPRECATE
+#define _CRT_NONSTDC_NO_DEPRECATE 1
+#endif
+
 #include "xt-private.hpp"
 #include <inttypes.h>
 #include <sstream>

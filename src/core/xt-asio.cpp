@@ -380,9 +380,9 @@ XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
 XtFault AsioDevice::GetMix(XtMix** mix) const {
 
   XtSample sample;
-  ASIOSampleType type;
   ASIOSampleRate rate;
   bool typeFixed = false;
+  ASIOSampleType type = -1;
   std::vector<ASIOChannelInfo> infos;
   ASIOError error = asio->getSampleRate(&rate);
 
@@ -405,6 +405,7 @@ XtFault AsioDevice::GetMix(XtMix** mix) const {
     return ASE_Format;
 
   *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
+  XT_ASSERT(*mix);
   (*mix)->sample = sample;
   (*mix)->rate = static_cast<int32_t>(rate);
   return ASE_OK;
@@ -488,7 +489,7 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   long min, max, preferred, granularity;
 
   if(streamOpen)
-    return DRVERR_DEVICE_ALREADY_OPEN;
+    return static_cast<XtFault>(DRVERR_DEVICE_ALREADY_OPEN);
   XT_VERIFY_ASIO(asio->getSampleRate(&rate));
   XT_VERIFY_ASIO(asio->getBufferSize(&min, &max, &preferred, &granularity));
 
