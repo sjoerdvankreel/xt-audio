@@ -23,6 +23,24 @@
 static pthread_t XtlMainThread;
 static bool XtlInitialized = false;
 
+extern const XtService* XtiServiceAlsa;
+extern const XtService* XtiServiceJack;
+extern const XtService* XtiServicePulse;
+
+const XtService* const XtiServices[] =
+{
+#ifndef XT_DISABLE_ALSA
+  XtiServiceAlsa,
+#endif // XT_DISABLE_ALSA
+#ifndef XT_DISABLE_JACK
+  XtiServiceJack,
+#endif // XT_DISABLE_JACK
+#ifndef XT_DISABLE_PULSE
+  XtiServicePulse,
+#endif // XT_DISABLE_PULSE
+  nullptr,
+};
+
 static XtStreamState ReadLinuxStreamState(
   XtlLinuxStream* stream) {
 

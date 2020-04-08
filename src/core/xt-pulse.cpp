@@ -1,5 +1,10 @@
 #ifdef __linux__
 #include "xt-linux.hpp"
+
+#ifdef XT_DISABLE_PULSE
+const XtService* XtiServicePulse = nullptr;
+#else // XT_DISABLE_PULSE
+
 #include <memory>
 #include <vector>
 #include <pulse/simple.h>
@@ -291,4 +296,5 @@ void PulseStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_STREAM_CALLBACK(fault);
 }
 
+#endif // XT_DISABLE_PULSE
 #endif // __linux__

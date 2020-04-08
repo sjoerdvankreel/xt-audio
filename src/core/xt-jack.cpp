@@ -1,5 +1,10 @@
 #ifdef __linux__
 #include "xt-linux.hpp"
+
+#ifdef XT_DISABLE_JACK
+const XtService* XtiServiceJack = nullptr;
+#else // XT_DISABLE_JACK
+
 #include <jack/jack.h>
 #include <vector>
 #include <memory>
@@ -401,4 +406,5 @@ XtFault JackStream::Start() {
   return 0;
 }
 
+#endif // XT_DISABLE_JACK
 #endif // __linux__

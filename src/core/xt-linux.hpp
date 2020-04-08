@@ -23,10 +23,6 @@
 
  // ---- linux ----
 
-extern const XtService* XtiServiceAlsa;
-extern const XtService* XtiServiceJack;
-extern const XtService* XtiServicePulse;
-
 void XtlInitJack();
 void XtlInitAlsa();
 void XtlTerminateJack();
