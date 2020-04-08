@@ -2,6 +2,8 @@
 #include "xt-linux.hpp"
 
 #ifdef XT_DISABLE_ALSA
+void XtlInitAlsa() { }
+void XtlTerminateAlsa() { }
 const XtService* XtiServiceAlsa = nullptr;
 #else // XT_DISABLE_ALSA
 
