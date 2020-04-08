@@ -128,15 +128,24 @@ XtBool XT_CALL XtAudioIsWin32(void) {
   return XtFalse;
 }
 
-int32_t XT_CALL XtAudioGetServiceCount(void) {
-  return 3; 
+int32_t XT_CALL XtAudioGetServiceCount(void) { 
+  return sizeof(XtiServices) / sizeof(XtiServices[0]) - 1;
+}
+
+const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {
+  XT_ASSERT(0 <= index && index < XtAudioGetServiceCount());
+  return XtiServices[index];
 }
 
 const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system) {
+  XT_ASSERT(XtSystemAlsa <= system && system <= XtSystemWasapi);
   switch(system) {
   case XtSystemAlsa: return XtiServiceAlsa;
   case XtSystemJack: return XtiServiceJack;
   case XtSystemPulse: return XtiServicePulse;
+  case XtSystemAsio:
+  case XtSystemDSound:
+  case XtSystemWasapi: return nullptr;
   default: return XT_FAIL("Unknown system."), nullptr;
   }
 }
@@ -179,15 +188,6 @@ XtSystem XtiSetupToSystem(XtSetup setup) {
   case XtSetupSystemAudio: return XtSystemAlsa;
   case XtSetupConsumerAudio: return XtSystemPulse;
   default: return XT_FAIL("Unknown setup."), XtSystemPulse;
-  }
-}
-
-XtSystem XtiIndexToSystem(int32_t index) {
-  switch(index) {
-  case 0: return XtSystemPulse;
-  case 1: return XtSystemAlsa;
-  case 2: return XtSystemJack;
-  default: return XT_FAIL("Unknown index."), XtSystemPulse;
   }
 }
 
