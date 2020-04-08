@@ -250,11 +250,13 @@ std::unique_ptr<Service> Audio::GetServiceByIndex(int32_t index) {
 }
 
 std::unique_ptr<Service> Audio::GetServiceBySetup(Setup setup) {
-  return std::unique_ptr<Service>(new Service(XtAudioGetServiceBySetup(static_cast<XtSetup>(setup))));
+  const XtService* service = XtAudioGetServiceBySetup(static_cast<XtSetup>(setup));
+  return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
 }
 
 std::unique_ptr<Service> Audio::GetServiceBySystem(System system) {
-  return std::unique_ptr<Service>(new Service(XtAudioGetServiceBySystem(static_cast<XtSystem>(system))));
+  const XtService* service = XtAudioGetServiceBySystem(static_cast<XtSystem>(system));
+  return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
 }
 
 // ---- service ----
