@@ -1,11 +1,15 @@
 #ifdef _WIN32
+#include "xt-win32.hpp"
+
+#ifdef XT_DISABLE_ASIO
+const XtService* XtiServiceAsio = nullptr;
+#else // XT_DISABLE_ASIO
 
 // Windows.h's min/max collide with asmjit.
 #ifndef NOMINMAX
 #define NOMINMAX 1 
 #endif // NOMINMAX
 
-#include "xt-win32.hpp"
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
 #include <host/pc/asiolist.h>
@@ -552,4 +556,5 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   return ASE_OK;
 }
 
+#endif // XT_DISABLE_ASIO
 #endif // _WIN32

@@ -23,6 +23,24 @@ static HWND XtwWindow = nullptr;
 static DWORD XtwMainThreadId = 0;
 static bool XtwOwnWindow = false;
 
+extern const XtService* XtiServiceAsio;
+extern const XtService* XtiServiceDSound;
+extern const XtService* XtiServiceWasapi;
+
+const XtService* const XtiServices[] =
+{
+#ifndef XT_DISABLE_ASIO
+  XtiServiceAsio,
+#endif // XT_DISABLE_ASIO
+#ifndef XT_DISABLE_DSOUND
+  XtiServiceDSound,
+#endif // XT_DISABLE_DSOUND
+#ifndef XT_DISABLE_WASAPI
+  XtiServiceWasapi,
+#endif // XT_DISABLE_WASAPI
+  nullptr,
+};
+
 static XtStreamState ReadWin32StreamState(
   XtwWin32Stream* stream) {
 
@@ -114,14 +132,23 @@ XtBool XT_CALL XtAudioIsWin32(void) {
 }
 
 int32_t XT_CALL XtAudioGetServiceCount(void) { 
-  return 3;
+  return sizeof(XtiServices) / sizeof(XtiServices[0]) - 1;
+}
+
+const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {
+  XT_ASSERT(0 <= index && index < XtAudioGetServiceCount());
+  return XtiServices[index];
 }
 
 const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system) {
+  XT_ASSERT(XtSystemAlsa <= system && system <= XtSystemWasapi);
   switch(system) {
   case XtSystemAsio: return XtiServiceAsio;
   case XtSystemDSound: return XtiServiceDSound;
   case XtSystemWasapi: return XtiServiceWasapi;
+  case XtSystemAlsa:
+  case XtSystemJack:
+  case XtSystemPulse: return nullptr;
   default: return XT_FAIL("Unknown system."), nullptr;
   }
 }
@@ -134,15 +161,6 @@ XtSystem XtiSetupToSystem(XtSetup setup) {
   case XtSetupSystemAudio: return XtSystemWasapi;
   case XtSetupConsumerAudio: return XtSystemDSound;
   default: return XT_FAIL("Unknown setup."), XtSystemDSound;
-  }
-}
-
-XtSystem XtiIndexToSystem(int32_t index) {
-  switch(index) {
-  case 0: return XtSystemDSound;
-  case 1: return XtSystemWasapi;
-  case 2: return XtSystemAsio;
-  default: return XT_FAIL("Unknown index."), XtSystemDSound;
   }
 }
 

@@ -1,5 +1,10 @@
 #ifdef _WIN32
 #include "xt-win32.hpp"
+
+#ifdef XT_DISABLE_WASAPI
+const XtService* XtiServiceWasapi = nullptr;
+#else // XT_DISABLE_WASAPI
+
 #define INITGUID 1
 #include <mmdeviceapi.h>
 #include <audioclient.h>
@@ -597,4 +602,5 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   }
 }
 
+#endif // XT_DISABLE_WASAPI
 #endif // _WIN32

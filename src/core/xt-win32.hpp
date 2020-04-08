@@ -35,9 +35,6 @@ do {                                       \
     return XT_TRACE(XtLevelError, #e), hr; \
 } while(0)
 
-extern const XtService* XtiServiceAsio;
-extern const XtService* XtiServiceDSound;
-extern const XtService* XtiServiceWasapi;
 extern const char* XtwWfxChannelNames[18];
 
 void* XtwGetWindow();

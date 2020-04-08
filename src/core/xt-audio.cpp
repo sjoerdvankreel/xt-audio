@@ -299,11 +299,6 @@ const char* XT_CALL XtAudioGetVersion(void) {
   return "1.0.6";
 }
 
-const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {
-  XT_ASSERT(0 <= index && index < XtAudioGetServiceCount());
-  return XtAudioGetServiceBySystem(XtiIndexToSystem(index));
-}
-
 const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup) {
   XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
   return XtAudioGetServiceBySystem(XtiSetupToSystem(setup));

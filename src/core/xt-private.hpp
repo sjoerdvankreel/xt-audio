@@ -234,7 +234,6 @@ bool XtiCalledOnMainThread();
 void XtiInitPlatform(void* window);
 int32_t XtiGetPopCount64(uint64_t x);
 XtSystem XtiSetupToSystem(XtSetup setup);
-XtSystem XtiIndexToSystem(int32_t index);
 int32_t XtiGetSampleSize(XtSample sample);
 int32_t XtiLockIncr(volatile int32_t* dest);
 int32_t XtiLockDecr(volatile int32_t* dest);
