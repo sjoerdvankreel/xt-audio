@@ -1,7 +1,7 @@
 Building XT-Audio
 
 * Windows dependencies: asmjit (source), steinberg asio sdk (source), msvcrt
-* Linux dependencies: libasound-dev, libjack-jackd2-dev, libpulse-dev
+* Linux dependencies: libasound-dev, libjack-jackd2-dev, libpulse-dev, libpulse-simple
 
 * Have a windows box or vm ready with:
 ** mvn on PATH
