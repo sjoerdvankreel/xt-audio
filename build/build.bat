@@ -1,6 +1,49 @@
 @echo off
 setLocal enableDelayedExpansion
 
+REM Selective compilation support.
+REM Command line args are (in order): 
+REM disable-dsound (OFF/ON), disable-wasapi (OFF/ON), disable-asio (OFF/ON), 
+REM path-to-asio-source (required for asio), path-to-asmjit-source (required for asio).
+
+set disable_dsound=OFF
+set disable_wasapi=OFF
+set disable_asio=OFF
+IF "%3"=="" (
+  echo Please specify which backends to compile.
+  exit /b 1  
+)
+IF "%1"=="ON" (
+  set disable_dsound=ON
+  echo Building without DSound support.
+) else (
+  echo Building with DSound support.
+)
+IF "%2"=="ON" (
+  set disable_wasapi=ON
+  echo Building without WASAPI support.
+) else (
+  echo Building with WASAPI support.
+)
+IF "%3"=="ON" (
+  set disable_asio=ON
+  echo Building without ASIO support.
+) else (
+  echo Building with ASIO support.
+)
+
+if "%disable_asio%"=="OFF" (
+  IF "%5"=="" (
+    echo Please specify the paths to the asio sdk and asmjit sources.
+    exit /b 1
+  )
+)
+
+set /p ok="Continue (y/n)? "
+IF NOT "%ok%"=="y" (
+  exit /b 0
+)
+
 REM Intermediate folders.
 REM Scratch is build directory.
 REM Temp is full output (all configurations).
@@ -31,7 +74,7 @@ for /L %%A in (0, 1, 1) do (
     set FS=win32-!archs[%%A]!-!libs[%%L]!
     if not exist !FS! (mkdir !FS!)
     cd !FS!
-    cmake ..\..\build -G %generator% -A!vsarchs[%%A]! -DXT_ASIOSDK_DIR=%1 -DXT_ASMJIT_DIR=%2 -DBUILD_SHARED_LIBS=!types[%%L]!
+    cmake ..\..\build -G %generator% -A!vsarchs[%%A]! -DDISABLE_DSOUND=%disable_dsound% -DDISABLE_WASAPI=%disable_wasapi% -DDISABLE_ASIO=%disable_asio% -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 -DBUILD_SHARED_LIBS=!types[%%L]!
     if !errorlevel! neq 0 exit /b !errorlevel!
     for /L %%C in (0, 1, 1) do (
       msbuild xt-audio.sln /p:Configuration=!confs[%%C]!
@@ -184,4 +227,3 @@ msbuild cli.shfbproj
 doxygen cpp.doxyfile
 doxygen core.doxyfile
 javadoc -Xmaxerrs 1 -Xmaxwarns 1 -sourcepath ../src/java -d ../dist/doc/java com.xtaudio.xt
-
