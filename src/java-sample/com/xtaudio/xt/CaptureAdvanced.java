@@ -21,7 +21,7 @@ public class CaptureAdvanced {
         int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
         return frames * format.inputs * sampleSize;
     }
-    
+
     static void xRun(int index, Object user) {
         // Don't do this.
         System.out.println("XRun on device " + index + ".");
@@ -30,8 +30,8 @@ public class CaptureAdvanced {
     static void captureInterleaved(XtStream stream, Object input, Object output, int frames,
             double time, long position, boolean timeValid, long error, Object user) throws Exception {
 
+        // Don't do this.
         if (frames > 0)
-            // Don't do this.
             ((Context) user).out.write((byte[]) input, 0, getBufferSize(stream, frames));
     }
 
@@ -83,18 +83,13 @@ public class CaptureAdvanced {
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
 
             XtService service = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
+            if (service == null)
+                return;
+
             XtFormat format = new XtFormat(new XtMix(44100, XtSample.INT24), 2, 0, 0, 0);
             try (XtDevice device = service.openDefaultDevice(false)) {
-
-                if (device == null) {
-                    System.out.println("No default device found.");
+                if (device == null || !device.supportsFormat(format))
                     return;
-                }
-
-                if (!device.supportsFormat(format)) {
-                    System.out.println("Format not supported.");
-                    return;
-                }
 
                 Context context = new Context();
                 XtBuffer buffer = device.getBuffer(format);

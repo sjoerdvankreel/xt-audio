@@ -17,9 +17,12 @@ public class PrintDetailed {
 
             System.out.println("Win32: " + XtAudio.isWin32());
             System.out.println("Version: " + XtAudio.getVersion());
-            System.out.println("Pro Audio: " + XtAudio.getServiceBySetup(XtSetup.PRO_AUDIO).getName());
-            System.out.println("System Audio: " + XtAudio.getServiceBySetup(XtSetup.SYSTEM_AUDIO).getName());
-            System.out.println("Consumer Audio: " + XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO).getName());
+            XtService pro = XtAudio.getServiceBySetup(XtSetup.PRO_AUDIO);
+            System.out.println("Pro Audio: " + (pro == null ? "None" : pro.getName()));
+            XtService system = XtAudio.getServiceBySetup(XtSetup.SYSTEM_AUDIO);
+            System.out.println("System Audio: " + (system == null ? "None" : system.getName()));
+            XtService consumer = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
+            System.out.println("Consumer Audio: " + (consumer == null ? "None" : consumer.getName()));
 
             for (int s = 0; s < XtAudio.getServiceCount(); s++) {
 

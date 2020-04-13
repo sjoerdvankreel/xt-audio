@@ -23,7 +23,7 @@ public class RenderAdvanced {
         // Don't do this.
         System.out.println("XRun on device " + index + ", user = " + user + ".");
     }
-    
+
     static void renderInterleaved(XtStream stream, Object input, Object output, int frames,
             double time, long position, boolean timeValid, long error, Object user) throws Exception {
 
@@ -75,18 +75,13 @@ public class RenderAdvanced {
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
 
             XtService service = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
+            if (service == null)
+                return;
+
             XtFormat format = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 2, 0);
             try (XtDevice device = service.openDefaultDevice(true)) {
-
-                if (device == null) {
-                    System.out.println("No default device found.");
+                if (device == null || !device.supportsFormat(format))
                     return;
-                }
-
-                if (!device.supportsFormat(format)) {
-                    System.out.println("Format not supported.");
-                    return;
-                }
 
                 XtBuffer buffer = device.getBuffer(format);
 

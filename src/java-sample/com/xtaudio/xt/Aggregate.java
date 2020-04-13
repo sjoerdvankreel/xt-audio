@@ -26,22 +26,30 @@ public class Aggregate {
         XtChannels inputChannels = new XtChannels(2, 0, 0, 0);
         XtFormat outputFormat = new XtFormat(mix, 0, 0, 2, 0);
         XtChannels outputChannels = new XtChannels(0, 0, 2, 0);
+
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
+
             XtService service = XtAudio.getServiceBySetup(XtSetup.SYSTEM_AUDIO);
+            if (service == null)
+                return;
+
             try (XtDevice input = service.openDefaultDevice(false);
                     XtDevice output = service.openDefaultDevice(true)) {
-                if (input != null && input.supportsFormat(inputFormat)
-                        && output != null && output.supportsFormat(outputFormat))
-                    try (XtStream stream = service.aggregateStream(
-                            new XtDevice[]{input, output},
-                            new XtChannels[]{inputChannels, outputChannels},
-                            new double[]{30.0, 30.0},
-                            2, mix, true, false, output, Aggregate::aggregate, Aggregate::xRun, "user-data")) {
-                        stream.start();
-                        System.out.println("Streaming aggregate, press any key to continue...");
-                        System.console().readLine();
-                        stream.stop();
-                    }
+                if (input == null || !input.supportsFormat(inputFormat))
+                    return;
+                if (output == null || !output.supportsFormat(outputFormat))
+                    return;
+
+                try (XtStream stream = service.aggregateStream(
+                        new XtDevice[]{input, output},
+                        new XtChannels[]{inputChannels, outputChannels},
+                        new double[]{30.0, 30.0},
+                        2, mix, true, false, output, Aggregate::aggregate, Aggregate::xRun, "user-data")) {
+                    stream.start();
+                    System.out.println("Streaming aggregate, press any key to continue...");
+                    System.console().readLine();
+                    stream.stop();
+                }
             }
         }
     }

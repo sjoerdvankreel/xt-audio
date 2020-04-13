@@ -20,17 +20,21 @@ public class RenderSimple {
     public static void main(String[] args) throws Exception {
 
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
-            XtService service = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
-            try (XtDevice device = service.openDefaultDevice(true)) {
-                if (device != null && device.supportsFormat(FORMAT)) {
 
-                    XtBuffer buffer = device.getBuffer(FORMAT);
-                    try (XtStream stream = device.openStream(FORMAT, true, false,
-                            buffer.current, RenderSimple::render, null, null)) {
-                        stream.start();
-                        Thread.sleep(1000);
-                        stream.stop();
-                    }
+            XtService service = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
+            if (service == null)
+                return;
+
+            try (XtDevice device = service.openDefaultDevice(true)) {
+                if (device == null || !device.supportsFormat(FORMAT))
+                    return;
+
+                XtBuffer buffer = device.getBuffer(FORMAT);
+                try (XtStream stream = device.openStream(FORMAT, true, false,
+                        buffer.current, RenderSimple::render, null, null)) {
+                    stream.start();
+                    Thread.sleep(1000);
+                    stream.stop();
                 }
             }
         }
