@@ -77,9 +77,12 @@ public class Driver {
         System.console().printf("Win32: %s\n", XtAudio.isWin32());
         System.console().printf("Version: %s\n", XtAudio.getVersion());
         System.console().printf("Service count: %s\n", XtAudio.getServiceCount());
-        System.console().printf("%s setup: %s\n", XtSetup.CONSUMER_AUDIO.toString(), XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO).toString());
-        System.console().printf("%s setup: %s\n", XtSetup.SYSTEM_AUDIO.toString(), XtAudio.getServiceBySetup(XtSetup.SYSTEM_AUDIO).toString());
-        System.console().printf("%s setup: %s\n", XtSetup.PRO_AUDIO.toString(), XtAudio.getServiceBySetup(XtSetup.PRO_AUDIO).toString());
+        XtService pro = XtAudio.getServiceBySetup(XtSetup.PRO_AUDIO);
+        System.console().printf("%s setup: %s\n", XtSetup.PRO_AUDIO.toString(), (pro == null ? "None" : pro.getName()));
+        XtService system = XtAudio.getServiceBySetup(XtSetup.SYSTEM_AUDIO);
+        System.console().printf("%s setup: %s\n", XtSetup.SYSTEM_AUDIO.toString(), (system == null ? "None" : system.getName()));
+        XtService consumer = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
+        System.console().printf("%s setup: %s\n", XtSetup.CONSUMER_AUDIO.toString(), (consumer == null ? "None" : consumer.getName()));
         for (int s = 0; s < XtAudio.getServiceCount(); s++)
             if (!listService(s))
                 return false;
