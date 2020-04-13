@@ -21,9 +21,9 @@ public enum XtSystem {
     ASIO,
     JACK,
     PULSE,
-    DSOUND, 
+    DSOUND,
     WASAPI;
-    
+
     @Override
     public String toString() {
         return XtPrint.systemToString(this);

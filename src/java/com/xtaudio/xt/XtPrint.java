@@ -59,7 +59,7 @@ public final class XtPrint {
     public static String latencyToString(XtLatency latency) {
         return XtNative.wrapAndFreeString(XtNative.XtPrintLatencyToString(latency));
     }
-    
+
     public static String channelsToString(XtChannels channels) {
         return XtNative.wrapAndFreeString(XtNative.XtPrintChannelsToString(channels));
     }

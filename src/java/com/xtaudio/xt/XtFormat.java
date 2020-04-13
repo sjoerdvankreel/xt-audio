@@ -25,7 +25,7 @@ public final class XtFormat {
 
     public XtFormat() {
     }
-    
+
     public XtFormat(XtMix mix, int inputs, long inMask, int outputs, long outMask) {
         this.mix = mix;
         this.inputs = inputs;
