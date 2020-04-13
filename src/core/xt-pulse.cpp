@@ -1,15 +1,3 @@
-#ifdef __linux__
-#include "xt-linux.hpp"
-
-#ifdef XT_DISABLE_PULSE
-const XtService* XtiServicePulse = nullptr;
-#else // XT_DISABLE_PULSE
-
-#include <memory>
-#include <vector>
-#include <pulse/simple.h>
-#include <pulse/pulseaudio.h>
-
 /* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
@@ -25,6 +13,17 @@ const XtService* XtiServicePulse = nullptr;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef __linux__
+#include "xt-linux.hpp"
+
+#ifdef XT_DISABLE_PULSE
+const XtService* XtiServicePulse = nullptr;
+#else // XT_DISABLE_PULSE
+
+#include <memory>
+#include <vector>
+#include <pulse/simple.h>
+#include <pulse/pulseaudio.h>
 
 // ---- local ----
 

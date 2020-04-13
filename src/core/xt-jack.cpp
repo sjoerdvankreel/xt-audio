@@ -1,17 +1,3 @@
-#ifdef __linux__
-#include "xt-linux.hpp"
-
-#ifdef XT_DISABLE_JACK
-void XtlInitJack() { }
-void XtlTerminateJack() { }
-const XtService* XtiServiceJack = nullptr;
-#else // XT_DISABLE_JACK
-
-#include <jack/jack.h>
-#include <vector>
-#include <memory>
-#include <sstream>
-
 /* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
@@ -27,6 +13,19 @@ const XtService* XtiServiceJack = nullptr;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef __linux__
+#include "xt-linux.hpp"
+
+#ifdef XT_DISABLE_JACK
+void XtlInitJack() { }
+void XtlTerminateJack() { }
+const XtService* XtiServiceJack = nullptr;
+#else // XT_DISABLE_JACK
+
+#include <jack/jack.h>
+#include <vector>
+#include <memory>
+#include <sstream>
 
 // ---- local ----
 

@@ -1,10 +1,3 @@
-#ifndef _XT_LINUX_HPP
-#define _XT_LINUX_HPP
-#ifdef __linux__
-
-#include "xt-private.hpp"
-#include <pthread.h>
-
 /* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
@@ -20,8 +13,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifndef _XT_LINUX_HPP
+#define _XT_LINUX_HPP
+#ifdef __linux__
 
- // ---- linux ----
+#include "xt-private.hpp"
+#include <pthread.h>
+
+// ---- linux ----
 
 void XtlInitJack();
 void XtlInitAlsa();

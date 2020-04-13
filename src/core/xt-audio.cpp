@@ -1,13 +1,3 @@
-// Don't warn about posix-compliant strdup() and friends.
-#ifndef _CRT_NONSTDC_NO_DEPRECATE
-#define _CRT_NONSTDC_NO_DEPRECATE 1
-#endif
-
-#include "xt-private.hpp"
-#include <inttypes.h>
-#include <sstream>
-#include <iomanip>
-
 /* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
@@ -23,6 +13,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+
+// Don't warn about posix-compliant strdup() and friends.
+#ifndef _CRT_NONSTDC_NO_DEPRECATE
+#define _CRT_NONSTDC_NO_DEPRECATE 1
+#endif
+
+#include "xt-private.hpp"
+#include <inttypes.h>
+#include <sstream>
+#include <iomanip>
 
 // ---- local ----
 
