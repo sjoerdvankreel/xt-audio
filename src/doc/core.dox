@@ -682,7 +682,7 @@
  * @fn void XtAudioInit(const char* id, void* window, XtTraceCallback trace, XtFatalCallback fatal)
  * @brief Initialize the XT-Audio library.
  * @param id the application id. Used to identify against sound servers such as JACK and PulseAudio. When NULL, "XT-Audio" is used.
- * @param window application main window handle. ASIO uses this to show model control panels. When NULL, a dummy message window is used.
+ * @param window application main window handle. ASIO uses this to show modal control panels. When NULL, a dummy message window is used.
  * @param trace application-defined logging callback. When NULL, no logging is performed. Fatal errors are always written to stdout.
  * @param fatal application-defined fatal error handler to allow cleanup, may be NULL. This function must not return.
  *
