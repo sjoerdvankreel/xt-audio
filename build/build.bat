@@ -183,5 +183,5 @@ REM build documentation.
 msbuild cli.shfbproj
 doxygen cpp.doxyfile
 doxygen core.doxyfile
-javadoc -sourcepath ../src/java -d ../dist/doc/java com.xtaudio.xt
+javadoc -Xmaxerrs 1 -Xmaxwarns 1 -sourcepath ../src/java -d ../dist/doc/java com.xtaudio.xt
 
