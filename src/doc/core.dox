@@ -653,7 +653,7 @@
 /**
  * @fn const XtService* XtAudioGetServiceBySetup(XtSetup setup)
  * @brief Get service by setup.
- * @return an audio service.
+ * @return an audio service, or NULL if XT-Audio was compiled without support for the given setup.
  * @param setup the desired setup type.
  *
  * This function may be called from any thread.
@@ -662,12 +662,8 @@
 /**
  * @fn const XtService* XtAudioGetServiceBySystem(XtSystem system)
  * @brief Get service by system.
- * @return an audio service.
+ * @return an audio service, or NULL if XT-Audio was compiled without support for the given service.
  * @param system the desired system.
- *
- * It is an error to call this function with a system that does not exist on the current platform,
- * for example, to specify XtSystemJack when running on Windows. Any attempt to do so will result
- * in a fatal error.
  *
  * This function may be called from any thread.
  * @see XtAudioIsWin32
