@@ -26,19 +26,21 @@ namespace Xt
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {
                 XtService service = XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio);
+                if (service == null)
+                    return;
+
                 using (XtDevice device = service.OpenDefaultDevice(true))
                 {
-                    if (device != null && device.SupportsFormat(Format))
-                    {
+                    if (device == null || !device.SupportsFormat(Format))
+                        return;
 
-                        XtBuffer buffer = device.GetBuffer(Format);
-                        using (XtStream stream = device.OpenStream(Format, true, false,
-                                buffer.current, Render, null, null))
-                        {
-                            stream.Start();
-                            Thread.Sleep(1000);
-                            stream.Stop();
-                        }
+                    XtBuffer buffer = device.GetBuffer(Format);
+                    using (XtStream stream = device.OpenStream(Format, true, false,
+                            buffer.current, Render, null, null))
+                    {
+                        stream.Start();
+                        Thread.Sleep(1000);
+                        stream.Stop();
                     }
                 }
             }

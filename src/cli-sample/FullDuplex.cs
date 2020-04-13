@@ -21,31 +21,33 @@ namespace Xt
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {
                 XtService service = XtAudio.GetServiceBySetup(XtSetup.ProAudio);
+                if (service == null)
+                    return;
+
                 using (XtDevice device = service.OpenDefaultDevice(true))
                 {
-                    if (device != null)
+                    if (device == null)
+                        return;
+
+                    if (device.SupportsFormat(int44100))
+                        format = int44100;
+                    else if (device.SupportsFormat(int48000))
+                        format = int48000;
+                    else if (device.SupportsFormat(float44100))
+                        format = float44100;
+                    else if (device.SupportsFormat(float48000))
+                        format = float48000;
+                    else
+                        return;
+
+                    XtBuffer buffer = device.GetBuffer(format);
+                    using (XtStream stream = device.OpenStream(format, true,
+                        false, buffer.min, Callback, null, null))
                     {
-
-                        if (device.SupportsFormat(int44100))
-                            format = int44100;
-                        else if (device.SupportsFormat(int48000))
-                            format = int48000;
-                        else if (device.SupportsFormat(float44100))
-                            format = float44100;
-                        else if (device.SupportsFormat(float48000))
-                            format = float48000;
-                        else
-                            return;
-
-                        XtBuffer buffer = device.GetBuffer(format);
-                        using (XtStream stream = device.OpenStream(format, true,
-                            false, buffer.min, Callback, null, null))
-                        {
-                            stream.Start();
-                            Console.WriteLine("Streaming full-duplex, press any key to continue...");
-                            Console.ReadLine();
-                            stream.Stop();
-                        }
+                        stream.Start();
+                        Console.WriteLine("Streaming full-duplex, press any key to continue...");
+                        Console.ReadLine();
+                        stream.Stop();
                     }
                 }
             }

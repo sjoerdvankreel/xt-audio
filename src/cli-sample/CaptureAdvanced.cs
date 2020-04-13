@@ -92,21 +92,14 @@ namespace Xt
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {
                 XtService service = XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio);
+                if (service == null)
+                    return;
+
                 XtFormat format = new XtFormat(new XtMix(44100, XtSample.Int24), 2, 0, 0, 0);
                 using (XtDevice device = service.OpenDefaultDevice(false))
                 {
-
-                    if (device == null)
-                    {
-                        Console.WriteLine("No default device found.");
+                    if (device == null || !device.SupportsFormat(format))
                         return;
-                    }
-
-                    if (!device.SupportsFormat(format))
-                    {
-                        Console.WriteLine("Format not supported.");
-                        return;
-                    }
 
                     Context context = new Context();
                     XtBuffer buffer = device.GetBuffer(format);
@@ -116,7 +109,6 @@ namespace Xt
                     using (XtStream stream = device.OpenStream(format, true, false,
                         buffer.current, CaptureInterleaved, XRun, context))
                     {
-
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();
@@ -130,7 +122,6 @@ namespace Xt
                     using (XtStream stream = device.OpenStream(format, true, true,
                         buffer.current, CaptureInterleavedRaw, XRun, context))
                     {
-
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();
@@ -144,7 +135,6 @@ namespace Xt
                     using (XtStream stream = device.OpenStream(format, false, false,
                         buffer.current, CaptureNonInterleaved, XRun, context))
                     {
-
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();
@@ -158,7 +148,6 @@ namespace Xt
                     using (XtStream stream = device.OpenStream(format, false, true,
                         buffer.current, CaptureNonInterleavedRaw, XRun, context))
                     {
-
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();

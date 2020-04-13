@@ -35,23 +35,27 @@ namespace Xt
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {
                 XtService service = XtAudio.GetServiceBySetup(XtSetup.SystemAudio);
+                if (service == null)
+                    return;
+
                 using (XtDevice input = service.OpenDefaultDevice(false))
                 using (XtDevice output = service.OpenDefaultDevice(true))
                 {
-                    if (input != null && input.SupportsFormat(inputFormat)
-                            && output != null && output.SupportsFormat(outputFormat))
+                    if (input == null || !input.SupportsFormat(inputFormat))
+                        return;
+                    if (output == null || !output.SupportsFormat(outputFormat))
+                        return;
+
+                    using (XtStream stream = service.AggregateStream(
+                            new XtDevice[] { input, output },
+                            new XtChannels[] { inputChannels, outputChannels },
+                            new double[] { 30.0, 30.0 },
+                            2, mix, true, false, output, OnAggregate, XRun, "user-data"))
                     {
-                        using (XtStream stream = service.AggregateStream(
-                                new XtDevice[] { input, output },
-                                new XtChannels[] { inputChannels, outputChannels },
-                                new double[] { 30.0, 30.0 },
-                                2, mix, true, false, output, OnAggregate, XRun, "user-data"))
-                        {
-                            stream.Start();
-                            Console.WriteLine("Streaming aggregate, press any key to continue...");
-                            Console.ReadLine();
-                            stream.Stop();
-                        }
+                        stream.Start();
+                        Console.WriteLine("Streaming aggregate, press any key to continue...");
+                        Console.ReadLine();
+                        stream.Stop();
                     }
                 }
             }

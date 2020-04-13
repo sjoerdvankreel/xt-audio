@@ -23,13 +23,15 @@ namespace Xt
                 {
                     Console.WriteLine("Win32: " + XtAudio.IsWin32());
                     Console.WriteLine("Version: " + XtAudio.GetVersion());
-                    Console.WriteLine("Pro Audio: " + XtAudio.GetServiceBySetup(XtSetup.ProAudio).GetName());
-                    Console.WriteLine("System Audio: " + XtAudio.GetServiceBySetup(XtSetup.SystemAudio).GetName());
-                    Console.WriteLine("Consumer Audio: " + XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio).GetName());
+                    XtService pro = XtAudio.GetServiceBySetup(XtSetup.ProAudio);
+                    Console.WriteLine("Pro Audio: " + (pro == null ? "None" : pro.GetName()));
+                    XtService system = XtAudio.GetServiceBySetup(XtSetup.SystemAudio);
+                    Console.WriteLine("System Audio: " + (system == null ? "None" : system.GetName()));
+                    XtService consumer = XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio);
+                    Console.WriteLine("Consumer Audio: " + (consumer == null ? "None" : consumer.GetName()));
 
                     for (int s = 0; s < XtAudio.GetServiceCount(); s++)
                     {
-
                         XtService service = XtAudio.GetServiceByIndex(s);
                         Console.WriteLine("Service " + service.GetName() + ":");
                         Console.WriteLine("  System: " + service.GetSystem());
@@ -42,11 +44,9 @@ namespace Xt
                         using (XtDevice defaultOutput = service.OpenDefaultDevice(true))
                             Console.WriteLine("  Default output: " + defaultOutput);
 
-
                         for (int d = 0; d < service.GetDeviceCount(); d++)
                             using (XtDevice device = service.OpenDevice(d))
                             {
-
                                 Console.WriteLine("  Device " + device.GetName() + ":");
                                 Console.WriteLine("    System: " + device.GetSystem());
                                 Console.WriteLine("    Current mix: " + device.GetMix());
@@ -58,7 +58,6 @@ namespace Xt
                     }
                 } catch (XtException e)
                 {
-
                     Console.WriteLine("Error: system %s, fault %s, cause %s, text %s, message: %s.\n",
                             XtException.GetSystem(e.GetError()),
                             XtException.GetFault(e.GetError()),

@@ -80,23 +80,16 @@ namespace Xt
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {
                 XtService service = XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio);
+                if (service == null)
+                    return;
+
                 XtFormat format = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 2, 0);
                 using (XtDevice device = service.OpenDefaultDevice(true))
                 {
-                    if (device == null)
-                    {
-                        Console.WriteLine("No default device found.");
+                    if (device == null || device.SupportsFormat(format))
                         return;
-                    }
-
-                    if (!device.SupportsFormat(format))
-                    {
-                        Console.WriteLine("Format not supported.");
-                        return;
-                    }
 
                     XtBuffer buffer = device.GetBuffer(format);
-
                     using (XtStream stream = device.OpenStream(format, true, false,
                         buffer.current, RenderInterleaved, XRun, "user-data"))
                     {
