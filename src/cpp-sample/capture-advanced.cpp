@@ -51,23 +51,18 @@ static void CaptureNonInterleaved(
 int CaptureAdvancedMain(int argc, char** argv) {
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
-  std::unique_ptr< Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
   Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), 2, 0, 0, 0);
+
+  std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+  if(!service)
+    return 0;  
+
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
-
-  if(!device) {
-    std::cout << "No default device found.\n";
+  if(!device || !device->SupportsFormat(format)) 
     return 0;
-  }
-
-  if(!device->SupportsFormat(format)) {
-    std::cout << "Format not supported.\n";
-    return 0;
-  }
 
   std::unique_ptr<Xt::Stream> stream;
   Xt::Buffer buffer = device->GetBuffer(format);
-
   std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
   stream = device->OpenStream(format, true, buffer.current, CaptureInterleaved, XRun, &interleaved);
   stream->Start();

@@ -59,30 +59,25 @@ static void RenderNonInterleaved(
 int RenderAdvancedMain(int argc, char** argv) {
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
-  std::unique_ptr< Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
   Xt::Format format(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 2, 0);
+
+  std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+  if(!service)
+    return 0;
+
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
-
-  if(!device) {
-    std::cout << "No default device found.\n";
+  if(!device || !device->SupportsFormat(format))
     return 0;
-  }
-
-  if(!device->SupportsFormat(format)) {
-    std::cout << "Format not supported.\n";
-    return 0;
-  }
 
   std::unique_ptr<Xt::Stream> stream;
   Xt::Buffer buffer = device->GetBuffer(format);
-
   stream = device->OpenStream(format, true, buffer.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering interleaved...\n";
   ReadLine();
   stream->Stop();
 
-  device->OpenStream(format, false, buffer.current, RenderNonInterleaved, XRun, const_cast<char*>("user-data"));
+  stream = device->OpenStream(format, false, buffer.current, RenderNonInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering non-interleaved...\n";
   ReadLine();
@@ -101,6 +96,5 @@ int RenderAdvancedMain(int argc, char** argv) {
   std::cout << "Rendering channel mask, channel 1...\n";
   ReadLine();
   stream->Stop();
-
   return 0;
 }

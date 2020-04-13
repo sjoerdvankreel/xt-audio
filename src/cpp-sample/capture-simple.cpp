@@ -22,21 +22,24 @@ static void Capture(
 
 int CaptureSimpleMain(int argc, char** argv) {
 
-  Xt::Audio audio("", nullptr, nullptr, nullptr);
-  std::unique_ptr< Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
-  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
-  if(device  && device->SupportsFormat(Format)) {
+  Xt::Audio audio("", nullptr, nullptr, nullptr);  
+  std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+  if(!service)
+    return 0;  
 
-    Xt::Buffer buffer = device->GetBuffer(Format);
-    std::ofstream recording("xt-audio.raw", std::ios::out | std::ios::binary);
-    std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Capture, nullptr, &recording);
-    stream->Start();
+  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
+  if(!device || !device->SupportsFormat(Format))
+    return 0;
+
+  Xt::Buffer buffer = device->GetBuffer(Format);
+  std::ofstream recording("xt-audio.raw", std::ios::out | std::ios::binary);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Capture, nullptr, &recording);
+  stream->Start();
 #if _WIN32
-    Sleep(1000);
+  Sleep(1000);
 #else
-    usleep(1000 * 1000);
+  usleep(1000 * 1000);
 #endif
-    stream->Stop();
-  }
+  stream->Stop();
   return 0;
 }
