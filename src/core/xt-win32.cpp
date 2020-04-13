@@ -28,15 +28,15 @@ extern const XtService* XtiServiceWasapi;
 
 const XtService* const XtiServices[] =
 {
-#ifndef XT_DISABLE_ASIO
-  XtiServiceAsio,
-#endif // XT_DISABLE_ASIO
 #ifndef XT_DISABLE_DSOUND
   XtiServiceDSound,
 #endif // XT_DISABLE_DSOUND
 #ifndef XT_DISABLE_WASAPI
   XtiServiceWasapi,
 #endif // XT_DISABLE_WASAPI
+#ifndef XT_DISABLE_ASIO
+  XtiServiceAsio,
+#endif // XT_DISABLE_ASIO
   nullptr,
 };
 
