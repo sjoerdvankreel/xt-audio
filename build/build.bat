@@ -6,25 +6,28 @@ REM Command line args are (in order):
 REM disable-dsound (OFF/ON), disable-wasapi (OFF/ON), disable-asio (OFF/ON), 
 REM path-to-asio-source (required for asio), path-to-asmjit-source (required for asio).
 
-set disable_dsound=OFF
-set disable_wasapi=OFF
-set disable_asio=OFF
 IF "%3"=="" (
   echo Please specify which backends to compile.
   exit /b 1  
 )
+
+set disable_dsound=OFF
 IF "%1"=="ON" (
   set disable_dsound=ON
   echo Building without DSound support.
 ) else (
   echo Building with DSound support.
 )
+
+set disable_wasapi=OFF
 IF "%2"=="ON" (
   set disable_wasapi=ON
   echo Building without WASAPI support.
 ) else (
   echo Building with WASAPI support.
 )
+
+set disable_asio=OFF
 IF "%3"=="ON" (
   set disable_asio=ON
   echo Building without ASIO support.
