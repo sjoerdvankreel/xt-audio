@@ -1,9 +1,3 @@
-package com.xtaudio.xt;
-
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-import java.lang.reflect.Array;
-
 /* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
@@ -19,6 +13,12 @@ import java.lang.reflect.Array;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+package com.xtaudio.xt;
+
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import java.lang.reflect.Array;
+
 public final class XtStream implements XtCloseable {
 
     private static Object createNonInterleavedBuffer(XtSample sample, int channels, int frames) {

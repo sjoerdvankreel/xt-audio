@@ -1,9 +1,3 @@
-package com.xtaudio.xt;
-
-import com.sun.jna.Structure;
-import java.util.Arrays;
-import java.util.List;
-
 /* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
@@ -19,6 +13,12 @@ import java.util.List;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+package com.xtaudio.xt;
+
+import com.sun.jna.Structure;
+import java.util.Arrays;
+import java.util.List;
+
 public final class XtAttributes extends Structure {
 
     public int size;
