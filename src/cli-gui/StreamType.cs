@@ -1,7 +1,7 @@
-namespace Xt {
-
-    enum StreamType {
-
+namespace Xt
+{
+    enum StreamType
+    {
         Capture,
         Render,
         Duplex,

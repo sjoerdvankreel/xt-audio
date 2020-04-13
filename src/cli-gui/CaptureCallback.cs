@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 
-namespace Xt {
-
-    class CaptureCallback : StreamCallback {
-
+namespace Xt
+{
+    class CaptureCallback : StreamCallback
+    {
         private byte[] block;
         private int frameSize;
         private Array interleavedBuffer;
@@ -13,19 +12,21 @@ namespace Xt {
 
         internal CaptureCallback(Action<Func<string>> onError,
             Action<Func<string>> onMessage, FileStream stream) :
-            base("Capture", onError, onMessage) {
+            base("Capture", onError, onMessage)
+        {
             this.stream = stream;
         }
 
-        internal void Init(XtFormat format, int maxFrames) {
+        internal void Init(XtFormat format, int maxFrames)
+        {
             frameSize = format.inputs * XtAudio.GetSampleAttributes(format.mix.sample).size;
             block = new byte[maxFrames * frameSize];
             interleavedBuffer = Utility.CreateInterleavedBuffer(format.mix.sample, format.inputs, maxFrames);
         }
 
         internal override void OnCallback(XtFormat format, bool interleaved,
-            bool raw, object input, object output, int frames) {
-
+            bool raw, object input, object output, int frames)
+        {
             if (frames == 0)
                 return;
             if (!raw && !interleaved)

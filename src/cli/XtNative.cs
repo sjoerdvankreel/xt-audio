@@ -19,16 +19,17 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace Xt {
-
+namespace Xt
+{
     [SuppressUnmanagedCodeSecurity]
-    static class XtNative {
-
-        internal class Utf8Buffer : IDisposable {
-
+    static class XtNative
+    {
+        internal class Utf8Buffer : IDisposable
+        {
             internal readonly IntPtr ptr = IntPtr.Zero;
 
-            internal Utf8Buffer(string s) {
+            internal Utf8Buffer(string s)
+            {
                 if (s == null)
                     return;
                 byte[] bytes = Encoding.UTF8.GetBytes(s);
@@ -36,15 +37,16 @@ namespace Xt {
                 Marshal.Copy(bytes, 0, ptr, bytes.Length);
             }
 
-            public void Dispose() {
+            public void Dispose()
+            {
                 if (ptr != IntPtr.Zero)
                     Marshal.FreeHGlobal(ptr);
             }
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        internal struct Format {
-
+        internal struct Format
+        {
             public int rate;
             public XtSample sample;
             public int inputs;
@@ -52,7 +54,8 @@ namespace Xt {
             public int outputs;
             public ulong outMask;
 
-            public XtFormat FromNative() {
+            public XtFormat FromNative()
+            {
                 XtFormat result = new XtFormat();
                 result.mix.rate = rate;
                 result.mix.sample = sample;
@@ -63,7 +66,8 @@ namespace Xt {
                 return result;
             }
 
-            public static Format ToNative(XtFormat format) {
+            public static Format ToNative(XtFormat format)
+            {
                 Format result = new Format();
                 result.rate = format.mix.rate;
                 result.sample = format.mix.sample;
@@ -105,18 +109,21 @@ namespace Xt {
         [SuppressUnmanagedCodeSecurity]
         internal delegate void XRunCallbackLinux(int index, IntPtr user);
 
-        internal static void HandleError(ulong error) {
+        internal static void HandleError(ulong error)
+        {
             if (error != 0)
                 throw new XtException(error);
         }
 
-        internal static string FreeStringFromUtf8(IntPtr utf8) {
+        internal static string FreeStringFromUtf8(IntPtr utf8)
+        {
             string result = StringFromUtf8(utf8);
             XtAudioFree(utf8);
             return result;
         }
 
-        internal static string StringFromUtf8(IntPtr utf8) {
+        internal static string StringFromUtf8(IntPtr utf8)
+        {
             byte c;
             int index = 0;
             List<byte> bytes = new List<byte>();
@@ -129,7 +136,8 @@ namespace Xt {
         [DllImport("kernel32")]
         private static extern IntPtr LoadLibrary(string library);
 
-        static XtNative() {
+        static XtNative()
+        {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 LoadLibrary(Environment.Is64BitProcess ? "win32-x64/xt-core.dll" : "win32-x86/xt-core.dll");
         }

@@ -1,20 +1,22 @@
 ﻿using System;
 
-namespace Xt {
-
-    class RenderCallback : StreamCallback {
-
+namespace Xt
+{
+    class RenderCallback : StreamCallback
+    {
         private double phase;
         private static readonly double Frequency = 660.0;
 
         internal RenderCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
-            base("Render", onError, onMessage) {
+            base("Render", onError, onMessage)
+        {
         }
 
         internal override unsafe void OnCallback(XtFormat format, bool interleaved,
-             bool raw, object input, object output, int frames) {
-
-            for (int f = 0; f < frames; f++) {
+             bool raw, object input, object output, int frames)
+        {
+            for (int f = 0; f < frames; f++)
+            {
 
                 int ival;
                 double val = Math.Sin(phase * Math.PI);
@@ -22,11 +24,14 @@ namespace Xt {
                 if (phase >= 1.0)
                     phase = -1.0;
 
-                if (!raw) {
+                if (!raw)
+                {
                     if (interleaved)
-                        for (int c = 0; c < format.outputs; c++) {
+                        for (int c = 0; c < format.outputs; c++)
+                        {
                             int pos = f * format.outputs + c;
-                            switch (format.mix.sample) {
+                            switch (format.mix.sample)
+                            {
                                 case XtSample.UInt8:
                                     ((byte[])output)[pos] = (byte)((val * 0.5 + 0.5) * byte.MaxValue);
                                     break;
@@ -48,9 +53,12 @@ namespace Xt {
                                 default:
                                     break;
                             }
-                        } else
-                        for (int c = 0; c < format.outputs; c++) {
-                            switch (format.mix.sample) {
+                        }
+                    else
+                        for (int c = 0; c < format.outputs; c++)
+                        {
+                            switch (format.mix.sample)
+                            {
                                 case XtSample.UInt8:
                                     ((byte[][])output)[c][f] = (byte)((val * 0.5 + 0.5) * byte.MaxValue);
                                     break;
@@ -73,11 +81,14 @@ namespace Xt {
                                     break;
                             }
                         }
-                } else {
+                } else
+                {
                     if (interleaved)
-                        for (int c = 0; c < format.outputs; c++) {
+                        for (int c = 0; c < format.outputs; c++)
+                        {
                             int pos = f * format.outputs + c;
-                            switch (format.mix.sample) {
+                            switch (format.mix.sample)
+                            {
                                 case XtSample.UInt8:
                                     ((byte*)(IntPtr)output)[pos] = (byte)((val * 0.5 + 0.5) * byte.MaxValue);
                                     break;
@@ -99,9 +110,12 @@ namespace Xt {
                                 default:
                                     break;
                             }
-                        } else
-                        for (int c = 0; c < format.outputs; c++) {
-                            switch (format.mix.sample) {
+                        }
+                    else
+                        for (int c = 0; c < format.outputs; c++)
+                        {
+                            switch (format.mix.sample)
+                            {
                                 case XtSample.UInt8:
                                     ((byte**)(IntPtr)output)[c][f] = (byte)((val * 0.5 + 0.5) * byte.MaxValue);
                                     break;

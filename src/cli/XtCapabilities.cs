@@ -15,11 +15,11 @@
  */
 using System;
 
-namespace Xt {
-
+namespace Xt
+{
     [Flags]
-    public enum XtCapabilities : int {
-
+    public enum XtCapabilities : int
+    {
         None = 0x0,
         Time = 0x1,
         Latency = 0x2,

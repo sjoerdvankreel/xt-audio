@@ -15,23 +15,26 @@
  */
 using System.Runtime.InteropServices;
 
-namespace Xt {
-
+namespace Xt
+{
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class XtMix {
-
+    public sealed class XtMix
+    {
         public int rate;
         public XtSample sample;
 
-        public XtMix() {
+        public XtMix()
+        {
         }
 
-        public XtMix(int rate, XtSample sample) {
+        public XtMix(int rate, XtSample sample)
+        {
             this.rate = rate;
             this.sample = sample;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return XtPrint.MixToString(this);
         }
     }

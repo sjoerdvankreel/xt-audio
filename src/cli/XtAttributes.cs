@@ -15,16 +15,17 @@
  */
 using System.Runtime.InteropServices;
 
-namespace Xt {
-
+namespace Xt
+{
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class XtAttributes {
-
+    public sealed class XtAttributes
+    {
         public int size;
         public bool isFloat;
         public bool isSigned;
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return XtPrint.AttributesToString(this);
         }
     }

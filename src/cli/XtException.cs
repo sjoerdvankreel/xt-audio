@@ -15,37 +15,44 @@
  */
 using System;
 
-namespace Xt {
-
-    public sealed class XtException : Exception {
-
+namespace Xt
+{
+    public sealed class XtException : Exception
+    {
         private readonly ulong error;
 
-        internal XtException(ulong error) {
+        internal XtException(ulong error)
+        {
             this.error = error;
         }
 
-        public ulong GetError() {
+        public ulong GetError()
+        {
             return error;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return XtPrint.ErrorToString(GetError());
         }
 
-        public static XtCause GetCause(ulong error) {
+        public static XtCause GetCause(ulong error)
+        {
             return XtNative.XtErrorGetCause(error);
         }
 
-        public static XtSystem GetSystem(ulong error) {
+        public static XtSystem GetSystem(ulong error)
+        {
             return XtNative.XtErrorGetSystem(error);
         }
 
-        public static int GetFault(ulong error) {
+        public static int GetFault(ulong error)
+        {
             return XtNative.XtErrorGetFault(error);
         }
 
-        public static string GetText(ulong error) {
+        public static string GetText(ulong error)
+        {
             return XtNative.StringFromUtf8(XtNative.XtErrorGetText(error));
         }
     }

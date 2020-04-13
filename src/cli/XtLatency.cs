@@ -15,15 +15,16 @@
  */
 using System.Runtime.InteropServices;
 
-namespace Xt {
-
+namespace Xt
+{
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class XtLatency {
-
+    public sealed class XtLatency
+    {
         public double input;
         public double output;
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return XtPrint.LatencyToString(this);
         }
     }

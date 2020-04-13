@@ -1,12 +1,12 @@
 using System;
 
-namespace Xt {
-
-    public class Sample {
-
+namespace Xt
+{
+    public class Sample
+    {
         [STAThread]
-        public static void Main(string[] args) {
-
+        public static void Main(string[] args)
+        {
             Console.WriteLine("PrintSimple:");
             PrintSimple.Main(args);
             Console.WriteLine("PrintDetailed:");

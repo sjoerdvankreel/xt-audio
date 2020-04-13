@@ -1,28 +1,32 @@
 using System;
 
-namespace Xt {
-
-    unsafe class AggregateCallback : StreamCallback {
-
+namespace Xt
+{
+    unsafe class AggregateCallback : StreamCallback
+    {
         private double attenuate = 1.0;
         private double[] aggregateChannel;
 
         internal AggregateCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
-            base("Aggregate", onError, onMessage) {
+            base("Aggregate", onError, onMessage)
+        {
         }
 
-        internal void Init(int maxFrames) {
+        internal void Init(int maxFrames)
+        {
             aggregateChannel = new double[maxFrames];
         }
 
         internal override unsafe void OnCallback(XtFormat format, bool interleaved,
-             bool raw, object input, object output, int frames) {
-
+             bool raw, object input, object output, int frames)
+        {
             Array.Clear(aggregateChannel, 0, frames);
-            for (int f = 0; f < frames; f++) {
+            for (int f = 0; f < frames; f++)
+            {
                 for (int c = 0; c < format.inputs; c++)
                     if (!raw && !interleaved)
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 aggregateChannel[f] += (((((byte[][])input)[c][f]) * 2.0) - 1.0) / byte.MaxValue;
                                 break;
@@ -43,7 +47,8 @@ namespace Xt {
                                 aggregateChannel[f] += ((float[][])input)[c][f];
                                 break;
                         } else if (!raw && interleaved)
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 aggregateChannel[f] += (((((byte[])input)[f * format.inputs + c]) * 2.0) - 1.0) / byte.MaxValue;
                                 break;
@@ -64,7 +69,8 @@ namespace Xt {
                                 aggregateChannel[f] += ((float[])input)[f * format.inputs + c];
                                 break;
                         } else if (raw && !interleaved)
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 aggregateChannel[f] += (((((byte**)(IntPtr)input)[c][f]) * 2.0) - 1.0) / byte.MaxValue;
                                 break;
@@ -85,7 +91,8 @@ namespace Xt {
                                 aggregateChannel[f] += ((float**)(IntPtr)input)[c][f];
                                 break;
                         } else
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 aggregateChannel[f] += (((((byte*)(IntPtr)input)[f * format.inputs + c]) * 2.0) - 1.0) / byte.MaxValue;
                                 break;
@@ -110,7 +117,8 @@ namespace Xt {
                 aggregateChannel[f] *= attenuate;
                 for (int c = 0; c < format.outputs; c++)
                     if (!raw && !interleaved)
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte[][])output)[c][f] = (byte)(((aggregateChannel[f] + 1.0) * 0.5) * byte.MaxValue);
                                 break;
@@ -130,7 +138,8 @@ namespace Xt {
                                 ((float[][])output)[c][f] = (float)aggregateChannel[f];
                                 break;
                         } else if (!raw && interleaved)
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte[])output)[f * format.outputs + c] = (byte)(((aggregateChannel[f] + 1.0) * 0.5) * byte.MaxValue);
                                 break;
@@ -150,7 +159,8 @@ namespace Xt {
                                 ((float[])output)[f * format.outputs + c] = (float)aggregateChannel[f];
                                 break;
                         } else if (raw && !interleaved)
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte**)(IntPtr)output)[c][f] = (byte)(((aggregateChannel[f] + 1.0) * 0.5) * byte.MaxValue);
                                 break;
@@ -170,7 +180,8 @@ namespace Xt {
                                 ((float**)(IntPtr)output)[c][f] = (float)aggregateChannel[f];
                                 break;
                         } else
-                        switch (format.mix.sample) {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte*)(IntPtr)output)[f * format.outputs + c] = (byte)(((aggregateChannel[f] + 1.0) * 0.5) * byte.MaxValue);
                                 break;

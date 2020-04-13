@@ -15,16 +15,17 @@
  */
 using System.Runtime.InteropServices;
 
-namespace Xt {
-
+namespace Xt
+{
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class XtBuffer {
-
+    public sealed class XtBuffer
+    {
         public double min;
         public double max;
         public double current;
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return XtPrint.BufferToString(this);
         }
     }

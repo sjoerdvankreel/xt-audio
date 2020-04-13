@@ -16,19 +16,22 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Xt {
-
-    public sealed class XtStream : IDisposable {
-
-        private static T[][] CreateNonInterleavedBuffer<T>(int channels, int elements) {
+namespace Xt
+{
+    public sealed class XtStream : IDisposable
+    {
+        private static T[][] CreateNonInterleavedBuffer<T>(int channels, int elements)
+        {
             T[][] result = new T[channels][];
             for (int i = 0; i < channels; i++)
                 result[i] = new T[elements];
             return result;
         }
 
-        private static Array CreateNonInterleavedBuffer(XtSample sample, int channels, int frames) {
-            switch (sample) {
+        private static Array CreateNonInterleavedBuffer(XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     return CreateNonInterleavedBuffer<byte>(channels, frames);
                 case XtSample.Int16:
@@ -44,8 +47,10 @@ namespace Xt {
             }
         }
 
-        private static Array CreateInterleavedBuffer(XtSample sample, int channels, int frames) {
-            switch (sample) {
+        private static Array CreateInterleavedBuffer(XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     return new byte[channels * frames];
                 case XtSample.Int16:
@@ -61,8 +66,10 @@ namespace Xt {
             }
         }
 
-        private static void CopyInterleavedBufferFromNative(XtSample sample, IntPtr raw, Array managed, int channels, int frames) {
-            switch (sample) {
+        private static void CopyInterleavedBufferFromNative(XtSample sample, IntPtr raw, Array managed, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     Marshal.Copy(raw, (byte[])managed, 0, frames * channels);
                     break;
@@ -83,8 +90,10 @@ namespace Xt {
             }
         }
 
-        private static void CopyInterleavedBufferToNative(XtSample sample, Array managed, IntPtr raw, int channels, int frames) {
-            switch (sample) {
+        private static void CopyInterleavedBufferToNative(XtSample sample, Array managed, IntPtr raw, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     Marshal.Copy((byte[])managed, 0, raw, frames * channels);
                     break;
@@ -105,9 +114,11 @@ namespace Xt {
             }
         }
 
-        private static unsafe void CopyNonInterleavedBufferFromNative(XtSample sample, IntPtr raw, Array managed, int channels, int frames) {
+        private static unsafe void CopyNonInterleavedBufferFromNative(XtSample sample, IntPtr raw, Array managed, int channels, int frames)
+        {
             void** data = (void**)raw.ToPointer();
-            switch (sample) {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     for (int i = 0; i < channels; i++)
                         Marshal.Copy(new IntPtr(data[i]), ((byte[][])managed)[i], 0, frames);
@@ -133,9 +144,11 @@ namespace Xt {
             }
         }
 
-        private static unsafe void CopyNonInterleavedBufferToNative(XtSample sample, Array managed, IntPtr raw, int channels, int frames) {
+        private static unsafe void CopyNonInterleavedBufferToNative(XtSample sample, Array managed, IntPtr raw, int channels, int frames)
+        {
             void** data = (void**)raw.ToPointer();
-            switch (sample) {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     for (int i = 0; i < channels; i++)
                         Marshal.Copy(((byte[][])managed)[i], 0, new IntPtr(data[i]), frames);
@@ -179,7 +192,8 @@ namespace Xt {
         private Array inputNonInterleaved;
         private Array outputNonInterleaved;
 
-        internal XtStream(bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
+        internal XtStream(bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
+        {
             this.raw = raw;
             this.user = user;
             this.xRunCallback = xRunCallback;
@@ -189,7 +203,8 @@ namespace Xt {
             Delegate streamCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
                 ? (Delegate)win32StreamCallback : linuxStreamCallback;
             streamCallbackPtr = Marshal.GetFunctionPointerForDelegate(streamCallbackDelegate);
-            if (xRunCallback != null) {
+            if (xRunCallback != null)
+            {
                 this.win32XRunCallback = new XtNative.XRunCallbackWin32(XRunCallback);
                 this.linuxXRunCallback = new XtNative.XRunCallbackLinux(XRunCallback);
                 Delegate xRunCallbackDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT
@@ -198,68 +213,84 @@ namespace Xt {
             }
         }
 
-        public bool IsRaw() {
+        public bool IsRaw()
+        {
             return raw;
         }
 
-        public XtSystem GetSystem() {
+        public XtSystem GetSystem()
+        {
             return XtNative.XtStreamGetSystem(s);
         }
 
-        public bool IsInterleaved() {
+        public bool IsInterleaved()
+        {
             return XtNative.XtStreamIsInterleaved(s);
         }
 
-        public void Stop() {
+        public void Stop()
+        {
             XtNative.HandleError(XtNative.XtStreamStop(s));
         }
 
-        public void Start() {
+        public void Start()
+        {
             XtNative.HandleError(XtNative.XtStreamStart(s));
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             if (s != IntPtr.Zero)
                 XtNative.XtStreamDestroy(s);
             s = IntPtr.Zero;
         }
 
-        public int GetFrames() {
+        public int GetFrames()
+        {
             int frames;
             XtNative.HandleError(XtNative.XtStreamGetFrames(s, out frames));
             return frames;
         }
 
-        public XtLatency GetLatency() {
+        public XtLatency GetLatency()
+        {
             XtLatency latency = new XtLatency();
             XtNative.HandleError(XtNative.XtStreamGetLatency(s, latency));
             return latency;
         }
 
-        public XtFormat GetFormat() {
+        public XtFormat GetFormat()
+        {
             object native = Marshal.PtrToStructure(XtNative.XtStreamGetFormat(s), typeof(XtNative.Format));
             return ((XtNative.Format)native).FromNative();
         }
 
-        internal void Init(IntPtr s) {
+        internal void Init(IntPtr s)
+        {
             this.s = s;
-            if (!IsRaw()) {
+            if (!IsRaw())
+            {
                 int frames = GetFrames();
                 XtFormat format = GetFormat();
-                if (IsInterleaved()) {
+                if (IsInterleaved())
+                {
                     inputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.inputs, frames);
                     outputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.outputs, frames);
-                } else {
+                } else
+                {
                     inputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
                     outputNonInterleaved = CreateNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
                 }
             }
         }
 
-        internal void XRunCallback(int index, IntPtr user) {
-            try {
+        internal void XRunCallback(int index, IntPtr user)
+        {
+            try
+            {
                 xRunCallback(index, this.user);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 if (XtAudio.trace != null)
                     XtAudio.trace(XtLevel.Fatal, string.Format("Exception caught in xrun callback: {0}.", e));
                 Console.WriteLine(e);
@@ -269,8 +300,8 @@ namespace Xt {
         }
 
         internal void StreamCallback(IntPtr stream, IntPtr input, IntPtr output,
-            int frames, double time, ulong position, bool timeValid, ulong error, IntPtr u) {
-
+            int frames, double time, ulong position, bool timeValid, ulong error, IntPtr u)
+        {
             XtFormat format = GetFormat();
             bool interleaved = IsInterleaved();
             object inData = raw ? (object)input : input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
@@ -282,9 +313,11 @@ namespace Xt {
                 else
                     CopyNonInterleavedBufferFromNative(format.mix.sample, input, (Array)inData, format.inputs, frames);
 
-            try {
+            try
+            {
                 streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 if (XtAudio.trace != null)
                     XtAudio.trace(XtLevel.Fatal, string.Format("Exception caught in xrun callback: {0}.", e));
                 Console.WriteLine(e);

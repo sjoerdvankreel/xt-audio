@@ -1,24 +1,27 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Xt {
-
-    static class Utility {
-
+namespace Xt
+{
+    static class Utility
+    {
         [DllImport("libc", EntryPoint = "memcpy")]
         static extern IntPtr MemCpyLinux(IntPtr dest, IntPtr src, IntPtr count);
         [DllImport("msvcrt", EntryPoint = "memcpy")]
         static extern IntPtr MemCpyWin32(IntPtr dest, IntPtr src, IntPtr count);
 
-        internal static void MemCpy(IntPtr dest, IntPtr src, IntPtr count) {
+        internal static void MemCpy(IntPtr dest, IntPtr src, IntPtr count)
+        {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 MemCpyWin32(dest, src, count);
             else
                 MemCpyLinux(dest, src, count);
         }
 
-        internal static Array CreateInterleavedBuffer(XtSample sample, int channels, int frames) {
-            switch (sample) {
+        internal static Array CreateInterleavedBuffer(XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     return new byte[channels * frames];
                 case XtSample.Int16:
@@ -34,8 +37,10 @@ namespace Xt {
             }
         }
 
-        internal static void Copy(IntPtr source, Array target, XtSample sample, int channels, int frames) {
-            switch (sample) {
+        internal static void Copy(IntPtr source, Array target, XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     Marshal.Copy(source, (byte[])target, 0, channels * frames);
                     break;
@@ -56,8 +61,10 @@ namespace Xt {
             }
         }
 
-        internal static void Copy(Array source, IntPtr target, XtSample sample, int channels, int frames) {
-            switch (sample) {
+        internal static void Copy(Array source, IntPtr target, XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     Marshal.Copy((byte[])source, 0, target, channels * frames);
                     break;
@@ -78,8 +85,10 @@ namespace Xt {
             }
         }
 
-        internal static void Interleave(Array source, Array target, XtSample sample, int channels, int frames) {
-            switch (sample) {
+        internal static void Interleave(Array source, Array target, XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     for (int f = 0; f < frames; f++)
                         for (int c = 0; c < channels; c++)
@@ -111,8 +120,10 @@ namespace Xt {
             }
         }
 
-        internal static unsafe void Interleave(IntPtr source, Array target, XtSample sample, int channels, int frames) {
-            switch (sample) {
+        internal static unsafe void Interleave(IntPtr source, Array target, XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     for (int f = 0; f < frames; f++)
                         for (int c = 0; c < channels; c++)
@@ -144,8 +155,10 @@ namespace Xt {
             }
         }
 
-        internal static void Deinterleave(Array source, Array target, XtSample sample, int channels, int frames) {
-            switch (sample) {
+        internal static void Deinterleave(Array source, Array target, XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     for (int f = 0; f < frames; f++)
                         for (int c = 0; c < channels; c++)
@@ -177,8 +190,10 @@ namespace Xt {
             }
         }
 
-        internal static unsafe void Deinterleave(Array source, IntPtr target, XtSample sample, int channels, int frames) {
-            switch (sample) {
+        internal static unsafe void Deinterleave(Array source, IntPtr target, XtSample sample, int channels, int frames)
+        {
+            switch (sample)
+            {
                 case XtSample.UInt8:
                     for (int f = 0; f < frames; f++)
                         for (int c = 0; c < channels; c++)

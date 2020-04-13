@@ -1,15 +1,16 @@
 ﻿using System;
 
-namespace Xt {
-
-    abstract class StreamCallback {
-
+namespace Xt
+{
+    abstract class StreamCallback
+    {
         int processed;
         protected string name;
         protected readonly Action<Func<string>> onError;
         protected readonly Action<Func<string>> onMessage;
 
-        internal StreamCallback(string name, Action<Func<string>> onError, Action<Func<string>> onMessage) {
+        internal StreamCallback(string name, Action<Func<string>> onError, Action<Func<string>> onMessage)
+        {
             this.name = name;
             this.onError = onError;
             this.onMessage = onMessage;
@@ -18,14 +19,16 @@ namespace Xt {
         internal abstract void OnCallback(XtFormat format, bool interleaved,
             bool raw, object input, object output, int frames);
 
-        internal virtual void OnMessage(Func<string> message) {
+        internal virtual void OnMessage(Func<string> message)
+        {
             onMessage.Invoke(message);
         }
 
         internal void OnCallback(XtStream stream, object input, object output, int frames,
-            double time, ulong position, bool timeValid, ulong error, object user) {
-
-            if (error != 0) {
+            double time, ulong position, bool timeValid, ulong error, object user)
+        {
+            if (error != 0)
+            {
                 onError(() => "Stream callback error: " + XtPrint.ErrorToString(error));
                 return;
             }
