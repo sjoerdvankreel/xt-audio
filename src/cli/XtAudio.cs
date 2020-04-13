@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
-
 /* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
@@ -16,6 +13,9 @@ using System.Runtime.InteropServices;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+using System;
+using System.Runtime.InteropServices;
+
 namespace Xt {
 
     public sealed class XtAudio : IDisposable {

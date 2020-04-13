@@ -13,7 +13,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
-
 namespace Xt {
 
     public enum XtCause : int {
