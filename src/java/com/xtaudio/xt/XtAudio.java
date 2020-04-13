@@ -58,11 +58,13 @@ public final class XtAudio implements XtCloseable {
     }
 
     public static XtService getServiceBySetup(XtSetup setup) {
-        return new XtService(XtNative.XtAudioGetServiceBySetup(setup.ordinal()));
+        Pointer service = XtNative.XtAudioGetServiceBySetup(setup.ordinal());
+        return service == Pointer.NULL ? null : new XtService(service);
     }
 
     public static XtService getServiceBySystem(XtSystem system) {
-        return new XtService(XtNative.XtAudioGetServiceBySystem(system.ordinal() + 1));
+        Pointer service = XtNative.XtAudioGetServiceBySystem(system.ordinal() + 1);
+        return service == Pointer.NULL ? null : new XtService(service);
     }
 
     public static XtAttributes getSampleAttributes(XtSample sample) {
