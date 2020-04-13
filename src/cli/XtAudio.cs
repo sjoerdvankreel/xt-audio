@@ -63,11 +63,13 @@ namespace Xt {
         }
 
         public static XtService GetServiceBySetup(XtSetup setup) {
-            return new XtService(XtNative.XtAudioGetServiceBySetup(setup));
+            IntPtr service = XtNative.XtAudioGetServiceBySetup(setup);
+            return service == IntPtr.Zero? null: new XtService(service);
         }
 
         public static XtService GetServiceBySystem(XtSystem system) {
-            return new XtService(XtNative.XtAudioGetServiceBySystem(system));
+            IntPtr service = XtNative.XtAudioGetServiceBySystem(system);
+            return service == IntPtr.Zero? null: new XtService(service);
         }
 
         public static XtAttributes GetSampleAttributes(XtSample sample) {
