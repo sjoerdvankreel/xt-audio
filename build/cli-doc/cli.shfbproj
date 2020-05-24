@@ -13,12 +13,12 @@
     <RootNamespace>Documentation</RootNamespace>
     <Name>Documentation</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
-    <OutputPath>..\dist\doc\cli\</OutputPath>
+    <FrameworkVersion>.NET Framework 4.6.1</FrameworkVersion>
+    <OutputPath>..\..\dist\doc\cli\</OutputPath>
     <HtmlHelpName>XT-Audio</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\scratch\cli\Release\xt-cli.dll" xmlns="" />
+      <DocumentationSource sourceFile="..\..\scratch\cli\Release\netstandard2.0\xt-cli.dll" xmlns="" />
     </DocumentationSources>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
