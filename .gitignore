@@ -4,6 +4,11 @@ temp/**
 scratch/**
 build/*.sdf
 build/.vs/**
-build/obj/**
 build/*.user
 build/*.opensdf
+build/cli/obj/**
+build/cli/*.user
+build/cli-gui/obj/**
+build/cli-gui/*.user
+build/cli-sample/obj/**
+build/cli-sample/*.user
