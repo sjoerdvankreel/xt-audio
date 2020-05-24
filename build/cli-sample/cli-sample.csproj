@@ -6,7 +6,7 @@
     <StartupObject>Xt.Sample</StartupObject>   
     <AssemblyName>xt-cli-sample</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
     <OutputPath>..\..\scratch\cli-sample\$(Configuration)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
