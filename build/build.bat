@@ -136,44 +136,60 @@ REM build cli projects.
 for %%C in (debug release) do (
   msbuild cli.sln /p:Configuration=%%C
   if !errorlevel! neq 0 exit /b !errorlevel!
-  if not exist ..\scratch\cli\%%C\win32-x86 mkdir ..\scratch\cli\%%C\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli\%%C\win32-x86
-  if not exist ..\scratch\cli\%%C\win32-x64 mkdir ..\scratch\cli\%%C\win32-x64
-  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli\%%C\win32-x64
-  if not exist ..\scratch\cli-gui\%%C\win32-x86 mkdir ..\scratch\cli-gui\%%C\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-gui\%%C\win32-x86
-  if not exist ..\scratch\cli-gui\%%C\win32-x64 mkdir ..\scratch\cli-gui\%%C\win32-x64
-  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-gui\%%C\win32-x64
-  if not exist ..\scratch\cli-sample\%%C\win32-x86 mkdir ..\scratch\cli-sample\%%C\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-sample\%%C\win32-x86
-  if not exist ..\scratch\cli-sample\%%C\win32-x64 mkdir ..\scratch\cli-sample\%%C\win32-x64
-  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-sample\%%C\win32-x64
-  if not exist ..\temp\cli-xt-%%C (mkdir ..\temp\cli-xt-%%C)
-  xcopy /y /s ..\scratch\cli\%%C ..\temp\cli-xt-%%C
-  if not exist ..\temp\cli-gui-%%C (mkdir ..\temp\cli-gui-%%C)
-  xcopy /y /s ..\scratch\cli-gui\%%C ..\temp\cli-gui-%%C
-  if not exist ..\temp\cli-gui32-%%C (mkdir ..\temp\cli-gui32-%%C)
-  xcopy /y /s ..\scratch\cli-gui\%%C ..\temp\cli-gui32-%%C
-  corflags ..\temp\cli-gui32-%%C\xt-cli-gui.exe /32bitpref+
-  copy ..\scratch\cli\%%C\xt-cli.dll.config ..\scratch\cli-gui\%%C\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\xt-cli.dll.config ..\temp\cli-gui-%%C\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\xt-cli.dll.config ..\temp\cli-gui32-%%C\xt-cli.dll.config
-  if not exist ..\temp\cli-sample-%%C (mkdir ..\temp\cli-sample-%%C)
-  xcopy /y /s ..\scratch\cli-sample\%%C ..\temp\cli-sample-%%C
-  if not exist ..\temp\cli-sample32-%%C (mkdir ..\temp\cli-sample32-%%C)
-  xcopy /y /s ..\scratch\cli-sample\%%C ..\temp\cli-sample32-%%C
-  corflags ..\temp\cli-sample32-%%C\xt-cli-sample.exe /32bitpref+
+  if not exist ..\scratch\cli\%%C\netstandard2.0\win32-x86 mkdir ..\scratch\cli\%%C\netstandard2.0\win32-x86
+  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli\%%C\netstandard2.0\win32-x86
+  if not exist ..\scratch\cli\%%C\netstandard2.0\win32-x64 mkdir ..\scratch\cli\%%C\netstandard2.0\win32-x64
+  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli\%%C\netstandard2.0\win32-x64
+  if not exist ..\scratch\cli-gui\%%C\net48\win32-x86 mkdir ..\scratch\cli-gui\%%C\net48\win32-x86
+  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-gui\%%C\net48\win32-x86
+  if not exist ..\scratch\cli-gui\%%C\net48\win32-x64 mkdir ..\scratch\cli-gui\%%C\net48\win32-x64
+  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-gui\%%C\net48\win32-x64
+  if not exist ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x86 mkdir ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x86
+  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x86
+  if not exist ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x64 mkdir ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x64
+  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x64
+  if not exist ..\scratch\cli-sample\%%C\net48\win32-x86 mkdir ..\scratch\cli-sample\%%C\net48\win32-x86
+  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-sample\%%C\net48\win32-x86
+  if not exist ..\scratch\cli-sample\%%C\net48\win32-x64 mkdir ..\scratch\cli-sample\%%C\net48\win32-x64
+  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-sample\%%C\net48\win32-x64
+  if not exist ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x86 mkdir ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x86
+  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x86
+  if not exist ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x64 mkdir ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x64
+  copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x64
+  if not exist ..\temp\cli-xt-%%C\netstandard2.0 (mkdir ..\temp\cli-xt-%%C\netstandard2.0)
+  xcopy /y /s ..\scratch\cli\%%C\netstandard2.0 ..\temp\cli-xt-%%C\netstandard2.0
+  if not exist ..\temp\cli-gui-%%C\net48 (mkdir ..\temp\cli-gui-%%C\net48)
+  xcopy /y /s ..\scratch\cli-gui\%%C\net48 ..\temp\cli-gui-%%C\net48
+  if not exist ..\temp\cli-gui-%%C\netcoreapp3.1 (mkdir ..\temp\cli-gui-%%C\netcoreapp3.1)
+  xcopy /y /s ..\scratch\cli-gui\%%C\netcoreapp3.1 ..\temp\cli-gui-%%C\netcoreapp3.1
+  if not exist ..\temp\cli-gui32-%%C\net48 (mkdir ..\temp\cli-gui32-%%C\net48)
+  xcopy /y /s ..\scratch\cli-gui\%%C\net48 ..\temp\cli-gui32-%%C\net48
+  corflags ..\temp\cli-gui32-%%C\net48\xt-cli-gui.exe /32bitpref+
+  copy ..\scratch\cli\%%C\netstandard2.0\xt-cli.dll.config ..\scratch\cli-gui\%%C\net48\xt-cli.dll.config
+  copy ..\scratch\cli\%%C\netstandard2.0\xt-cli.dll.config ..\temp\cli-gui-%%C\net48\xt-cli.dll.config
+  copy ..\scratch\cli\%%C\netstandard2.0\xt-cli.dll.config ..\temp\cli-gui32-%%C\net48\xt-cli.dll.config
+  if not exist ..\temp\cli-sample-%%C\net48 (mkdir ..\temp\cli-sample-%%C\net48)
+  xcopy /y /s ..\scratch\cli-sample\%%C\net48 ..\temp\cli-sample-%%C\net48
+  if not exist ..\temp\cli-sample-%%C\netcoreapp3.1 (mkdir ..\temp\cli-sample-%%C\netcoreapp3.1)
+  xcopy /y /s ..\scratch\cli-sample\%%C\netcoreapp3.1 ..\temp\cli-sample-%%C\netcoreapp3.1
+  if not exist ..\temp\cli-sample32-%%C\net48 (mkdir ..\temp\cli-sample32-%%C\net48)
+  xcopy /y /s ..\scratch\cli-sample\%%C\net48 ..\temp\cli-sample32-%%C\net48
+  corflags ..\temp\cli-sample32-%%C\net48\xt-cli-sample.exe /32bitpref+
   if !errorlevel! neq 0 exit /b !errorlevel!
-  copy ..\scratch\cli\%%C\xt-cli.dll.config ..\scratch\cli-sample\%%C\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\xt-cli.dll.config ..\temp\cli-sample-%%C\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\xt-cli.dll.config ..\temp\cli-sample32-%%C\xt-cli.dll.config
+  copy ..\scratch\cli\%%C\netstandard2.0\xt-cli.dll.config ..\scratch\cli-sample\%%C\net48\xt-cli.dll.config
+  copy ..\scratch\cli\%%C\netstandard2.0\xt-cli.dll.config ..\temp\cli-sample-%%C\net48\xt-cli.dll.config
+  copy ..\scratch\cli\%%C\netstandard2.0\xt-cli.dll.config ..\temp\cli-sample32-%%C\net48\xt-cli.dll.config
 )
-if not exist ..\dist\cli-xt (mkdir ..\dist\cli-xt)
-if not exist ..\dist\cli-gui (mkdir ..\dist\cli-gui)
-if not exist ..\dist\cli-sample (mkdir ..\dist\cli-sample)
-xcopy /y /s ..\temp\cli-xt-release ..\dist\cli-xt
-xcopy /y /s ..\temp\cli-gui-release ..\dist\cli-gui
-xcopy /y /s ..\temp\cli-sample-release ..\dist\cli-sample
+if not exist ..\dist\cli-xt\netstandard2.0 (mkdir ..\dist\cli-xt\netstandard2.0)
+if not exist ..\dist\cli-gui\net48 (mkdir ..\dist\cli-gui\net48)
+if not exist ..\dist\cli-gui\netcoreapp3.1 (mkdir ..\dist\cli-gui\netcoreapp3.1)
+if not exist ..\dist\cli-sample\net48 (mkdir ..\dist\cli-sample\net48)
+if not exist ..\dist\cli-sample\netcoreapp3.1 (mkdir ..\dist\cli-sample\netcoreapp3.1)
+xcopy /y /s ..\temp\cli-xt-release\netstandard2.0 ..\dist\cli-xt\netstandard2.0
+xcopy /y /s ..\temp\cli-gui-release\net48 ..\dist\cli-gui\net48
+xcopy /y /s ..\temp\cli-gui-release\netcoreapp3.1 ..\dist\cli-gui\netcoreapp3.1
+xcopy /y /s ..\temp\cli-sample-release\net48 ..\dist\cli-sample\net48
+xcopy /y /s ..\temp\cli-sample-release\netcoreapp3.1 ..\dist\cli-sample\netcoreapp3.1
 
 REM build java projects.
 cd java
@@ -226,7 +242,7 @@ if not exist ..\dist\java-sample (mkdir ..\dist\java-sample)
 xcopy /y /s ..\temp\java-sample\*.* ..\dist\java-sample\*.*
 
 REM build documentation.
-msbuild cli.shfbproj
+msbuild cli-doc\cli.shfbproj
 doxygen cpp.doxyfile
 doxygen core.doxyfile
 javadoc -Xmaxerrs 1 -Xmaxwarns 1 -sourcepath ../src/java -d ../dist/doc/java com.xtaudio.xt
