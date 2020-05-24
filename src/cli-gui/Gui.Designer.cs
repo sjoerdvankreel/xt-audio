@@ -296,6 +296,16 @@
             label20.TabIndex = 64;
             label20.Text = "Interleaved: ";
             // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label21.Location = new System.Drawing.Point(447, 374);
+            label21.Name = "label21";
+            label21.Size = new System.Drawing.Size(305, 13);
+            label21.TabIndex = 75;
+            label21.Text = "Stream aggregation secondary input/output devices:";
+            // 
             // messages
             // 
             this.messages.Location = new System.Drawing.Point(447, 12);
@@ -615,7 +625,7 @@
             // x64
             // 
             this.x64.AutoSize = true;
-            this.x64.Location = new System.Drawing.Point(223, 3);
+            this.x64.Location = new System.Drawing.Point(233, 3);
             this.x64.Name = "x64";
             this.x64.Size = new System.Drawing.Size(57, 13);
             this.x64.TabIndex = 62;
@@ -624,7 +634,7 @@
             // debug
             // 
             this.debug.AutoSize = true;
-            this.debug.Location = new System.Drawing.Point(147, 3);
+            this.debug.Location = new System.Drawing.Point(157, 3);
             this.debug.Name = "debug";
             this.debug.Size = new System.Drawing.Size(70, 13);
             this.debug.TabIndex = 61;
@@ -698,16 +708,6 @@
             this.secondaryOutput.Name = "secondaryOutput";
             this.secondaryOutput.Size = new System.Drawing.Size(325, 21);
             this.secondaryOutput.TabIndex = 74;
-            // 
-            // label21
-            // 
-            label21.AutoSize = true;
-            label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            label21.Location = new System.Drawing.Point(447, 374);
-            label21.Name = "label21";
-            label21.Size = new System.Drawing.Size(305, 13);
-            label21.TabIndex = 75;
-            label21.Text = "Stream aggregation secondary input/output devices:";
             // 
             // XtGui
             // 
