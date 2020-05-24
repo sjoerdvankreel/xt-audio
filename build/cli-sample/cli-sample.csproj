@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Xt</RootNamespace>
+    <StartupObject>Xt.Sample</StartupObject>   
+    <AssemblyName>xt-cli-sample</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <OutputPath>..\..\scratch\cli-sample\$(Configuration)</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\cli-sample\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cli\cli.csproj" />
+  </ItemGroup>
+</Project>

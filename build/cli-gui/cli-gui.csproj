@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Xt</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>xt-cli-gui</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFrameworks>net461;netcoreapp3.0</TargetFrameworks>
+    <OutputPath>..\..\scratch\cli-gui\$(Configuration)</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\cli-gui\*.cs" />
+    <EmbeddedResource Include="..\..\src\cli-gui\Gui.resx">
+      <Link>Gui.cs</Link>
+      <DependentUpon>Gui.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cli\cli.csproj" />
+  </ItemGroup>
+</Project>
