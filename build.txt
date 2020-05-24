@@ -2,7 +2,7 @@ Building XT-Audio
 
 * Windows dependencies: msvcrt
 * Windows dependencies: asmjit (source, only when building with ASIO support)
-* Windows dependencies: steinberg asio sdk (source, only when building with ASIO support)
+* Windows dependencies: steinberg asio sdk 2.3 (source, only when building with ASIO support)
 
 * Linux dependencies: libasound-dev (only when building with ALSA support)
 * Linux dependencies: libjack-jackd2-dev (only when building with JACK support)

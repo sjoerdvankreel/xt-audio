@@ -1,2 +1,6 @@
-TODO interesting stuff about roadmap goes here.
-Support java 9 modules?
+Must have:
+* Don't owe you a thang.
+* Always open to suggestions.
+
+Nice to have:
+* Java module support.
