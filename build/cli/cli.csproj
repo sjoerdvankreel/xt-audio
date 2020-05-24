@@ -10,6 +10,10 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <OutputPath>..\..\scratch\cli\$(Configuration)</OutputPath>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
     <ItemGroup>
         <Compile Include="..\..\src\cli\*.cs" />
         <None Include="..\..\src\cli\App.config">
