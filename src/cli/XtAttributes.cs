@@ -24,9 +24,6 @@ namespace Xt
         public bool isFloat;
         public bool isSigned;
 
-        public override string ToString()
-        {
-            return XtPrint.AttributesToString(this);
-        }
+        public override string ToString() => XtPrint.AttributesToString(this);
     }
 }

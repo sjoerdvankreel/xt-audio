@@ -213,30 +213,11 @@ namespace Xt
             }
         }
 
-        public bool IsRaw()
-        {
-            return raw;
-        }
-
-        public XtSystem GetSystem()
-        {
-            return XtNative.XtStreamGetSystem(s);
-        }
-
-        public bool IsInterleaved()
-        {
-            return XtNative.XtStreamIsInterleaved(s);
-        }
-
-        public void Stop()
-        {
-            XtNative.HandleError(XtNative.XtStreamStop(s));
-        }
-
-        public void Start()
-        {
-            XtNative.HandleError(XtNative.XtStreamStart(s));
-        }
+        public bool IsRaw() => raw;
+        public XtSystem GetSystem() => XtNative.XtStreamGetSystem(s);
+        public bool IsInterleaved() => XtNative.XtStreamIsInterleaved(s);
+        public void Stop() => XtNative.HandleError(XtNative.XtStreamStop(s));
+        public void Start() => XtNative.HandleError(XtNative.XtStreamStart(s));
 
         public void Dispose()
         {

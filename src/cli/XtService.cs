@@ -22,31 +22,12 @@ namespace Xt
     public sealed class XtService
     {
         private readonly IntPtr s;
+        internal XtService(IntPtr s) => this.s = s;
 
-        internal XtService(IntPtr s)
-        {
-            this.s = s;
-        }
-
-        public override string ToString()
-        {
-            return GetName();
-        }
-
-        public XtSystem GetSystem()
-        {
-            return XtNative.XtServiceGetSystem(s);
-        }
-
-        public string GetName()
-        {
-            return XtNative.StringFromUtf8(XtNative.XtServiceGetName(s));
-        }
-
-        public XtCapabilities GetCapabilities()
-        {
-            return XtNative.XtServiceGetCapabilities(s);
-        }
+        public override string ToString() => GetName();
+        public XtSystem GetSystem() => XtNative.XtServiceGetSystem(s);
+        public XtCapabilities GetCapabilities() => XtNative.XtServiceGetCapabilities(s);
+        public string GetName() => XtNative.StringFromUtf8(XtNative.XtServiceGetName(s));
 
         public int GetDeviceCount()
         {

@@ -36,9 +36,6 @@ namespace Xt
             this.outMask = outMask;
         }
 
-        public override string ToString()
-        {
-            return XtPrint.FormatToString(this);
-        }
+        public override string ToString() => XtPrint.FormatToString(this);
     }
 }

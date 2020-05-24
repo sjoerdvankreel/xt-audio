@@ -33,9 +33,6 @@ namespace Xt
             this.sample = sample;
         }
 
-        public override string ToString()
-        {
-            return XtPrint.MixToString(this);
-        }
+        public override string ToString() => XtPrint.MixToString(this);
     }
 }

@@ -43,30 +43,11 @@ namespace Xt
                 XtNative.XtAudioInit(buffer.ptr, window, tracePtr, fatalPtr);
         }
 
-        public void Dispose()
-        {
-            XtNative.XtAudioTerminate();
-        }
-
-        public static bool IsWin32()
-        {
-            return XtNative.XtAudioIsWin32();
-        }
-
-        public static string GetVersion()
-        {
-            return XtNative.StringFromUtf8(XtNative.XtAudioGetVersion());
-        }
-
-        public static int GetServiceCount()
-        {
-            return XtNative.XtAudioGetServiceCount();
-        }
-
-        public static XtService GetServiceByIndex(int index)
-        {
-            return new XtService(XtNative.XtAudioGetServiceByIndex(index));
-        }
+        public void Dispose() => XtNative.XtAudioTerminate();
+        public static bool IsWin32() => XtNative.XtAudioIsWin32();
+        public static int GetServiceCount() => XtNative.XtAudioGetServiceCount();
+        public static string GetVersion() => XtNative.StringFromUtf8(XtNative.XtAudioGetVersion());
+        public static XtService GetServiceByIndex(int index) => new XtService(XtNative.XtAudioGetServiceByIndex(index));
 
         public static XtService GetServiceBySetup(XtSetup setup)
         {

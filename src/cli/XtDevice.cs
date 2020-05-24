@@ -21,26 +21,11 @@ namespace Xt
     public sealed class XtDevice : IDisposable
     {
         internal IntPtr d;
+        internal XtDevice(IntPtr d) => this.d = d;
 
-        internal XtDevice(IntPtr d)
-        {
-            this.d = d;
-        }
-
-        public override string ToString()
-        {
-            return GetName();
-        }
-
-        public XtSystem GetSystem()
-        {
-            return XtNative.XtDeviceGetSystem(d);
-        }
-
-        public void ShowControlPanel()
-        {
-            XtNative.HandleError(XtNative.XtDeviceShowControlPanel(d));
-        }
+        public override string ToString() => GetName();
+        public XtSystem GetSystem() => XtNative.XtDeviceGetSystem(d);
+        public void ShowControlPanel() => XtNative.HandleError(XtNative.XtDeviceShowControlPanel(d));
 
         public void Dispose()
         {

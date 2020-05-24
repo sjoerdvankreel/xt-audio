@@ -23,9 +23,6 @@ namespace Xt
         public double input;
         public double output;
 
-        public override string ToString()
-        {
-            return XtPrint.LatencyToString(this);
-        }
+        public override string ToString() => XtPrint.LatencyToString(this);
     }
 }

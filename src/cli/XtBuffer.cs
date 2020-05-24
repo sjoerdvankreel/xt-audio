@@ -24,9 +24,6 @@ namespace Xt
         public double max;
         public double current;
 
-        public override string ToString()
-        {
-            return XtPrint.BufferToString(this);
-        }
+        public override string ToString() => XtPrint.BufferToString(this);
     }
 }
