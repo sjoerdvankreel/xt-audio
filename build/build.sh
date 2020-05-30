@@ -125,16 +125,12 @@ do
   cp ../temp/core-xt-linux-$XT_ARCH-${confs[$C]}-shared/libxt-core.so ../temp/cli-gui-${confs[$C]}/netcoreapp3.1/linux-$XT_ARCH
   mkdir -p ../temp/cli-gui32-${confs[$C]}/net48/linux-$XT_ARCH
   cp ../temp/core-xt-linux-$XT_ARCH-${confs[$C]}-shared/libxt-core.so ../temp/cli-gui32-${confs[$C]}/net48/linux-$XT_ARCH
-  mkdir -p ../temp/cli-gui32-${confs[$C]}/netcoreapp3.1/linux-$XT_ARCH
-  cp ../temp/core-xt-linux-$XT_ARCH-${confs[$C]}-shared/libxt-core.so ../temp/cli-gui32-${confs[$C]}/netcoreapp3.1/linux-$XT_ARCH
   mkdir -p ../temp/cli-sample-${confs[$C]}/net48/linux-$XT_ARCH
   cp ../temp/core-xt-linux-$XT_ARCH-${confs[$C]}-shared/libxt-core.so ../temp/cli-sample-${confs[$C]}/net48/linux-$XT_ARCH
   mkdir -p ../temp/cli-sample-${confs[$C]}/netcoreapp3.1/linux-$XT_ARCH
   cp ../temp/core-xt-linux-$XT_ARCH-${confs[$C]}-shared/libxt-core.so ../temp/cli-sample-${confs[$C]}/netcoreapp3.1/linux-$XT_ARCH
   mkdir -p ../temp/cli-sample32-${confs[$C]}/net48/linux-$XT_ARCH
   cp ../temp/core-xt-linux-$XT_ARCH-${confs[$C]}-shared/libxt-core.so ../temp/cli-sample32-${confs[$C]}/net48/linux-$XT_ARCH
-  mkdir -p ../temp/cli-sample32-${confs[$C]}/netcoreapp3.1/linux-$XT_ARCH
-  cp ../temp/core-xt-linux-$XT_ARCH-${confs[$C]}-shared/libxt-core.so ../temp/cli-sample32-${confs[$C]}/netcoreapp3.1/linux-$XT_ARCH
 done
 mkdir -p ../dist/cli-xt/netstandard2.0/linux-$XT_ARCH
 cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../dist/cli-xt/netstandard2.0/linux-$XT_ARCH

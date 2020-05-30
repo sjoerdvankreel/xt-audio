@@ -1,6 +1,6 @@
 * The core library (C interface) is provided as both static and 
 dynamic libraries for x86 and x64 windows and linux. Compile with
-a recent C++ compiler (currently gcc 7 and visual studio 2019).
+a recent C++ compiler (currently gcc 9 and visual studio 2019).
 
 * C++ bindings are only distributed as statically linked libraries. 
 Compile from source if you need dynamic libraries.
