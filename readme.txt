@@ -19,7 +19,6 @@ mono for .NET framework. Linux .NET Core runtime (dotnet-runtime)
 does not support WinForms/WPF so no GUI apps.
 
 * .NET Core on linux (dotnet-runtime) currently only supports x64.
-.NET Core binaries can still be used on x86 linux using mono.
 
 * The distributed binaries are linked with all supported backends. 
 Backends may be disabled at compile time if compiled from source, 
