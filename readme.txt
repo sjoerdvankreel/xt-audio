@@ -9,7 +9,7 @@ Compile from source if you need dynamic libraries.
 with any java version >= 8.
 
 * .NET library (xt-cli) is currently on netstandard2.0, to allow 
-both .NET framework and .NET core clients on both windows and linux.
+both .NET framework and .NET core clients on windows and linux.
 
 * .NET gui and sample apps are compiled for .NET core 3.1 and .NET 
 framework 4.8.
