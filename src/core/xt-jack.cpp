@@ -50,7 +50,7 @@ struct XtJackClient {
   { client = rhs.client; rhs.client = nullptr; return *this; }
 
   ~XtJackClient() 
-  { XT_ASSERT(client == nullptr || jack_client_close(client) == 0); }
+  { if(client != nullptr) jack_client_close(client); }
 };
 
 struct XtJackPort {
@@ -70,7 +70,7 @@ struct XtJackPort {
   { XT_ASSERT(client != nullptr); XT_ASSERT(port != nullptr); }
 
   ~XtJackPort() 
-  { XT_ASSERT(port == nullptr || jack_port_unregister(client, port) == 0); }
+  { if(port != nullptr) jack_port_unregister(client, port); }
 
   XtJackPort& operator=(XtJackPort&& rhs)  
   { client = rhs.client; port = rhs.port; connectTo = rhs.connectTo; rhs.port = nullptr; return *this; }
@@ -89,7 +89,7 @@ struct XtJackConnection {
   { rhs.source = nullptr; }
 
   ~XtJackConnection()
-  { XT_ASSERT(source == nullptr || jack_disconnect(client, source, dest) == 0); }
+  { if(source != nullptr) jack_disconnect(client, source, dest); }
 
   XtJackConnection(jack_client_t* client, const char* source, const char* dest):
   dest(dest), source(source), client(client)
@@ -177,6 +177,7 @@ static XtFault CreatePorts(jack_client_t* client, uint32_t channels, uint64_t ma
 
 static int XRunCallback(void* arg) {
   static_cast<JackStream*>(arg)->ProcessXRun();
+  return 0;
 }
 
 static int ProcessCallback(jack_nframes_t frames, void* arg) {
