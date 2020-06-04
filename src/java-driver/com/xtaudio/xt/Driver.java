@@ -370,7 +370,7 @@ public class Driver {
             else
                 for (int f = 0; f < frames; f++)
                     for (int c = 0; c < format.inputs; c++)
-                        writeRecordingRaw(ctx, ((Pointer) input).getPointer(c * Pointer.SIZE), f * sampleSize, sampleSize);
+                        writeRecordingRaw(ctx, ((Pointer) input).getPointer(c * Native.POINTER_SIZE), f * sampleSize, sampleSize);
         else if (format.inputs != 0)
             if (!raw)
                 if (interleaved)
@@ -383,8 +383,8 @@ public class Driver {
             else
                 for (int c = 0; c < format.inputs; c++)
                     memcpy(
-                            ((Pointer) output).getPointer(c * Pointer.SIZE),
-                            ((Pointer) input).getPointer(c * Pointer.SIZE),
+                            ((Pointer) output).getPointer(c * Native.POINTER_SIZE),
+                            ((Pointer) input).getPointer(c * Native.POINTER_SIZE),
                             new Pointer(frames * sampleSize));
         else
             for (int f = 0; f < frames; f++) {
@@ -404,7 +404,7 @@ public class Driver {
                         outputSineRaw((Pointer) output, format.mix.sample, f * outputs + c, value);
                 else
                     for (int c = 0; c < format.outputs; c++)
-                        outputSineRaw(((Pointer) output).getPointer(c * Pointer.SIZE), format.mix.sample, f, value);
+                        outputSineRaw(((Pointer) output).getPointer(c * Native.POINTER_SIZE), format.mix.sample, f, value);
             }
 
         if (ctx.start < 0.0)

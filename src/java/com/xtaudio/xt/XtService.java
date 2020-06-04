@@ -70,10 +70,10 @@ public final class XtService {
         PointerByReference str = new PointerByReference();
         XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
         XtNative.Mix nativeMix = XtNative.Mix.toNative(mix);
-        Pointer ds = new Memory(count * Pointer.SIZE);
+        Pointer ds = new Memory(count * Native.POINTER_SIZE);
         Pointer cs = new Memory(count * Native.getNativeSize(XtNative.ChannelsByValue.class));
         for (int d = 0; d < count; d++) {
-            ds.setPointer(d * Pointer.SIZE, devices[d].d);
+            ds.setPointer(d * Native.POINTER_SIZE, devices[d].d);
             channels[d].doUseMemory(cs, d * Native.getNativeSize(XtNative.ChannelsByValue.class));
             channels[d].write();
         }

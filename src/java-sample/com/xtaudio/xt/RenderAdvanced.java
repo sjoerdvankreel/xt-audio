@@ -1,5 +1,6 @@
 package com.xtaudio.xt;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
 public class RenderAdvanced {
@@ -66,7 +67,7 @@ public class RenderAdvanced {
         for (int f = 0; f < frames; f++) {
             float sine = nextSine(format.mix.rate);
             for (int c = 0; c < format.outputs; c++)
-                ((Pointer) output).getPointer(c * Pointer.SIZE).setFloat(f * sampleSize, sine);
+                ((Pointer) output).getPointer(c * Native.POINTER_SIZE).setFloat(f * sampleSize, sine);
         }
     }
 

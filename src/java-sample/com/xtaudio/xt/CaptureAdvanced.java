@@ -1,5 +1,6 @@
 package com.xtaudio.xt;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import java.io.FileOutputStream;
 
@@ -71,7 +72,7 @@ public class CaptureAdvanced {
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
             for (int f = 0; f < frames; f++)
                 for (int c = 0; c < channels; c++) {
-                    ((Pointer) input).getPointer(c * Pointer.SIZE).read(f * sampleSize, ctx.intermediate, 0, sampleSize);
+                    ((Pointer) input).getPointer(c * Native.POINTER_SIZE).read(f * sampleSize, ctx.intermediate, 0, sampleSize);
                     // Don't do this.
                     ctx.out.write(ctx.intermediate, 0, sampleSize);
                 }

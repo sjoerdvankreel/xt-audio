@@ -15,6 +15,7 @@
  */
 package com.xtaudio.xt;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import java.lang.reflect.Array;
@@ -103,23 +104,23 @@ public final class XtStream implements XtCloseable {
         switch (sample) {
             case UINT8:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((byte[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((byte[][]) managed)[i], 0, frames);
                 break;
             case INT16:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((short[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((short[][]) managed)[i], 0, frames);
                 break;
             case INT24:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((byte[][]) managed)[i], 0, frames * 3);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((byte[][]) managed)[i], 0, frames * 3);
                 break;
             case INT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((int[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((int[][]) managed)[i], 0, frames);
                 break;
             case FLOAT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((float[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((float[][]) managed)[i], 0, frames);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -130,23 +131,23 @@ public final class XtStream implements XtCloseable {
         switch (sample) {
             case UINT8:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((byte[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((byte[][]) managed)[i], 0, frames);
                 break;
             case INT16:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((short[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((short[][]) managed)[i], 0, frames);
                 break;
             case INT24:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((byte[][]) managed)[i], 0, frames * 3);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((byte[][]) managed)[i], 0, frames * 3);
                 break;
             case INT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((int[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((int[][]) managed)[i], 0, frames);
                 break;
             case FLOAT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((float[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((float[][]) managed)[i], 0, frames);
                 break;
             default:
                 throw new IllegalArgumentException();

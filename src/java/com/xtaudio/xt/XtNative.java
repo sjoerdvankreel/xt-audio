@@ -136,10 +136,10 @@ final class XtNative {
     static void init() {
         if (initialized)
             return;
-        boolean isX64 = Pointer.SIZE == 8;
+        boolean isX64 = Native.POINTER_SIZE == 8;
         System.setProperty("jna.encoding", "UTF-8");
         boolean isWin32 = System.getProperty("os.name").contains("Windows");
-        Map<Object, Object> options = new HashMap<>();
+        Map<String, Object> options = new HashMap<>();
         if (isWin32) {
             options.put(Library.OPTION_FUNCTION_MAPPER, new StdCallFunctionMapper());
             options.put(Library.OPTION_CALLING_CONVENTION, StdCallLibrary.STDCALL_CONVENTION);

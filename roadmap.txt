@@ -1,6 +1,3 @@
 Must have:
 * Don't owe you a thang.
 * Always open to suggestions.
-
-Nice to have:
-* Java module support.
