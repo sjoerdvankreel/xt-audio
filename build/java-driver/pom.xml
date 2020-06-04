@@ -54,7 +54,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.xtaudio.xt.Driver</mainClass>
+                            <mainClass>com.xtaudio.xt.driver.Driver</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -54,7 +54,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.xtaudio.xt.Sample</mainClass>
+                            <mainClass>com.xtaudio.xt.sample.Sample</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

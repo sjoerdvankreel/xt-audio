@@ -140,7 +140,7 @@ final class XtNative {
         System.setProperty("jna.encoding", "UTF-8");
         boolean isWin32 = System.getProperty("os.name").contains("Windows");
         Map<String, Object> options = new HashMap<>();
-        if (isWin32) {
+        if (isWin32 && !isX64) {
             options.put(Library.OPTION_FUNCTION_MAPPER, new StdCallFunctionMapper());
             options.put(Library.OPTION_CALLING_CONVENTION, StdCallLibrary.STDCALL_CONVENTION);
         }

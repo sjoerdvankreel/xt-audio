@@ -1,1 +1,3 @@
 * Update java samples for modules and jna 5.5.
+* Check 32-bit java calling conventions on windows.
+* Check java samples on linux.
