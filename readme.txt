@@ -5,8 +5,8 @@ a recent C++ compiler (currently gcc 9 and visual studio 2019).
 * C++ bindings are only distributed as statically linked libraries. 
 Compile from source if you need dynamic libraries.
 
-* Java bindings are currently on Java 8. They should be compatible
-with any java version >= 8.
+* Java bindings are currently on Java 9. They should be compatible
+with any java version >= 9.
 
 * .NET library (xt-cli) is currently on netstandard2.0, to allow 
 both .NET framework and .NET core clients on windows and linux.
