@@ -1,4 +1,4 @@
-* Update java samples for modules and jna 5.5.
+* Update all samples.
 * Check 32-bit java calling conventions on windows.
 * Check java samples on linux.
-* Handle exceptions in C++ sample.
+* Fix javadoc module not found.
