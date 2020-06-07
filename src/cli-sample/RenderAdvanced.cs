@@ -86,7 +86,7 @@ namespace Xt
                 XtFormat format = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 2, 0);
                 using (XtDevice device = service.OpenDefaultDevice(true))
                 {
-                    if (device == null || device.SupportsFormat(format))
+                    if (device == null || !device.SupportsFormat(format))
                         return;
 
                     XtBuffer buffer = device.GetBuffer(format);
