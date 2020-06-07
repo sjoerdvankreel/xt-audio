@@ -18,7 +18,7 @@ Building XT-Audio
 ** sandcastle helpfile builder
 ** asmjit (library source, optional)
 ** asiosdk (library source, optional)
-** visual studio 2019 or equivalent windows sdk
+** visual studio 2019 or equivalent windows sdk and .net core sdk
 
 * Have an x86 and x64 linux box or vm ready with:
 ** gcc
