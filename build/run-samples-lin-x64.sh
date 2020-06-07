@@ -14,7 +14,7 @@ echo Netfx sample finished.
 read -p "Starting netcore sample (press return to continue)..."
 cd ../dist/cli-sample/netcoreapp3.1
 dotnet xt-cli-sample.dll
-cd ../../build
+cd ../../../build
 echo Netcore sample finished.
 
 read -p "Starting java sample (press return to continue)..."
