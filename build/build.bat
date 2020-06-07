@@ -241,8 +241,14 @@ copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\scratch\java-sample
 if not exist ..\dist\java-sample (mkdir ..\dist\java-sample)
 xcopy /y /s ..\temp\java-sample\*.* ..\dist\java-sample\*.*
 
-REM build documentation.
-msbuild cli-doc\cli.shfbproj
+REM build native documentation.
 doxygen cpp.doxyfile
 doxygen core.doxyfile
-javadoc -Xmaxerrs 1 -Xmaxwarns 1 -sourcepath ../src/java -d ../dist/doc/java com.xtaudio.xt
+
+REM build .NET documentation.
+msbuild cli-doc\cli.shfbproj
+
+REM build java documentation.
+cd java
+call mvn javadoc:javadoc
+cd ..

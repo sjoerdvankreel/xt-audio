@@ -46,6 +46,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <version>3.2.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <sourceFileExcludes>
+                        <sourceFileExclude>**/module-info.java</sourceFileExclude>
+                    </sourceFileExcludes>
+                    <reportOutputDirectory>${basedir}/../../dist/doc/java</reportOutputDirectory>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
