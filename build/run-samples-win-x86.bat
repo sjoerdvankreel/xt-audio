@@ -15,7 +15,7 @@ echo Netfx sample finished.
 
 set /p ok="Starting netcore sample (press return to continue)..."
 cd ../dist/cli-sample/netcoreapp3.1
-xt-cli-sample.exe
+dotnet xt-cli-sample.dll
 cd %build%
 echo Netcore sample finished.
 
