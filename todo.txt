@@ -1,2 +1,5 @@
+* Update samples.
+* Release v1.0.6.
+* Remove driver programs.
 * Figure out JACK support on Ubuntu 20.
 * Query device info without opening the device.
