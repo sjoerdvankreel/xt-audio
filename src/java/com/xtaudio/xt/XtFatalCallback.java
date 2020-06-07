@@ -15,9 +15,9 @@
  */
 package com.xtaudio.xt;
 
-import com.sun.jna.win32.StdCallLibrary;
+import com.sun.jna.Callback;
 
-public interface XtFatalCallback extends StdCallLibrary.StdCallCallback {
+public interface XtFatalCallback extends Callback {
 
     void callback();
 }

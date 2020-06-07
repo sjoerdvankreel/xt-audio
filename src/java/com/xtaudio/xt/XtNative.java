@@ -15,6 +15,7 @@
  */
 package com.xtaudio.xt;
 
+import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -117,17 +118,17 @@ final class XtNative {
     public static class ChannelsByValue extends XtChannels implements Structure.ByValue {
     }
 
-    static interface XRunCallback extends StdCallLibrary.StdCallCallback {
+    static interface XRunCallback extends Callback {
 
         void callback(int index, Pointer user);
     }
 
-    static interface TraceCallback extends StdCallLibrary.StdCallCallback {
+    static interface TraceCallback extends Callback {
 
         void callback(int level, String message);
     }
 
-    static interface StreamCallback extends StdCallLibrary.StdCallCallback {
+    static interface StreamCallback extends Callback {
 
         void callback(Pointer stream, Pointer input, Pointer output, int frames,
                 double time, long position, boolean timeValid, long error, Pointer user);
