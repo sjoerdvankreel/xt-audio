@@ -112,6 +112,7 @@
     which backends are compiled-in, so bindings to other languages stay the same. If support for a specific
     backend is not selected at build-time (either through the build scripts, CMake, or by directly invoking
     the C++ compiler with the appropriate flags), XT-Audio will build without dependencies on that backend.
+    Pre-built binaries are compiled with all supported backends enabled.
     <h2>Build instructions</h2>
     <ul>
       <li>On X86 Linux: cd build && export XT_ARCH=x86 && ./build.sh [DISABLE_PULSE] [DISABLE_ALSA] [DISABLE_JACK] (1)</li>
