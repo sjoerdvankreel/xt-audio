@@ -242,7 +242,9 @@ if not exist ..\dist\java-sample (mkdir ..\dist\java-sample)
 xcopy /y /s ..\temp\java-sample\*.* ..\dist\java-sample\*.*
 
 REM build native documentation.
+if not exist "..\dist\doc\cpp" (mkdir "..\dist\doc\cpp")
 doxygen cpp.doxyfile
+if not exist "..\dist\doc\core" (mkdir "..\dist\doc\core")
 doxygen core.doxyfile
 
 REM build .NET documentation.
