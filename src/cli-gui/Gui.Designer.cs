@@ -87,6 +87,7 @@
             this.outputMaster = new System.Windows.Forms.CheckBox();
             this.secondaryInput = new System.Windows.Forms.ComboBox();
             this.secondaryOutput = new System.Windows.Forms.ComboBox();
+            this.logXRuns = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -709,9 +710,23 @@
             this.secondaryOutput.Size = new System.Drawing.Size(325, 21);
             this.secondaryOutput.TabIndex = 74;
             // 
+            // logXRuns
+            // 
+            this.logXRuns.AutoSize = true;
+            this.logXRuns.Checked = true;
+            this.logXRuns.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.logXRuns.Location = new System.Drawing.Point(687, 452);
+            this.logXRuns.Name = "logXRuns";
+            this.logXRuns.Size = new System.Drawing.Size(72, 17);
+            this.logXRuns.TabIndex = 76;
+            this.logXRuns.Text = "Log xruns";
+            this.logXRuns.ThreeState = true;
+            this.logXRuns.UseVisualStyleBackColor = true;
+            // 
             // XtGui
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.logXRuns);
             this.Controls.Add(label21);
             this.Controls.Add(this.secondaryOutput);
             this.Controls.Add(this.secondaryInput);
@@ -779,5 +794,6 @@
         private System.Windows.Forms.CheckBox outputMaster;
         private System.Windows.Forms.ComboBox secondaryInput;
         private System.Windows.Forms.ComboBox secondaryOutput;
+        private System.Windows.Forms.CheckBox logXRuns;
     }
 }
