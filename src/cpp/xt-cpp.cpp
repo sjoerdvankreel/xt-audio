@@ -307,8 +307,8 @@ std::unique_ptr<Stream> Service::AggregateStream(Device** devices, const Channel
     ds[i] = devices[i]->d;
   auto m = reinterpret_cast<const XtMix*>(&mix);
   auto c = reinterpret_cast<const XtChannels*>(channels);
-  auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
   auto forwardStream = &StreamCallbackForwarder::ForwardStream;
+  auto forwardXRun = xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
   std::unique_ptr<Stream> result(new Stream(streamCallback, xRunCallback, user));
   HandleError(XtServiceAggregateStream(s, &ds[0], c, bufferSizes, count, m, interleaved, master.d, forwardStream, forwardXRun, result.get(), &stream));
   result->s = stream;
@@ -383,8 +383,8 @@ std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleave
 
   XtStream* stream; 
   auto f = reinterpret_cast<const XtFormat*>(&format);
-  auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
   auto forwardStream = &StreamCallbackForwarder::ForwardStream;
+  auto forwardXRun = xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
   std::unique_ptr<Stream> result(new Stream(streamCallback, xRunCallback, user));
   HandleError(XtDeviceOpenStream(d, f, interleaved, bufferSize, forwardStream, forwardXRun, result.get(), &stream));
   result->s = stream;

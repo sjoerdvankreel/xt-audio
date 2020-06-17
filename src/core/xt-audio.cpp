@@ -110,7 +110,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   (*stream)->format = *format;
   (*stream)->aggregated = false;
   (*stream)->aggregationIndex = 0;
-  (*stream)->xRunCallback = nullptr;
   (*stream)->interleaved = interleaved;
   (*stream)->xRunCallback = xRunCallback;
   (*stream)->sampleSize = attributes.size;
