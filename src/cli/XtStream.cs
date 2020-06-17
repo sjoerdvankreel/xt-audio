@@ -276,7 +276,7 @@ namespace Xt
                     XtAudio.trace(XtLevel.Fatal, string.Format("Exception caught in xrun callback: {0}.", e));
                 Console.WriteLine(e);
                 Console.WriteLine(e.StackTrace);
-                Environment.FailFast("Exception caught in stream callback.", e);
+                Environment.FailFast("Exception caught in xrun callback.", e);
             }
         }
 
