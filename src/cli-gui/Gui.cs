@@ -413,6 +413,17 @@ namespace Xt
                 for (int c = 0; c < outputChannels.SelectedItems.Count; c++)
                     outputFormat.outMask |= (1UL << ((ChannelView)outputChannels.SelectedItems[c]).index);
 
+                stop.Enabled = true;
+                panel.Enabled = false;
+                start.Enabled = false;
+                streamRaw.Enabled = false;
+                bufferSize.Enabled = false;
+                streamType.Enabled = false;
+                outputMaster.Enabled = false;
+                secondaryInput.Enabled = false;
+                secondaryOutput.Enabled = false;
+                streamInterleaved.Enabled = false;
+
                 if (type == StreamType.Capture)
                 {
                     captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
@@ -512,17 +523,6 @@ namespace Xt
                         master, callback.OnCallback, xRunCallback, "latency-user-data");
                     outputStream.Start();
                 }
-
-                stop.Enabled = true;
-                panel.Enabled = false;
-                start.Enabled = false;
-                streamRaw.Enabled = false;
-                bufferSize.Enabled = false;
-                streamType.Enabled = false;
-                outputMaster.Enabled = false;
-                secondaryInput.Enabled = false;
-                secondaryOutput.Enabled = false;
-                streamInterleaved.Enabled = false;
 
             } catch (XtException e)
             {
