@@ -1,12 +1,4 @@
-#ifdef _WIN32
-#include "xt-win32.hpp"
-#include <dsound.h>
-#include <mmdeviceapi.h>
-#include <audioclient.h>
-#include <vector>
-#include <memory>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -21,6 +13,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef _WIN32
+#include "xt-win32.hpp"
+
+#ifdef XT_DISABLE_DSOUND
+const XtService* XtiServiceDSound = nullptr;
+#else // XT_DISABLE_DSOUND
+
+#define INITGUID 1
+#include <dsound.h>
+#include <mmdeviceapi.h>
+#include <audioclient.h>
+#include <vector>
+#include <memory>
 
 // ---- local ----
 
@@ -210,7 +215,11 @@ XtCause DSoundService::GetFaultCause(XtFault fault) const {
   case DSERR_BUFFERLOST: 
   case DSERR_ACCESSDENIED: 
   case DSERR_OTHERAPPHASPRIO: return XtCauseEndpoint;
+#ifndef XT_DISABLE_WASAPI
   default: return XtwWasapiGetFaultCause(fault);
+#else // XT_DISABLE_WASAPI
+  default: return XtCauseUnknown;
+#endif // XT_DISABLE_WASAPI
   }
 }
 
@@ -240,7 +249,11 @@ const char* DSoundService::GetFaultText(XtFault fault) const {
   case DSERR_OTHERAPPHASPRIO: return "DSERR_OTHERAPPHASPRIO";
   case DSERR_BADSENDBUFFERGUID: return "DSERR_BADSENDBUFFERGUID";
   case DSERR_ALREADYINITIALIZED: return "DSERR_ALREADYINITIALIZED";
+#ifndef XT_DISABLE_WASAPI
   default: return XtwWasapiGetFaultText(fault);
+#else // XT_DISABLE_WASAPI
+  default: return "Unknown fault.";
+#endif // XT_DISABLE_WASAPI
   }
 }
 
@@ -502,4 +515,5 @@ void DSoundStream::ProcessBuffer(bool prefill) {
   }
 }
 
+#endif // XT_DISABLE_DSOUND
 #endif // _WIN32

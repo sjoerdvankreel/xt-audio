@@ -1,6 +1,4 @@
-package com.xtaudio.xt;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -15,6 +13,8 @@ package com.xtaudio.xt;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+package com.xtaudio.xt;
+
 public final class XtPrint {
 
     private XtPrint() {
@@ -59,7 +59,7 @@ public final class XtPrint {
     public static String latencyToString(XtLatency latency) {
         return XtNative.wrapAndFreeString(XtNative.XtPrintLatencyToString(latency));
     }
-    
+
     public static String channelsToString(XtChannels channels) {
         return XtNative.wrapAndFreeString(XtNative.XtPrintChannelsToString(channels));
     }

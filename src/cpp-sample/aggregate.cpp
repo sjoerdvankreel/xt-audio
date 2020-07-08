@@ -37,23 +37,28 @@ int AggregateMain(int argc, char** argv) {
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::SystemAudio);
-  std::unique_ptr<Xt::Device> input = service->OpenDefaultDevice(false);
-  std::unique_ptr<Xt::Device> output = service->OpenDefaultDevice(true);
-  if(input && input->SupportsFormat(inputFormat)
-    && output && output->SupportsFormat(outputFormat)) {
+  if(!service)
+    return 0;
 
-    devices[0] = input.get();
-    devices[1] = output.get();
-    channels[0] = inputChannels;
-    channels[1] = outputChannels;
-    bufferSizes[0] = 30.0;
-    bufferSizes[1] = 30.0;
-    std::unique_ptr<Xt::Stream> stream = service->AggregateStream(devices, channels,
-      bufferSizes, 2, mix, true, *output, Aggregate, XRun, const_cast<char*>("user-data"));
-    stream->Start();
-    std::cout << "Streaming aggregate, press any key to continue...\n";
-    ReadLine();
-    stream->Stop();
-  }
+  std::unique_ptr<Xt::Device> input = service->OpenDefaultDevice(false);
+  if(!input || !input->SupportsFormat(inputFormat))
+    return 0;
+
+  std::unique_ptr<Xt::Device> output = service->OpenDefaultDevice(true);
+  if(!output || !output->SupportsFormat(outputFormat))
+    return 0;
+
+  devices[0] = input.get();
+  devices[1] = output.get();
+  channels[0] = inputChannels;
+  channels[1] = outputChannels;
+  bufferSizes[0] = 30.0;
+  bufferSizes[1] = 30.0;
+  std::unique_ptr<Xt::Stream> stream = service->AggregateStream(devices, channels,
+    bufferSizes, 2, mix, true, *output, Aggregate, XRun, const_cast<char*>("user-data"));
+  stream->Start();
+  std::cout << "Streaming aggregate, press any key to continue...\n";
+  ReadLine();
+  stream->Stop();
   return 0;
 }

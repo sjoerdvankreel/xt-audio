@@ -1,8 +1,4 @@
-#include "xt-cpp.hpp"
-#include "xt-audio.h"
-#include <vector>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -17,6 +13,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#include "xt-cpp.hpp"
+#include "xt-audio.h"
+#include <vector>
 
 namespace Xt {
 
@@ -250,11 +249,13 @@ std::unique_ptr<Service> Audio::GetServiceByIndex(int32_t index) {
 }
 
 std::unique_ptr<Service> Audio::GetServiceBySetup(Setup setup) {
-  return std::unique_ptr<Service>(new Service(XtAudioGetServiceBySetup(static_cast<XtSetup>(setup))));
+  const XtService* service = XtAudioGetServiceBySetup(static_cast<XtSetup>(setup));
+  return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
 }
 
 std::unique_ptr<Service> Audio::GetServiceBySystem(System system) {
-  return std::unique_ptr<Service>(new Service(XtAudioGetServiceBySystem(static_cast<XtSystem>(system))));
+  const XtService* service = XtAudioGetServiceBySystem(static_cast<XtSystem>(system));
+  return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
 }
 
 // ---- service ----
@@ -306,8 +307,8 @@ std::unique_ptr<Stream> Service::AggregateStream(Device** devices, const Channel
     ds[i] = devices[i]->d;
   auto m = reinterpret_cast<const XtMix*>(&mix);
   auto c = reinterpret_cast<const XtChannels*>(channels);
-  auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
   auto forwardStream = &StreamCallbackForwarder::ForwardStream;
+  auto forwardXRun = xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
   std::unique_ptr<Stream> result(new Stream(streamCallback, xRunCallback, user));
   HandleError(XtServiceAggregateStream(s, &ds[0], c, bufferSizes, count, m, interleaved, master.d, forwardStream, forwardXRun, result.get(), &stream));
   result->s = stream;
@@ -382,8 +383,8 @@ std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleave
 
   XtStream* stream; 
   auto f = reinterpret_cast<const XtFormat*>(&format);
-  auto forwardXRun = &StreamCallbackForwarder::ForwardXRun;
   auto forwardStream = &StreamCallbackForwarder::ForwardStream;
+  auto forwardXRun = xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
   std::unique_ptr<Stream> result(new Stream(streamCallback, xRunCallback, user));
   HandleError(XtDeviceOpenStream(d, f, interleaved, bufferSize, forwardStream, forwardXRun, result.get(), &stream));
   result->s = stream;

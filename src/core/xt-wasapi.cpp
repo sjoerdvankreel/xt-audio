@@ -1,14 +1,4 @@
-#ifdef _WIN32
-#include "xt-win32.hpp"
-#define INITGUID 1
-#include <mmdeviceapi.h>
-#include <audioclient.h>
-#include <functiondiscoverykeys_devpkey.h>
-#include <avrt.h>
-#include <memory>
-#include <cmath>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -23,6 +13,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef _WIN32
+#include "xt-win32.hpp"
+
+#ifdef XT_DISABLE_WASAPI
+const XtService* XtiServiceWasapi = nullptr;
+#else // XT_DISABLE_WASAPI
+
+#define INITGUID 1
+#include <mmdeviceapi.h>
+#include <audioclient.h>
+#include <functiondiscoverykeys_devpkey.h>
+#include <avrt.h>
+#include <memory>
+#include <cmath>
 
 // ---- local ----
 
@@ -597,4 +601,5 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   }
 }
 
+#endif // XT_DISABLE_WASAPI
 #endif // _WIN32

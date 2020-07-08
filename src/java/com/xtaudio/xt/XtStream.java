@@ -1,10 +1,4 @@
-package com.xtaudio.xt;
-
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-import java.lang.reflect.Array;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -19,6 +13,13 @@ import java.lang.reflect.Array;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+package com.xtaudio.xt;
+
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import java.lang.reflect.Array;
+
 public final class XtStream implements XtCloseable {
 
     private static Object createNonInterleavedBuffer(XtSample sample, int channels, int frames) {
@@ -103,23 +104,23 @@ public final class XtStream implements XtCloseable {
         switch (sample) {
             case UINT8:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((byte[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((byte[][]) managed)[i], 0, frames);
                 break;
             case INT16:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((short[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((short[][]) managed)[i], 0, frames);
                 break;
             case INT24:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((byte[][]) managed)[i], 0, frames * 3);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((byte[][]) managed)[i], 0, frames * 3);
                 break;
             case INT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((int[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((int[][]) managed)[i], 0, frames);
                 break;
             case FLOAT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).read(0, ((float[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((float[][]) managed)[i], 0, frames);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -130,23 +131,23 @@ public final class XtStream implements XtCloseable {
         switch (sample) {
             case UINT8:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((byte[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((byte[][]) managed)[i], 0, frames);
                 break;
             case INT16:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((short[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((short[][]) managed)[i], 0, frames);
                 break;
             case INT24:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((byte[][]) managed)[i], 0, frames * 3);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((byte[][]) managed)[i], 0, frames * 3);
                 break;
             case INT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((int[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((int[][]) managed)[i], 0, frames);
                 break;
             case FLOAT32:
                 for (int i = 0; i < channels; i++)
-                    raw.getPointer(i * Pointer.SIZE).write(0, ((float[][]) managed)[i], 0, frames);
+                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((float[][]) managed)[i], 0, frames);
                 break;
             default:
                 throw new IllegalArgumentException();

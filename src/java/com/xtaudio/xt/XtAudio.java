@@ -1,8 +1,4 @@
-package com.xtaudio.xt;
-
-import com.sun.jna.Pointer;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -17,6 +13,10 @@ import com.sun.jna.Pointer;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+package com.xtaudio.xt;
+
+import com.sun.jna.Pointer;
+
 public final class XtAudio implements XtCloseable {
 
     static XtTraceCallback trace;
@@ -58,11 +58,13 @@ public final class XtAudio implements XtCloseable {
     }
 
     public static XtService getServiceBySetup(XtSetup setup) {
-        return new XtService(XtNative.XtAudioGetServiceBySetup(setup.ordinal()));
+        Pointer service = XtNative.XtAudioGetServiceBySetup(setup.ordinal());
+        return service == Pointer.NULL ? null : new XtService(service);
     }
 
     public static XtService getServiceBySystem(XtSystem system) {
-        return new XtService(XtNative.XtAudioGetServiceBySystem(system.ordinal() + 1));
+        Pointer service = XtNative.XtAudioGetServiceBySystem(system.ordinal() + 1);
+        return service == Pointer.NULL ? null : new XtService(service);
     }
 
     public static XtAttributes getSampleAttributes(XtSample sample) {

@@ -1,20 +1,22 @@
 ﻿using System;
 
-namespace Xt {
-
-    class LatencyCallback : StreamCallback {
-
+namespace Xt
+{
+    class LatencyCallback : StreamCallback
+    {
         private long pulseSend;
         private long framesProcessed;
 
         internal LatencyCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
-            base("Latency", onError, onMessage) {
+            base("Latency", onError, onMessage)
+        {
         }
 
         internal override unsafe void OnCallback(XtFormat format, bool interleaved,
-             bool raw, object input, object output, int frames) {
-
-            for (int f = 0; f < frames; f++) {
+             bool raw, object input, object output, int frames)
+        {
+            for (int f = 0; f < frames; f++)
+            {
                 bool pulseReceived = false;
                 bool sendPulse = framesProcessed == pulseSend + format.mix.rate;
                 if (sendPulse)
@@ -24,9 +26,12 @@ namespace Xt {
                 int intValue = sendPulse ? int.MaxValue : (int)0;
                 float floatValue = sendPulse ? 1.0f : 0.0f;
 
-                if (!raw) {
-                    if (!interleaved) {
-                        switch (format.mix.sample) {
+                if (!raw)
+                {
+                    if (!interleaved)
+                    {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte[][])output)[0][f] = byteValue;
                                 pulseReceived = ((byte[][])input)[0][f] < 64 || ((byte[][])input)[0][f] > 192;
@@ -48,8 +53,10 @@ namespace Xt {
                                 pulseReceived = Math.Abs(((float[][])input)[0][f]) > 0.5;
                                 break;
                         }
-                    } else {
-                        switch (format.mix.sample) {
+                    } else
+                    {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte[])output)[f * format.outputs] = byteValue;
                                 pulseReceived = ((byte[])input)[f * format.inputs] < 64 || ((byte[])input)[f * format.inputs] > 192;
@@ -72,9 +79,12 @@ namespace Xt {
                                 break;
                         }
                     }
-                } else {
-                    if (!interleaved) {
-                        switch (format.mix.sample) {
+                } else
+                {
+                    if (!interleaved)
+                    {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte**)(IntPtr)output)[0][f] = byteValue;
                                 pulseReceived = ((byte**)(IntPtr)input)[0][f] < 64 || ((byte**)(IntPtr)input)[0][f] > 192;
@@ -96,8 +106,10 @@ namespace Xt {
                                 pulseReceived = Math.Abs(((float**)(IntPtr)input)[0][f]) > 0.5;
                                 break;
                         }
-                    } else {
-                        switch (format.mix.sample) {
+                    } else
+                    {
+                        switch (format.mix.sample)
+                        {
                             case XtSample.UInt8:
                                 ((byte*)(IntPtr)output)[f * format.outputs] = byteValue;
                                 pulseReceived = ((byte*)(IntPtr)input)[f * format.inputs] < 64 || ((byte*)(IntPtr)input)[f * format.inputs] > 192;
@@ -122,7 +134,8 @@ namespace Xt {
                     }
                 }
 
-                if (pulseReceived) {
+                if (pulseReceived)
+                {
                     onMessage(() => string.Format(
                         "Pulse received after {0} frames ({1} ms).",
                         framesProcessed - pulseSend,

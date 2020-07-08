@@ -1,13 +1,4 @@
-#ifndef _XT_AUDIO_H
-#define _XT_AUDIO_H
-
-/** @file */
-
-/** @cond */
-#include <stdint.h>
-/** @endcond */
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -22,6 +13,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifndef _XT_AUDIO_H
+#define _XT_AUDIO_H
+
+/** @file */
+
+/** @cond */
+#include <stdint.h>
+/** @endcond */
 
 #ifdef _WIN32
 #define XT_CALL __stdcall

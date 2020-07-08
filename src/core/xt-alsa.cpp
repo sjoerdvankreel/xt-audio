@@ -1,11 +1,4 @@
-#ifdef __linux__
-#include "xt-linux.hpp"
-#include <vector>
-#include <cstring>
-#include <climits>
-#include <alsa/asoundlib.h>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -20,6 +13,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef __linux__
+#include "xt-linux.hpp"
+
+#ifdef XT_DISABLE_ALSA
+void XtlInitAlsa() { }
+void XtlTerminateAlsa() { }
+const XtService* XtiServiceAlsa = nullptr;
+#else // XT_DISABLE_ALSA
+
+#include <vector>
+#include <cstring>
+#include <climits>
+#include <alsa/asoundlib.h>
 
 #define XT_VERIFY_ALSA(c) do { int e = (c); if(e < 0) \
   return XT_TRACE(XtLevelError, "%s", #c), e; } while(0)
@@ -612,4 +618,5 @@ void AlsaStream::ProcessBuffer(bool prefill) {
   }
 }
 
+#endif // XT_DISABLE_ALSA
 #endif // __linux__

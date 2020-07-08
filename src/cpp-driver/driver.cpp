@@ -139,9 +139,13 @@ static bool List() {
   if(!EnableList)
     return true;
   std::cout << "Win32: " << Xt::Audio::IsWin32() << "\n";
-  std::cout << Xt::Setup::ProAudio << ": " << Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio)->GetName() << "\n"; 
-  std::cout << Xt::Setup::SystemAudio << ": " << Xt::Audio::GetServiceBySetup(Xt::Setup::SystemAudio)->GetName() << "\n"; 
-  std::cout << Xt::Setup::ConsumerAudio << ": " << Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio)->GetName() << "\n"; 
+  
+  auto pro = Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio);
+  std::cout << Xt::Setup::ProAudio << ": " << (pro? pro->GetName(): "None") << "\n"; 
+  auto system = Xt::Audio::GetServiceBySetup(Xt::Setup::SystemAudio);
+  std::cout << Xt::Setup::SystemAudio << ": " << (system? system->GetName(): "None") << "\n"; 
+  auto consumer = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+  std::cout << Xt::Setup::ConsumerAudio << ": " << (consumer? consumer->GetName(): "None") << "\n"; 
   int32_t count = Xt::Audio::GetServiceCount();
   for(int32_t s = 0; s < count; s++) {
     std::cout << "Service " << s << ":\n";

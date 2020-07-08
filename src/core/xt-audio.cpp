@@ -1,9 +1,4 @@
-#include "xt-private.hpp"
-#include <inttypes.h>
-#include <sstream>
-#include <iomanip>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -18,6 +13,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+
+// Don't warn about posix-compliant strdup() and friends.
+#ifndef _CRT_NONSTDC_NO_DEPRECATE
+#define _CRT_NONSTDC_NO_DEPRECATE 1
+#endif
+
+#include "xt-private.hpp"
+#include <inttypes.h>
+#include <sstream>
+#include <iomanip>
 
 // ---- local ----
 
@@ -105,7 +110,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   (*stream)->format = *format;
   (*stream)->aggregated = false;
   (*stream)->aggregationIndex = 0;
-  (*stream)->xRunCallback = nullptr;
   (*stream)->interleaved = interleaved;
   (*stream)->xRunCallback = xRunCallback;
   (*stream)->sampleSize = attributes.size;
@@ -287,16 +291,11 @@ char* XT_CALL XtPrintErrorToString(XtError error) {
 // ---- audio ----
 
 void XT_CALL XtAudioFree(void* ptr) {
-  free(ptr); 
+  free(ptr);
 }
 
 const char* XT_CALL XtAudioGetVersion(void) {
-  return "1.0.5";
-}
-
-const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {
-  XT_ASSERT(0 <= index && index < XtAudioGetServiceCount());
-  return XtAudioGetServiceBySystem(XtiIndexToSystem(index));
+  return "1.0.6";
 }
 
 const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup) {

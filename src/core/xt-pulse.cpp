@@ -1,11 +1,4 @@
-#ifdef __linux__
-#include "xt-linux.hpp"
-#include <memory>
-#include <vector>
-#include <pulse/simple.h>
-#include <pulse/pulseaudio.h>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -20,6 +13,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef __linux__
+#include "xt-linux.hpp"
+
+#ifdef XT_DISABLE_PULSE
+const XtService* XtiServicePulse = nullptr;
+#else // XT_DISABLE_PULSE
+
+#include <memory>
+#include <vector>
+#include <pulse/simple.h>
+#include <pulse/pulseaudio.h>
 
 // ---- local ----
 
@@ -291,4 +295,5 @@ void PulseStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_STREAM_CALLBACK(fault);
 }
 
+#endif // XT_DISABLE_PULSE
 #endif // __linux__

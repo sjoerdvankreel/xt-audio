@@ -1,6 +1,4 @@
-using System.Runtime.InteropServices;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -15,17 +13,17 @@ using System.Runtime.InteropServices;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
-namespace Xt {
+using System.Runtime.InteropServices;
 
+namespace Xt
+{
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class XtAttributes {
-
+    public sealed class XtAttributes
+    {
         public int size;
         public bool isFloat;
         public bool isSigned;
 
-        public override string ToString() {
-            return XtPrint.AttributesToString(this);
-        }
+        public override string ToString() => XtPrint.AttributesToString(this);
     }
 }

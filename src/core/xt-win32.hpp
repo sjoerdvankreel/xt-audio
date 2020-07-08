@@ -1,17 +1,4 @@
-#ifndef _XT_WIN32_HPP
-#define _XT_WIN32_HPP
-#ifdef _WIN32
-
-#include "xt-private.hpp"
-#include <windows.h>
-#include <atlbase.h>
-#include <mmsystem.h>
-#include <mmreg.h>
-#include <ks.h>
-#include <ksmedia.h>
-#include <string>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -26,6 +13,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifndef _XT_WIN32_HPP
+#define _XT_WIN32_HPP
+#ifdef _WIN32
+
+#include "xt-private.hpp"
+#include <windows.h>
+#include <atlbase.h>
+#include <mmsystem.h>
+#include <mmreg.h>
+#include <ks.h>
+#include <ksmedia.h>
+#include <string>
 
 // ---- win32 ----
 
@@ -35,9 +34,6 @@ do {                                       \
     return XT_TRACE(XtLevelError, #e), hr; \
 } while(0)
 
-extern const XtService* XtiServiceAsio;
-extern const XtService* XtiServiceDSound;
-extern const XtService* XtiServiceWasapi;
 extern const char* XtwWfxChannelNames[18];
 
 void* XtwGetWindow();

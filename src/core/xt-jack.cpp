@@ -1,11 +1,4 @@
-#ifdef __linux__
-#include "xt-linux.hpp"
-#include <jack/jack.h>
-#include <vector>
-#include <memory>
-#include <sstream>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -20,6 +13,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef __linux__
+#include "xt-linux.hpp"
+
+#ifdef XT_DISABLE_JACK
+void XtlInitJack() { }
+void XtlTerminateJack() { }
+const XtService* XtiServiceJack = nullptr;
+#else // XT_DISABLE_JACK
+
+#include <jack/jack.h>
+#include <vector>
+#include <memory>
+#include <sstream>
 
 // ---- local ----
 
@@ -44,7 +50,7 @@ struct XtJackClient {
   { client = rhs.client; rhs.client = nullptr; return *this; }
 
   ~XtJackClient() 
-  { XT_ASSERT(client == nullptr || jack_client_close(client) == 0); }
+  { if(client != nullptr) jack_client_close(client); }
 };
 
 struct XtJackPort {
@@ -64,7 +70,7 @@ struct XtJackPort {
   { XT_ASSERT(client != nullptr); XT_ASSERT(port != nullptr); }
 
   ~XtJackPort() 
-  { XT_ASSERT(port == nullptr || jack_port_unregister(client, port) == 0); }
+  { if(port != nullptr) jack_port_unregister(client, port); }
 
   XtJackPort& operator=(XtJackPort&& rhs)  
   { client = rhs.client; port = rhs.port; connectTo = rhs.connectTo; rhs.port = nullptr; return *this; }
@@ -83,7 +89,7 @@ struct XtJackConnection {
   { rhs.source = nullptr; }
 
   ~XtJackConnection()
-  { XT_ASSERT(source == nullptr || jack_disconnect(client, source, dest) == 0); }
+  { if(source != nullptr) jack_disconnect(client, source, dest); }
 
   XtJackConnection(jack_client_t* client, const char* source, const char* dest):
   dest(dest), source(source), client(client)
@@ -171,6 +177,7 @@ static XtFault CreatePorts(jack_client_t* client, uint32_t channels, uint64_t ma
 
 static int XRunCallback(void* arg) {
   static_cast<JackStream*>(arg)->ProcessXRun();
+  return 0;
 }
 
 static int ProcessCallback(jack_nframes_t frames, void* arg) {
@@ -401,4 +408,5 @@ XtFault JackStream::Start() {
   return 0;
 }
 
+#endif // XT_DISABLE_JACK
 #endif // __linux__

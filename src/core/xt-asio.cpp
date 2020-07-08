@@ -1,12 +1,4 @@
-#ifdef _WIN32
-#include "xt-win32.hpp"
-#include <asmjit.h>
-#include <common/iasiodrv.h>
-#include <host/pc/asiolist.h>
-#include <memory>
-#include <vector>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -21,6 +13,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef _WIN32
+
+// Windows.h's min/max collide with asmjit.
+#ifndef NOMINMAX
+#define NOMINMAX 1 
+#endif // NOMINMAX
+#include "xt-win32.hpp"
+
+#ifdef XT_DISABLE_ASIO
+const XtService* XtiServiceAsio = nullptr;
+#else // XT_DISABLE_ASIO
+
+#include <asmjit/asmjit.h>
+#include <common/iasiodrv.h>
+#include <host/pc/asiolist.h>
+#include <memory>
+#include <vector>
 
 // ---- local ----
 
@@ -218,56 +227,65 @@ static SdkBufferSwitch JitBufferSwitch(
   asmjit::JitRuntime* runtime, ContextBufferSwitch target, void* ctx) {
 
   using namespace asmjit;
-  X86Assembler assembler(runtime);
-  X86Compiler compiler(&assembler);
+  CodeHolder code;
+  code.init(runtime->codeInfo());
+  x86::Compiler compiler(&code);
   
-  auto sdkProto = FuncBuilder2<void, long, ASIOBool>(kCallConvHostCDecl);
-  X86FuncNode* function = compiler.addFunc(sdkProto);
-  X86GpVar index = compiler.newInt32("index");
-  X86GpVar directProcess = compiler.newInt32("directProcess");
+  auto sdkProto = FuncSignatureT<void, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncNode* function = compiler.addFunc(sdkProto);
+  x86::Gp index = compiler.newInt32("index");
+  x86::Gp directProcess = compiler.newInt32("directProcess");
   compiler.setArg(0, index);
   compiler.setArg(1, directProcess);
 
-  auto ctxProto = FuncBuilder3<void, void*, long, ASIOBool>(kCallConvHostCDecl);
-  X86CallNode* call = compiler.call(asmjit_cast<Ptr>(target), ctxProto);
-  call->setArg(0, imm_ptr(ctx));
+  auto ctxProto = FuncSignatureT<void, void*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncCallNode* call = compiler.call(imm(target), ctxProto);
+  call->setArg(0, imm(ctx));
   call->setArg(1, index);
   call->setArg(2, directProcess);
   
   compiler.endFunc();
   compiler.finalize();
-  return asmjit_cast<SdkBufferSwitch>(assembler.make());
+
+  SdkBufferSwitch result;
+  XT_ASSERT(!runtime->add(&result, &code));
+  return result;
 }
 
 static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
   asmjit::JitRuntime* runtime, ContextBufferSwitchTimeInfo target, void* ctx) {
 
   using namespace asmjit;
-  X86Assembler assembler(runtime);
-  X86Compiler compiler(&assembler);
+  CodeHolder code;
+  code.init(runtime->codeInfo());
+  x86::Compiler compiler(&code);
   
-  auto sdkProto = FuncBuilder3<ASIOTime*, ASIOTime*, long, ASIOBool>(kCallConvHostCDecl);
-  X86FuncNode* function = compiler.addFunc(sdkProto);
-  X86GpVar params = compiler.newIntPtr("params");
-  X86GpVar index = compiler.newInt32("index");
-  X86GpVar directProcess = compiler.newInt32("directProcess");
+  auto sdkProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncNode* function = compiler.addFunc(sdkProto);
+  x86::Gp params = compiler.newIntPtr("params");
+  x86::Gp index = compiler.newInt32("index");
+  x86::Gp directProcess = compiler.newInt32("directProcess");
   compiler.setArg(0, params);
   compiler.setArg(1, index);
   compiler.setArg(2, directProcess);
 
-  auto ctxProto = FuncBuilder4<ASIOTime*, void*, ASIOTime*, long, ASIOBool>(kCallConvHostCDecl);
-  X86CallNode* call = compiler.call(asmjit_cast<Ptr>(target), ctxProto);
-  call->setArg(0, imm_ptr(ctx));
+  auto ctxProto = FuncSignatureT<ASIOTime*, void*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncCallNode* call = compiler.call(imm(target), ctxProto);
+  call->setArg(0, imm(ctx));
   call->setArg(1, params);
   call->setArg(2, index);
   call->setArg(3, directProcess);
 
-  X86GpVar ret = compiler.newIntPtr("ret");
+  x86::Gp ret = compiler.newIntPtr("ret");
   call->setRet(0, ret);
   compiler.ret(ret);
+
   compiler.endFunc();
   compiler.finalize();
-  return asmjit_cast<SdkBufferSwitchTimeInfo>(assembler.make());
+
+  SdkBufferSwitchTimeInfo result;
+  XT_ASSERT(!runtime->add(&result, &code));
+  return result;
 }
 
 // ---- service ----
@@ -365,9 +383,9 @@ XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
 XtFault AsioDevice::GetMix(XtMix** mix) const {
 
   XtSample sample;
-  ASIOSampleType type;
   ASIOSampleRate rate;
   bool typeFixed = false;
+  ASIOSampleType type = -1;
   std::vector<ASIOChannelInfo> infos;
   ASIOError error = asio->getSampleRate(&rate);
 
@@ -390,6 +408,7 @@ XtFault AsioDevice::GetMix(XtMix** mix) const {
     return ASE_Format;
 
   *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
+  XT_ASSERT(*mix);
   (*mix)->sample = sample;
   (*mix)->rate = static_cast<int32_t>(rate);
   return ASE_OK;
@@ -473,7 +492,7 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   long min, max, preferred, granularity;
 
   if(streamOpen)
-    return DRVERR_DEVICE_ALREADY_OPEN;
+    return static_cast<XtFault>(DRVERR_DEVICE_ALREADY_OPEN);
   XT_VERIFY_ASIO(asio->getSampleRate(&rate));
   XT_VERIFY_ASIO(asio->getBufferSize(&min, &max, &preferred, &granularity));
 
@@ -536,4 +555,5 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   return ASE_OK;
 }
 
+#endif // XT_DISABLE_ASIO
 #endif // _WIN32

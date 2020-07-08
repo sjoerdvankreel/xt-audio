@@ -18,9 +18,13 @@ int PrintDetailedMain(int argc, char** argv) {
   try {
     std::cout << "Win32: " << Xt::Audio::IsWin32() << "\n";
     std::cout << "Version: " << Xt::Audio::GetVersion() << "\n";
-    std::cout << "Pro Audio: " << Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio)->GetName() << "\n";
-    std::cout << "System Audio: " << Xt::Audio::GetServiceBySetup(Xt::Setup::SystemAudio)->GetName() << "\n";
-    std::cout << "Consumer Audio: " << Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio)->GetName() << "\n";
+    
+    auto pro = Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio);
+    std::cout << "Pro Audio: " << (pro? pro->GetName(): "None") << "\n";
+    auto system = Xt::Audio::GetServiceBySetup(Xt::Setup::SystemAudio);
+    std::cout << "System Audio: " << (system? system->GetName(): "None") << "\n";
+    auto consumer = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+    std::cout << "Consumer Audio: " << (consumer? consumer->GetName(): "None") << "\n";
 
     for(int s = 0; s < Xt::Audio::GetServiceCount(); s++) {
 

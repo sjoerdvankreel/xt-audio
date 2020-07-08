@@ -1,6 +1,4 @@
-package com.xtaudio.xt;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -15,15 +13,17 @@ package com.xtaudio.xt;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+package com.xtaudio.xt;
+
 public enum XtSystem {
 
     ALSA,
     ASIO,
     JACK,
     PULSE,
-    DSOUND, 
+    DSOUND,
     WASAPI;
-    
+
     @Override
     public String toString() {
         return XtPrint.systemToString(this);

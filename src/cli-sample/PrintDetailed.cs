@@ -1,31 +1,37 @@
 using System;
 
-namespace Xt {
-
-    public class PrintDetailed {
-
-        static void OnFatal() {
+namespace Xt
+{
+    public class PrintDetailed
+    {
+        static void OnFatal()
+        {
             Console.WriteLine("Fatal error.");
         }
 
-        static void OnTrace(XtLevel level, String message) {
+        static void OnTrace(XtLevel level, String message)
+        {
             if (level != XtLevel.Info)
                 Console.WriteLine("-- " + level + ": " + message);
         }
 
-        public static void Main(String[] args) {
-
-            using (XtAudio audio = new XtAudio("Sample", IntPtr.Zero, OnTrace, OnFatal)) {
-
-                try {
+        public static void Main(String[] args)
+        {
+            using (XtAudio audio = new XtAudio("Sample", IntPtr.Zero, OnTrace, OnFatal))
+            {
+                try
+                {
                     Console.WriteLine("Win32: " + XtAudio.IsWin32());
                     Console.WriteLine("Version: " + XtAudio.GetVersion());
-                    Console.WriteLine("Pro Audio: " + XtAudio.GetServiceBySetup(XtSetup.ProAudio).GetName());
-                    Console.WriteLine("System Audio: " + XtAudio.GetServiceBySetup(XtSetup.SystemAudio).GetName());
-                    Console.WriteLine("Consumer Audio: " + XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio).GetName());
+                    XtService pro = XtAudio.GetServiceBySetup(XtSetup.ProAudio);
+                    Console.WriteLine("Pro Audio: " + (pro == null ? "None" : pro.GetName()));
+                    XtService system = XtAudio.GetServiceBySetup(XtSetup.SystemAudio);
+                    Console.WriteLine("System Audio: " + (system == null ? "None" : system.GetName()));
+                    XtService consumer = XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio);
+                    Console.WriteLine("Consumer Audio: " + (consumer == null ? "None" : consumer.GetName()));
 
-                    for (int s = 0; s < XtAudio.GetServiceCount(); s++) {
-
+                    for (int s = 0; s < XtAudio.GetServiceCount(); s++)
+                    {
                         XtService service = XtAudio.GetServiceByIndex(s);
                         Console.WriteLine("Service " + service.GetName() + ":");
                         Console.WriteLine("  System: " + service.GetSystem());
@@ -38,10 +44,9 @@ namespace Xt {
                         using (XtDevice defaultOutput = service.OpenDefaultDevice(true))
                             Console.WriteLine("  Default output: " + defaultOutput);
 
-
                         for (int d = 0; d < service.GetDeviceCount(); d++)
-                            using (XtDevice device = service.OpenDevice(d)) {
-
+                            using (XtDevice device = service.OpenDevice(d))
+                            {
                                 Console.WriteLine("  Device " + device.GetName() + ":");
                                 Console.WriteLine("    System: " + device.GetSystem());
                                 Console.WriteLine("    Current mix: " + device.GetMix());
@@ -51,8 +56,8 @@ namespace Xt {
                                 Console.WriteLine("    Non-interleaved access: " + device.SupportsAccess(false));
                             }
                     }
-                } catch (XtException e) {
-
+                } catch (XtException e)
+                {
                     Console.WriteLine("Error: system %s, fault %s, cause %s, text %s, message: %s.\n",
                             XtException.GetSystem(e.GetError()),
                             XtException.GetFault(e.GetError()),

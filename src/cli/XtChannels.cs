@@ -1,6 +1,4 @@
-using System.Runtime.InteropServices;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -15,28 +13,30 @@ using System.Runtime.InteropServices;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
-namespace Xt {
+using System.Runtime.InteropServices;
 
+namespace Xt
+{
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class XtChannels {
-
+    public sealed class XtChannels
+    {
         public int inputs;
         public ulong inMask;
         public int outputs;
         public ulong outMask;
 
-        public XtChannels() {
+        public XtChannels()
+        {
         }
 
-        public XtChannels(int inputs, ulong inMask, int outputs, ulong outMask) {
+        public XtChannels(int inputs, ulong inMask, int outputs, ulong outMask)
+        {
             this.inputs = inputs;
             this.inMask = inMask;
             this.outputs = outputs;
             this.outMask = outMask;
         }
 
-        public override string ToString() {
-            return XtPrint.ChannelsToString(this);
-        }
+        public override string ToString() => XtPrint.ChannelsToString(this);
     }
 }

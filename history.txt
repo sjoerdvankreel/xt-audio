@@ -1,3 +1,8 @@
+July 8, 2020 - V1.0.6.
+* Support .NET Core.
+* Support Java 9 modules.
+* Support build-time backend selection.
+
 February 14, 2018 - V1.0.5.
 * ASIO related bugfix.
 

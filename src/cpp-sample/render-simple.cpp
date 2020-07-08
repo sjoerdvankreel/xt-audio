@@ -30,19 +30,22 @@ static void Render(
 int RenderSimpleMain(int argc, char** argv) {
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
-  std::unique_ptr< Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
-  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
-  if(device  && device->SupportsFormat(Format)) {
+  std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+  if(!service)
+    return 0;
 
-    Xt::Buffer buffer = device->GetBuffer(Format);
-    std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Render, nullptr, nullptr);
-    stream->Start();
+  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
+  if(!device || !device->SupportsFormat(Format)) 
+    return 0;
+
+  Xt::Buffer buffer = device->GetBuffer(Format);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Render, nullptr, nullptr);
+  stream->Start();
 #if _WIN32
-    Sleep(1000);
+  Sleep(1000);
 #else
-    usleep(1000 * 1000);
+  usleep(1000 * 1000);
 #endif
-    stream->Stop();
-  }
+  stream->Stop();
   return 0;
 }

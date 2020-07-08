@@ -1,20 +1,4 @@
-package com.xtaudio.xt;
-
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.PointerByReference;
-import com.sun.jna.win32.StdCallFunctionMapper;
-import com.sun.jna.win32.StdCallLibrary;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -29,6 +13,23 @@ import java.util.Map;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+package com.xtaudio.xt;
+
+import com.sun.jna.Callback;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.win32.StdCallFunctionMapper;
+import com.sun.jna.win32.StdCallLibrary;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 final class XtNative {
 
     private static boolean initialized = false;
@@ -117,17 +118,17 @@ final class XtNative {
     public static class ChannelsByValue extends XtChannels implements Structure.ByValue {
     }
 
-    static interface XRunCallback extends StdCallLibrary.StdCallCallback {
+    static interface XRunCallback extends Callback {
 
         void callback(int index, Pointer user);
     }
 
-    static interface TraceCallback extends StdCallLibrary.StdCallCallback {
+    static interface TraceCallback extends Callback {
 
         void callback(int level, String message);
     }
 
-    static interface StreamCallback extends StdCallLibrary.StdCallCallback {
+    static interface StreamCallback extends Callback {
 
         void callback(Pointer stream, Pointer input, Pointer output, int frames,
                 double time, long position, boolean timeValid, long error, Pointer user);
@@ -136,11 +137,11 @@ final class XtNative {
     static void init() {
         if (initialized)
             return;
-        boolean isX64 = Pointer.SIZE == 8;
+        boolean isX64 = Native.POINTER_SIZE == 8;
         System.setProperty("jna.encoding", "UTF-8");
         boolean isWin32 = System.getProperty("os.name").contains("Windows");
-        Map<Object, Object> options = new HashMap<>();
-        if (isWin32) {
+        Map<String, Object> options = new HashMap<>();
+        if (isWin32 && !isX64) {
             options.put(Library.OPTION_FUNCTION_MAPPER, new StdCallFunctionMapper());
             options.put(Library.OPTION_CALLING_CONVENTION, StdCallLibrary.STDCALL_CONVENTION);
         }

@@ -1,0 +1,2 @@
+* Figure out JACK support on Ubuntu 20.
+* Query device info without opening the device.

@@ -1,14 +1,4 @@
-#ifndef _XT_PRIVATE_HPP
-#define _XT_PRIVATE_HPP
-
-#include "xt-audio.h"
-#include <string>
-#include <vector>
-#include <memory>
-#include <cstring>
-#include <cstdarg>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -23,6 +13,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifndef _XT_PRIVATE_HPP
+#define _XT_PRIVATE_HPP
+
+#include "xt-audio.h"
+#include <string>
+#include <vector>
+#include <memory>
+#include <cstring>
+#include <cstdarg>
+
 #ifdef _WIN32
 #define XT_SEPARATOR '\\'
 #else
@@ -119,7 +119,7 @@ struct XtRingBuffer {
   mutable int32_t locked;
   std::vector<std::vector<char>> blocks;
 
-  XtRingBuffer() {}
+  XtRingBuffer();
   XtRingBuffer(bool interleaved, int32_t frames, 
     int32_t channels, int32_t sampleSize);
 
@@ -234,7 +234,6 @@ bool XtiCalledOnMainThread();
 void XtiInitPlatform(void* window);
 int32_t XtiGetPopCount64(uint64_t x);
 XtSystem XtiSetupToSystem(XtSetup setup);
-XtSystem XtiIndexToSystem(int32_t index);
 int32_t XtiGetSampleSize(XtSample sample);
 int32_t XtiLockIncr(volatile int32_t* dest);
 int32_t XtiLockDecr(volatile int32_t* dest);

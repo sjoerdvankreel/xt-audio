@@ -1,8 +1,4 @@
-#ifdef __linux__
-#include "xt-linux.hpp"
-#include <pthread.h>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -17,11 +13,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#ifdef __linux__
+#include "xt-linux.hpp"
+#include <pthread.h>
 
 // ---- local ----
 
 static pthread_t XtlMainThread;
 static bool XtlInitialized = false;
+
+extern const XtService* XtiServiceAlsa;
+extern const XtService* XtiServiceJack;
+extern const XtService* XtiServicePulse;
+
+const XtService* const XtiServices[] =
+{
+#ifndef XT_DISABLE_PULSE
+  XtiServicePulse,
+#endif // XT_DISABLE_PULSE
+#ifndef XT_DISABLE_ALSA
+  XtiServiceAlsa,
+#endif // XT_DISABLE_ALSA
+#ifndef XT_DISABLE_JACK
+  XtiServiceJack,
+#endif // XT_DISABLE_JACK
+  nullptr,
+};
 
 static XtStreamState ReadLinuxStreamState(
   XtlLinuxStream* stream) {
@@ -110,15 +127,24 @@ XtBool XT_CALL XtAudioIsWin32(void) {
   return XtFalse;
 }
 
-int32_t XT_CALL XtAudioGetServiceCount(void) {
-  return 3; 
+int32_t XT_CALL XtAudioGetServiceCount(void) { 
+  return sizeof(XtiServices) / sizeof(XtiServices[0]) - 1;
+}
+
+const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {
+  XT_ASSERT(0 <= index && index < XtAudioGetServiceCount());
+  return XtiServices[index];
 }
 
 const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system) {
+  XT_ASSERT(XtSystemAlsa <= system && system <= XtSystemWasapi);
   switch(system) {
   case XtSystemAlsa: return XtiServiceAlsa;
   case XtSystemJack: return XtiServiceJack;
   case XtSystemPulse: return XtiServicePulse;
+  case XtSystemAsio:
+  case XtSystemDSound:
+  case XtSystemWasapi: return nullptr;
   default: return XT_FAIL("Unknown system."), nullptr;
   }
 }
@@ -137,6 +163,9 @@ void XtiInitPlatform(void* wnd) {
   XtlInitAlsa();
   XtlInitJack();
   XtlInitialized = true;
+  XT_TRACE(XtLevelInfo, "Built with ALSA: %d.", XtAudioGetServiceBySystem(XtSystemAlsa) != nullptr);
+  XT_TRACE(XtLevelInfo, "Built with JACK: %d.", XtAudioGetServiceBySystem(XtSystemJack) != nullptr);
+  XT_TRACE(XtLevelInfo, "Built with PulseAudio: %d.", XtAudioGetServiceBySystem(XtSystemPulse) != nullptr);
 }
 
 int32_t XtiLockIncr(volatile int32_t* dest) {
@@ -161,15 +190,6 @@ XtSystem XtiSetupToSystem(XtSetup setup) {
   case XtSetupSystemAudio: return XtSystemAlsa;
   case XtSetupConsumerAudio: return XtSystemPulse;
   default: return XT_FAIL("Unknown setup."), XtSystemPulse;
-  }
-}
-
-XtSystem XtiIndexToSystem(int32_t index) {
-  switch(index) {
-  case 0: return XtSystemPulse;
-  case 1: return XtSystemAlsa;
-  case 2: return XtSystemJack;
-  default: return XT_FAIL("Unknown index."), XtSystemPulse;
   }
 }
 

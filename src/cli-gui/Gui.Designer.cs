@@ -87,6 +87,7 @@
             this.outputMaster = new System.Windows.Forms.CheckBox();
             this.secondaryInput = new System.Windows.Forms.ComboBox();
             this.secondaryOutput = new System.Windows.Forms.ComboBox();
+            this.logXRuns = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -295,6 +296,16 @@
             label20.Size = new System.Drawing.Size(66, 13);
             label20.TabIndex = 64;
             label20.Text = "Interleaved: ";
+            // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label21.Location = new System.Drawing.Point(447, 374);
+            label21.Name = "label21";
+            label21.Size = new System.Drawing.Size(305, 13);
+            label21.TabIndex = 75;
+            label21.Text = "Stream aggregation secondary input/output devices:";
             // 
             // messages
             // 
@@ -615,7 +626,7 @@
             // x64
             // 
             this.x64.AutoSize = true;
-            this.x64.Location = new System.Drawing.Point(223, 3);
+            this.x64.Location = new System.Drawing.Point(233, 3);
             this.x64.Name = "x64";
             this.x64.Size = new System.Drawing.Size(57, 13);
             this.x64.TabIndex = 62;
@@ -624,7 +635,7 @@
             // debug
             // 
             this.debug.AutoSize = true;
-            this.debug.Location = new System.Drawing.Point(147, 3);
+            this.debug.Location = new System.Drawing.Point(157, 3);
             this.debug.Name = "debug";
             this.debug.Size = new System.Drawing.Size(70, 13);
             this.debug.TabIndex = 61;
@@ -699,19 +710,23 @@
             this.secondaryOutput.Size = new System.Drawing.Size(325, 21);
             this.secondaryOutput.TabIndex = 74;
             // 
-            // label21
+            // logXRuns
             // 
-            label21.AutoSize = true;
-            label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            label21.Location = new System.Drawing.Point(447, 374);
-            label21.Name = "label21";
-            label21.Size = new System.Drawing.Size(305, 13);
-            label21.TabIndex = 75;
-            label21.Text = "Stream aggregation secondary input/output devices:";
+            this.logXRuns.AutoSize = true;
+            this.logXRuns.Checked = true;
+            this.logXRuns.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.logXRuns.Location = new System.Drawing.Point(687, 452);
+            this.logXRuns.Name = "logXRuns";
+            this.logXRuns.Size = new System.Drawing.Size(72, 17);
+            this.logXRuns.TabIndex = 76;
+            this.logXRuns.Text = "Log xruns";
+            this.logXRuns.ThreeState = true;
+            this.logXRuns.UseVisualStyleBackColor = true;
             // 
             // XtGui
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.logXRuns);
             this.Controls.Add(label21);
             this.Controls.Add(this.secondaryOutput);
             this.Controls.Add(this.secondaryInput);
@@ -779,5 +794,6 @@
         private System.Windows.Forms.CheckBox outputMaster;
         private System.Windows.Forms.ComboBox secondaryInput;
         private System.Windows.Forms.ComboBox secondaryOutput;
+        private System.Windows.Forms.CheckBox logXRuns;
     }
 }

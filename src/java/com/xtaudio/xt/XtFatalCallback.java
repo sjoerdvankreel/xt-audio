@@ -1,8 +1,4 @@
-package com.xtaudio.xt;
-
-import com.sun.jna.win32.StdCallLibrary;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -17,7 +13,11 @@ import com.sun.jna.win32.StdCallLibrary;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
-public interface XtFatalCallback extends StdCallLibrary.StdCallCallback {
+package com.xtaudio.xt;
+
+import com.sun.jna.Callback;
+
+public interface XtFatalCallback extends Callback {
 
     void callback();
 }

@@ -1,7 +1,4 @@
-using System;
-using System.Runtime.InteropServices;
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -16,54 +13,51 @@ using System.Runtime.InteropServices;
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
-namespace Xt {
+using System;
+using System.Runtime.InteropServices;
 
-    public sealed class XtDevice : IDisposable {
-
+namespace Xt
+{
+    public sealed class XtDevice : IDisposable
+    {
         internal IntPtr d;
+        internal XtDevice(IntPtr d) => this.d = d;
 
-        internal XtDevice(IntPtr d) {
-            this.d = d;
-        }
+        public override string ToString() => GetName();
+        public XtSystem GetSystem() => XtNative.XtDeviceGetSystem(d);
+        public void ShowControlPanel() => XtNative.HandleError(XtNative.XtDeviceShowControlPanel(d));
 
-        public override string ToString() {
-            return GetName();
-        }
-
-        public XtSystem GetSystem() {
-            return XtNative.XtDeviceGetSystem(d);
-        }
-
-        public void ShowControlPanel() {
-            XtNative.HandleError(XtNative.XtDeviceShowControlPanel(d));
-        }
-
-        public void Dispose() {
+        public void Dispose()
+        {
             if (d != IntPtr.Zero)
                 XtNative.XtDeviceDestroy(d);
             d = IntPtr.Zero;
         }
 
-        public string GetName() {
+        public string GetName()
+        {
             IntPtr name;
             XtNative.HandleError(XtNative.XtDeviceGetName(d, out name));
             return XtNative.FreeStringFromUtf8(name);
         }
 
-        public int GetChannelCount(bool output) {
+        public int GetChannelCount(bool output)
+        {
             int count;
             XtNative.HandleError(XtNative.XtDeviceGetChannelCount(d, output, out count));
             return count;
         }
 
-        public XtBuffer GetBuffer(XtFormat format) {
+        public XtBuffer GetBuffer(XtFormat format)
+        {
             XtBuffer buffer = new XtBuffer();
             XtNative.Format native = XtNative.Format.ToNative(format);
             XtNative.HandleError(XtNative.XtDeviceGetBuffer(d, ref native, buffer));
             return buffer;
         }
 
-        public XtMix GetMix() {
+        public XtMix GetMix()
+        {
             IntPtr mix;
             XtNative.HandleError(XtNative.XtDeviceGetMix(d, out mix));
             XtMix result = mix == IntPtr.Zero ? null : (XtMix)Marshal.PtrToStructure(mix, typeof(XtMix));
@@ -71,28 +65,31 @@ namespace Xt {
             return result;
         }
 
-        public bool SupportsAccess(bool interleaved) {
+        public bool SupportsAccess(bool interleaved)
+        {
             bool supports;
             XtNative.HandleError(XtNative.XtDeviceSupportsAccess(d, interleaved, out supports));
             return supports;
         }
 
-        public bool SupportsFormat(XtFormat format) {
+        public bool SupportsFormat(XtFormat format)
+        {
             bool supports;
             XtNative.Format native = XtNative.Format.ToNative(format);
             XtNative.HandleError(XtNative.XtDeviceSupportsFormat(d, ref native, out supports));
             return supports;
         }
 
-        public string GetChannelName(bool output, int index) {
+        public string GetChannelName(bool output, int index)
+        {
             IntPtr name;
             XtNative.HandleError(XtNative.XtDeviceGetChannelName(d, output, index, out name));
             return XtNative.FreeStringFromUtf8(name);
         }
 
-        public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize, 
-            XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user) {
-
+        public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize,
+            XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
+        {
             IntPtr s;
             XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
             XtNative.Format native = XtNative.Format.ToNative(format);

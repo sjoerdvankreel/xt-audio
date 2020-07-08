@@ -1,0 +1,165 @@
+<html>
+  <head>
+    <title>XT-Audio</title>
+    <style>
+      body { width: 1024; }
+    </style>
+  </head>
+  <body>
+    <h1>Runtime requirements</h1>
+    <table border="1" cellspacing="0" cellpadding="2">
+      <tr>
+        <td/>
+        <td>Windows x86</td>
+        <td>Windows x64</td>
+        <td>Linux x86</td>
+        <td>Linux x64</td>
+      </tr>
+      <tr>
+        <td>Java</td>
+        <td>JRE 9+ (2)</td>
+        <td>JRE 9+</td>
+        <td>JRE 9+ (2)</td>
+        <td>JRE 9+</td>
+      </tr>
+      <tr>
+        <td>.NET Framework</td>
+        <td>.NET 4.8</td>
+        <td>.NET 4.8</td>
+        <td>Mono 6.8</td>
+        <td>Mono 6.8</td>
+      </tr>
+      <tr>
+        <td>.NET Core</td>
+        <td>Runtime 3.1</td>
+        <td>Runtime 3.1</td>
+        <td>Not supported (1)</td>
+        <td>Runtime 3.1 (3)</td>
+      </tr>
+      <tr>
+        <td>Native</td>
+        <td>Windows 7+</td>
+        <td>Windows 7+</td>
+        <td>Something recent</td>
+        <td>Something recent</td>
+      </tr>
+    </table>
+    <ul>
+      <li>(1): .NET Core on Linux is x64 only (x86 not supported by Microsoft).</li>
+      <li>(2): Oracle ditched x86 support from Java 9 onwards. Tested on AdoptOpenJdk.</li>
+      <li>(3): Library will work but GUI-demo will not (Winforms not supported on Linux).</li>
+    </ul>
+    <h1>Build-time requirements</h1>
+    <h2>Dependencies</h2>
+    <table border="1" cellspacing="0" cellpadding="2">
+      <tr>
+        <td>PulseAudio (1,6)</td>
+        <td>libpulse-dev</td>
+      </tr>
+      <tr>
+        <td>ALSA (1,5)</td>
+        <td>libasound-dev</td>
+      </tr>
+      <tr>
+        <td>Jack (1,4)</td>
+        <td>libjack-jackd2-dev</td>
+      </tr>
+      <tr>
+        <td>DirectSound (2)</td>
+        <td>None (built-in)</td>
+      </tr>
+      <tr>
+        <td>WASAPI (2)</td>
+        <td>None (built-in)</td>
+      </tr>
+      <tr>
+        <td>ASIO (2,3)</td>
+        <td>ASIO SDK 2.3 (source), asmjit (source, recent)
+      </tr>
+    </table>
+    <ul>
+      <li>(1) Linux only.</li>
+      <li>(2) Windows only.</li>
+      <li>(3) Only required when building with ASIO support.</li>
+      <li>(4) Only required when building with JACK support.</li>
+      <li>(5) Only required when building with ALSA support.</li>
+      <li>(6) Only required when building with PulseAudio support.</li>
+    </ul>
+    <h2>Build tools</h2>
+    <table border="1" cellspacing="0" cellpadding="2">
+      <tr>
+        <td>Linux x86 (1)</td>
+        <td>GCC 9+<br/>CMake 2.8+</td>
+      </tr>
+      <tr>
+        <td>Linux x64 (2)</td>
+        <td>GCC 9+<br/>CMake 2.8+</td>
+      </tr>
+      <tr>
+        <td>Windows x64 (3)</td>
+        <td>Visual Studio 2019+<br/>Java SDK 9+<br/>.NET SDK 4.8+<br/>.NET Core SDK 3.1+<br/>CMake 2.8+<br/>Maven 3.3.3+<br/>Doxygen 1.8.10+<br/>Sandcastle (SHFB) 2020.3.6.0+</td>
+      </tr>
+    </table>
+    <ul>
+      <li>(1): Builds Linux x86 core library and sample apps only.</li>
+      <li>(2): Builds Linux x64 core library and sample apps only.</li>
+      <li>(3): Builds x86/x64 Windows core library and sample apps, and Java, .NET and .NET Core bindings, sample apps and GUI demo program.</li>
+    </ul>
+    <h1>Building XT-Audio</h1>
+    <h2>Selective backend compilation</h2>
+    XT-Audio may be compiled with built-in support for any/all of DirectSound, WASAPI and ASIO on Windows,
+    and PulseAudio, ALSA and JACK support on Linux. The core library (C) API does not change regardless of
+    which backends are compiled-in, so bindings to other languages stay the same. If support for a specific
+    backend is not selected at build-time (either through the build scripts, CMake, or by directly invoking
+    the C++ compiler with the appropriate flags), XT-Audio will build without dependencies on that backend.
+    Pre-built binaries are compiled with all supported backends enabled.
+    <h2>Build instructions</h2>
+    <ul>
+      <li>On X86 Linux: cd build && export XT_ARCH=x86 && ./build.sh [DISABLE_PULSE] [DISABLE_ALSA] [DISABLE_JACK] (1)</li>
+      <li>On X64 Linux: cd build && export XT_ARCH=x64 && ./build.sh [DISABLE_PULSE] [DISABLE_ALSA] [DISABLE_JACK]</li>
+      <li>On X64 Windows: cd build && build.bat [DISABLE_DSOUND] [DISABLE_WASAPI] [DISABLE_ASIO] path/to/asiosdk path/to/asmjit (2,3)</li>
+    </ul>
+    <ul>
+      <li>(1) For example ./build.sh OFF ON ON builds with PulseAudio support only.</li>
+      <li>(2) For example build.bat ON OFF ON builds with WASAPI support only.</li>
+      <li>(3) Paths to ASIO SDK and asmjit are required for builds with ASIO support only.</li>
+    </ul>
+    <h2>Build outputs</h2>
+    <table border="1" cellspacing="0" cellpadding="2">
+      <tr>
+        <td>Core library</td>
+        <td>X86/x64, Linux/Windows, static/dynamic</td>
+      </tr>
+      <tr>
+        <td>C++ bindings and samples</td>
+        <td>X86/x64, Linux/Windows, static only (1)</td>
+      </tr>
+      <tr>
+        <td>.NET bindings, samples and demo GUI</td>
+        <td>.NET 4.8/Mono 6.8/.NET Core 3.1</td>
+      </tr>
+      <tr>
+        <td>Java bindings and samples</td>
+        <td>JRE 9+</td>
+      </tr>
+    </table>
+    <ul>
+      <li>(1) Build from source for dynamically linked C++ libraries.</li>
+    </ul>
+    <h2>Build output directories</h2>
+    <table border="1" cellspacing="0" cellpadding="2">
+      <tr>
+        <td>Scratch</td>
+        <td>Working directory with all project files and binaries produced by individual targets.</td>
+      </tr>
+      <tr>
+        <td>Temp</td>
+        <td>Complete outputs including required binaries for all projects, including debug builds and test programs.</td>
+      </tr>
+      <tr>
+        <td>Dist</td>
+        <td>Only stuff that's actually supported ends up here: release versions of core library, wrapper libraries, sample programs, cli gui app and docs.</td>
+      </tr>
+    </table>
+  </body>
+</html>

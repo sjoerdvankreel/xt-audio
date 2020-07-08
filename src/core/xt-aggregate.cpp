@@ -1,7 +1,4 @@
-#include "xt-private.hpp"
-#include <cassert>
-
-/* Copyright (C) 2015-2017 Sjoerd van Kreel.
+/* Copyright (C) 2015-2020 Sjoerd van Kreel.
  *
  * This file is part of XT-Audio.
  *
@@ -16,6 +13,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with XT-Audio. If not, see<http://www.gnu.org/licenses/>.
  */
+#include "xt-private.hpp"
+#include <cassert>
 
 // ---- local ----
 
@@ -64,6 +63,10 @@ static void ZeroBuffer(
 }
 
 // ---- ring buffer ----
+
+XtRingBuffer::XtRingBuffer(): 
+end(), full(), begin(), frames(), channels(), 
+interleaved(), sampleSize(), locked(), blocks() {}
 
 XtRingBuffer::XtRingBuffer(
   bool interleaved, int32_t frames, 
