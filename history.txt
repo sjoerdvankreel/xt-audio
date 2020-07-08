@@ -1,4 +1,4 @@
-?, ? - V1.0.6.
+July 8, 2020 - V1.0.6.
 * Support .NET Core.
 * Support Java 9 modules.
 * Support build-time backend selection.
