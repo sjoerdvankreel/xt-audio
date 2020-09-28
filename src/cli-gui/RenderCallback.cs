@@ -5,7 +5,7 @@ namespace Xt
     class RenderCallback : StreamCallback
     {
         private double phase;
-        private static readonly double Frequency = 660.0;
+        private static readonly double Frequency = 440.0;
 
         internal RenderCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
             base("Render", onError, onMessage)
@@ -19,7 +19,7 @@ namespace Xt
             {
 
                 int ival;
-                double val = Math.Sin(phase * Math.PI);
+                double val = Math.Sin(phase * 2.0  * Math.PI);
                 phase += Frequency / format.mix.rate;
                 if (phase >= 1.0)
                     phase = -1.0;
