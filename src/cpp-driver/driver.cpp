@@ -20,7 +20,7 @@ static const bool EnableList = true;
 static const int32_t AutoMillis = 333;
 static const bool EnableStream = true;
 static const bool EnableListFull = true;
-static const double ToneFrequency = 660.0;
+static const double ToneFrequency = 440.0;
 static const int32_t StreamIterations = 2;
 static const int32_t AutoStreamMillis = -1;
 static const char RecordFileName[] = "xt-recording";
@@ -230,7 +230,7 @@ static void OnStreamCallback(
       ctx.phase += ToneFrequency / format.mix.rate;
       if(ctx.phase > 1.0)
         ctx.phase = -1.0;
-      value = sin(ctx.phase * M_PI) * 0.95;
+      value = sin(2.0 * ctx.phase * M_PI) * 0.95;
       for(int32_t c = 0; c < format.outputs; c++) {
         if(interleaved)
           dest = &static_cast<unsigned char*>(output)[(f * outputs + c) * sampleSize];

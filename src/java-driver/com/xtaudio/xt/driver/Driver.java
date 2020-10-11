@@ -38,7 +38,7 @@ public class Driver {
     private static final boolean STREAM = true;
     private static final boolean LIST_FULL = true;
     private static final int AUTO_STREAM_MILLIS = -1;
-    private static final double TONE_FREQUENCY = 660.0;
+    private static final double TONE_FREQUENCY = 440.0;
 
     private static final int[] CHANNELS = {1, 2, 6, 8};
     private static final XtSample[] SAMPLES = XtSample.values();
@@ -410,7 +410,7 @@ public class Driver {
                 ctx.phase += TONE_FREQUENCY / format.mix.rate;
                 if (ctx.phase > 1.0)
                     ctx.phase = -1.0;
-                value = Math.sin(ctx.phase * Math.PI) * 0.95;
+                value = Math.sin(2.0 * ctx.phase * Math.PI) * 0.95;
                 if (!raw)
                     if (interleaved)
                         for (int c = 0; c < format.outputs; c++)
