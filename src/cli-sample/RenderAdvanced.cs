@@ -5,7 +5,7 @@ namespace Xt
     public class RenderAdvanced
     {
         static double phase = 0.0;
-        const double Frequency = 660.0;
+        const double Frequency = 440.0;
 
         static void ReadLine()
         {
@@ -18,7 +18,7 @@ namespace Xt
             phase += Frequency / sampleRate;
             if (phase >= 1.0)
                 phase = -1.0;
-            return (float)Math.Sin(phase * Math.PI);
+            return (float)Math.Sin(2.0 * phase * Math.PI);
         }
 
         static void XRun(int index, object user)

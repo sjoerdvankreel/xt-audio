@@ -15,7 +15,7 @@ import com.xtaudio.xt.XtStream;
 public class RenderAdvanced {
 
     static double phase = 0.0;
-    static final double FREQUENCY = 660.0;
+    static final double FREQUENCY = 440.0;
 
     static void readLine() {
         System.out.println("Press any key to continue...");
@@ -26,7 +26,7 @@ public class RenderAdvanced {
         phase += FREQUENCY / sampleRate;
         if (phase >= 1.0)
             phase = -1.0;
-        return (float) Math.sin(phase * Math.PI);
+        return (float) Math.sin(2.0 * phase * Math.PI);
     }
 
     static void xRun(int index, Object user) {

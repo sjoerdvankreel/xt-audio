@@ -12,7 +12,7 @@
 #endif
 
 static double phase = 0.0;
-static const double Frequency = 660.0;
+static const double Frequency = 440.0;
 
 static void ReadLine() {
   std::string s;
@@ -24,7 +24,7 @@ static float NextSine(double sampleRate) {
   phase += Frequency / sampleRate;
   if(phase >= 1.0)
     phase = -1.0;
-  return (float)sin(phase * M_PI);
+  return (float)sin(2.0 * phase * M_PI);
 }
 
 static void XRun(int index, void* user) {

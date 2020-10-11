@@ -12,7 +12,7 @@
 #endif
 
 static double phase = 0.0;
-static const double Frequency = 660.0;
+static const double Frequency = 440.0;
 static const Xt::Format Format(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 0);
 
 static void Render(
@@ -23,7 +23,7 @@ static void Render(
     phase += Frequency / Format.mix.rate;
     if(phase >= 1.0)
       phase = -1.0;
-    ((float*)output)[f] = (float)sin(phase * M_PI);
+    ((float*)output)[f] = (float)sin(2.0 * phase * M_PI);
   }
 }
 

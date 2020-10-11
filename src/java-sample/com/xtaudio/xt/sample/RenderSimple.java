@@ -13,7 +13,7 @@ import com.xtaudio.xt.XtStream;
 public class RenderSimple {
 
     static double phase = 0.0;
-    static final double FREQUENCY = 660.0;
+    static final double FREQUENCY = 440.0;
     static final XtFormat FORMAT = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 0);
 
     static void render(XtStream stream, Object input, Object output, int frames,
@@ -23,7 +23,7 @@ public class RenderSimple {
             phase += FREQUENCY / FORMAT.mix.rate;
             if (phase >= 1.0)
                 phase = -1.0;
-            ((float[]) output)[f] = (float) Math.sin(phase * Math.PI);
+            ((float[]) output)[f] = (float) Math.sin(2.0 * phase * Math.PI);
         }
     }
 
