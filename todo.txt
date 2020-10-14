@@ -8,3 +8,6 @@
 * Device & stream events in favor of logging
 * Distribute debug binaries
 * Split getversionnumber
+* Overall code cleanup
+* Check TODOS
+* Move statics into single class

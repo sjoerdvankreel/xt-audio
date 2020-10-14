@@ -239,7 +239,8 @@ public:
   Audio(const std::string& id, void* window, TraceCallback trace, FatalCallback fatal);
 
   static bool IsWin32();
-  static std::string GetVersion();
+  static int32_t GetVersionMajor();
+  static int32_t GetVersionMinor();
   static int32_t GetServiceCount();
   static Attributes GetSampleAttributes(Sample sample);
   static std::unique_ptr<Service> GetServiceBySetup(Setup setup);

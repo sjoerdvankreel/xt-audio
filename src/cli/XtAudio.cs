@@ -46,7 +46,8 @@ namespace Xt
         public void Dispose() => XtNative.XtAudioTerminate();
         public static bool IsWin32() => XtNative.XtAudioIsWin32();
         public static int GetServiceCount() => XtNative.XtAudioGetServiceCount();
-        public static string GetVersion() => XtNative.StringFromUtf8(XtNative.XtAudioGetVersion());
+        public static int GetVersionMajor() => XtNative.XtAudioGetVersionMajor();
+        public static int GetVersionMinor() => XtNative.XtAudioGetVersionMinor();
         public static XtService GetServiceByIndex(int index) => new XtService(XtNative.XtAudioGetServiceByIndex(index));
 
         public static XtService GetServiceBySetup(XtSetup setup)

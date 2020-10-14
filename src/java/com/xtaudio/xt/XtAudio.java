@@ -45,8 +45,12 @@ public final class XtAudio implements XtCloseable {
         return XtNative.XtAudioIsWin32();
     }
 
-    public static String getVersion() {
-        return XtNative.XtAudioGetVersion();
+    public static int getVersionMajor() {
+        return XtNative.XtAudioGetVersionMajor();
+    }
+
+    public static int getVersionMinor() {
+        return XtNative.XtAudioGetVersionMinor();
     }
 
     public static int getServiceCount() {

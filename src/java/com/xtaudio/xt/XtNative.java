@@ -209,7 +209,8 @@ final class XtNative {
     static native boolean XtAudioIsWin32();
     static native void XtAudioTerminate();
     static native void XtAudioFree(Pointer p);
-    static native String XtAudioGetVersion();
+    static native int XtAudioGetVersionMajor();
+    static native int XtAudioGetVersionMinor();
     static native int XtAudioGetServiceCount();
     static native Pointer XtAudioGetServiceByIndex(int index);
     static native Pointer XtAudioGetServiceBySetup(int setup);

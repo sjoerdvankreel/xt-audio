@@ -294,8 +294,12 @@ void XT_CALL XtAudioFree(void* ptr) {
   free(ptr);
 }
 
-const char* XT_CALL XtAudioGetVersion(void) {
-  return "1.7";
+int32_t XT_CALL XtAudioGetVersionMajor(void) {
+  return 1;
+}
+
+int32_t XT_CALL XtAudioGetVersionMinor(void) {
+  return 7;
 }
 
 const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup) {
@@ -321,9 +325,9 @@ void XT_CALL XtAudioGetSampleAttributes(XtSample sample, XtAttributes* attribute
 
 void XT_CALL XtAudioTerminate(void) {
   XT_ASSERT(XtiCalledOnMainThread());
-  XT_TRACE(XtLevelInfo, "Terminating library (version %s)...", XtAudioGetVersion());
+  XT_TRACE(XtLevelInfo, "Terminating library (version %d.%d)...", XtAudioGetVersionMajor(), XtAudioGetVersionMinor());
   XtiTerminatePlatform();
-  XT_TRACE(XtLevelInfo, "Terminated library (version %s).", XtAudioGetVersion());
+  XT_TRACE(XtLevelInfo, "Terminated library (version %d.%d).", XtAudioGetVersionMajor(), XtAudioGetVersionMinor());
   free(XtiId);
   XtiId = nullptr;
   XtiTraceCallback = nullptr;
@@ -334,9 +338,9 @@ void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, Xt
   XtiTraceCallback = trace;
   XtiFatalCallback = fatal;
   XtiId = id == nullptr || strlen(id) == 0? strdup("XT-Audio"): strdup(id);
-  XT_TRACE(XtLevelInfo, "Initializing library (version %s, built %s %s) ...", XtAudioGetVersion(), __DATE__, __TIME__);
+  XT_TRACE(XtLevelInfo, "Initializing library (version %d.%d, built %s %s) ...", XtAudioGetVersionMajor(), XtAudioGetVersionMinor(), __DATE__, __TIME__);
   XtiInitPlatform(window);
-  XT_TRACE(XtLevelInfo, "Initialized library (version %s).", XtAudioGetVersion());
+  XT_TRACE(XtLevelInfo, "Initialized library (version %d.%d).", XtAudioGetVersionMajor(), XtAudioGetVersionMinor());
 }
 
 // ---- service ----

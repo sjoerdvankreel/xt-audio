@@ -222,8 +222,12 @@ Audio::Audio(const std::string& id, void* window, TraceCallback t, FatalCallback
   XtAudioInit(id.c_str(), window, &ForwardTraceCallback, &ForwardFatalCallback);
 }
 
-std::string Audio::GetVersion() {
-  return XtAudioGetVersion();
+int32_t Audio::GetVersionMajor() {
+  return XtAudioGetVersionMajor();
+}
+
+int32_t Audio::GetVersionMinor() {
+  return XtAudioGetVersionMinor();
 }
 
 int32_t Audio::GetServiceCount() {

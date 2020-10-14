@@ -228,7 +228,9 @@ namespace Xt
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern void XtAudioFree(IntPtr p);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtAudioGetVersion();
+        internal static extern int XtAudioGetVersionMajor();
+        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+        internal static extern int XtAudioGetVersionMinor();
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern int XtAudioGetServiceCount();
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]

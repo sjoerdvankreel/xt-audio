@@ -165,7 +165,7 @@ namespace Xt
 #endif
             x64.Text = "X64: " + (IntPtr.Size == 8);
             isWin32.Text = "Win32: " + XtAudio.IsWin32();
-            version.Text = "Version: " + XtAudio.GetVersion();
+            version.Text = "Version: " + XtAudio.GetVersionMajor() + "." + XtAudio.GetVersionMinor();
 
             rate.DataSource = Rates;
             rate.SelectedItem = 44100;
