@@ -80,11 +80,10 @@ struct XtwWin32Stream: public XtManagedStream {
   XtwCriticalSection lock;
   const XtwEvent respondEvent;
   const XtwEvent controlEvent;
-  XT_IMPLEMENT_STREAM_CONTROL();
+  XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
 
   XtwWin32Stream(bool secondary);
   ~XtwWin32Stream();
-  virtual void RequestStop();
   bool VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr);
 };
 

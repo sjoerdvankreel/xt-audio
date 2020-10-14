@@ -63,7 +63,7 @@ struct DSoundStream: public XtwWin32Stream {
   const CComPtr<IDirectSoundCapture> input;
   const CComPtr<IDirectSoundBuffer> render;
   const CComPtr<IDirectSoundCaptureBuffer> capture;
-  XT_IMPLEMENT_STREAM(DSound);
+  XT_IMPLEMENT_BLOCKING_STREAM(DSound);
 
   ~DSoundStream() { Stop(); }
   DSoundStream(bool secondary,
@@ -75,10 +75,6 @@ struct DSoundStream: public XtwWin32Stream {
   xtBytesProcessed(0), dsBytesProcessed(0),
   previousDsPosition(0), bufferFrames(bufferFrames), timer(),
   output(output), input(input), render(render), capture(capture) {}
-
-  void StopStream();
-  void StartStream();
-  void ProcessBuffer(bool prefill);  
 };
 
 // ---- local ----

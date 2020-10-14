@@ -111,8 +111,8 @@ struct AlsaStream: public XtlLinuxStream {
   const int32_t bufferFrames;
   std::vector<char> interleavedAudio;
   std::vector<void*> nonInterleavedAudio;
-  std::vector<std::vector<char>> nonInterleavedAudioChannels;
-  XT_IMPLEMENT_STREAM(Alsa);
+  std::vector<std::vector<char>> nonInterleavedAudioChannels;  
+  XT_IMPLEMENT_BLOCKING_STREAM(Alsa);
 
   ~AlsaStream() { Stop(); }
   AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
@@ -130,10 +130,6 @@ struct AlsaStream: public XtlLinuxStream {
     for(size_t i = 0; i < channels; i++)
       nonInterleavedAudio[i] = &(nonInterleavedAudioChannels[i][0]);
   }
-
-  void StopStream();
-  void StartStream();
-  void ProcessBuffer(bool prefill);
 };
 
 // ---- local ----

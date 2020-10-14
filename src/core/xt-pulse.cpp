@@ -75,7 +75,7 @@ struct PulseStream: public XtlLinuxStream {
   const XtPaSimple client;
   std::vector<char> audio;
   const int32_t bufferFrames;
-  XT_IMPLEMENT_STREAM(Pulse);
+  XT_IMPLEMENT_BLOCKING_STREAM(Pulse);
 
   ~PulseStream() { Stop(); }
   PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
@@ -83,10 +83,6 @@ struct PulseStream: public XtlLinuxStream {
   audio(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   bufferFrames(bufferFrames) 
   { XT_ASSERT(client.simple != nullptr); }
-
-  void StopStream();
-  void StartStream();
-  void ProcessBuffer(bool prefill); 
 };
 
 // ---- local ----

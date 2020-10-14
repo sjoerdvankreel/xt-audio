@@ -66,7 +66,7 @@ struct WasapiStream: public XtwWin32Stream {
   const CComPtr<IAudioClient> loopback;
   const CComPtr<IAudioRenderClient> render;
   const CComPtr<IAudioCaptureClient> capture;
-  XT_IMPLEMENT_STREAM(Wasapi);
+  XT_IMPLEMENT_BLOCKING_STREAM(Wasapi);
 
   ~WasapiStream() { Stop(); }
   WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
@@ -76,9 +76,6 @@ struct WasapiStream: public XtwWin32Stream {
   options(options), streamEvent(), clock(clock), clock2(clock2), 
   client(client), loopback(loopback), render(render), capture(capture) {}
 
-  void StopStream();
-  void StartStream();
-  void ProcessBuffer(bool prefill);
   const wchar_t* GetMmcssTaskName() const;
 };
 

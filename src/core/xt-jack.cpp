@@ -117,8 +117,7 @@ struct JackStream: public XtStream {
   std::vector<void*> inputChannels;
   std::vector<void*> outputChannels;
   std::vector<XtJackConnection> connections;
-  XT_IMPLEMENT_STREAM(Jack);
-  XT_IMPLEMENT_STREAM_CONTROL();
+  XT_IMPLEMENT_CALLBACK_STREAM(Jack);
 
   JackStream(XtJackClient&& client, 
     std::vector<XtJackPort>&& inputs, std::vector<XtJackPort>&& outputs,

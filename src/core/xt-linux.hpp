@@ -49,11 +49,10 @@ struct XtlLinuxStream: public XtManagedStream {
   XtStreamState state;
   XtlCondition respondCv;
   XtlCondition controlCv;
-  XT_IMPLEMENT_STREAM_CONTROL();
+  XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
 
   XtlLinuxStream(bool secondary);
   ~XtlLinuxStream();
-  virtual void RequestStop();
   bool VerifyStreamCallback(int error, const char* file, int line, const char* func, const char* expr);
 };
 

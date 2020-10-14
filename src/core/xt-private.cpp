@@ -139,14 +139,6 @@ XtManagedStream::XtManagedStream(bool secondary):
 secondary(secondary) {
 }
 
-bool XtManagedStream::IsManaged() {
-  return true;
-}
-
-bool XtStream::IsManaged() {
-  return false;
-}
-
 void XtStream::RequestStop() {
   XT_FAIL("Async stop request not supported on the current stream.");
 }

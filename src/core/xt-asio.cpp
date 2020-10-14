@@ -73,8 +73,7 @@ struct AsioStream: public XtStream {
   std::vector<void*> outputChannels;
   std::vector<ASIOBufferInfo> buffers;
   const std::unique_ptr<asmjit::JitRuntime> runtime;
-  XT_IMPLEMENT_STREAM(Asio);
-  XT_IMPLEMENT_STREAM_CONTROL();
+  XT_IMPLEMENT_CALLBACK_STREAM(Asio);
 
   ~AsioStream();
   AsioStream(AsioDevice* d, const XtFormat& format, 

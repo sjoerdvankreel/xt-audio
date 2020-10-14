@@ -49,42 +49,53 @@ static_assert(sizeof(XtCapabilities) == 4, "sizeof(XtCapabilities) == 4");
 
 // ---- forward ----
 
-#define XT_IMPLEMENT_STREAM_CONTROL() \
-  XtFault Stop();                     \
-  XtFault Start();                    
+#define XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM() \
+  XtFault Stop() override;                           \
+  XtFault Start() override;                          \
+  void RequestStop() override;
 
-#define XT_IMPLEMENT_STREAM(name)               \
-  XtFault GetFrames(int32_t* frames) const;     \
-  XtFault GetLatency(XtLatency* latency) const; \
-  XtSystem GetSystem() const { return XtSystem ## name; }
+#define XT_IMPLEMENT_CALLBACK_STREAM(name)               \
+  XtFault Stop() override;                               \
+  XtFault Start() override;                              \
+  XtFault GetFrames(int32_t* frames) const override;     \
+  XtFault GetLatency(XtLatency* latency) const override; \
+  XtSystem GetSystem() const override { return XtSystem ## name; }
 
-#define XT_DECLARE_SERVICE(name)                                     \
-struct name ## Service: public XtService {                           \
-  const char* GetName() const;                                       \
-  XtFault GetFormatFault() const;                                    \
-  XtCapabilities GetCapabilities() const;                            \
-  XtCause GetFaultCause(XtFault fault) const;                        \
-  XtFault GetDeviceCount(int32_t* count) const;                      \
-  const char* GetFaultText(XtFault fault) const;                     \
-  XtSystem GetSystem() const { return XtSystem ## name; }            \
-  XtFault OpenDevice(int32_t index, XtDevice** device) const;        \
-  XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const; \
-};                                                                   \
-static const name ## Service Service ## name;                        \
+#define XT_IMPLEMENT_BLOCKING_STREAM(name)               \
+  void StopStream() override;                            \
+  void StartStream() override;                           \
+  void ProcessBuffer(bool prefill) override;             \
+  XtFault GetFrames(int32_t* frames) const override;     \
+  XtFault GetLatency(XtLatency* latency) const override; \
+  XtSystem GetSystem() const override { return XtSystem ## name; }
+
+#define XT_DECLARE_SERVICE(name)                                              \
+struct name ## Service: public XtService {                                    \
+  const char* GetName() const override;                                       \
+  XtFault GetFormatFault() const override;                                    \
+  XtCapabilities GetCapabilities() const override;                            \
+  XtCause GetFaultCause(XtFault fault) const override;                        \
+  XtFault GetDeviceCount(int32_t* count) const override;                      \
+  const char* GetFaultText(XtFault fault) const override;                     \
+  XtSystem GetSystem() const override { return XtSystem ## name; }            \
+  XtFault OpenDevice(int32_t index, XtDevice** device) const override;        \
+  XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const override; \
+};                                                                            \
+static const name ## Service Service ## name;                                 \
 const XtService* XtiService ## name = &Service ## name
 
-#define XT_IMPLEMENT_DEVICE(name)                                                   \
-  XtFault ShowControlPanel();                                                       \
-  XtFault GetMix(XtMix** mix) const;                                                \
-  XtFault GetName(char** name) const;                                               \
-  XtSystem GetSystem() const { return XtSystem ## name; }                           \
-  XtFault GetChannelCount(XtBool output, int32_t* count) const;                     \
-  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const;                \
-  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const;               \
-  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const;           \
-  XtFault GetChannelName(XtBool output, int32_t index, char** name) const;          \
-  XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, \
-                     bool secondary, XtStreamCallback callback, void* user, XtStream** stream)
+#define XT_IMPLEMENT_DEVICE(name)                                                            \
+  XtFault ShowControlPanel() override;                                                       \
+  XtFault GetMix(XtMix** mix) const override;                                                \
+  XtFault GetName(char** name) const override;                                               \
+  XtSystem GetSystem() const override { return XtSystem ## name; }                           \
+  XtFault GetChannelCount(XtBool output, int32_t* count) const override;                     \
+  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const override;                \
+  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;               \
+  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;           \
+  XtFault GetChannelName(XtBool output, int32_t index, char** name) const override;          \
+  XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,          \
+                     bool secondary, XtStreamCallback callback, void* user, XtStream** stream) override
 
 // ---- internal ----
 
@@ -169,11 +180,11 @@ struct XtStream {
   XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
-  virtual bool IsManaged();
   virtual void RequestStop();
   virtual XtFault Stop() = 0;
   virtual XtFault Start() = 0;
   virtual XtSystem GetSystem() const = 0;
+  virtual bool IsManaged() const { return false; }
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
   void ProcessXRun();
@@ -185,10 +196,10 @@ struct XtManagedStream: public XtStream {
   const bool secondary;
   XtManagedStream(bool secondary);
   virtual ~XtManagedStream() {};
-  virtual bool IsManaged();
   virtual void StopStream() = 0;
   virtual void StartStream() = 0;
   virtual void ProcessBuffer(bool prefill) = 0;
+  bool IsManaged() const override { return true; }
 };
 
 struct XtAggregate: public XtStream {
