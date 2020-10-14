@@ -13,10 +13,10 @@ static void Callback(
 int FullDuplexMain(int argc, char** argv) {
 
   Xt::Format format;
-  Xt::Format int44100(Xt::Mix(44100, Xt::Sample::Int32), 2, 0, 2, 0);
-  Xt::Format int48000(Xt::Mix(48000, Xt::Sample::Int32), 2, 0, 2, 0);
-  Xt::Format float44100(Xt::Mix(44100, Xt::Sample::Float32), 2, 0, 2, 0);
-  Xt::Format float48000(Xt::Mix(48000, Xt::Sample::Float32), 2, 0, 2, 0);
+  Xt::Format int44100(Xt::Mix(44100, Xt::Sample::Int32), Xt::Channels(2, 0, 2, 0));
+  Xt::Format int48000(Xt::Mix(48000, Xt::Sample::Int32), Xt::Channels(2, 0, 2, 0));
+  Xt::Format float44100(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(2, 0, 2, 0));
+  Xt::Format float48000(Xt::Mix(48000, Xt::Sample::Float32), Xt::Channels(2, 0, 2, 0));
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio);

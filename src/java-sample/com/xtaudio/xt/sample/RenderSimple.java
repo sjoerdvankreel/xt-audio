@@ -14,7 +14,7 @@ public class RenderSimple {
 
     static double phase = 0.0;
     static final double FREQUENCY = 440.0;
-    static final XtFormat FORMAT = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 0, 0, 1, 0);
+    static final XtFormat FORMAT = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(0, 0, 1, 0));
 
     static void render(XtStream stream, Object input, Object output, int frames,
             double time, long position, boolean timeValid, long error, Object user) {

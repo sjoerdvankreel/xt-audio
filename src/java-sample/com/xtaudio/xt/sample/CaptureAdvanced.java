@@ -29,7 +29,7 @@ public class CaptureAdvanced {
     static int getBufferSize(XtStream stream, int frames) {
         XtFormat format = stream.getFormat();
         int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
-        return frames * format.inputs * sampleSize;
+        return frames * format.channels.inputs * sampleSize;
     }
 
     static void xRun(int index, Object user) {
@@ -62,7 +62,7 @@ public class CaptureAdvanced {
         if (frames > 0) {
             Context ctx = (Context) user;
             XtFormat format = stream.getFormat();
-            int channels = format.inputs;
+            int channels = format.channels.inputs;
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
             for (int f = 0; f < frames; f++)
                 for (int c = 0; c < channels; c++)
@@ -77,7 +77,7 @@ public class CaptureAdvanced {
         if (frames > 0) {
             Context ctx = (Context) user;
             XtFormat format = stream.getFormat();
-            int channels = format.inputs;
+            int channels = format.channels.inputs;
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
             for (int f = 0; f < frames; f++)
                 for (int c = 0; c < channels; c++) {
@@ -96,7 +96,7 @@ public class CaptureAdvanced {
             if (service == null)
                 return;
 
-            XtFormat format = new XtFormat(new XtMix(44100, XtSample.INT24), 2, 0, 0, 0);
+            XtFormat format = new XtFormat(new XtMix(44100, XtSample.INT24), new XtChannels(2, 0, 0, 0));
             try (XtDevice device = service.openDefaultDevice(false)) {
                 if (device == null || !device.supportsFormat(format))
                     return;

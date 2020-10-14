@@ -379,12 +379,12 @@ void XT_CALLBACK XtiMasterCallback(
   ringOutput = interleaved? 
     static_cast<void*>(&(aggregate->weave.outputInterleaved[0])):
     &(aggregate->weave.outputNonInterleaved[0]);
-  appInput = format->inputs == 0?
+  appInput = format->channels.inputs == 0?
     nullptr:
     interleaved? 
     static_cast<void*>(&(aggregate->intermediate.inputInterleaved[0])):
     &(aggregate->intermediate.inputNonInterleaved[0]);
-  appOutput = format->outputs == 0?
+  appOutput = format->channels.outputs == 0?
     nullptr:
     interleaved? 
     static_cast<void*>(&(aggregate->intermediate.outputInterleaved[0])):
@@ -395,18 +395,18 @@ void XT_CALLBACK XtiMasterCallback(
     thisInRing = &aggregate->inputRings[i];
     thisStream = aggregate->streams[i].get();
     thisFormat = &aggregate->streams[i]->format;
-    if(thisFormat->inputs > 0) {
+    if(thisFormat->channels.inputs > 0) {
       thisInRing->Lock();
       read = thisInRing->Read(ringInput, frames);
       thisInRing->Unlock();
       if(read < frames) {
-        ZeroBuffer(ringInput, interleaved, read, thisFormat->inputs, frames - read, sampleSize);
+        ZeroBuffer(ringInput, interleaved, read, thisFormat->channels.inputs, frames - read, sampleSize);
         if(xRunCallback != nullptr)
           xRunCallback(-1, aggregate->user);
       }
-      for(c = 0; c < thisFormat->inputs; c++)
-        Weave(appInput, ringInput, interleaved, format->inputs, thisFormat->inputs, totalChannels + c, c, frames, sampleSize);
-      totalChannels += thisFormat->inputs;
+      for(c = 0; c < thisFormat->channels.inputs; c++)
+        Weave(appInput, ringInput, interleaved, format->channels.inputs, thisFormat->channels.inputs, totalChannels + c, c, frames, sampleSize);
+      totalChannels += thisFormat->channels.inputs;
     }
   }
 
@@ -417,10 +417,10 @@ void XT_CALLBACK XtiMasterCallback(
     thisOutRing = &aggregate->outputRings[i];
     thisStream = aggregate->streams[i].get();
     thisFormat = &aggregate->streams[i]->format;
-    if(thisFormat->outputs > 0) {
-      for(c = 0; c < thisFormat->outputs; c++)
-        Weave(ringOutput, appOutput, interleaved, thisFormat->outputs, format->outputs, c, totalChannels + c, frames, sampleSize);
-      totalChannels += thisFormat->outputs;
+    if(thisFormat->channels.outputs > 0) {
+      for(c = 0; c < thisFormat->channels.outputs; c++)
+        Weave(ringOutput, appOutput, interleaved, thisFormat->channels.outputs, format->channels.outputs, c, totalChannels + c, frames, sampleSize);
+      totalChannels += thisFormat->channels.outputs;
       thisOutRing->Lock();
       written = thisOutRing->Write(ringOutput, frames);
       thisOutRing->Unlock();

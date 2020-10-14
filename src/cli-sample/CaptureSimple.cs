@@ -7,7 +7,7 @@ namespace Xt
     public class CaptureSimple
     {
         const int SampleSize = 3;
-        static readonly XtFormat Format = new XtFormat(new XtMix(44100, XtSample.Int24), 1, 0, 0, 0);
+        static readonly XtFormat Format = new XtFormat(new XtMix(44100, XtSample.Int24), new XtChannels(1, 0, 0, 0));
 
         static void Capture(XtStream stream, object input, object output, int frames,
             double time, ulong position, bool timeValid, ulong error, object user)

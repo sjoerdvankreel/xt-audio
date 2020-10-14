@@ -81,8 +81,8 @@ struct AsioStream: public XtStream {
   XtStream(), issueOutputReady(true), 
   bufferSize(static_cast<long>(bufferSize)), 
   callbacks(), device(d), running(0), insideCallback(0),
-  inputChannels(static_cast<size_t>(format.inputs), nullptr),
-  outputChannels(static_cast<size_t>(format.outputs), nullptr),
+  inputChannels(static_cast<size_t>(format.channels.inputs), nullptr),
+  outputChannels(static_cast<size_t>(format.channels.outputs), nullptr),
   buffers(buffers), runtime(std::make_unique<asmjit::JitRuntime>()) {}
 };
 
@@ -196,12 +196,12 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
     time = XT_TO_UINT64(info.systemTime.lo, info.systemTime.hi) / XtAsioNsPerMs;
   }
 
-  input = s->format.inputs > 0? &s->inputChannels[0]: nullptr;
-  output = s->format.outputs > 0? &s->outputChannels[0]: nullptr;
-  for(int32_t i = 0; i < s->format.inputs; i++)
+  input = s->format.channels.inputs > 0? &s->inputChannels[0]: nullptr;
+  output = s->format.channels.outputs > 0? &s->outputChannels[0]: nullptr;
+  for(int32_t i = 0; i < s->format.channels.inputs; i++)
     s->inputChannels[i] = s->buffers[i].buffers[index];
-  for(int32_t i = 0; i < s->format.outputs; i++)
-    s->outputChannels[i] = s->buffers[s->format.inputs + i].buffers[index];
+  for(int32_t i = 0; i < s->format.channels.outputs; i++)
+    s->outputChannels[i] = s->buffers[s->format.channels.inputs + i].buffers[index];
   s->ProcessCallback(input, output, s->bufferSize, time, position, timeValid, ASE_OK);
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
@@ -457,23 +457,23 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
     return ASE_OK;
   if(static_cast<int32_t>(rate) != format->mix.rate)
     return ASE_OK;
-  if(format->inputs > inputs || format->outputs > outputs)
+  if(format->channels.inputs > inputs || format->channels.outputs > outputs)
     return ASE_OK;
   for(int32_t i = inputs; i < 64; i++)
-    if((format->inMask & (1ULL << i)) != 0)
+    if((format->channels.inMask & (1ULL << i)) != 0)
       return ASE_OK;
   for(int32_t i = outputs; i < 64; i++)
-    if((format->outMask & (1ULL << i)) != 0)
+    if((format->channels.outMask & (1ULL << i)) != 0)
       return ASE_OK;
   
   for(size_t i = 0; i < infos.size(); i++) {
     if(infos[i].isInput && infos[i].type != type &&
-      (format->inMask == 0 && infos[i].channel < format->inputs 
-        || format->inMask != 0 && (((format->inMask >> infos[i].channel) & 1ULL) == 1ULL)))
+      (format->channels.inMask == 0 && infos[i].channel < format->channels.inputs 
+        || format->channels.inMask != 0 && (((format->channels.inMask >> infos[i].channel) & 1ULL) == 1ULL)))
       return ASE_OK;
     if(!infos[i].isInput && infos[i].type != type &&
-      (format->outMask == 0 && infos[i].channel < format->outputs 
-        || format->outMask != 0 && (((format->outMask >> infos[i].channel) & 1ULL) == 1ULL)))
+      (format->channels.outMask == 0 && infos[i].channel < format->channels.outputs 
+        || format->channels.outMask != 0 && (((format->channels.outMask >> infos[i].channel) & 1ULL) == 1ULL)))
       return ASE_OK;
   }
 
@@ -508,8 +508,8 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
       asioBufferSize = max;
   }
 
-  CreateBufferInfos(buffers, ASIOTrue, format->inputs, format->inMask);
-  CreateBufferInfos(buffers, ASIOFalse, format->outputs, format->outMask);
+  CreateBufferInfos(buffers, ASIOTrue, format->channels.inputs, format->channels.inMask);
+  CreateBufferInfos(buffers, ASIOFalse, format->channels.outputs, format->channels.outMask);
   auto result = std::make_unique<AsioStream>(this, *format, asioBufferSize, buffers);
   result->callbacks.asioMessage = &AsioMessage;
   result->callbacks.sampleRateDidChange = &SampleRateDidChange;
@@ -549,8 +549,8 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   ASIOSampleRate rate;
   XT_VERIFY_ASIO(device->asio->getSampleRate(&rate));
   XT_VERIFY_ASIO(device->asio->getLatencies(&input, &output));
-  latency->input = format.inputs == 0? 0.0: input * 1000.0 / rate;
-  latency->output = format.outputs == 0? 0.0: output * 1000.0 / rate;
+  latency->input = format.channels.inputs == 0? 0.0: input * 1000.0 / rate;
+  latency->output = format.channels.outputs == 0? 0.0: output * 1000.0 / rate;
   return ASE_OK;
 }
 

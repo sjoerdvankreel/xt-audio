@@ -96,10 +96,10 @@ final class XtNative {
             XtFormat result = new XtFormat();
             result.mix.rate = rate;
             result.mix.sample = XtSample.values()[sample];
-            result.inputs = inputs;
-            result.inMask = inMask;
-            result.outputs = outputs;
-            result.outMask = outMask;
+            result.channels.inputs = inputs;
+            result.channels.inMask = inMask;
+            result.channels.outputs = outputs;
+            result.channels.outMask = outMask;
             return result;
         }
 
@@ -107,10 +107,10 @@ final class XtNative {
             Format result = new Format();
             result.rate = format.mix.rate;
             result.sample = format.mix.sample.ordinal();
-            result.inputs = format.inputs;
-            result.inMask = format.inMask;
-            result.outputs = format.outputs;
-            result.outMask = format.outMask;
+            result.inputs = format.channels.inputs;
+            result.inMask = format.channels.inMask;
+            result.outputs = format.channels.outputs;
+            result.outMask = format.channels.outMask;
             return result;
         }
     }

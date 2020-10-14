@@ -225,11 +225,11 @@ public final class XtStream implements XtCloseable {
             int frames = getFrames();
             XtFormat format = getFormat();
             if (isInterleaved()) {
-                inputInterleaved = createInterleavedBuffer(format.mix.sample, format.inputs, frames);
-                outputInterleaved = createInterleavedBuffer(format.mix.sample, format.outputs, frames);
+                inputInterleaved = createInterleavedBuffer(format.mix.sample, format.channels.inputs, frames);
+                outputInterleaved = createInterleavedBuffer(format.mix.sample, format.channels.outputs, frames);
             } else {
-                inputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.inputs, frames);
-                outputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.outputs, frames);
+                inputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.channels.inputs, frames);
+                outputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.channels.outputs, frames);
             }
         }
     }
@@ -256,9 +256,9 @@ public final class XtStream implements XtCloseable {
 
         if (!raw && inData != null)
             if (interleaved)
-                copyInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+                copyInterleavedBufferFromNative(format.mix.sample, input, inData, format.channels.inputs, frames);
             else
-                copyNonInterleavedBufferFromNative(format.mix.sample, input, inData, format.inputs, frames);
+                copyNonInterleavedBufferFromNative(format.mix.sample, input, inData, format.channels.inputs, frames);
 
         try {
             userStreamCallback.callback(this, inData, outData, frames, time, position, timeValid, error, user);
@@ -272,8 +272,8 @@ public final class XtStream implements XtCloseable {
 
         if (!raw && outData != null)
             if (interleaved)
-                copyInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
+                copyInterleavedBufferToNative(format.mix.sample, outData, output, format.channels.outputs, frames);
             else
-                copyNonInterleavedBufferToNative(format.mix.sample, outData, output, format.outputs, frames);
+                copyNonInterleavedBufferToNative(format.mix.sample, outData, output, format.channels.outputs, frames);
     }
 }

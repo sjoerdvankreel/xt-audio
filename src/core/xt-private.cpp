@@ -83,15 +83,15 @@ XtError XtiCreateError(XtSystem system, XtFault fault) {
 
 bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
   const XtService* service = XtAudioGetServiceBySystem(system);
-  if(format.inputs < 0 || format.outputs < 0)
+  if(format.channels.inputs < 0 || format.channels.outputs < 0)
     return false;
-  if(format.inputs == 0 && format.outputs == 0)
+  if(format.channels.inputs == 0 && format.channels.outputs == 0)
     return false;
   if(format.mix.rate < 1 || format.mix.rate > 384000)
     return false;
-  if(format.inMask != 0 && format.inputs != XtiGetPopCount64(format.inMask))
+  if(format.channels.inMask != 0 && format.channels.inputs != XtiGetPopCount64(format.channels.inMask))
     return false;
-  if(format.outMask != 0 && format.outputs != XtiGetPopCount64(format.outMask))
+  if(format.channels.outMask != 0 && format.channels.outputs != XtiGetPopCount64(format.channels.outMask))
     return false;
   if(format.mix.sample < XtSampleUInt8 || format.mix.sample > XtSampleFloat32)
     return false;
@@ -168,17 +168,17 @@ void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double
     inData = haveInput? &intermediate.inputInterleaved[0]: nullptr;
     outData = haveOutput? &intermediate.outputInterleaved[0]: nullptr;
     if(haveInput)
-      Interleave(&intermediate.inputInterleaved[0], static_cast<void**>(input), frames, format.inputs, sampleSize);
+      Interleave(&intermediate.inputInterleaved[0], static_cast<void**>(input), frames, format.channels.inputs, sampleSize);
     streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     if(haveOutput)
-      Deinterleave(static_cast<void**>(output), &intermediate.outputInterleaved[0], frames, format.outputs, sampleSize);
+      Deinterleave(static_cast<void**>(output), &intermediate.outputInterleaved[0], frames, format.channels.outputs, sampleSize);
   } else {
     inData = haveInput? &intermediate.inputNonInterleaved[0]: nullptr;
     outData = haveOutput? &intermediate.outputNonInterleaved[0]: nullptr;
     if(haveInput)
-      Deinterleave(&intermediate.inputNonInterleaved[0], input, frames, format.inputs, sampleSize);
+      Deinterleave(&intermediate.inputNonInterleaved[0], input, frames, format.channels.inputs, sampleSize);
     streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
     if(haveOutput)
-      Interleave(output, &intermediate.outputNonInterleaved[0], frames, format.outputs, sampleSize);
+      Interleave(output, &intermediate.outputNonInterleaved[0], frames, format.channels.outputs, sampleSize);
   }
 }

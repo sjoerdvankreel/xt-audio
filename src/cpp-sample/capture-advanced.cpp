@@ -16,7 +16,7 @@ static void ReadLine() {
 static int GetBufferSize(const Xt::Stream& stream, int frames) {
   const Xt::Format& format = stream.GetFormat();
   int sampleSize = Xt::Audio::GetSampleAttributes(format.mix.sample).size;
-  return frames * format.inputs * sampleSize;
+  return frames * format.channels.inputs * sampleSize;
 }
 
 static void XRun(int index, void* user) {
@@ -39,7 +39,7 @@ static void CaptureNonInterleaved(
 
   if(frames > 0) {
     const Xt::Format& format = stream.GetFormat();
-    int channels = format.inputs;
+    int channels = format.channels.inputs;
     int sampleSize = Xt::Audio::GetSampleAttributes(format.mix.sample).size;
     for(int f = 0; f < frames; f++)
       for(int c = 0; c < channels; c++)
@@ -51,7 +51,7 @@ static void CaptureNonInterleaved(
 int CaptureAdvancedMain(int argc, char** argv) {
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
-  Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), 2, 0, 0, 0);
+  Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), Xt::Channels(2, 0, 0, 0));
 
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
   if(!service)

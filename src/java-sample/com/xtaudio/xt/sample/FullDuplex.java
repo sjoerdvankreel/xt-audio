@@ -20,10 +20,10 @@ public class FullDuplex {
     public static void main(String[] args) throws Exception {
 
         XtFormat format;
-        XtFormat int44100 = new XtFormat(new XtMix(44100, XtSample.INT32), 2, 0, 2, 0);
-        XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.INT32), 2, 0, 2, 0);
-        XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), 2, 0, 2, 0);
-        XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.FLOAT32), 2, 0, 2, 0);
+        XtFormat int44100 = new XtFormat(new XtMix(44100, XtSample.INT32), new XtChannels(2, 0, 2, 0));
+        XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.INT32), new XtChannels(2, 0, 2, 0));
+        XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
+        XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
 
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
 

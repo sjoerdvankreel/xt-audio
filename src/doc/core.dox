@@ -301,8 +301,6 @@
   * @struct XtChannels
   * @brief Audio channel specification.
   *
-  * See XtFormat for details on the members of this struct.
-  *
   * @ingroup library
   * @see XtFormat
   * @see XtServiceAggregateStream
@@ -339,7 +337,7 @@
   */
 
 /**
-  * @typedef typedef void (*XtFatalCallback)(void)
+  * @typedef void (*XtFatalCallback)(void)
   * @brief Fatal error callback.
   *
   * @ingroup library
@@ -350,7 +348,7 @@
   */
 
 /**
-  * @typedef typedef void (*XtTraceCallback)(XtLevel level, const char* message)
+  * @typedef void (*XtTraceCallback)(XtLevel level, const char* message)
   * @brief Logging callback.
   *
   * @ingroup library
@@ -364,7 +362,7 @@
   * @see XtAudioInit
   */
   
-/** @typedef typedef void (*XtXRunCallback)(int32_t index, void* user)
+/** @typedef void (*XtXRunCallback)(int32_t index, void* user)
   * @brief Audio xrun callback.
   *
   * @ingroup library
@@ -393,7 +391,7 @@
   */
 
 /**
-  * @typedef typedef void (*XtStreamCallback)(const XtStream* stream, const void* input, void* output, int32_t frames, double time, uint64_t position, XtBool timeValid, XtError error, void* user)
+  * @typedef void (*XtStreamCallback)(const XtStream* stream, const void* input, void* output, int32_t frames, double time, uint64_t position, XtBool timeValid, XtError error, void* user)
   * @brief Audio stream callback.
   *
   * @ingroup library

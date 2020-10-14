@@ -22,16 +22,14 @@ namespace Xt
             XtFormat format = stream.GetFormat();
             XtAttributes attrs = XtAudio.GetSampleAttributes(format.mix.sample);
             if (frames > 0)
-                Buffer.BlockCopy((Array)input, 0, (Array)output, 0, frames * format.inputs * attrs.size);
+                Buffer.BlockCopy((Array)input, 0, (Array)output, 0, frames * format.channels.inputs * attrs.size);
         }
 
         public static void Main(string[] args)
         {
             XtMix mix = new XtMix(48000, XtSample.Int16);
-            XtFormat inputFormat = new XtFormat(mix, 2, 0, 0, 0);
-            XtChannels inputChannels = new XtChannels(2, 0, 0, 0);
-            XtFormat outputFormat = new XtFormat(mix, 0, 0, 2, 0);
-            XtChannels outputChannels = new XtChannels(0, 0, 2, 0);
+            XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
+            XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {
                 XtService service = XtAudio.GetServiceBySetup(XtSetup.SystemAudio);
@@ -48,7 +46,7 @@ namespace Xt
 
                     using (XtStream stream = service.AggregateStream(
                             new XtDevice[] { input, output },
-                            new XtChannels[] { inputChannels, outputChannels },
+                            new XtChannels[] { inputFormat.channels, outputFormat.channels },
                             new double[] { 30.0, 30.0 },
                             2, mix, true, false, output, OnAggregate, XRun, "user-data"))
                     {

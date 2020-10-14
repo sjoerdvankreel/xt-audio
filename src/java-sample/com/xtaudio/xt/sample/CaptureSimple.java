@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 public class CaptureSimple {
 
     static final int SAMPLE_SIZE = 3;
-    static final XtFormat FORMAT = new XtFormat(new XtMix(44100, XtSample.INT24), 1, 0, 0, 0);
+    static final XtFormat FORMAT = new XtFormat(new XtMix(44100, XtSample.INT24), new XtChannels(1, 0, 0, 0));
 
     static void capture(XtStream stream, Object input, Object output, int frames, double time,
             long position, boolean timeValid, long error, Object user) throws Exception {

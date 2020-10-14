@@ -19,9 +19,9 @@ namespace Xt
 
         internal void Init(XtFormat format, int maxFrames)
         {
-            frameSize = format.inputs * XtAudio.GetSampleAttributes(format.mix.sample).size;
+            frameSize = format.channels.inputs * XtAudio.GetSampleAttributes(format.mix.sample).size;
             block = new byte[maxFrames * frameSize];
-            interleavedBuffer = Utility.CreateInterleavedBuffer(format.mix.sample, format.inputs, maxFrames);
+            interleavedBuffer = Utility.CreateInterleavedBuffer(format.mix.sample, format.channels.inputs, maxFrames);
         }
 
         internal override void OnCallback(XtFormat format, bool interleaved,
@@ -30,11 +30,11 @@ namespace Xt
             if (frames == 0)
                 return;
             if (!raw && !interleaved)
-                Utility.Interleave((Array)input, interleavedBuffer, format.mix.sample, format.inputs, frames);
+                Utility.Interleave((Array)input, interleavedBuffer, format.mix.sample, format.channels.inputs, frames);
             else if (raw && !interleaved)
-                Utility.Interleave((IntPtr)input, interleavedBuffer, format.mix.sample, format.inputs, frames);
+                Utility.Interleave((IntPtr)input, interleavedBuffer, format.mix.sample, format.channels.inputs, frames);
             else if (raw && interleaved)
-                Utility.Copy((IntPtr)input, interleavedBuffer, format.mix.sample, format.inputs, frames);
+                Utility.Copy((IntPtr)input, interleavedBuffer, format.mix.sample, format.channels.inputs, frames);
             Buffer.BlockCopy(interleaved && !raw ? (Array)input : interleavedBuffer, 0, block, 0, frames * frameSize);
             stream.Write(block, 0, frames * frameSize);
         }

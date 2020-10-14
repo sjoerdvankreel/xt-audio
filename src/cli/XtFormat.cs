@@ -18,22 +18,16 @@ namespace Xt
     public sealed class XtFormat
     {
         public XtMix mix = new XtMix();
-        public int inputs;
-        public ulong inMask;
-        public int outputs;
-        public ulong outMask;
+        public XtChannels channels = new XtChannels();
 
         public XtFormat()
         {
         }
 
-        public XtFormat(XtMix mix, int inputs, ulong inMask, int outputs, ulong outMask)
+        public XtFormat(XtMix mix, XtChannels channels)
         {
             this.mix = mix;
-            this.inputs = inputs;
-            this.inMask = inMask;
-            this.outputs = outputs;
-            this.outMask = outMask;
+            this.channels = channels;
         }
 
         public override string ToString() => XtPrint.FormatToString(this);

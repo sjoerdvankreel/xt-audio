@@ -351,7 +351,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   CComHeapPtr<WAVEFORMATEX> mix;
   CComHeapPtr<WAVEFORMATEX> match;
 
-  if(format->inputs > 0 && options.output || format->outputs > 0 && !options.output || !XtwFormatToWfx(*format, wfx))
+  if(format->channels.inputs > 0 && options.output || format->channels.outputs > 0 && !options.output || !XtwFormatToWfx(*format, wfx))
     return S_OK;
   if(options.exclusive)
     hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, reinterpret_cast<WAVEFORMATEX*>(&wfx), nullptr);
@@ -362,7 +362,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
     XT_VERIFY_COM(hr);
   if(options.loopback) {
     XT_VERIFY_COM(client->GetMixFormat(&mix));
-    *supports &= mix->nChannels == format->inputs;
+    *supports &= mix->nChannels == format->channels.inputs;
   }
   return S_OK;
 }

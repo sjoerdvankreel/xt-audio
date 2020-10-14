@@ -9,8 +9,18 @@
 * Overall code cleanup
 * Check TODOS
 * Move statics into single class
-* rename managed to blocking
 * fix compiler warnings
 * merge private implementation stuff
 * simplify xtl/xti/xtw prefixes
 * split types to files
+* merge format and channels
+* check docs
+* major testing
+* remove print of structs
+* remove license in each file
+* naming convention -> camelcase for fields ?
+* naming convention cpp -> prefix with Xt?
+* fix native struct marshalling
+* what is dousememory
+* change disable_service to enable_service
+* fix doxygen typedef errors

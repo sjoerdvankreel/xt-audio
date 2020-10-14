@@ -201,7 +201,7 @@ static int SetHwParams(const AlsaDevice& device, snd_pcm_t* pcm, snd_pcm_hw_para
 
   int fault;
   XtBool alsaInterleaved;
-  int32_t channels = format->inputs + format->outputs;
+  int32_t channels = format->channels.inputs + format->channels.outputs;
   unsigned urate = static_cast<unsigned>(format->mix.rate);
   snd_pcm_format_t alsaFormat = ToAlsaSample(format->mix.sample);
 
@@ -238,7 +238,7 @@ static int QueryDevice(const AlsaDevice& device, const XtFormat* format,
   snd_pcm_uframes_t minBuffer;
   snd_pcm_uframes_t maxBuffer;
   snd_pcm_hw_params_t* hwParams;
-  snd_pcm_stream_t stream = format->inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
+  snd_pcm_stream_t stream = format->channels.inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
 
   *min = 0;
   *max = 0;
@@ -364,7 +364,7 @@ XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char** name) co
 XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
   int fault;
   double min, max;
-  if(format->inputs > 0 && info.output || format->outputs > 0 && !info.output)
+  if(format->channels.inputs > 0 && info.output || format->channels.outputs > 0 && !info.output)
     return 0;
   return QueryDevice(*this, format, true, supports, &min, &max);
 }
@@ -372,7 +372,7 @@ XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
 XtFault AlsaDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
 
   XtBool supports;
-  double frameSize = (format->inputs + format->outputs) * XtiGetSampleSize(format->mix.sample);
+  double frameSize = (format->channels.inputs + format->channels.outputs) * XtiGetSampleSize(format->mix.sample);
 
   XT_VERIFY_ALSA(QueryDevice(*this, format, true, &supports, &buffer->min, &buffer->max));
   buffer->current = (XtAlsaDefaultBufferBytes / frameSize) / format->mix.rate * 1000.0;
@@ -435,7 +435,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   snd_pcm_uframes_t realBuffer;
   snd_pcm_hw_params_t* hwParams;
   snd_pcm_sw_params_t* swParams;
-  snd_pcm_stream_t direction = format->inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
+  snd_pcm_stream_t direction = format->channels.inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
 
   snd_pcm_hw_params_alloca(&hwParams);
   XT_VERIFY_ALSA(snd_pcm_open(&pcm, info.name.c_str(), direction, 0));
@@ -461,7 +461,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XT_VERIFY_ALSA(snd_pcm_sw_params(pcm, swParams));
 
   sampleSize = XtiGetSampleSize(format->mix.sample);
-  channels = format->inputs + format->outputs;
+  channels = format->channels.inputs + format->channels.outputs;
   *stream = new AlsaStream(secondary, std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
   return 0;
 }
@@ -591,7 +591,7 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       data = static_cast<char*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
     else {
       data = &nonInterleavedAudio[0];
-      for(c = 0; c < format.inputs + format.outputs; c++) {
+      for(c = 0; c < format.channels.inputs + format.channels.outputs; c++) {
         nonInterleavedAudio[c] = static_cast<char*>(areas[c].addr) + areas[c].first / 8 + offset * areas[c].step / 8;
       }
     }

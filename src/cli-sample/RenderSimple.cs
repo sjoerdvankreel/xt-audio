@@ -7,7 +7,7 @@ namespace Xt
 	{
 		static double phase = 0.0;
 		const double Frequency = 440.0;
-		static readonly XtFormat Format = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 1, 0);
+		static readonly XtFormat Format = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 0));
 
 		static void Render(XtStream stream, object input, object output, int frames,
 				double time, ulong position, bool timeValid, ulong error, object user)

@@ -22,7 +22,7 @@ namespace Xt
         {
             XtFormat format = stream.GetFormat();
             int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
-            return frames * format.inputs * sampleSize;
+            return frames * format.channels.inputs * sampleSize;
         }
 
         static void XRun(int index, object user)
@@ -58,7 +58,7 @@ namespace Xt
             {
                 Context ctx = (Context)user;
                 XtFormat format = stream.GetFormat();
-                int channels = format.inputs;
+                int channels = format.channels.inputs;
                 int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
                 for (int f = 0; f < frames; f++)
                     for (int c = 0; c < channels; c++)
@@ -74,7 +74,7 @@ namespace Xt
             {
                 Context ctx = (Context)user;
                 XtFormat format = stream.GetFormat();
-                int channels = format.inputs;
+                int channels = format.channels.inputs;
                 int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
                 for (int f = 0; f < frames; f++)
                     for (int c = 0; c < channels; c++)
@@ -95,7 +95,7 @@ namespace Xt
                 if (service == null)
                     return;
 
-                XtFormat format = new XtFormat(new XtMix(44100, XtSample.Int24), 2, 0, 0, 0);
+                XtFormat format = new XtFormat(new XtMix(44100, XtSample.Int24), new XtChannels(2, 0, 0, 0));
                 using (XtDevice device = service.OpenDefaultDevice(false))
                 {
                     if (device == null || !device.SupportsFormat(format))

@@ -34,8 +34,8 @@ namespace Xt
             for (int f = 0; f < frames; f++)
             {
                 float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.outputs; c++)
-                    ((float[])output)[f * format.outputs + c] = sine;
+                for (int c = 0; c < format.channels.outputs; c++)
+                    ((float[])output)[f * format.channels.outputs + c] = sine;
             }
         }
 
@@ -46,8 +46,8 @@ namespace Xt
             for (int f = 0; f < frames; f++)
             {
                 float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.outputs; c++)
-                    ((float*)(IntPtr)output)[f * format.outputs + c] = sine;
+                for (int c = 0; c < format.channels.outputs; c++)
+                    ((float*)(IntPtr)output)[f * format.channels.outputs + c] = sine;
             }
         }
 
@@ -58,7 +58,7 @@ namespace Xt
             for (int f = 0; f < frames; f++)
             {
                 float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.outputs; c++)
+                for (int c = 0; c < format.channels.outputs; c++)
                     ((float[][])output)[c][f] = sine;
             }
         }
@@ -70,7 +70,7 @@ namespace Xt
             for (int f = 0; f < frames; f++)
             {
                 float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.outputs; c++)
+                for (int c = 0; c < format.channels.outputs; c++)
                     ((float**)(IntPtr)output)[c][f] = sine;
             }
         }
@@ -83,7 +83,7 @@ namespace Xt
                 if (service == null)
                     return;
 
-                XtFormat format = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 2, 0);
+                XtFormat format = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 2, 0));
                 using (XtDevice device = service.OpenDefaultDevice(true))
                 {
                     if (device == null || !device.SupportsFormat(format))
@@ -126,7 +126,7 @@ namespace Xt
                         stream.Stop();
                     }
 
-                    XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 1, 1L << 0);
+                    XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 1L << 0));
                     using (XtStream stream = device.OpenStream(sendTo0, true, false,
                         buffer.current, RenderInterleaved, XRun, "user-data"))
                     {
@@ -136,7 +136,7 @@ namespace Xt
                         stream.Stop();
                     }
 
-                    XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.Float32), 0, 0, 1, 1L << 1);
+                    XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 1L << 1));
                     using (XtStream stream = device.OpenStream(sendTo1, true, false, buffer.current,
                             RenderInterleaved, XRun, "user-data"))
                     {

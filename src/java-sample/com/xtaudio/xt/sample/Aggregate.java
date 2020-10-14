@@ -26,16 +26,14 @@ public class Aggregate {
             long position, boolean timeValid, long error, Object user) throws Exception {
 
         if (frames > 0)
-            System.arraycopy(input, 0, output, 0, frames * stream.getFormat().inputs);
+            System.arraycopy(input, 0, output, 0, frames * stream.getFormat().channels.inputs);
     }
 
     public static void main(String[] args) throws Exception {
 
         XtMix mix = new XtMix(48000, XtSample.INT16);
-        XtFormat inputFormat = new XtFormat(mix, 2, 0, 0, 0);
-        XtChannels inputChannels = new XtChannels(2, 0, 0, 0);
-        XtFormat outputFormat = new XtFormat(mix, 0, 0, 2, 0);
-        XtChannels outputChannels = new XtChannels(0, 0, 2, 0);
+        XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
+        XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
 
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
 
@@ -52,7 +50,7 @@ public class Aggregate {
 
                 try (XtStream stream = service.aggregateStream(
                         new XtDevice[]{input, output},
-                        new XtChannels[]{inputChannels, outputChannels},
+                        new XtChannels[]{inputFormat.channels, outputFormat.channels},
                         new double[]{30.0, 30.0},
                         2, mix, true, false, output, Aggregate::aggregate, Aggregate::xRun, "user-data")) {
                     stream.start();

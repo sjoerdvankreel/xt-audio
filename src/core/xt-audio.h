@@ -185,13 +185,7 @@ struct XtMix {
   XtSample sample;
 };
 
-/** @cond */
-typedef struct XtMix XtMix;
-/** @endcond */
-
-struct XtFormat {
-  /** @brief Sample rate and type. */
-  XtMix mix;
+struct XtChannels {
   /** @brief Input channel count. */
   int32_t inputs;
   /**
@@ -216,27 +210,11 @@ struct XtFormat {
   uint64_t outMask;
 };
 
-struct XtChannels {
-  /** @brief Input channel count. 
-    *
-    * @see XtFormat::inputs.
-    */
-  int32_t inputs;
-  /** @brief Input channel mask. 
-    *
-    * @see XtFormat::inMask.
-    */
-  uint64_t inMask;
-  /** @brief Output channel count. 
-    *
-    * @see XtFormat::outputs.
-    */
-  int32_t outputs;
-  /** @brief Output channel mask. 
-    *
-    * @see XtFormat::outMask.
-    */
-  uint64_t outMask;
+struct XtFormat {
+  /** @brief Sample rate and type. */
+  struct XtMix mix;
+  /** @brief Channel counts and mappings. */
+  struct XtChannels channels;
 };
 
 struct XtBuffer {
@@ -265,9 +243,11 @@ struct XtAttributes {
 };
 
 /** @cond */
+typedef struct XtMix XtMix;
 typedef struct XtFormat XtFormat;
 typedef struct XtBuffer XtBuffer;
 typedef struct XtLatency XtLatency;
+typedef struct XtChannels XtChannels;
 typedef struct XtAttributes XtAttributes;
 /** @endcond */
 

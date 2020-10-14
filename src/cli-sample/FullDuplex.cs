@@ -13,10 +13,10 @@ namespace Xt
         public static void Main(string[] args)
         {
             XtFormat format;
-            XtFormat int44100 = new XtFormat(new XtMix(44100, XtSample.Int32), 2, 0, 2, 0);
-            XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.Int32), 2, 0, 2, 0);
-            XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.Float32), 2, 0, 2, 0);
-            XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.Float32), 2, 0, 2, 0);
+            XtFormat int44100 = new XtFormat(new XtMix(44100, XtSample.Int32), new XtChannels(2, 0, 2, 0));
+            XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.Int32), new XtChannels(2, 0, 2, 0));
+            XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(2, 0, 2, 0));
+            XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.Float32), new XtChannels(2, 0, 2, 0));
 
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {

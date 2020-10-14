@@ -205,20 +205,20 @@ XtFault PulseDevice::GetChannelName(XtBool output, int32_t index, char** name) c
 
 XtFault PulseDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
   pa_sample_format pulse;
-  if(format->inputs > 0 && output)
+  if(format->channels.inputs > 0 && output)
     return PA_OK;
-  if(format->outputs > 0 && !output)
+  if(format->channels.outputs > 0 && !output)
     return PA_OK;
   if(format->mix.rate < XtPaMinRate)
     return PA_OK;
   if(format->mix.rate > XtPaMaxRate)
     return PA_OK;
-  if(format->inputs >= PA_CHANNEL_POSITION_MAX)
+  if(format->channels.inputs >= PA_CHANNEL_POSITION_MAX)
     return PA_OK;
-  if(format->outputs >= PA_CHANNEL_POSITION_MAX)
+  if(format->channels.outputs >= PA_CHANNEL_POSITION_MAX)
     return PA_OK;
   for(int32_t i = PA_CHANNEL_POSITION_MAX; i < 64; i++)
-    if(format->inMask & (1ULL << i) || format->outMask & (1ULL << i))
+    if(format->channels.inMask & (1ULL << i) || format->channels.outMask & (1ULL << i))
       return PA_OK;
   *supports = XtTrue;
   return PA_OK;
@@ -239,8 +239,8 @@ XtFault PulseDevice::OpenStream(const XtFormat* format, XtBool interleaved, doub
   bufferFrames = static_cast<int32_t>(bufferSize / 1000.0 * format->mix.rate);
   spec.rate = format->mix.rate;
   spec.format = ToPulseSample(format->mix.sample);
-  spec.channels = format->inputs + format->outputs;
-  mask = format->inMask? format->inMask: format->outMask;
+  spec.channels = format->channels.inputs + format->channels.outputs;
+  mask = format->channels.inMask? format->channels.inMask: format->channels.outMask;
   if(mask == 0)
     pa_channel_map_init_extend(&map, spec.channels, PA_CHANNEL_MAP_DEFAULT);
   else {
@@ -251,7 +251,7 @@ XtFault PulseDevice::OpenStream(const XtFormat* format, XtBool interleaved, doub
         map.map[j++] = static_cast<pa_channel_position_t>(i);
   }
   
-  frameSize = (format->inputs + format->outputs) * XtiGetSampleSize(format->mix.sample);
+  frameSize = (format->channels.inputs + format->channels.outputs) * XtiGetSampleSize(format->mix.sample);
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   if((client = pa_simple_new(nullptr, XtiId, dir, nullptr, 
     XtiId, &spec, &map, nullptr, &fault)) == nullptr)

@@ -100,25 +100,8 @@ struct Attributes final {
 struct Mix final {
   int32_t rate;
   Sample sample;
-
   Mix() = default;
-  Mix(int32_t rate, Sample sample):
-  rate(rate), sample(sample) {}
-};
-
-struct Format final {
-  Mix mix;
-  int32_t inputs;
-  uint64_t inMask;
-  int32_t outputs;
-  uint64_t outMask;
-  
-  Format() = default;
-  Format(const Mix& mix, int32_t inputs, 
-    uint64_t inMask, int32_t outputs, uint64_t outMask):
-  mix(mix), 
-  inputs(inputs), inMask(inMask), 
-  outputs(outputs), outMask(outMask){}
+  Mix(int32_t rate, Sample sample): rate(rate), sample(sample) {}
 };
 
 struct Channels final {
@@ -126,12 +109,16 @@ struct Channels final {
   uint64_t inMask;
   int32_t outputs;
   uint64_t outMask;
-  
   Channels() = default;
-  Channels(int32_t inputs, uint64_t inMask, 
-    int32_t outputs, uint64_t outMask):
-  inputs(inputs), inMask(inMask), 
-  outputs(outputs), outMask(outMask){}
+  Channels(int32_t inputs, uint64_t inMask, int32_t outputs, uint64_t outMask):
+  inputs(inputs), inMask(inMask), outputs(outputs), outMask(outMask) {}
+};
+
+struct Format final {
+  Mix mix;
+  Channels channels;  
+  Format() = default;
+  Format(const Mix& mix, const Channels& channels): channels(channels) {}
 };
 
 std::ostream& operator<<(std::ostream& os, Level level);

@@ -13,7 +13,7 @@
 
 static double phase = 0.0;
 static const double Frequency = 440.0;
-static const Xt::Format Format(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 0);
+static const Xt::Format Format(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 1, 0));
 
 static void Render(
   const Xt::Stream& stream, const void* input, void* output, int32_t frames,

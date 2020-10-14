@@ -27,9 +27,9 @@ namespace Xt
                 if (!raw)
                 {
                     if (interleaved)
-                        for (int c = 0; c < format.outputs; c++)
+                        for (int c = 0; c < format.channels.outputs; c++)
                         {
-                            int pos = f * format.outputs + c;
+                            int pos = f * format.channels.outputs + c;
                             switch (format.mix.sample)
                             {
                                 case XtSample.UInt8:
@@ -55,7 +55,7 @@ namespace Xt
                             }
                         }
                     else
-                        for (int c = 0; c < format.outputs; c++)
+                        for (int c = 0; c < format.channels.outputs; c++)
                         {
                             switch (format.mix.sample)
                             {
@@ -84,9 +84,9 @@ namespace Xt
                 } else
                 {
                     if (interleaved)
-                        for (int c = 0; c < format.outputs; c++)
+                        for (int c = 0; c < format.channels.outputs; c++)
                         {
-                            int pos = f * format.outputs + c;
+                            int pos = f * format.channels.outputs + c;
                             switch (format.mix.sample)
                             {
                                 case XtSample.UInt8:
@@ -112,7 +112,7 @@ namespace Xt
                             }
                         }
                     else
-                        for (int c = 0; c < format.outputs; c++)
+                        for (int c = 0; c < format.channels.outputs; c++)
                         {
                             switch (format.mix.sample)
                             {

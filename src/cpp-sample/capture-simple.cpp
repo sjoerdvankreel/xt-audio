@@ -9,7 +9,7 @@
 #include <cmath>
 
 static const int SampleSize = 3;
-static const Xt::Format Format(Xt::Mix(44100, Xt::Sample::Int24), 1, 0, 0, 0);
+static const Xt::Format Format(Xt::Mix(44100, Xt::Sample::Int24), Xt::Channels(1, 0, 0, 0));
 
 static void Capture(
   const Xt::Stream& stream, const void* input, void* output, int32_t frames,

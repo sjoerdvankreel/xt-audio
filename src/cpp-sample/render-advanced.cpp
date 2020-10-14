@@ -39,8 +39,8 @@ static void RenderInterleaved(
   Xt::Format format = stream.GetFormat();
   for(int f = 0; f < frames; f++) {
     float sine = NextSine(format.mix.rate);
-    for(int c = 0; c < format.outputs; c++)
-      ((float*)output)[f * format.outputs + c] = sine;
+    for(int c = 0; c < format.channels.outputs; c++)
+      ((float*)output)[f * format.channels.outputs + c] = sine;
   }
 }
 
@@ -51,7 +51,7 @@ static void RenderNonInterleaved(
   Xt::Format format = stream.GetFormat();
   for(int f = 0; f < frames; f++) {
     float sine = NextSine(format.mix.rate);
-    for(int c = 0; c < format.outputs; c++)
+    for(int c = 0; c < format.channels.outputs; c++)
       ((float**)output)[c][f] = sine;
   }
 }
@@ -59,7 +59,7 @@ static void RenderNonInterleaved(
 int RenderAdvancedMain(int argc, char** argv) {
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
-  Xt::Format format(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 2, 0);
+  Xt::Format format(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 2, 0));
 
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
   if(!service)
@@ -83,14 +83,14 @@ int RenderAdvancedMain(int argc, char** argv) {
   ReadLine();
   stream->Stop();
 
-  Xt::Format sendTo0(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 0);
+  Xt::Format sendTo0(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 1, 1ULL << 0));
   stream = device->OpenStream(sendTo0, true, buffer.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering channel mask, channel 0...\n";
   ReadLine();
   stream->Stop();
 
-  Xt::Format sendTo1(Xt::Mix(44100, Xt::Sample::Float32), 0, 0, 1, 1ULL << 1);
+  Xt::Format sendTo1(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 1, 1ULL << 1));
   stream = device->OpenStream(sendTo1, true, buffer.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
   stream->Start();
   std::cout << "Rendering channel mask, channel 1...\n";

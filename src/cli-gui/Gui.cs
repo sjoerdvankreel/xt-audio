@@ -147,9 +147,9 @@ namespace Xt
             result.mix.rate = (int)rate.SelectedItem;
             result.mix.sample = (XtSample)sample.SelectedItem;
             if (output)
-                result.outputs = (int)channelCount.SelectedItem;
+                result.channels.outputs = (int)channelCount.SelectedItem;
             else
-                result.inputs = (int)channelCount.SelectedItem;
+                result.channels.inputs = (int)channelCount.SelectedItem;
             return result;
         }
 
@@ -391,8 +391,8 @@ namespace Xt
                 XtXRunCallback xRunCallback = doLogXRuns ? xRunCallbackWrapper.OnCallback: (XtXRunCallback)null;
 
                 XtFormat inputFormat = GetFormat(false);
-                inputFormat.inputs = (int)channelCount.SelectedItem;
-                if (input && inputChannels.SelectedItems.Count > 0 && inputChannels.SelectedItems.Count != inputFormat.inputs)
+                inputFormat.channels.inputs = (int)channelCount.SelectedItem;
+                if (input && inputChannels.SelectedItems.Count > 0 && inputChannels.SelectedItems.Count != inputFormat.channels.inputs)
                 {
                     MessageBox.Show(this,
                         "Selected either 0 input channels or a number equal to the selected format's channels.",
@@ -400,10 +400,10 @@ namespace Xt
                     return;
                 }
                 for (int c = 0; c < inputChannels.SelectedItems.Count; c++)
-                    inputFormat.inMask |= (1UL << ((ChannelView)inputChannels.SelectedItems[c]).index);
+                    inputFormat.channels.inMask |= (1UL << ((ChannelView)inputChannels.SelectedItems[c]).index);
 
                 XtFormat outputFormat = GetFormat(true);
-                if (output && outputChannels.SelectedItems.Count > 0 && outputChannels.SelectedItems.Count != outputFormat.outputs)
+                if (output && outputChannels.SelectedItems.Count > 0 && outputChannels.SelectedItems.Count != outputFormat.channels.outputs)
                 {
                     MessageBox.Show(this,
                         "Selected either 0 output channels or a number equal to the selected format's channels.",
@@ -411,7 +411,7 @@ namespace Xt
                     return;
                 }
                 for (int c = 0; c < outputChannels.SelectedItems.Count; c++)
-                    outputFormat.outMask |= (1UL << ((ChannelView)outputChannels.SelectedItems[c]).index);
+                    outputFormat.channels.outMask |= (1UL << ((ChannelView)outputChannels.SelectedItems[c]).index);
 
                 stop.Enabled = true;
                 panel.Enabled = false;
@@ -443,8 +443,8 @@ namespace Xt
                 } else if (type == StreamType.Duplex)
                 {
                     XtFormat duplexFormat = inputFormat;
-                    duplexFormat.outputs = outputFormat.outputs;
-                    duplexFormat.outMask = outputFormat.outMask;
+                    duplexFormat.channels.outputs = outputFormat.channels.outputs;
+                    duplexFormat.channels.outMask = outputFormat.channels.outMask;
                     FullDuplexCallback callback = new FullDuplexCallback(OnStreamError, AddMessage);
                     outputStream = outputDevice.OpenStream(duplexFormat, streamInterleaved.Checked, streamRaw.Checked,
                         bufferSize.Value, callback.OnCallback, xRunCallback, "duplex-user-data");
@@ -459,25 +459,25 @@ namespace Xt
                     {
                         devices.Add(inputDevice);
                         bufferSizes.Add(bufferSize.Value);
-                        channels.Add(new XtChannels(inputFormat.inputs, inputFormat.inMask, 0, 0));
+                        channels.Add(new XtChannels(inputFormat.channels.inputs, inputFormat.channels.inMask, 0, 0));
                     }
                     if (outputDevice != null)
                     {
                         devices.Add(outputDevice);
                         bufferSizes.Add(bufferSize.Value);
-                        channels.Add(new XtChannels(0, 0, outputFormat.outputs, outputFormat.outMask));
+                        channels.Add(new XtChannels(0, 0, outputFormat.channels.outputs, outputFormat.channels.outMask));
                     }
                     if (secondaryInputDevice != null)
                     {
                         devices.Add(secondaryInputDevice);
                         bufferSizes.Add(bufferSize.Value);
-                        channels.Add(new XtChannels(inputFormat.inputs, inputFormat.inMask, 0, 0));
+                        channels.Add(new XtChannels(inputFormat.channels.inputs, inputFormat.channels.inMask, 0, 0));
                     }
                     if (secondaryOutputDevice != null)
                     {
                         devices.Add(secondaryOutputDevice);
                         bufferSizes.Add(bufferSize.Value);
-                        channels.Add(new XtChannels(0, 0, outputFormat.outputs, outputFormat.outMask));
+                        channels.Add(new XtChannels(0, 0, outputFormat.channels.outputs, outputFormat.channels.outMask));
                     }
 
                     XtDevice[] devicesArray = devices.ToArray();
@@ -501,8 +501,8 @@ namespace Xt
                 } else if (inputDevice == outputDevice)
                 {
                     XtFormat duplexFormat = inputFormat;
-                    duplexFormat.outputs = outputFormat.outputs;
-                    duplexFormat.outMask = outputFormat.outMask;
+                    duplexFormat.channels.outputs = outputFormat.channels.outputs;
+                    duplexFormat.channels.outMask = outputFormat.channels.outMask;
                     LatencyCallback callback = new LatencyCallback(OnStreamError, AddMessage);
                     outputStream = outputDevice.OpenStream(duplexFormat, streamInterleaved.Checked, streamRaw.Checked,
                         bufferSize.Value, callback.OnCallback, xRunCallback, "latency-user-data");
@@ -513,8 +513,8 @@ namespace Xt
                     XtDevice[] devices = new XtDevice[] { inputDevice, outputDevice };
                     double[] bufferSizes = new double[] { bufferSize.Value, bufferSize.Value };
                     XtChannels[] channels = new XtChannels[] {
-                        new XtChannels(inputFormat.inputs, inputFormat.inMask, 0, 0),
-                        new XtChannels(0, 0, outputFormat.outputs, outputFormat.outMask)
+                        new XtChannels(inputFormat.channels.inputs, inputFormat.channels.inMask, 0, 0),
+                        new XtChannels(0, 0, outputFormat.channels.outputs, outputFormat.channels.outMask)
                     };
                     XtDevice master = outputMaster.Checked ? outputDevice : inputDevice;
                     LatencyCallback callback = new LatencyCallback(OnStreamError, AddMessage);

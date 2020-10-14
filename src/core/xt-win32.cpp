@@ -275,10 +275,10 @@ bool XtwWfxToFormat(const WAVEFORMATEX& wfx, XtBool output, XtFormat& format) {
     wfxe = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(&wfx);
   
   format.mix.rate = wfx.nSamplesPerSec;
-  format.inputs = output? 0: wfx.nChannels;
-  format.outputs = output? wfx.nChannels: 0;
-  format.inMask = output || wfxe == nullptr? 0: wfxe->dwChannelMask;
-  format.outMask = !output || wfxe == nullptr? 0: wfxe->dwChannelMask;
+  format.channels.inputs = output? 0: wfx.nChannels;
+  format.channels.outputs = output? wfx.nChannels: 0;
+  format.channels.inMask = output || wfxe == nullptr? 0: wfxe->dwChannelMask;
+  format.channels.outMask = !output || wfxe == nullptr? 0: wfxe->dwChannelMask;
 
   if(wfxe != nullptr && wfx.wBitsPerSample != wfxe->Samples.wValidBitsPerSample)
     return false;
@@ -299,20 +299,20 @@ bool XtwFormatToWfx(const XtFormat& format, WAVEFORMATEXTENSIBLE& wfx) {
 
   XtAttributes attributes;     
   memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
-  if(format.inputs > 0 && format.outputs > 0)
+  if(format.channels.inputs > 0 && format.channels.outputs > 0)
     return false;
 
   XtAudioGetSampleAttributes(format.mix.sample, &attributes);
   wfx.Format.cbSize = 22;
   wfx.Format.nSamplesPerSec = format.mix.rate;
   wfx.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-  wfx.Format.nChannels = format.inputs + format.outputs;
+  wfx.Format.nChannels = format.channels.inputs + format.channels.outputs;
   wfx.Format.wBitsPerSample = XtiGetSampleSize(format.mix.sample) * 8;
   wfx.Format.nBlockAlign = wfx.Format.wBitsPerSample / 8 * wfx.Format.nChannels;
   wfx.Format.nAvgBytesPerSec = wfx.Format.nBlockAlign * format.mix.rate;
   wfx.SubFormat = attributes.isFloat? KSDATAFORMAT_SUBTYPE_IEEE_FLOAT: KSDATAFORMAT_SUBTYPE_PCM;
   wfx.Samples.wValidBitsPerSample = wfx.Format.wBitsPerSample;
-  wfx.dwChannelMask = static_cast<DWORD>(format.inputs? format.inMask: format.outMask);
+  wfx.dwChannelMask = static_cast<DWORD>(format.channels.inputs? format.channels.inMask: format.channels.outMask);
   if(wfx.dwChannelMask == 0)
     wfx.dwChannelMask = (1U << wfx.Format.nChannels) - 1;
   return true;

@@ -277,8 +277,8 @@ XtFault DSoundDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const 
 }
 
 XtFault DSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
-  *supports = format->inputs > 0 != !input 
-           && format->outputs > 0 != !output 
+  *supports = format->channels.inputs > 0 != !input 
+           && format->channels.outputs > 0 != !output 
            && format->mix.rate >= 8000 
            && format->mix.rate <= 192000;
   return S_OK;
@@ -357,7 +357,7 @@ XtFault DSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
   if(bufferSize > XtDsMaxBufferMs)
     bufferSize = XtDsMaxBufferMs;
   bufferFrames = static_cast<int32_t>(bufferSize / 1000.0 * format->mix.rate);
-  frameSize = (format->inputs + format->outputs) * XtiGetSampleSize(format->mix.sample);
+  frameSize = (format->channels.inputs + format->channels.outputs) * XtiGetSampleSize(format->mix.sample);
 
   if(input) {
     captureDesc.dwSize = sizeof(DSCBUFFERDESC);

@@ -18,20 +18,14 @@ package com.xtaudio.xt;
 public final class XtFormat {
 
     public XtMix mix = new XtMix();
-    public int inputs;
-    public long inMask;
-    public int outputs;
-    public long outMask;
+    public XtChannels channels = new XtChannels();
 
     public XtFormat() {
     }
 
-    public XtFormat(XtMix mix, int inputs, long inMask, int outputs, long outMask) {
+    public XtFormat(XtMix mix, XtChannels channels) {
         this.mix = mix;
-        this.inputs = inputs;
-        this.inMask = inMask;
-        this.outputs = outputs;
-        this.outMask = outMask;
+        this.channels = channels;
     }
 
     @Override

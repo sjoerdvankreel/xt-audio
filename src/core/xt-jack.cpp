@@ -315,17 +315,17 @@ XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char** name) co
 XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
   if(format->mix.sample != XtSampleFloat32)
     return 0;
-  if(format->inputs > CountPorts(client.client, XtFalse))
+  if(format->channels.inputs > CountPorts(client.client, XtFalse))
     return 0;
-  if(format->outputs > CountPorts(client.client, XtTrue))
+  if(format->channels.outputs > CountPorts(client.client, XtTrue))
     return 0;
   if(format->mix.rate != jack_get_sample_rate(client.client))
     return 0;
   for(int32_t i = CountPorts(client.client, XtFalse); i < 64; i++)
-    if((format->inMask & (1ULL << i)) != 0)
+    if((format->channels.inMask & (1ULL << i)) != 0)
       return 0;
   for(int32_t i = CountPorts(client.client, XtTrue); i < 64; i++)
-    if((format->outMask & (1ULL << i)) != 0)
+    if((format->channels.outMask & (1ULL << i)) != 0)
       return 0;
   *supports = XtTrue;
   return 0;
@@ -345,17 +345,17 @@ XtFault JackDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XtJackClient streamClient(c);
   
   std::vector<XtJackPort> inputs, outputs;
-  if((fault = CreatePorts(c, format->inputs, format->inMask, 
+  if((fault = CreatePorts(c, format->channels.inputs, format->channels.inMask, 
     JackPortIsInput, JackPortIsOutput, "inputs", inputs)) != 0)
     return fault;
-  if((fault = CreatePorts(c, format->outputs, format->outMask, 
+  if((fault = CreatePorts(c, format->channels.outputs, format->channels.outMask, 
     JackPortIsOutput, JackPortIsInput, "outputs", outputs)) != 0)
     return fault;
 
   sampleSize = XtiGetSampleSize(format->mix.sample);
   bufferFrames = jack_get_buffer_size(streamClient.client);
   result.reset(new JackStream(std::move(streamClient), std::move(inputs), std::move(outputs), 
-    format->inputs, format->outputs, bufferFrames, sampleSize));
+    format->channels.inputs, format->channels.outputs, bufferFrames, sampleSize));
   if((fault = jack_set_xrun_callback(c, &XRunCallback, result.get())) != 0)
     return fault;
   if((fault = jack_set_process_callback(c, &ProcessCallback, result.get())) != 0)
@@ -387,7 +387,7 @@ XtFault JackStream::Start() {
   if((fault = jack_activate(client.client)) != 0)
     return fault;
 
-  for(int32_t i = 0; i < format.inputs; i++) {
+  for(int32_t i = 0; i < format.channels.inputs; i++) {
     if((fault = jack_connect(client.client, 
       inputs[i].connectTo, jack_port_name(inputs[i].port))) != 0)
       return fault;
@@ -395,7 +395,7 @@ XtFault JackStream::Start() {
       inputs[i].connectTo, jack_port_name(inputs[i].port)));
   }
 
-  for(int32_t i = 0; i < format.outputs; i++) {
+  for(int32_t i = 0; i < format.channels.outputs; i++) {
     if((fault = jack_connect(client.client, 
       jack_port_name(outputs[i].port), outputs[i].connectTo)) != 0)
       return fault;

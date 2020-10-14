@@ -31,20 +31,20 @@ static void InitStreamBuffers(
   const XtFormat* format, int32_t frames, int32_t sampleSize) {
 
   if(interleaved) {
-    buffers.inputInterleaved = std::vector<char>(frames * format->inputs * sampleSize, '\0');
-    buffers.outputInterleaved = std::vector<char>(frames * format->outputs * sampleSize, '\0');
+    buffers.inputInterleaved = std::vector<char>(frames * format->channels.inputs * sampleSize, '\0');
+    buffers.outputInterleaved = std::vector<char>(frames * format->channels.outputs * sampleSize, '\0');
   }
 
   if(nonInterleaved) {
-    buffers.inputNonInterleaved = std::vector<void*>(format->inputs, nullptr);
-    buffers.outputNonInterleaved = std::vector<void*>(format->outputs, nullptr);
+    buffers.inputNonInterleaved = std::vector<void*>(format->channels.inputs, nullptr);
+    buffers.outputNonInterleaved = std::vector<void*>(format->channels.outputs, nullptr);
     buffers.inputChannelsNonInterleaved = std::vector<std::vector<char>>(
-      format->inputs, std::vector<char>(frames * sampleSize, '\0'));
+      format->channels.inputs, std::vector<char>(frames * sampleSize, '\0'));
     buffers.outputChannelsNonInterleaved = std::vector<std::vector<char>>(
-      format->outputs, std::vector<char>(frames * sampleSize, '\0'));
-    for(int32_t i = 0; i < format->inputs; i++)
+      format->channels.outputs, std::vector<char>(frames * sampleSize, '\0'));
+    for(int32_t i = 0; i < format->channels.inputs; i++)
       buffers.inputNonInterleaved[i] = &(buffers.inputChannelsNonInterleaved[i][0]);
-    for(int32_t i = 0; i < format->outputs; i++)
+    for(int32_t i = 0; i < format->channels.outputs; i++)
       buffers.outputNonInterleaved[i] = &(buffers.outputChannelsNonInterleaved[i][0]);
   }
 }
@@ -75,10 +75,10 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   char* formatCString;
   std::string formatStdString;
   double rate = format->mix.rate;
-  uint64_t inMask = format->inMask;
-  int32_t inputs = format->inputs;
-  uint64_t outMask = format->outMask;
-  int32_t outputs = format->outputs;
+  uint64_t inMask = format->channels.inMask;
+  int32_t inputs = format->channels.inputs;
+  uint64_t outMask = format->channels.outMask;
+  int32_t outputs = format->channels.outputs;
   XtSample sample = format->mix.sample;
 
   XtAudioGetSampleAttributes(sample, &attributes);
@@ -222,8 +222,8 @@ char* XT_CALL XtPrintFormatToString(const XtFormat* format) {
   std::ostringstream oss;
   oss << "[" << format->mix.rate << " ";
   oss << XtPrintSampleToString(format->mix.sample) << " ";
-  oss << format->inputs << " (" << format->inMask << ") ";
-  oss << format->outputs << " (" << format->outMask << ")]";
+  oss << format->channels.inputs << " (" << format->channels.inMask << ") ";
+  oss << format->channels.outputs << " (" << format->channels.outMask << ")]";
   return strdup(oss.str().c_str());
 }
 
@@ -459,16 +459,16 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   format.mix = *mix;
   for(int32_t i = 0; i < count; i++) {
     thisFormat.mix = *mix;
-    thisFormat.inputs = channels[i].inputs;
-    thisFormat.inMask = channels[i].inMask;
-    thisFormat.outputs = channels[i].outputs;
-    thisFormat.outMask = channels[i].outMask;
+    thisFormat.channels.inputs = channels[i].inputs;
+    thisFormat.channels.inMask = channels[i].inMask;
+    thisFormat.channels.outputs = channels[i].outputs;
+    thisFormat.channels.outMask = channels[i].outMask;
 
     result->contexts[i].index = i;
     result->contexts[i].stream = result.get();
     result->channels.push_back(channels[i]);
-    format.inputs += channels[i].inputs;
-    format.outputs += channels[i].outputs;
+    format.channels.inputs += channels[i].inputs;
+    format.channels.outputs += channels[i].outputs;
 
     masterFound |= master == devices[i];
     if(master == devices[i])
