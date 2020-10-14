@@ -70,7 +70,7 @@ struct PulseDevice: public XtDevice {
   output(output) {}
 };
 
-struct PulseStream: public XtlLinuxStream {
+struct PulseStream: public XtlLinuxBlockingStream {
   const bool output;
   const XtPaSimple client;
   std::vector<char> audio;
@@ -79,7 +79,7 @@ struct PulseStream: public XtlLinuxStream {
 
   ~PulseStream() { Stop(); }
   PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
-  XtlLinuxStream(secondary), output(output), client(std::move(c)), 
+  XtlLinuxBlockingStream(secondary), output(output), client(std::move(c)), 
   audio(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   bufferFrames(bufferFrames) 
   { XT_ASSERT(client.simple != nullptr); }

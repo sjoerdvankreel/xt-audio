@@ -75,15 +75,15 @@ struct XtwEvent {
   XtwEvent(): event() { XT_ASSERT((event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
 };
 
-struct XtwWin32Stream: public XtManagedStream {
+struct XtwWin32BlockingStream: public XtBlockingStream {
   XtStreamState state;
   XtwCriticalSection lock;
   const XtwEvent respondEvent;
   const XtwEvent controlEvent;
   XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
 
-  XtwWin32Stream(bool secondary);
-  ~XtwWin32Stream();
+  XtwWin32BlockingStream(bool secondary);
+  ~XtwWin32BlockingStream();
   bool VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr);
 };
 

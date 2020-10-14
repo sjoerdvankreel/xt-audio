@@ -55,7 +55,7 @@ struct WasapiDevice: public XtDevice {
   XtDevice(), options(o), device(d), client(c), client3(c3) {}
 };
 
-struct WasapiStream: public XtwWin32Stream {
+struct WasapiStream: public XtwWin32BlockingStream {
   HANDLE mmcssHandle;
   UINT32 bufferFrames;
   const Options options;
@@ -72,7 +72,7 @@ struct WasapiStream: public XtwWin32Stream {
   WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
     CComPtr<IAudioClient> client, CComPtr<IAudioClient> loopback, CComPtr<IAudioCaptureClient> capture,
     CComPtr<IAudioRenderClient> render, const Options& options):
-  XtwWin32Stream(secondary), mmcssHandle(), bufferFrames(bufferFrames),
+  XtwWin32BlockingStream(secondary), mmcssHandle(), bufferFrames(bufferFrames),
   options(options), streamEvent(), clock(clock), clock2(clock2), 
   client(client), loopback(loopback), render(render), capture(capture) {}
 

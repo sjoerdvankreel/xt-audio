@@ -51,7 +51,7 @@ struct DSoundDevice: public XtDevice {
   XtDevice(), guid(g), name(n), output(o), input(i) {}
 };
 
-struct DSoundStream: public XtwWin32Stream {
+struct DSoundStream: public XtwWin32BlockingStream {
   const int32_t frameSize;
   std::vector<char> buffer;
   uint64_t xtBytesProcessed;
@@ -70,7 +70,7 @@ struct DSoundStream: public XtwWin32Stream {
     CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
-  XtwWin32Stream(secondary), frameSize(frameSize),
+  XtwWin32BlockingStream(secondary), frameSize(frameSize),
   buffer(static_cast<size_t>(bufferFrames * frameSize), '\0'),
   xtBytesProcessed(0), dsBytesProcessed(0),
   previousDsPosition(0), bufferFrames(bufferFrames), timer(),

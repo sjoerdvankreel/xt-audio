@@ -184,7 +184,7 @@ struct XtStream {
   virtual XtFault Stop() = 0;
   virtual XtFault Start() = 0;
   virtual XtSystem GetSystem() const = 0;
-  virtual bool IsManaged() const { return false; }
+  virtual bool IsBlocking() const { return false; }
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
   void ProcessXRun();
@@ -192,14 +192,14 @@ struct XtStream {
                        uint64_t position, XtBool timeValid, XtError error);
 };
 
-struct XtManagedStream: public XtStream {
+struct XtBlockingStream: public XtStream {
   const bool secondary;
-  XtManagedStream(bool secondary);
-  virtual ~XtManagedStream() {};
+  XtBlockingStream(bool secondary);
+  virtual ~XtBlockingStream() {};
   virtual void StopStream() = 0;
   virtual void StartStream() = 0;
   virtual void ProcessBuffer(bool prefill) = 0;
-  bool IsManaged() const override { return true; }
+  bool IsBlocking() const override { return true; }
 };
 
 struct XtAggregate: public XtStream {

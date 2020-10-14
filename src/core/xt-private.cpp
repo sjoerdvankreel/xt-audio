@@ -135,7 +135,7 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
 
 // ---- stream ----
 
-XtManagedStream::XtManagedStream(bool secondary):
+XtBlockingStream::XtBlockingStream(bool secondary):
 secondary(secondary) {
 }
 

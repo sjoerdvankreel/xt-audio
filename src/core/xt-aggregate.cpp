@@ -358,10 +358,10 @@ void XT_CALLBACK XtiMasterCallback(
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
 
-  if(aggregate->streams[aggregate->masterIndex]->IsManaged())
+  if(aggregate->streams[aggregate->masterIndex]->IsBlocking())
     for(i = 0; i < aggregate->streams.size(); i++)
       if(i != static_cast<size_t>(aggregate->masterIndex))
-        static_cast<XtManagedStream*>(aggregate->streams[i].get())->ProcessBuffer(false);
+        static_cast<XtBlockingStream*>(aggregate->streams[i].get())->ProcessBuffer(false);
 
   XtiSlaveCallback(stream, input, output, frames, time, position, timeValid, error, user);
   if(error != 0) {

@@ -12,3 +12,5 @@
 * rename managed to blocking
 * fix compiler warnings
 * merge private implementation stuff
+* simplify xtl/xti/xtw prefixes
+* split types to files

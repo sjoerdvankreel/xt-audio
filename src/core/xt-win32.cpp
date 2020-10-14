@@ -40,8 +40,8 @@ const XtService* const XtiServices[] =
   nullptr,
 };
 
-static XtStreamState ReadWin32StreamState(
-  XtwWin32Stream* stream) {
+static XtStreamState ReadWin32BlockingStreamState(
+  XtwWin32BlockingStream* stream) {
 
   XtStreamState result;
   EnterCriticalSection(&stream->lock.cs);
@@ -50,8 +50,8 @@ static XtStreamState ReadWin32StreamState(
   return result;
 }
 
-static void ReceiveWin32StreamControl(
-  XtwWin32Stream* stream, XtStreamState state) {
+static void ReceiveWin32BlockingStreamControl(
+  XtwWin32BlockingStream* stream, XtStreamState state) {
 
   EnterCriticalSection(&stream->lock.cs);
   stream->state = state;
@@ -59,8 +59,8 @@ static void ReceiveWin32StreamControl(
   LeaveCriticalSection(&stream->lock.cs);
 }
 
-static void SendWin32StreamControl(
-  XtwWin32Stream* stream, XtStreamState from, XtStreamState to) {
+static void SendWin32BlockingStreamControl(
+  XtwWin32BlockingStream* stream, XtStreamState from, XtStreamState to) {
 
   EnterCriticalSection(&stream->lock.cs);
   if(stream->state == to) {
@@ -70,32 +70,32 @@ static void SendWin32StreamControl(
   stream->state = from;
   XT_ASSERT(SetEvent(stream->controlEvent.event));
   LeaveCriticalSection(&stream->lock.cs);
-  while(ReadWin32StreamState(stream) != to)
+  while(ReadWin32BlockingStreamState(stream) != to)
     XT_ASSERT(WaitForSingleObject(stream->respondEvent.event, XT_WAIT_TIMEOUT_MS) == WAIT_OBJECT_0);
 }
 
-static DWORD WINAPI Win32StreamCallback(void* user) {
+static DWORD WINAPI Win32BlockingStreamCallback(void* user) {
   XtStreamState state;
-  auto stream = static_cast<XtwWin32Stream*>(user);
+  auto stream = static_cast<XtwWin32BlockingStream*>(user);
 
   XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
-  while((state = ReadWin32StreamState(stream)) != XtStreamStateClosed) {
+  while((state = ReadWin32BlockingStreamState(stream)) != XtStreamStateClosed) {
     switch(state) {
     case XtStreamStateStarted:
       stream->ProcessBuffer(false);
       break;
     case XtStreamStateClosing:
-      ReceiveWin32StreamControl(stream, XtStreamStateClosed);
+      ReceiveWin32BlockingStreamControl(stream, XtStreamStateClosed);
       CoUninitialize();
       return S_OK;
     case XtStreamStateStopping:
       stream->StopStream();
-      ReceiveWin32StreamControl(stream, XtStreamStateStopped);
+      ReceiveWin32BlockingStreamControl(stream, XtStreamStateStopped);
       break;
     case XtStreamStateStarting:
       stream->ProcessBuffer(true);
       stream->StartStream();
-      ReceiveWin32StreamControl(stream, XtStreamStateStarted);
+      ReceiveWin32BlockingStreamControl(stream, XtStreamStateStarted);
       break;
     case XtStreamStateStopped:
       XT_ASSERT(WaitForSingleObject(stream->controlEvent.event, INFINITE) == WAIT_OBJECT_0);
@@ -204,27 +204,27 @@ void XtiInitPlatform(void* wnd) {
 
 // ---- win32 ----
 
-XtwWin32Stream::XtwWin32Stream(bool secondary):
-XtManagedStream(secondary),
+XtwWin32BlockingStream::XtwWin32BlockingStream(bool secondary):
+XtBlockingStream(secondary),
 state(XtStreamStateStopped), 
 lock(),
 respondEvent(),
 controlEvent() {
   if(!secondary) {
-    HANDLE thread = CreateThread(nullptr, 0, &Win32StreamCallback, this, 0, nullptr);
+    HANDLE thread = CreateThread(nullptr, 0, &Win32BlockingStreamCallback, this, 0, nullptr);
     XT_ASSERT(thread != nullptr);
     CloseHandle(thread);
   }
 }
 
-XtwWin32Stream::~XtwWin32Stream() {
+XtwWin32BlockingStream::~XtwWin32BlockingStream() {
   if(!secondary)
-    SendWin32StreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
+    SendWin32BlockingStreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
 }
 
-XtFault XtwWin32Stream::Start() {
+XtFault XtwWin32BlockingStream::Start() {
   if(!secondary)
-    SendWin32StreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+    SendWin32BlockingStreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
   else {
     ProcessBuffer(true);
     StartStream();
@@ -232,15 +232,15 @@ XtFault XtwWin32Stream::Start() {
   return S_OK;
 }
 
-XtFault XtwWin32Stream::Stop() {
+XtFault XtwWin32BlockingStream::Stop() {
   if(secondary)
     StopStream();
   else
-    SendWin32StreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
+    SendWin32BlockingStreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
   return S_OK;
 }
 
-void XtwWin32Stream::RequestStop() {
+void XtwWin32BlockingStream::RequestStop() {
   StopStream();
   if(!secondary) {
     EnterCriticalSection(&lock.cs);
@@ -250,7 +250,7 @@ void XtwWin32Stream::RequestStop() {
   }
 }
 
-bool XtwWin32Stream::VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
+bool XtwWin32BlockingStream::VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
   if(SUCCEEDED(hr))
     return true;
   RequestStop();

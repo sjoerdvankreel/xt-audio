@@ -44,15 +44,15 @@ struct XtlCondition {
   XtlCondition(): cv() { XT_ASSERT(pthread_cond_init(&cv, nullptr) == 0); }
 };
 
-struct XtlLinuxStream: public XtManagedStream {
+struct XtlLinuxBlockingStream: public XtBlockingStream {
   XtlMutex lock;
   XtStreamState state;
   XtlCondition respondCv;
   XtlCondition controlCv;
   XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
 
-  XtlLinuxStream(bool secondary);
-  ~XtlLinuxStream();
+  XtlLinuxBlockingStream(bool secondary);
+  ~XtlLinuxBlockingStream();
   bool VerifyStreamCallback(int error, const char* file, int line, const char* func, const char* expr);
 };
 
