@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <PropertyGroup>
-        <Version>1.0.6</Version>
+        <Version>1.7</Version>
         <LangVersion>8.0</LangVersion>
         <OutputType>WinExe</OutputType>
-        <FileVersion>1.0.6</FileVersion>
+        <FileVersion>1.7</FileVersion>
         <RootNamespace>Xt</RootNamespace>
         <UseWindowsForms>true</UseWindowsForms>
         <AssemblyName>xt-cli-gui</AssemblyName>
-        <AssemblyVersion>1.0.6</AssemblyVersion>
+        <AssemblyVersion>1.7</AssemblyVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
         <OutputPath>..\..\scratch\cli-gui\$(Configuration)</OutputPath>

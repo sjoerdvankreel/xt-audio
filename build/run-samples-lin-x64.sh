@@ -19,6 +19,6 @@ echo Netcore sample finished.
 
 read -p "Starting java sample (press return to continue)..."
 cd ../dist/java-sample
-java -jar com.xt-audio.xt.sample-1.0.6.jar
+java -jar com.xt-audio.xt.sample-1.7.jar
 cd ../../build
 echo Java sample finished.
