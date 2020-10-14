@@ -127,6 +127,7 @@ for /L %%A in (0, 1, 1) do (
 cd ..\build
 
 REM build cli projects.
+dotnet restore
 for %%C in (debug release) do (
   msbuild cli.sln /p:Configuration=%%C
   if !errorlevel! neq 0 exit /b !errorlevel!

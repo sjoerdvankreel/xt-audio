@@ -6,3 +6,5 @@
 * Add overrides.
 * IPlatform, IDeviceList
 * Device & stream events in favor of logging
+* Distribute debug binaries
+* Split getversionnumber
