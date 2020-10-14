@@ -76,10 +76,10 @@ struct XtwEvent {
 };
 
 struct XtwWin32BlockingStream: public XtBlockingStream {
-  XtStreamState state;
   XtwCriticalSection lock;
   const XtwEvent respondEvent;
   const XtwEvent controlEvent;
+  XtBlockingStreamState state;
   XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
 
   XtwWin32BlockingStream(bool secondary);

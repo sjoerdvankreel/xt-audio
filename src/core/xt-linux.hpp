@@ -46,9 +46,9 @@ struct XtlCondition {
 
 struct XtlLinuxBlockingStream: public XtBlockingStream {
   XtlMutex lock;
-  XtStreamState state;
   XtlCondition respondCv;
   XtlCondition controlCv;
+  XtBlockingStreamState state;
   XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
 
   XtlLinuxBlockingStream(bool secondary);

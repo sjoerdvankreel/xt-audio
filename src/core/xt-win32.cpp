@@ -40,10 +40,10 @@ const XtService* const XtiServices[] =
   nullptr,
 };
 
-static XtStreamState ReadWin32BlockingStreamState(
+static XtBlockingStreamState ReadWin32BlockingStreamState(
   XtwWin32BlockingStream* stream) {
 
-  XtStreamState result;
+  XtBlockingStreamState result;
   EnterCriticalSection(&stream->lock.cs);
   result = stream->state;
   LeaveCriticalSection(&stream->lock.cs);
@@ -51,7 +51,7 @@ static XtStreamState ReadWin32BlockingStreamState(
 }
 
 static void ReceiveWin32BlockingStreamControl(
-  XtwWin32BlockingStream* stream, XtStreamState state) {
+  XtwWin32BlockingStream* stream, XtBlockingStreamState state) {
 
   EnterCriticalSection(&stream->lock.cs);
   stream->state = state;
@@ -60,7 +60,7 @@ static void ReceiveWin32BlockingStreamControl(
 }
 
 static void SendWin32BlockingStreamControl(
-  XtwWin32BlockingStream* stream, XtStreamState from, XtStreamState to) {
+  XtwWin32BlockingStream* stream, XtBlockingStreamState from, XtBlockingStreamState to) {
 
   EnterCriticalSection(&stream->lock.cs);
   if(stream->state == to) {
@@ -75,29 +75,29 @@ static void SendWin32BlockingStreamControl(
 }
 
 static DWORD WINAPI Win32BlockingStreamCallback(void* user) {
-  XtStreamState state;
+  XtBlockingStreamState state;
   auto stream = static_cast<XtwWin32BlockingStream*>(user);
 
   XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
-  while((state = ReadWin32BlockingStreamState(stream)) != XtStreamStateClosed) {
+  while((state = ReadWin32BlockingStreamState(stream)) != XtBlockingStreamState::Closed) {
     switch(state) {
-    case XtStreamStateStarted:
+    case XtBlockingStreamState::Started:
       stream->ProcessBuffer(false);
       break;
-    case XtStreamStateClosing:
-      ReceiveWin32BlockingStreamControl(stream, XtStreamStateClosed);
+    case XtBlockingStreamState::Closing:
+      ReceiveWin32BlockingStreamControl(stream, XtBlockingStreamState::Closed);
       CoUninitialize();
       return S_OK;
-    case XtStreamStateStopping:
+    case XtBlockingStreamState::Stopping:
       stream->StopStream();
-      ReceiveWin32BlockingStreamControl(stream, XtStreamStateStopped);
+      ReceiveWin32BlockingStreamControl(stream, XtBlockingStreamState::Stopped);
       break;
-    case XtStreamStateStarting:
+    case XtBlockingStreamState::Starting:
       stream->ProcessBuffer(true);
       stream->StartStream();
-      ReceiveWin32BlockingStreamControl(stream, XtStreamStateStarted);
+      ReceiveWin32BlockingStreamControl(stream, XtBlockingStreamState::Started);
       break;
-    case XtStreamStateStopped:
+    case XtBlockingStreamState::Stopped:
       XT_ASSERT(WaitForSingleObject(stream->controlEvent.event, INFINITE) == WAIT_OBJECT_0);
       break;
     default:
@@ -206,7 +206,7 @@ void XtiInitPlatform(void* wnd) {
 
 XtwWin32BlockingStream::XtwWin32BlockingStream(bool secondary):
 XtBlockingStream(secondary),
-state(XtStreamStateStopped), 
+state(XtBlockingStreamState::Stopped), 
 lock(),
 respondEvent(),
 controlEvent() {
@@ -219,12 +219,12 @@ controlEvent() {
 
 XtwWin32BlockingStream::~XtwWin32BlockingStream() {
   if(!secondary)
-    SendWin32BlockingStreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
+    SendWin32BlockingStreamControl(this, XtBlockingStreamState::Closing, XtBlockingStreamState::Closed);
 }
 
 XtFault XtwWin32BlockingStream::Start() {
   if(!secondary)
-    SendWin32BlockingStreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+    SendWin32BlockingStreamControl(this, XtBlockingStreamState::Starting, XtBlockingStreamState::Started);
   else {
     ProcessBuffer(true);
     StartStream();
@@ -236,7 +236,7 @@ XtFault XtwWin32BlockingStream::Stop() {
   if(secondary)
     StopStream();
   else
-    SendWin32BlockingStreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
+    SendWin32BlockingStreamControl(this, XtBlockingStreamState::Stopping, XtBlockingStreamState::Stopped);
   return S_OK;
 }
 
@@ -244,7 +244,7 @@ void XtwWin32BlockingStream::RequestStop() {
   StopStream();
   if(!secondary) {
     EnterCriticalSection(&lock.cs);
-    state = XtStreamStateStopped;
+    state = XtBlockingStreamState::Stopped;
     XT_ASSERT(SetEvent(respondEvent.event));
     LeaveCriticalSection(&lock.cs);
   }

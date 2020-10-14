@@ -40,10 +40,10 @@ const XtService* const XtiServices[] =
   nullptr,
 };
 
-static XtStreamState ReadLinuxBlockingStreamState(
+static XtBlockingStreamState ReadLinuxBlockingStreamState(
   XtlLinuxBlockingStream* stream) {
 
-  XtStreamState result;
+  XtBlockingStreamState result;
   XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
   result = stream->state;
   XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
@@ -51,7 +51,7 @@ static XtStreamState ReadLinuxBlockingStreamState(
 }
 
 static void ReceiveLinuxBlockingStreamControl(
-  XtlLinuxBlockingStream* stream, XtStreamState state) {
+  XtlLinuxBlockingStream* stream, XtBlockingStreamState state) {
 
   XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
   stream->state = state;
@@ -60,7 +60,7 @@ static void ReceiveLinuxBlockingStreamControl(
 }
 
 static void SendLinuxBlockingStreamControl(
-  XtlLinuxBlockingStream* stream, XtStreamState from, XtStreamState to) {
+  XtlLinuxBlockingStream* stream, XtBlockingStreamState from, XtBlockingStreamState to) {
 
   XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
   if(stream->state == to) {
@@ -79,35 +79,35 @@ static void* LinuxBlockingStreamCallback(void* user) {
   int policy;
   int maxPriority;
   int startPriority;
-  XtStreamState state;
   struct sched_param param;
+  XtBlockingStreamState state;
   auto stream = static_cast<XtlLinuxBlockingStream*>(user);
 
   XT_ASSERT(pthread_getschedparam(pthread_self(), &policy, &param) == 0);
   startPriority = param.sched_priority;
   maxPriority = sched_get_priority_max(policy);
-  while((state = ReadLinuxBlockingStreamState(stream)) != XtStreamStateClosed) {
+  while((state = ReadLinuxBlockingStreamState(stream)) != XtBlockingStreamState::Closed) {
     switch(state) {
-    case XtStreamStateStarted:
+    case XtBlockingStreamState::Started:
       stream->ProcessBuffer(false);
       break;
-    case XtStreamStateClosing:
-      ReceiveLinuxBlockingStreamControl(stream, XtStreamStateClosed);
+    case XtBlockingStreamState::Closing:
+      ReceiveLinuxBlockingStreamControl(stream, XtBlockingStreamState::Closed);
       return nullptr;
-    case XtStreamStateStopping:
+    case XtBlockingStreamState::Stopping:
       stream->StopStream();
       param.sched_priority = startPriority;
       XT_ASSERT(pthread_setschedparam(pthread_self(), policy, &param) == 0);
-      ReceiveLinuxBlockingStreamControl(stream, XtStreamStateStopped);
+      ReceiveLinuxBlockingStreamControl(stream, XtBlockingStreamState::Stopped);
       break;
-    case XtStreamStateStarting:
+    case XtBlockingStreamState::Starting:
       stream->ProcessBuffer(true);
       param.sched_priority = maxPriority;
       XT_ASSERT(pthread_setschedparam(pthread_self(), policy, &param) == 0);
       stream->StartStream();
-      ReceiveLinuxBlockingStreamControl(stream, XtStreamStateStarted);
+      ReceiveLinuxBlockingStreamControl(stream, XtBlockingStreamState::Started);
       break;
-    case XtStreamStateStopped:
+    case XtBlockingStreamState::Stopped:
       XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
       XT_ASSERT(pthread_cond_wait(&stream->controlCv.cv, &stream->lock.m) == 0);
       XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
@@ -212,7 +212,7 @@ XtCause XtlPosixErrorToCause(XtFault fault) {
 XtlLinuxBlockingStream::XtlLinuxBlockingStream(bool secondary):
 XtBlockingStream(secondary),
 lock(),
-state(XtStreamStateStopped),
+state(XtBlockingStreamState::Stopped),
 respondCv(), 
 controlCv() {
   if(!secondary) {
@@ -223,12 +223,12 @@ controlCv() {
 
 XtlLinuxBlockingStream::~XtlLinuxBlockingStream() {
   if(!secondary) 
-    SendLinuxBlockingStreamControl(this, XtStreamStateClosing, XtStreamStateClosed);
+    SendLinuxBlockingStreamControl(this, XtBlockingStreamState::Closing, XtBlockingStreamState::Closed);
 }
 
 XtFault XtlLinuxBlockingStream::Start() {
   if(!secondary)
-    SendLinuxBlockingStreamControl(this, XtStreamStateStarting, XtStreamStateStarted);
+    SendLinuxBlockingStreamControl(this, XtBlockingStreamState::Starting, XtBlockingStreamState::Started);
   else {
     ProcessBuffer(true);
     StartStream();
@@ -240,7 +240,7 @@ XtFault XtlLinuxBlockingStream::Stop() {
   if(secondary)
     StopStream();
   else
-    SendLinuxBlockingStreamControl(this, XtStreamStateStopping, XtStreamStateStopped);
+    SendLinuxBlockingStreamControl(this, XtBlockingStreamState::Stopping, XtBlockingStreamState::Stopped);
   return 0;
 }
 
@@ -248,7 +248,7 @@ void XtlLinuxBlockingStream::RequestStop() {
   StopStream();
   if(!secondary) {
     XT_ASSERT(pthread_mutex_lock(&lock.m) == 0);
-    state = XtStreamStateStopped;
+    state = XtBlockingStreamState::Stopped;
     XT_ASSERT(pthread_cond_signal(&respondCv.cv) == 0);
     XT_ASSERT(pthread_mutex_unlock(&lock.m) == 0);
   }

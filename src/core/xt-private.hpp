@@ -105,13 +105,13 @@ typedef uint32_t XtFault;
 extern XtTraceCallback XtiTraceCallback;
 extern XtFatalCallback XtiFatalCallback;
 
-enum XtStreamState {
-  XtStreamStateStopped,
-  XtStreamStateStarting,
-  XtStreamStateStarted,
-  XtStreamStateStopping,
-  XtStreamStateClosing,
-  XtStreamStateClosed
+enum class XtBlockingStreamState {
+  Stopped,
+  Starting,
+  Started,
+  Stopping,
+  Closing,
+  Closed
 };
 
 struct XtAggregateContext {
