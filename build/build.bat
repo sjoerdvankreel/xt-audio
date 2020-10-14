@@ -108,12 +108,6 @@ for /L %%A in (0, 1, 1) do (
           if not exist !FD! (mkdir !FD!)
           copy !FT! !FD!
         )
-        set FT=..\..\temp\cpp-driver-win32-!archs[%%A]!-!confs[%%C]!-!libs[%%L]!
-        if not exist !FT! (mkdir !FT!)
-        copy !confs[%%C]!\xt-cpp-driver.exe !FT!\xt-cpp-driver.exe
-        if %%C == 0 (
-          copy !confs[%%C]!\xt-cpp-driver.pdb !FT!\xt-cpp-driver.pdb
-        )
         set FT=..\..\temp\cpp-sample-win32-!archs[%%A]!-!confs[%%C]!-!libs[%%L]!
         if not exist !FT! (mkdir !FT!)
         copy !confs[%%C]!\xt-cpp-sample.exe !FT!\xt-cpp-sample.exe
@@ -208,21 +202,6 @@ copy ..\temp\core-xt-win32-x86-release-shared\xt-core.dll ..\scratch\java\target
 copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\scratch\java\target\win32-x64
 if not exist ..\dist\java-xt (mkdir ..\dist\java-xt)
 xcopy /y /s ..\temp\java-xt\*.* ..\dist\java-xt\*.*
-
-cd java-driver
-call mvn install
-if !errorlevel! neq 0 exit /b !errorlevel!
-cd ..
-if not exist ..\temp\java-driver (mkdir ..\temp\java-driver)
-if not exist ..\temp\java-driver\win32-x86 (mkdir ..\temp\java-driver\win32-x86)
-if not exist ..\temp\java-driver\win32-x64 (mkdir ..\temp\java-driver\win32-x64)
-if not exist ..\scratch\java-driver\target\win32-x86 (mkdir ..\scratch\java-driver\target\win32-x86)
-if not exist ..\scratch\java-driver\target\win32-x64 (mkdir ..\scratch\java-driver\target\win32-x64)
-copy ..\scratch\java-driver\target\*.jar ..\temp\java-driver
-copy ..\temp\core-xt-win32-x86-release-shared\xt-core.dll ..\temp\java-driver\win32-x86
-copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\temp\java-driver\win32-x64
-copy ..\temp\core-xt-win32-x86-release-shared\xt-core.dll ..\scratch\java-driver\target\win32-x86
-copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\scratch\java-driver\target\win32-x64
 
 cd java-sample
 call mvn install

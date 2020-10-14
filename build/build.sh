@@ -83,9 +83,6 @@ do
       mkdir -p $FT
       cp libxt-core.a $FT || :
       cp libxt-cpp.a $FT || :
-      FT=../../temp/cpp-driver-linux-$XT_ARCH-${confs[$C]}-${libs[$L]}
-      mkdir -p $FT
-      cp xt-cpp-driver $FT || :
       FT=../../temp/cpp-sample-linux-$XT_ARCH-${confs[$C]}-${libs[$L]}
       mkdir -p $FT
       cp xt-cpp-sample $FT || :
@@ -146,14 +143,10 @@ cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../dist/cli-sampl
 # Copy native libraries to java.
 mkdir -p ../scratch/java/target/linux-$XT_ARCH
 cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../scratch/java/target/linux-$XT_ARCH
-mkdir -p ../scratch/java-driver/target/linux-$XT_ARCH
-cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../scratch/java-driver/target/linux-$XT_ARCH
 mkdir -p ../scratch/java-sample/target/linux-$XT_ARCH
 cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../scratch/java-sample/target/linux-$XT_ARCH
 mkdir -p ../temp/java-xt/linux-$XT_ARCH
 cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../temp/java-xt/linux-$XT_ARCH
-mkdir -p ../temp/java-driver/linux-$XT_ARCH
-cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../temp/java-driver/linux-$XT_ARCH
 mkdir -p ../temp/java-sample/linux-$XT_ARCH
 cp ../temp/core-xt-linux-$XT_ARCH-release-shared/libxt-core.so ../temp/java-sample/linux-$XT_ARCH
 mkdir -p ../dist/java-xt/linux-$XT_ARCH
