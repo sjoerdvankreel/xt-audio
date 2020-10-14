@@ -1,2 +1,10 @@
 * Figure out JACK support on Ubuntu 20.
+* Have aggregate stream open the device.
 * Query device info without opening the device.
+* Better document service/list/device/stream lifetime (what needs to be alive when).
+* Cleanup logging and unnecessary class members.
+* Bump version number.
+* Remove drivers.
+* Add overrides.
+* IPlatform, IDeviceList
+* Device & stream events in favor of logging
