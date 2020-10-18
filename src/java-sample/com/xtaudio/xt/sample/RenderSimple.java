@@ -2,6 +2,7 @@ package com.xtaudio.xt.sample;
 
 import com.xtaudio.xt.XtAudio;
 import com.xtaudio.xt.XtBuffer;
+import com.xtaudio.xt.XtChannels;
 import com.xtaudio.xt.XtDevice;
 import com.xtaudio.xt.XtFormat;
 import com.xtaudio.xt.XtMix;

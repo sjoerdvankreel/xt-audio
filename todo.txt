@@ -17,10 +17,10 @@
 * check docs
 * major testing
 * remove print of structs
-* remove license in each file
 * naming convention -> camelcase for fields ?
 * naming convention cpp -> prefix with Xt?
 * fix native struct marshalling
 * what is dousememory
 * change disable_service to enable_service
 * fix doxygen typedef errors
+* small java driver
