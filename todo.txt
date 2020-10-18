@@ -1,3 +1,4 @@
+* Rename files
 * Figure out JACK support on Ubuntu 20.
 * Have aggregate stream open the device.
 * Query device info without opening the device.
@@ -13,7 +14,6 @@
 * merge private implementation stuff
 * simplify xtl/xti/xtw prefixes
 * split types to files
-* merge format and channels
 * check docs
 * major testing
 * remove print of structs
