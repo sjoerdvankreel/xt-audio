@@ -247,9 +247,9 @@ namespace Xt
                 null : ((DeviceView)(this.inputDevice.SelectedItem)).device;
             bool inputSupported = inputDevice == null ? false : inputDevice.SupportsFormat(inputFormat);
             inputFormatSupported.Text = inputSupported.ToString();
-            XtBuffer inputBuffer = !inputSupported ? null : inputDevice.GetBuffer(inputFormat);
+            XtBuffer? inputBuffer = !inputSupported ? (XtBuffer?)null : inputDevice.GetBuffer(inputFormat);
             inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
-                inputBuffer.min.ToString("N1"), inputBuffer.current.ToString("N1"), inputBuffer.max.ToString("N1"));
+                inputBuffer.Value.min.ToString("N1"), inputBuffer.Value.current.ToString("N1"), inputBuffer.Value.max.ToString("N1"));
             var inputDeviceMix = inputDevice?.GetMix();
             inputMix.Text = inputDeviceMix == null ? "N/A" : inputDeviceMix.rate + " " + inputDeviceMix.sample;
             inputInterleaved.Text = inputDevice == null
@@ -273,9 +273,9 @@ namespace Xt
                 null : ((DeviceView)(this.outputDevice.SelectedItem)).device;
             bool outputSupported = outputDevice == null ? false : outputDevice.SupportsFormat(outputFormat);
             outputFormatSupported.Text = outputSupported.ToString();
-            XtBuffer outputBuffer = !outputSupported ? null : outputDevice.GetBuffer(outputFormat);
+            XtBuffer? outputBuffer = !outputSupported ? (XtBuffer?)null : outputDevice.GetBuffer(outputFormat);
             outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
-                outputBuffer.min.ToString("N1"), outputBuffer.current.ToString("N1"), outputBuffer.max.ToString("N1"));
+                outputBuffer.Value.min.ToString("N1"), outputBuffer.Value.current.ToString("N1"), outputBuffer.Value.max.ToString("N1"));
             var outputDeviceMix = outputDevice?.GetMix();
             outputMix.Text = outputDeviceMix == null ? "N/A" : outputDeviceMix.rate + " " + outputDeviceMix.sample;
             outputInterleaved.Text = outputDevice == null
@@ -299,9 +299,9 @@ namespace Xt
             bufferSize.Value = 1000;
             if (outputBuffer != null)
             {
-                bufferSize.Minimum = (int)Math.Floor(outputBuffer.min);
-                bufferSize.Maximum = (int)Math.Ceiling(outputBuffer.max);
-                bufferSize.Value = (int)Math.Ceiling(outputBuffer.current);
+                bufferSize.Minimum = (int)Math.Floor(outputBuffer.Value.min);
+                bufferSize.Maximum = (int)Math.Ceiling(outputBuffer.Value.max);
+                bufferSize.Value = (int)Math.Ceiling(outputBuffer.Value.current);
                 bufferSize.TickFrequency = (bufferSize.Maximum - bufferSize.Minimum) / 10;
             }
         }

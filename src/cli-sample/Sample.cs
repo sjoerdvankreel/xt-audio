@@ -59,6 +59,7 @@ namespace Xt
                 Console.WriteLine("\tCause: " + XtAudio.GetErrorCause(e.GetError()));
                 Console.WriteLine("\tFault: " + XtAudio.GetErrorFault(e.GetError()));
                 Console.WriteLine("\tText: " + XtAudio.GetErrorText(e.GetError()));
+                Console.WriteLine(e.StackTrace);
             }
         }
     }

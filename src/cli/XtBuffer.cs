@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Xt
 {
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class XtBuffer
+    public struct XtBuffer
     {
         public double min;
         public double max;

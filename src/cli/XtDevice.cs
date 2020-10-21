@@ -35,9 +35,9 @@ namespace Xt
 
         public XtBuffer GetBuffer(XtFormat format)
         {
-            XtBuffer buffer = new XtBuffer();
+            XtBuffer buffer;
             XtNative.Format native = XtNative.Format.ToNative(format);
-            XtNative.HandleError(XtNative.XtDeviceGetBuffer(d, ref native, buffer));
+            XtNative.HandleError(XtNative.XtDeviceGetBuffer(d, ref native, out buffer));
             return buffer;
         }
 

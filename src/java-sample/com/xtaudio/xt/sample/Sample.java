@@ -49,6 +49,7 @@ public class Sample {
             System.out.println("\tCause: " + XtAudio.getErrorCause(e.getError()));
             System.out.println("\tFault: " + XtAudio.getErrorFault(e.getError()));
             System.out.println("\tText: " + XtAudio.getErrorText(e.getError()));
+            e.printStackTrace();
         }
     }
 }

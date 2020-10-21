@@ -219,7 +219,7 @@ namespace Xt
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceSupportsAccess(IntPtr d, bool interleaved, out bool supports);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetBuffer(IntPtr d, ref Format format, [In, Out] XtBuffer buffer);
+        internal static extern ulong XtDeviceGetBuffer(IntPtr d, ref Format format, out XtBuffer buffer);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceSupportsFormat(IntPtr d, ref Format format, out bool supports);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
