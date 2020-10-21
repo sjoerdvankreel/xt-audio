@@ -2,7 +2,6 @@ package com.xtaudio.xt.sample;
 
 import com.xtaudio.xt.XtAudio;
 import com.xtaudio.xt.XtException;
-import com.xtaudio.xt.XtPrint;
 
 public class Sample {
 
@@ -46,8 +45,8 @@ public class Sample {
             }
         } catch (XtException e) {
             System.out.println("Error:");
-            System.out.println("\tSystem: " + XtPrint.systemToString(XtAudio.getErrorSystem(e.getError())));
-            System.out.println("\tCause: " + XtPrint.causeToString(XtAudio.getErrorCause(e.getError())));
+            System.out.println("\tSystem: " + XtAudio.getErrorSystem(e.getError()));
+            System.out.println("\tCause: " + XtAudio.getErrorCause(e.getError()));
             System.out.println("\tFault: " + XtAudio.getErrorFault(e.getError()));
             System.out.println("\tText: " + XtAudio.getErrorText(e.getError()));
         }

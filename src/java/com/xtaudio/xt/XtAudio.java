@@ -1,6 +1,9 @@
 package com.xtaudio.xt;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class XtAudio implements XtCloseable {
 
@@ -74,5 +77,14 @@ public final class XtAudio implements XtCloseable {
 
     public static XtAttributes getSampleAttributes(XtSample sample) {
         return XtNative.XtAudioGetSampleAttributes(sample.ordinal());
+    }
+
+    public static List<String> printCapabilitiesToString(int capabilities) {
+        int i = 0;
+        List<String> result = new ArrayList<>();
+        Pointer strings = XtNative.XtAudioPrintCapabilitiesToString(capabilities);
+        while(strings.getPointer(i * Native.POINTER_SIZE) != null)
+            result.add(strings.getPointer(i++ * Native.POINTER_SIZE).getString(0));
+        return result;
     }
 }

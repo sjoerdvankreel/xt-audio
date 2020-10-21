@@ -1,10 +1,11 @@
 package com.xtaudio.xt.sample;
 
 import com.xtaudio.xt.XtAudio;
+import com.xtaudio.xt.XtCapabilities;
 import com.xtaudio.xt.XtDevice;
 import com.xtaudio.xt.XtException;
 import com.xtaudio.xt.XtLevel;
-import com.xtaudio.xt.XtPrint;
+import com.xtaudio.xt.XtMix;
 import com.xtaudio.xt.XtService;
 import com.xtaudio.xt.XtSetup;
 
@@ -38,21 +39,22 @@ public class PrintDetailed {
                 System.out.println("Service " + service.getName() + ":");
                 System.out.println("  System: " + service.getSystem());
                 System.out.println("  Device count: " + service.getDeviceCount());
-                System.out.println("  Capabilities: " + String.join(", ", XtPrint.capabilitiesToString(service.getCapabilities())));
+                System.out.println("  Capabilities: " + XtCapabilities.toString(service.getCapabilities()));
 
                 try (XtDevice defaultInput = service.openDefaultDevice(false)) {
-                    System.out.println("  Default input: " + defaultInput);
+                    System.out.println("  Default input: " + defaultInput.getName());
                 }
                 try (XtDevice defaultOutput = service.openDefaultDevice(true)) {
-                    System.out.println("  Default output: " + defaultOutput);
+                    System.out.println("  Default output: " + defaultOutput.getName());
                 }
 
                 for (int d = 0; d < service.getDeviceCount(); d++)
                     try (XtDevice device = service.openDevice(d)) {
-
+                        XtMix mix = device.getMix();
                         System.out.println("  Device " + device.getName() + ":");
                         System.out.println("    System: " + device.getSystem());
-                        System.out.println("    Current mix: " + device.getMix());
+                        if(mix != null)
+                            System.out.println("    Current mix: " + mix.rate + " " + mix.sample);
                         System.out.println("    Input channels: " + device.getChannelCount(false));
                         System.out.println("    Output channels: " + device.getChannelCount(true));
                         System.out.println("    Interleaved access: " + device.supportsAccess(true));
@@ -62,9 +64,9 @@ public class PrintDetailed {
         } catch (XtException e) {
 
             System.out.printf("Error: system %s, fault %s, cause %s, text %s.\n",
-                    XtPrint.systemToString(XtAudio.getErrorSystem(e.getError())),
+                    XtAudio.getErrorSystem(e.getError()),
                     XtAudio.getErrorFault(e.getError()),
-                    XtPrint.causeToString(XtAudio.getErrorCause(e.getError())),
+                    XtAudio.getErrorCause(e.getError()),
                     XtAudio.getErrorText(e.getError()));
         }
     }

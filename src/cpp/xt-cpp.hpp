@@ -112,8 +112,6 @@ std::ostream& operator<<(std::ostream& os, Cause cause);
 std::ostream& operator<<(std::ostream& os, Setup setup);
 std::ostream& operator<<(std::ostream& os, System system);
 std::ostream& operator<<(std::ostream& os, Sample sample);
-std::ostream& operator<<(std::ostream& os, const Device& device);
-std::ostream& operator<<(std::ostream& os, const Service& service);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
 
 typedef void (*FatalCallback)();
@@ -131,19 +129,6 @@ public:
   Exception(uint64_t e);
   uint64_t GetError() const;
   const char* what() const noexcept override;
-};
-
-class Print final {
-private:
-  Print();
-public:
-
-  static std::string LevelToString(Level level);
-  static std::string CauseToString(Cause cause);
-  static std::string SetupToString(Setup setup);
-  static std::string SystemToString(System system);
-  static std::string SampleToString(Sample sample);
-  static std::vector<std::string> CapabilitiesToString(Capabilities capabilities);
 };
 
 class Stream final {
@@ -205,6 +190,7 @@ public:
   static std::unique_ptr<Service> GetServiceBySetup(Setup setup);
   static std::unique_ptr<Service> GetServiceByIndex(int32_t index);
   static std::unique_ptr<Service> GetServiceBySystem(System system);
+  static std::vector<std::string> PrintCapabilitiesToString(Capabilities capabilities);
 };
 
 class Device final {

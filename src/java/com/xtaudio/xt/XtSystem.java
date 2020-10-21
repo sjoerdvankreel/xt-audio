@@ -8,9 +8,4 @@ public enum XtSystem {
     PULSE,
     DSOUND,
     WASAPI;
-
-    @Override
-    public String toString() {
-        return XtPrint.systemToString(this);
-    }
 }

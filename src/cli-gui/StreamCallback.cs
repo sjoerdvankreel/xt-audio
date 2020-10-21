@@ -29,7 +29,7 @@ namespace Xt
 		{
 			if (error != 0)
 			{
-				onError(() => "Stream callback error: " + XtPrint.CauseToString(XtAudio.GetErrorCause(error)) + " (" + XtAudio.GetErrorText(error) + ")");
+				onError(() => "Stream callback error: " + XtAudio.GetErrorCause(error) + " (" + XtAudio.GetErrorText(error) + ")");
 				return;
 			}
 

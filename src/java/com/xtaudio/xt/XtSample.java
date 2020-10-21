@@ -7,9 +7,4 @@ public enum XtSample {
     INT24,
     INT32,
     FLOAT32;
-
-    @Override
-    public String toString() {
-        return XtPrint.sampleToString(this);
-    }
 }

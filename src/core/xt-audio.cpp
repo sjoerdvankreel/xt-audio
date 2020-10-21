@@ -4,9 +4,10 @@
 #endif
 
 #include "xt-private.hpp"
-#include <inttypes.h>
+#include <cassert>
 #include <sstream>
 #include <iomanip>
+#include <inttypes.h>
 
 // ---- local ----
 
@@ -96,75 +97,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   return 0;
 }
 
-// ---- print ----
-
-const char* XT_CALL XtPrintLevelToString(XtLevel level) {
-  switch(level) {
-  case XtLevelInfo: return "Info";
-  case XtLevelError: return "Error";
-  case XtLevelFatal: return "Fatal";
-  default: return "<Unknown level>";
-  }
-}
-
-const char* XT_CALL XtPrintCauseToString(XtCause cause) {
-  switch(cause) {
-  case XtCauseFormat: return "Format";
-  case XtCauseGeneric: return "Generic";
-  case XtCauseService: return "Service";
-  case XtCauseUnknown: return "Unknown";
-  case XtCauseEndpoint: return "Endpoint";
-  default: return "<Unknown cause>";
-  }
-}
-
-const char* XT_CALL XtPrintSetupToString(XtSetup setup) {
-  switch(setup) {
-  case XtSetupProAudio: return "ProAudio";
-  case XtSetupSystemAudio: return "SystemAudio";
-  case XtSetupConsumerAudio: return "ConsumerAudio";
-  default: return "<Unknown setup>";
-  }
-}
-
-const char* XT_CALL XtPrintSystemToString(XtSystem system) {
-  switch(system) {
-  case XtSystemAlsa: return "Alsa";
-  case XtSystemAsio: return "Asio";
-  case XtSystemJack: return "Jack";
-  case XtSystemPulse: return "Pulse";
-  case XtSystemDSound: return "DSound";
-  case XtSystemWasapi: return "Wasapi";
-  default: return "<Unknown system>";
-  }
-}
-
-const char* XT_CALL XtPrintSampleToString(XtSample sample) {
-  switch(sample) {
-  case XtSampleUInt8: return "UInt8";
-  case XtSampleInt16: return "Int16";
-  case XtSampleInt24: return "Int24";
-  case XtSampleInt32: return "Int32";
-  case XtSampleFloat32: return "Float32";
-  default: return "<Unknown sample>";
-  }
-}
-
-const char* const* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
-  size_t i = 0;
-  static thread_local const char* result[6];
-  static const char* const noCapabilities[] = { "None", nullptr };
-  static const char* const allCapabilities[] = { "Time", "Latency", "FullDuplex", "ChannelMask", "XRunDetection" };
-  std::memset(result, 0, sizeof(result));
-  if(capabilities == XtCapabilitiesNone) return noCapabilities;
-  if((capabilities & XtCapabilitiesTime) != 0) result[i++] = allCapabilities[0];
-  if((capabilities & XtCapabilitiesLatency) != 0) result[i++] = allCapabilities[1];
-  if((capabilities & XtCapabilitiesFullDuplex) != 0) result[i++] = allCapabilities[2];
-  if((capabilities & XtCapabilitiesChannelMask) != 0) result[i++] = allCapabilities[3];
-  if((capabilities & XtCapabilitiesXRunDetection) != 0) result[i++] = allCapabilities[4];
-  return result;
-}
-
 // ---- audio ----
 
 void XT_CALL XtAudioFree(void* ptr) {
@@ -216,6 +148,73 @@ XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample) {
   case XtSampleFloat32: result.size = 4; break;
   default: XT_FAIL("Unknown sample"); break;
   }
+  return result;
+}
+
+const char* XT_CALL XtAudioPrintLevelToString(XtLevel level) {
+  switch(level) {
+  case XtLevelInfo: return "Info";
+  case XtLevelError: return "Error";
+  case XtLevelFatal: return "Fatal";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtAudioPrintCauseToString(XtCause cause) {
+  switch(cause) {
+  case XtCauseFormat: return "Format";
+  case XtCauseGeneric: return "Generic";
+  case XtCauseService: return "Service";
+  case XtCauseUnknown: return "Unknown";
+  case XtCauseEndpoint: return "Endpoint";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtAudioPrintSetupToString(XtSetup setup) {
+  switch(setup) {
+  case XtSetupProAudio: return "ProAudio";
+  case XtSetupSystemAudio: return "SystemAudio";
+  case XtSetupConsumerAudio: return "ConsumerAudio";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtAudioPrintSystemToString(XtSystem system) {
+  switch(system) {
+  case XtSystemAlsa: return "Alsa";
+  case XtSystemAsio: return "Asio";
+  case XtSystemJack: return "Jack";
+  case XtSystemPulse: return "Pulse";
+  case XtSystemDSound: return "DSound";
+  case XtSystemWasapi: return "Wasapi";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtAudioPrintSampleToString(XtSample sample) {
+  switch(sample) {
+  case XtSampleUInt8: return "UInt8";
+  case XtSampleInt16: return "Int16";
+  case XtSampleInt24: return "Int24";
+  case XtSampleInt32: return "Int32";
+  case XtSampleFloat32: return "Float32";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* const* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities) {
+  size_t i = 0;
+  static thread_local const char* result[6];
+  static const char* const noCapabilities[] = { "None", nullptr };
+  static const char* const allCapabilities[] = { "Time", "Latency", "FullDuplex", "ChannelMask", "XRunDetection" };
+  std::memset(result, 0, sizeof(result));
+  if(capabilities == XtCapabilitiesNone) return noCapabilities;
+  if((capabilities & XtCapabilitiesTime) != 0) result[i++] = allCapabilities[0];
+  if((capabilities & XtCapabilitiesLatency) != 0) result[i++] = allCapabilities[1];
+  if((capabilities & XtCapabilitiesFullDuplex) != 0) result[i++] = allCapabilities[2];
+  if((capabilities & XtCapabilitiesChannelMask) != 0) result[i++] = allCapabilities[3];
+  if((capabilities & XtCapabilitiesXRunDetection) != 0) result[i++] = allCapabilities[4];
   return result;
 }
 
@@ -502,7 +501,7 @@ void XT_CALL XtStreamDestroy(XtStream* s) {
   XT_ASSERT(XtiCalledOnMainThread());
   if(s == nullptr)
     return;
-  const char* system = XtPrintSystemToString(XtStreamGetSystem(s));
+  const char* system = XtAudioPrintSystemToString(XtStreamGetSystem(s));
   XT_TRACE(XtLevelInfo, "Closing stream on system %s...", system);
   delete s;
   XT_TRACE(XtLevelInfo, "Closed stream on system %s.", system);
@@ -511,7 +510,7 @@ void XT_CALL XtStreamDestroy(XtStream* s) {
 XtError XT_CALL XtStreamStop(XtStream* s) {
   XT_ASSERT(s != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  const char* system = XtPrintSystemToString(XtStreamGetSystem(s));
+  const char* system = XtAudioPrintSystemToString(XtStreamGetSystem(s));
   XT_TRACE(XtLevelInfo, "Stopping stream on system %s...", system);
   XtError error =  XtiCreateError(s->GetSystem(), s->Stop());
   XT_TRACE(XtLevelInfo, "Stopped stream on system %s.", system);
@@ -521,7 +520,7 @@ XtError XT_CALL XtStreamStop(XtStream* s) {
 XtError XT_CALL XtStreamStart(XtStream* s) {
   XT_ASSERT(s != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  const char* system = XtPrintSystemToString(XtStreamGetSystem(s));
+  const char* system = XtAudioPrintSystemToString(XtStreamGetSystem(s));
   XT_TRACE(XtLevelInfo, "Starting stream on system %s...", system);
   XtError error =  XtiCreateError(s->GetSystem(), s->Start());
   XT_TRACE(XtLevelInfo, "Started stream on system %s.", system);

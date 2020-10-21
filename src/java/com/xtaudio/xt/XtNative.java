@@ -156,13 +156,7 @@ final class XtNative {
     static native int XtAudioGetErrorFault(long error);
     static native int XtAudioGetErrorSystem(long error);
     static native String XtAudioGetErrorText(long error);
-
-    static native String XtPrintLevelToString(int level);
-    static native String XtPrintCauseToString(int cause);
-    static native String XtPrintSetupToString(int setup);
-    static native String XtPrintSystemToString(int system);
-    static native String XtPrintSampleToString(int sample);
-    static native Pointer XtPrintCapabilitiesToString(int capabilities);
+    static native Pointer XtAudioPrintCapabilitiesToString(int capabilities);
 
     static native void XtStreamDestroy(Pointer s);
     static native long XtStreamStop(Pointer s);

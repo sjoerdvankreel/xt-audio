@@ -33,18 +33,15 @@ int PrintDetailedMain(int argc, char** argv) {
       std::cout << "Service " << service->GetName() + ":\n";
       std::cout << "  System: " << service->GetSystem() << "\n";
       std::cout << "  Device count: " << service->GetDeviceCount() << "\n";
-      auto capabilities = Xt::Print::CapabilitiesToString(service->GetCapabilities());
-      auto joiner = [](const std::string& l, const std::string& r) { return l.size() > 0? l + ", " + r: r; };
-      auto capabilitiesText = std::accumulate(capabilities.cbegin(), capabilities.cend(), std::string(), joiner);
-      std::cout << "  Capabilities: " << capabilitiesText << "\n";
+      std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";
 
       std::unique_ptr<Xt::Device> defaultInput = service->OpenDefaultDevice(false);
       if(defaultInput)
-        std::cout << "  Default input: " << *defaultInput << "\n";
+        std::cout << "  Default input: " << defaultInput->GetName() << "\n";
 
       std::unique_ptr<Xt::Device> defaultOutput = service->OpenDefaultDevice(true);
       if(defaultOutput)
-        std::cout << "  Default output: " << *defaultOutput << "\n";
+        std::cout << "  Default output: " << defaultOutput->GetName() << "\n";
 
       for(int d = 0; d < service->GetDeviceCount(); d++) {
         std::unique_ptr<Xt::Device> device = service->OpenDevice(d);
@@ -52,7 +49,7 @@ int PrintDetailedMain(int argc, char** argv) {
         std::cout << "  Device " << device->GetName() + ":" << "\n";
         std::cout << "    System: " << device->GetSystem() << "\n";
         if(mix)
-          std::cout << "    Current mix: " << mix->rate << " " << Xt::Print::SampleToString(mix->sample) << "\n";
+          std::cout << "    Current mix: " << mix->rate << " " << mix->sample << "\n";
         std::cout << "    Input channels: " << device->GetChannelCount(false) << "\n";
         std::cout << "    Output channels: " << device->GetChannelCount(true) << "\n";
         std::cout << "    Interleaved access: " << device->SupportsAccess(true) << "\n";

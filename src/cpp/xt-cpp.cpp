@@ -1,5 +1,6 @@
 #include "xt-cpp.hpp"
 #include "xt-audio.h"
+#include <numeric>
 
 namespace Xt {
 
@@ -63,62 +64,29 @@ const char* Exception::what() const noexcept {
 // ---- ostream ----
 
 std::ostream& operator<<(std::ostream& os, Level level) {
-  return os << Print::LevelToString(level);
+  return os << XtAudioPrintLevelToString(static_cast<XtLevel>(level));
 }
 
 std::ostream& operator<<(std::ostream& os, Cause cause) {
-  return os << Print::CauseToString(cause);
+  return os << XtAudioPrintCauseToString(static_cast<XtCause>(cause));
 }
 
 std::ostream& operator<<(std::ostream& os, Setup setup) {
-  return os << Print::SetupToString(setup);
+  return os << XtAudioPrintSetupToString(static_cast<XtSetup>(setup));
 }
 
 std::ostream& operator<<(std::ostream& os, System system) {
-  return os << Print::SystemToString(system);
+  return os << XtAudioPrintSystemToString(static_cast<XtSystem>(system));
 }
 
 std::ostream& operator<<(std::ostream& os, Sample sample) {
-  return os << Print::SampleToString(sample);
+  return os << XtAudioPrintSampleToString(static_cast<XtSample>(sample));
 }
 
-std::ostream& operator<<(std::ostream& os, const Device& device) {
-  return os << device.GetName();
-}
-
-std::ostream& operator<<(std::ostream& os, const Service& service) {
-  return os << service.GetName();
-}
-
-// ---- print ----
-
-std::string Print::LevelToString(Level level) {
-  return XtPrintLevelToString(static_cast<XtLevel>(level));
-}
-
-std::string Print::CauseToString(Cause cause) {
-  return XtPrintCauseToString(static_cast<XtCause>(cause));
-}
-
-std::string Print::SetupToString(Setup setup) {
-  return XtPrintSetupToString(static_cast<XtSetup>(setup));
-}
-
-std::string Print::SystemToString(System system) {
-  return XtPrintSystemToString(static_cast<XtSystem>(system));
-}
-
-std::string Print::SampleToString(Sample sample) {
-  return XtPrintSampleToString(static_cast<XtSample>(sample));
-}
-
-std::vector<std::string> Print::CapabilitiesToString(Capabilities capabilities) {
-  size_t i = 0;
-  std::vector<std::string> result;
-  const char* const* strings = XtPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
-  while(strings[i] != nullptr)
-    result.emplace_back(std::string(strings[i++]));
-  return result;
+std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
+  auto strings = Audio::PrintCapabilitiesToString(capabilities);
+  auto joiner = [](const std::string& l, const std::string& r) { return l.size() > 0? l + ", " + r: r; };
+  return os << std::accumulate(strings.cbegin(), strings.cend(), std::string(), joiner);  
 }
 
 // ---- audio ----
@@ -188,6 +156,15 @@ std::unique_ptr<Service> Audio::GetServiceBySetup(Setup setup) {
 std::unique_ptr<Service> Audio::GetServiceBySystem(System system) {
   const XtService* service = XtAudioGetServiceBySystem(static_cast<XtSystem>(system));
   return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
+}
+
+std::vector<std::string> Audio::PrintCapabilitiesToString(Capabilities capabilities) {
+  size_t i = 0;
+  std::vector<std::string> result;
+  const char* const* strings = XtAudioPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
+  while(strings[i] != nullptr)
+    result.emplace_back(std::string(strings[i++]));
+  return result;
 }
 
 // ---- service ----

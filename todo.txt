@@ -28,3 +28,4 @@
 * remove utility functions (iswin32, tostring, print)
 * getfaulttext ?
 * check enum tostrings
+* check aggregate tostrings
