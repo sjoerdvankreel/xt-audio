@@ -115,7 +115,7 @@ std::string Print::SampleToString(Sample sample) {
 std::vector<std::string> Print::CapabilitiesToString(Capabilities capabilities) {
   size_t i = 0;
   std::vector<std::string> result;
-  const char** strings = XtPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
+  const char* const* strings = XtPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
   while(strings[i] != nullptr)
     result.emplace_back(std::string(strings[i++]));
   return result;

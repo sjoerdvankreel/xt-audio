@@ -150,11 +150,13 @@ const char* XT_CALL XtPrintSampleToString(XtSample sample) {
   }
 }
 
-const char** XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
+const char* const* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
   size_t i = 0;
   static thread_local const char* result[6];
+  static const char* const noCapabilities[] = { "None", nullptr };
   static const char* const allCapabilities[] = { "Time", "Latency", "FullDuplex", "ChannelMask", "XRunDetection" };
   std::memset(result, 0, sizeof(result));
+  if(capabilities == XtCapabilitiesNone) return noCapabilities;
   if((capabilities & XtCapabilitiesTime) != 0) result[i++] = allCapabilities[0];
   if((capabilities & XtCapabilitiesLatency) != 0) result[i++] = allCapabilities[1];
   if((capabilities & XtCapabilitiesFullDuplex) != 0) result[i++] = allCapabilities[2];
