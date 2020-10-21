@@ -25,3 +25,4 @@
 * fix doxygen typedef errors
 * small java driver
 * c++ const noexcept
+* remove utility functions (iswin32, tostring, print)

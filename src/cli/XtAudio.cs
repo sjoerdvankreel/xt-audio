@@ -33,6 +33,11 @@ namespace Xt
         public static int GetServiceCount() => XtNative.XtAudioGetServiceCount();
         public static int GetVersionMajor() => XtNative.XtAudioGetVersionMajor();
         public static int GetVersionMinor() => XtNative.XtAudioGetVersionMinor();
+        public static int GetErrorFault(ulong error) => XtNative.XtAudioGetErrorFault(error);
+        public static XtCause GetErrorCause(ulong error) => XtNative.XtAudioGetErrorCause(error);
+        public static XtSystem GetErrorSystem(ulong error) => XtNative.XtAudioGetErrorSystem(error);
+        public static string GetErrorText(ulong error) => XtNative.StringFromUtf8(XtNative.XtAudioGetErrorText(error));
+
         public static XtService GetServiceByIndex(int index) => new XtService(XtNative.XtAudioGetServiceByIndex(index));
 
         public static XtService GetServiceBySetup(XtSetup setup)

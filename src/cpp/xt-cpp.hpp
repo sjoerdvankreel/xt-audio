@@ -136,10 +136,6 @@ private:
 public:
   Exception(uint64_t e);
   uint64_t GetError() const;
-  static Cause GetCause(uint64_t error);
-  static System GetSystem(uint64_t error);
-  static uint32_t GetFault(uint64_t error);
-  static std::string GetText(uint64_t error);
   const char* what() const noexcept override;
 };
 
@@ -212,8 +208,12 @@ public:
 
   static bool IsWin32();
   static int32_t GetVersionMajor();
-  static int32_t GetVersionMinor();
+  static int32_t GetVersionMinor();  
   static int32_t GetServiceCount();
+  static Cause GetErrorCause(uint64_t error);
+  static System GetErrorSystem(uint64_t error);
+  static uint32_t GetErrorFault(uint64_t error);
+  static std::string GetErrorText(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
   static std::unique_ptr<Service> GetServiceBySetup(Setup setup);
   static std::unique_ptr<Service> GetServiceByIndex(int32_t index);

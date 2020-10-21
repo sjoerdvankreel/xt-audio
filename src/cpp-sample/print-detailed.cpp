@@ -58,10 +58,10 @@ int PrintDetailedMain(int argc, char** argv) {
   }
   catch(const Xt::Exception& e) {
     std::cout << "Error: "
-      << "system " << Xt::Exception::GetSystem(e.GetError()) << ", "
-      << "fault " << Xt::Exception::GetFault(e.GetError()) << ", "
-      << "cause " << Xt::Exception::GetCause(e.GetError()) << ", "
-      << "text " << Xt::Exception::GetText(e.GetError()) << ", "
+      << "system " << Xt::Audio::GetErrorSystem(e.GetError()) << ", "
+      << "fault " << Xt::Audio::GetErrorFault(e.GetError()) << ", "
+      << "cause " << Xt::Audio::GetErrorCause(e.GetError()) << ", "
+      << "text " << Xt::Audio::GetErrorText(e.GetError()) << ", "
       << "message " << e << ".\n";
   }
   return 0;

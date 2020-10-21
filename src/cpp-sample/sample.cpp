@@ -51,9 +51,9 @@ int main(int argc, char** argv) {
     return 0;
   } catch(Xt::Exception const& e) {
     std::cout << "Error:\n";
-    std::cout << "\tSystem: " << Xt::Print::SystemToString(Xt::Exception::GetSystem(e.GetError())) << "\n";
-    std::cout << "\tCause: " << Xt::Print::CauseToString(Xt::Exception::GetCause(e.GetError())) << "\n";
-    std::cout << "\tFault: " << Xt::Exception::GetFault(e.GetError()) << "\n";
-    std::cout << "\tText: " << Xt::Exception::GetText(e.GetError()) << "\n";
+    std::cout << "\tSystem: " << Xt::Print::SystemToString(Xt::Audio::GetErrorSystem(e.GetError())) << "\n";
+    std::cout << "\tCause: " << Xt::Print::CauseToString(Xt::Audio::GetErrorCause(e.GetError())) << "\n";
+    std::cout << "\tFault: " << Xt::Audio::GetErrorFault(e.GetError()) << "\n";
+    std::cout << "\tText: " << Xt::Audio::GetErrorText(e.GetError()) << "\n";
   }
 }

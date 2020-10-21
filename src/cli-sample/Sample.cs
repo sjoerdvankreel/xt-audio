@@ -55,10 +55,10 @@ namespace Xt
             } catch (XtException e)
             {
                 Console.WriteLine("Error:");
-                Console.WriteLine("\tSystem: " + XtPrint.SystemToString(XtException.GetSystem(e.GetError())));
-                Console.WriteLine("\tCause: " + XtPrint.CauseToString(XtException.GetCause(e.GetError())));
-                Console.WriteLine("\tFault: " + XtException.GetFault(e.GetError()));
-                Console.WriteLine("\tText: " + XtException.GetText(e.GetError()));
+                Console.WriteLine("\tSystem: " + XtPrint.SystemToString(XtAudio.GetErrorSystem(e.GetError())));
+                Console.WriteLine("\tCause: " + XtPrint.CauseToString(XtAudio.GetErrorCause(e.GetError())));
+                Console.WriteLine("\tFault: " + XtAudio.GetErrorFault(e.GetError()));
+                Console.WriteLine("\tText: " + XtAudio.GetErrorText(e.GetError()));
             }
         }
     }

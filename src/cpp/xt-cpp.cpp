@@ -61,22 +61,6 @@ const char* Exception::what() const noexcept {
   return XtAudioGetErrorText(GetError()); 
 }
 
-uint32_t Exception::GetFault(uint64_t error) { 
-  return XtAudioGetErrorFault(error); 
-}
-
-std::string Exception::GetText(uint64_t error) {
-  return XtAudioGetErrorText(error); 
-}
-
-Cause Exception::GetCause(uint64_t error) {
-  return static_cast<Cause>(XtAudioGetErrorCause(error));
-}
-
-System Exception::GetSystem(uint64_t error) { 
-  return static_cast<System>(XtAudioGetErrorSystem(error));
-}
-
 // ---- ostream ----
 
 std::ostream& operator<<(std::ostream& os, Level level) {
@@ -221,6 +205,22 @@ int32_t Audio::GetServiceCount() {
 
 bool Audio::IsWin32() {
   return XtAudioIsWin32() != XtFalse;
+}
+
+uint32_t Audio::GetErrorFault(uint64_t error) { 
+  return XtAudioGetErrorFault(error); 
+}
+
+std::string Audio::GetErrorText(uint64_t error) {
+  return XtAudioGetErrorText(error); 
+}
+
+Cause Audio::GetErrorCause(uint64_t error) {
+  return static_cast<Cause>(XtAudioGetErrorCause(error));
+}
+
+System Audio::GetErrorSystem(uint64_t error) { 
+  return static_cast<System>(XtAudioGetErrorSystem(error));
 }
 
 Attributes Audio::GetSampleAttributes(Sample sample) {

@@ -62,10 +62,10 @@ public class PrintDetailed {
         } catch (XtException e) {
 
             System.out.printf("Error: system %s, fault %s, cause %s, text %s, message: %s.\n",
-                    XtException.getSystem(e.getError()),
-                    XtException.getFault(e.getError()),
-                    XtException.getCause(e.getError()),
-                    XtException.getText(e.getError()),
+                    XtAudio.getErrorSystem(e.getError()),
+                    XtAudio.getErrorFault(e.getError()),
+                    XtAudio.getErrorCause(e.getError()),
+                    XtAudio.getErrorText(e.getError()),
                     e.toString());
         }
     }
