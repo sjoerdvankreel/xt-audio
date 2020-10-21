@@ -247,10 +247,10 @@ typedef void (XT_CALLBACK *XtStreamCallback)(
  * @ingroup audio
  * @{ 
  */
-XT_API XtCause XT_CALL XtErrorGetCause(XtError error);
-XT_API uint32_t XT_CALL XtErrorGetFault(XtError error);
-XT_API XtSystem XT_CALL XtErrorGetSystem(XtError error);
-XT_API const char* XT_CALL XtErrorGetText(XtError error);
+XT_API XtCause XT_CALL XtAudioGetErrorCause(XtError error);
+XT_API uint32_t XT_CALL XtAudioGetErrorFault(XtError error);
+XT_API XtSystem XT_CALL XtAudioGetErrorSystem(XtError error);
+XT_API const char* XT_CALL XtAudioGetErrorText(XtError error);
 /** @} */
 
 /** 

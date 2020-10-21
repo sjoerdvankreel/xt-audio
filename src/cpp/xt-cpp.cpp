@@ -58,23 +58,23 @@ uint64_t Exception::GetError() const {
 }
 
 const char* Exception::what() const noexcept {
-  return XtErrorGetText(GetError()); 
+  return XtAudioGetErrorText(GetError()); 
 }
 
 uint32_t Exception::GetFault(uint64_t error) { 
-  return XtErrorGetFault(error); 
+  return XtAudioGetErrorFault(error); 
 }
 
 std::string Exception::GetText(uint64_t error) {
-  return XtErrorGetText(error); 
+  return XtAudioGetErrorText(error); 
 }
 
 Cause Exception::GetCause(uint64_t error) {
-  return static_cast<Cause>(XtErrorGetCause(error));
+  return static_cast<Cause>(XtAudioGetErrorCause(error));
 }
 
 System Exception::GetSystem(uint64_t error) { 
-  return static_cast<System>(XtErrorGetSystem(error));
+  return static_cast<System>(XtAudioGetErrorSystem(error));
 }
 
 // ---- ostream ----

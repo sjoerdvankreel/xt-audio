@@ -152,10 +152,10 @@ final class XtNative {
         return result;
     }
 
-    static native int XtErrorGetCause(long error);
-    static native int XtErrorGetFault(long error);
-    static native int XtErrorGetSystem(long error);
-    static native String XtErrorGetText(long error);
+    static native int XtAudioGetErrorCause(long error);
+    static native int XtAudioGetErrorFault(long error);
+    static native int XtAudioGetErrorSystem(long error);
+    static native String XtAudioGetErrorText(long error);
 
     static native Pointer XtPrintErrorToString(long error);
     static native Pointer XtPrintMixToString(Mix mix);

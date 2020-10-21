@@ -18,18 +18,18 @@ public final class XtException extends RuntimeException {
     }
 
     public static XtCause getCause(long error) {
-        return XtCause.class.getEnumConstants()[XtNative.XtErrorGetCause(error)];
+        return XtCause.class.getEnumConstants()[XtNative.XtAudioGetErrorCause(error)];
     }
 
     public static XtSystem getSystem(long error) {
-        return XtSystem.class.getEnumConstants()[XtNative.XtErrorGetSystem(error) - 1];
+        return XtSystem.class.getEnumConstants()[XtNative.XtAudioGetErrorSystem(error) - 1];
     }
 
     public static int getFault(long error) {
-        return XtNative.XtErrorGetFault(error);
+        return XtNative.XtAudioGetErrorFault(error);
     }
 
     public static String getText(long error) {
-        return XtNative.XtErrorGetText(error);
+        return XtNative.XtAudioGetErrorText(error);
     }
 }

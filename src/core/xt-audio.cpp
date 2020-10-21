@@ -109,23 +109,23 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
 
 // ---- error ----
 
-uint32_t XT_CALL XtErrorGetFault(XtError error) {
+uint32_t XT_CALL XtAudioGetErrorFault(XtError error) {
   return static_cast<XtFault>(error & 0x00000000FFFFFFFF);
 }
 
-XtSystem XT_CALL XtErrorGetSystem(XtError error) {
+XtSystem XT_CALL XtAudioGetErrorSystem(XtError error) {
   XT_ASSERT(error != 0);
   return static_cast<XtSystem>((error & 0xFFFFFFFF00000000) >> 32ULL);
 }
 
-const char* XT_CALL XtErrorGetText(XtError error) {
+const char* XT_CALL XtAudioGetErrorText(XtError error) {
   XT_ASSERT(error != 0);
-  return XtAudioGetServiceBySystem(XtErrorGetSystem(error))->GetFaultText(XtErrorGetFault(error));
+  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultText(XtAudioGetErrorFault(error));
 }
 
-XtCause XT_CALL XtErrorGetCause(XtError error) {
+XtCause XT_CALL XtAudioGetErrorCause(XtError error) {
   XT_ASSERT(error != 0);
-  return XtAudioGetServiceBySystem(XtErrorGetSystem(error))->GetFaultCause(XtErrorGetFault(error));
+  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultCause(XtAudioGetErrorFault(error));
 }
 
 // ---- print ----
@@ -262,12 +262,12 @@ char* XT_CALL XtPrintErrorToString(XtError error) {
   std::ostringstream oss;
   if(error == 0)
     return strdup("<No error>");
-  XtFault fault = XtErrorGetFault(error);
-  XtCause cause = XtErrorGetCause(error);
-  XtSystem system = XtErrorGetSystem(error);
+  XtCause cause = XtAudioGetErrorCause(error);
+  XtFault fault = XtAudioGetErrorFault(error);
+  XtSystem system = XtAudioGetErrorSystem(error);
   oss << "[system: " << system << " (" << XtPrintSystemToString(system) << "), ";
   oss << "cause: " << cause << " (" << XtPrintCauseToString(cause) << ") ", 
-  oss << "fault: " << fault << " (" << XtErrorGetText(error) << ")]";
+  oss << "fault: " << fault << " (" << XtAudioGetErrorText(error) << ")]";
   return strdup(oss.str().c_str());
 }
 

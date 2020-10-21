@@ -135,13 +135,13 @@ namespace Xt
         }
 
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtCause XtErrorGetCause(ulong error);
+        internal static extern XtCause XtAudioGetErrorCause(ulong error);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern int XtErrorGetFault(ulong error);
+        internal static extern int XtAudioGetErrorFault(ulong error);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtSystem XtErrorGetSystem(ulong error);
+        internal static extern XtSystem XtAudioGetErrorSystem(ulong error);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtErrorGetText(ulong error);
+        internal static extern IntPtr XtAudioGetErrorText(ulong error);
 
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintErrorToString(ulong error);
