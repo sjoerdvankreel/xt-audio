@@ -57,8 +57,6 @@ public final class XtAudio implements XtCloseable {
     }
 
     public static XtAttributes getSampleAttributes(XtSample sample) {
-        XtAttributes result = new XtAttributes();
-        XtNative.XtAudioGetSampleAttributes(sample.ordinal(), result);
-        return result;
+        return XtNative.XtAudioGetSampleAttributes(sample.ordinal());
     }
 }

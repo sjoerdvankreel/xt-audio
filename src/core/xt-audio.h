@@ -283,10 +283,10 @@ XT_API void XT_CALL XtAudioFree(void* ptr);
 XT_API int32_t XT_CALL XtAudioGetVersionMajor(void);
 XT_API int32_t XT_CALL XtAudioGetVersionMinor(void);
 XT_API int32_t XT_CALL XtAudioGetServiceCount(void);
+XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
 XT_API const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index);
 XT_API const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup);
 XT_API const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system);
-XT_API void XT_CALL XtAudioGetSampleAttributes(XtSample sample, XtAttributes* attributes);
 XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, XtFatalCallback fatal);
 /** @} */
 

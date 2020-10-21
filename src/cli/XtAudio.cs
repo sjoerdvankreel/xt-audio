@@ -47,11 +47,6 @@ namespace Xt
             return service == IntPtr.Zero ? null : new XtService(service);
         }
 
-        public static XtAttributes GetSampleAttributes(XtSample sample)
-        {
-            XtAttributes attributes = new XtAttributes();
-            XtNative.XtAudioGetSampleAttributes(sample, attributes);
-            return attributes;
-        }
+        public static XtAttributes GetSampleAttributes(XtSample sample) => XtNative.XtAudioGetSampleAttributes(sample);
     }
 }

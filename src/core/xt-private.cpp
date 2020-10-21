@@ -44,9 +44,7 @@ int32_t XtiGetPopCount64(uint64_t x) {
 }
 
 int32_t XtiGetSampleSize(XtSample sample) {
-  XtAttributes attributes;
-  XtAudioGetSampleAttributes(sample, &attributes);
-  return attributes.size;
+  return XtAudioGetSampleAttributes(sample).size;
 }
 
 std::string XtiTryGetDeviceName(const XtDevice* d) {

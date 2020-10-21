@@ -225,11 +225,10 @@ bool Audio::IsWin32() {
 
 Attributes Audio::GetSampleAttributes(Sample sample) {
   Attributes result;
-  XtAttributes attributes;
-  XtAudioGetSampleAttributes(static_cast<XtSample>(sample), &attributes);
-  result.size = attributes.size;
-  result.isFloat = attributes.isFloat != XtFalse;
-  result.isSigned = attributes.isSigned != XtFalse;
+  auto attrs = XtAudioGetSampleAttributes(static_cast<XtSample>(sample));
+  result.size = attrs.size;
+  result.isFloat = attrs.isFloat != XtFalse;
+  result.isSigned = attrs.isSigned != XtFalse;
   return result;
 }
 

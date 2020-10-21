@@ -166,7 +166,7 @@ namespace Xt
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintChannelsToString(XtChannels channels);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintAttributesToString(XtAttributes attributes);
+        internal static extern IntPtr XtPrintAttributesToString(in XtAttributes attributes);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintCapabilitiesToString(XtCapabilities capabilities);
 
@@ -225,7 +225,7 @@ namespace Xt
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtAudioGetServiceBySystem(XtSystem system);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void XtAudioGetSampleAttributes(XtSample sample, [In, Out] XtAttributes attributes);
+        internal static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern void XtAudioInit(IntPtr id, IntPtr window, IntPtr trace, IntPtr fatal);
 

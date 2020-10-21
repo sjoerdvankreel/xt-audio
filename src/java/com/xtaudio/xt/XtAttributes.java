@@ -4,8 +4,10 @@ import com.sun.jna.Structure;
 import java.util.Arrays;
 import java.util.List;
 
-public final class XtAttributes extends Structure {
+public class XtAttributes extends Structure {
 
+    public static class ByValue extends XtAttributes implements Structure.ByValue {}
+    
     public int size;
     public boolean isFloat;
     public boolean isSigned;

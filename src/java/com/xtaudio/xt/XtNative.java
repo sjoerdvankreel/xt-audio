@@ -200,7 +200,7 @@ final class XtNative {
     static native Pointer XtAudioGetServiceByIndex(int index);
     static native Pointer XtAudioGetServiceBySetup(int setup);
     static native Pointer XtAudioGetServiceBySystem(int system);
-    static native void XtAudioGetSampleAttributes(int sample, XtAttributes attributes);
+    static native XtAttributes.ByValue XtAudioGetSampleAttributes(int sample);
     static native void XtAudioInit(String id, Pointer window, TraceCallback trace, XtFatalCallback fatal);
 
     static native void XtDeviceDestroy(Pointer d);

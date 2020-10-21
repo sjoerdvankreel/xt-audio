@@ -43,7 +43,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   XtSystem system;
   XtBool canInterleaved;
   XtBool initInterleaved;
-  XtAttributes attributes;
   XtBool canNonInterleaved;
   XtBool initNonInterleaved;
 
@@ -65,7 +64,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   int32_t outputs = format->channels.outputs;
   XtSample sample = format->mix.sample;
 
-  XtAudioGetSampleAttributes(sample, &attributes);
+  auto attributes = XtAudioGetSampleAttributes(sample);
 
   *stream = nullptr;
   system = XtDeviceGetSystem(d);
@@ -291,20 +290,20 @@ const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup) {
   return XtAudioGetServiceBySystem(XtiSetupToSystem(setup));
 }
 
-void XT_CALL XtAudioGetSampleAttributes(XtSample sample, XtAttributes* attributes) {
-  XT_ASSERT(attributes != nullptr);
+XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample) {
   XT_ASSERT(XtSampleUInt8 <= sample && sample <= XtSampleFloat32);
-
-  attributes->isSigned = sample != XtSampleUInt8;
-  attributes->isFloat = sample == XtSampleFloat32;
+  XtAttributes result;
+  result.isSigned = sample != XtSampleUInt8;
+  result.isFloat = sample == XtSampleFloat32;
   switch(sample) {
-  case XtSampleUInt8: attributes->size = 1; break;
-  case XtSampleInt16: attributes->size = 2; break;
-  case XtSampleInt24: attributes->size = 3; break;
-  case XtSampleInt32: attributes->size = 4; break;
-  case XtSampleFloat32: attributes->size = 4; break;
+  case XtSampleUInt8: result.size = 1; break;
+  case XtSampleInt16: result.size = 2; break;
+  case XtSampleInt24: result.size = 3; break;
+  case XtSampleInt32: result.size = 4; break;
+  case XtSampleFloat32: result.size = 4; break;
   default: XT_FAIL("Unknown sample"); break;
   }
+  return result;
 }
 
 void XT_CALL XtAudioTerminate(void) {
@@ -410,9 +409,8 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   const char* fmt = "Opening aggregate: service %s, count %d...";
   XT_TRACE(XtLevelInfo, fmt, XtServiceGetName(s), count);
 
-  XtAttributes attrs;
   XtSystem system = XtServiceGetSystem(s);
-  XtAudioGetSampleAttributes(mix->sample, &attrs);
+  auto attrs = XtAudioGetSampleAttributes(mix->sample);
   std::unique_ptr<XtAggregate> result(new XtAggregate);
   result->user = user;
   result->running = 0;

@@ -282,12 +282,11 @@ bool XtwWfxToFormat(const WAVEFORMATEX& wfx, XtBool output, XtFormat& format) {
 
 bool XtwFormatToWfx(const XtFormat& format, WAVEFORMATEXTENSIBLE& wfx) {  
 
-  XtAttributes attributes;     
   memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
   if(format.channels.inputs > 0 && format.channels.outputs > 0)
     return false;
 
-  XtAudioGetSampleAttributes(format.mix.sample, &attributes);
+  auto attributes = XtAudioGetSampleAttributes(format.mix.sample);
   wfx.Format.cbSize = 22;
   wfx.Format.nSamplesPerSec = format.mix.rate;
   wfx.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;

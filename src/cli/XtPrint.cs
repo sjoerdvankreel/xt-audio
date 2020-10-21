@@ -13,7 +13,7 @@ namespace Xt
         public static string BufferToString(XtBuffer buffer) => XtNative.FreeStringFromUtf8(XtNative.XtPrintBufferToString(buffer));
         public static string LatencyToString(XtLatency latency) => XtNative.FreeStringFromUtf8(XtNative.XtPrintLatencyToString(latency));
         public static string ChannelsToString(XtChannels channels) => XtNative.FreeStringFromUtf8(XtNative.XtPrintChannelsToString(channels));
-        public static string AttributesToString(XtAttributes attributes) => XtNative.FreeStringFromUtf8(XtNative.XtPrintAttributesToString(attributes));
+        public static string AttributesToString(in XtAttributes attributes) => XtNative.FreeStringFromUtf8(XtNative.XtPrintAttributesToString(in attributes));
         public static string CapabilitiesToString(XtCapabilities capabilities) => XtNative.FreeStringFromUtf8(XtNative.XtPrintCapabilitiesToString(capabilities));
 
         public static string FormatToString(XtFormat format)
