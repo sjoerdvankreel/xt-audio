@@ -1,6 +1,7 @@
 #include <xt-cpp.hpp>
-#include <iostream>
 #include <memory>
+#include <numeric>
+#include <iostream>
 
 static void OnFatal() {
   std::cout << "Fatal error.";
@@ -32,7 +33,10 @@ int PrintDetailedMain(int argc, char** argv) {
       std::cout << "Service " << service->GetName() + ":\n";
       std::cout << "  System: " << service->GetSystem() << "\n";
       std::cout << "  Device count: " << service->GetDeviceCount() << "\n";
-      std::cout << "  Capabilities: " << Xt::Print::CapabilitiesToString(service->GetCapabilities()) << "\n";
+      auto capabilities = Xt::Print::CapabilitiesToString(service->GetCapabilities());
+      auto joiner = [](const std::string& l, const std::string& r) { return l.size() > 0? l + ", " + r: r; };
+      auto capabilitiesText = std::accumulate(capabilities.cbegin(), capabilities.cend(), std::string(), joiner);
+      std::cout << "  Capabilities: " << capabilitiesText << "\n";
 
       std::unique_ptr<Xt::Device> defaultInput = service->OpenDefaultDevice(false);
       if(defaultInput)

@@ -1,5 +1,10 @@
 package com.xtaudio.xt;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import java.util.ArrayList;
+import java.util.List;
+
 public final class XtPrint {
 
     private XtPrint() {
@@ -25,7 +30,12 @@ public final class XtPrint {
         return XtNative.XtPrintSampleToString(sample.ordinal());
     }
 
-    public static String capabilitiesToString(int capabilities) {
-        return XtNative.wrapAndFreeString(XtNative.XtPrintCapabilitiesToString(capabilities));
+    public static List<String> capabilitiesToString(int capabilities) {
+        int i = 0;
+        List<String> result = new ArrayList<>();
+        Pointer strings = XtNative.XtPrintCapabilitiesToString(capabilities);
+        while(strings.getPointer(i * Native.POINTER_SIZE) != null)
+            result.add(strings.getPointer(i++ * Native.POINTER_SIZE).getString(0));
+        return result;
     }
 }

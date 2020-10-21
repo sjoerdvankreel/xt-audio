@@ -227,7 +227,7 @@ namespace Xt
             outputDevice.SelectedIndex = outputViews.Count == 1 ? 0 : 1;
 
             system.Text = s.GetSystem().ToString();
-            capabilities.Text = XtPrint.CapabilitiesToString(s.GetCapabilities());
+            capabilities.Text = string.Join(", ", XtPrint.CapabilitiesToString(s.GetCapabilities()));
             defaultInput.Text = inputView.device == null ? "null" : inputView.device.ToString();
             defaultOutput.Text = outputView.device == null ? "null" : outputView.device.ToString();
             inputControlPanel.Enabled = s.GetSystem() == XtSystem.Asio;

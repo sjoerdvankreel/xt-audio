@@ -262,7 +262,7 @@ XT_API const char* XT_CALL XtPrintCauseToString(XtCause cause);
 XT_API const char* XT_CALL XtPrintSetupToString(XtSetup setup);
 XT_API const char* XT_CALL XtPrintSystemToString(XtSystem system);
 XT_API const char* XT_CALL XtPrintSampleToString(XtSample sample);
-XT_API char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities);
+XT_API const char** XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities);
 
 /** @} */
 

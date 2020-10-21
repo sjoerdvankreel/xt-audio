@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <ostream>
 #include <stdexcept>
 
@@ -142,7 +143,7 @@ public:
   static std::string SetupToString(Setup setup);
   static std::string SystemToString(System system);
   static std::string SampleToString(Sample sample);
-  static std::string CapabilitiesToString(Capabilities capabilities);
+  static std::vector<std::string> CapabilitiesToString(Capabilities capabilities);
 };
 
 class Stream final {

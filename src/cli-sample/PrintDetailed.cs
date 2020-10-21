@@ -36,7 +36,7 @@ namespace Xt
                         Console.WriteLine("Service " + service.GetName() + ":");
                         Console.WriteLine("  System: " + service.GetSystem());
                         Console.WriteLine("  Device count: " + service.GetDeviceCount());
-                        Console.WriteLine("  Capabilities: " + XtPrint.CapabilitiesToString(service.GetCapabilities()));
+                        Console.WriteLine("  Capabilities: " + string.Join(", ", XtPrint.CapabilitiesToString(service.GetCapabilities())));
 
                         using (XtDevice defaultInput = service.OpenDefaultDevice(false))
                             Console.WriteLine("  Default input: " + defaultInput);
