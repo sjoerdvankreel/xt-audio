@@ -27,3 +27,4 @@
 * c++ const noexcept
 * remove utility functions (iswin32, tostring, print)
 * getfaulttext ?
+* stream callback params
