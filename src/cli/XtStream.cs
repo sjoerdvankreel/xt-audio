@@ -225,8 +225,7 @@ namespace Xt
 
         public XtFormat GetFormat()
         {
-            object native = Marshal.PtrToStructure(XtNative.XtStreamGetFormat(s), typeof(XtNative.Format));
-            return ((XtNative.Format)native).FromNative();
+            return Marshal.PtrToStructure<XtFormat>(XtNative.XtStreamGetFormat(s));
         }
 
         internal void Init(IntPtr s)

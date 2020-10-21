@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 
 namespace Xt
 {
@@ -33,12 +32,10 @@ namespace Xt
             return count;
         }
 
-        public XtBuffer GetBuffer(XtFormat format)
+        public XtBuffer GetBuffer(in XtFormat format)
         {
-            XtBuffer buffer;
-            XtNative.Format native = XtNative.Format.ToNative(format);
-            XtNative.HandleError(XtNative.XtDeviceGetBuffer(d, ref native, out buffer));
-            return buffer;
+            XtNative.HandleError(XtNative.XtDeviceGetBuffer(d, in format, out var result));
+            return result;
         }
 
         public XtMix? GetMix()
@@ -51,36 +48,30 @@ namespace Xt
 
         public bool SupportsAccess(bool interleaved)
         {
-            bool supports;
-            XtNative.HandleError(XtNative.XtDeviceSupportsAccess(d, interleaved, out supports));
-            return supports;
+            XtNative.HandleError(XtNative.XtDeviceSupportsAccess(d, interleaved, out var result));
+            return result;
         }
 
-        public bool SupportsFormat(XtFormat format)
+        public bool SupportsFormat(in XtFormat format)
         {
-            bool supports;
-            XtNative.Format native = XtNative.Format.ToNative(format);
-            XtNative.HandleError(XtNative.XtDeviceSupportsFormat(d, ref native, out supports));
-            return supports;
+            XtNative.HandleError(XtNative.XtDeviceSupportsFormat(d, in format, out var result));
+            return result;
         }
 
         public string GetChannelName(bool output, int index)
         {
-            IntPtr name;
-            XtNative.HandleError(XtNative.XtDeviceGetChannelName(d, output, index, out name));
-            return XtNative.FreeStringFromUtf8(name);
+            XtNative.HandleError(XtNative.XtDeviceGetChannelName(d, output, index, out var result));
+            return XtNative.FreeStringFromUtf8(result);
         }
 
-        public XtStream OpenStream(XtFormat format, bool interleaved, bool raw, double bufferSize,
+        public XtStream OpenStream(in XtFormat format, bool interleaved, bool raw, double bufferSize,
             XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
         {
-            IntPtr s;
-            XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
-            XtNative.Format native = XtNative.Format.ToNative(format);
-            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, ref native, interleaved,
-                bufferSize, stream.streamCallbackPtr, stream.xRunCallbackPtr, IntPtr.Zero, out s));
-            stream.Init(s);
-            return stream;
+            XtStream result = new XtStream(raw, streamCallback, xRunCallback, user);
+            XtNative.HandleError(XtNative.XtDeviceOpenStream(d, in format, interleaved,
+                bufferSize, result.streamCallbackPtr, result.xRunCallbackPtr, IntPtr.Zero, out var stream));
+            result.Init(stream);
+            return result;
         }
     }
 }

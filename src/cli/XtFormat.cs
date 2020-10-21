@@ -1,13 +1,12 @@
+using System.Runtime.InteropServices;
+
 namespace Xt
 {
-    public sealed class XtFormat
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XtFormat
     {
-        public XtMix mix = new XtMix();
-        public XtChannels channels = new XtChannels();
-
-        public XtFormat()
-        {
-        }
+        public XtMix mix;
+        public XtChannels channels;
 
         public XtFormat(XtMix mix, XtChannels channels)
         {

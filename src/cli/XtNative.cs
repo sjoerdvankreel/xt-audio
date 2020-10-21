@@ -29,41 +29,6 @@ namespace Xt
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct Format
-        {
-            public int rate;
-            public XtSample sample;
-            public int inputs;
-            public ulong inMask;
-            public int outputs;
-            public ulong outMask;
-
-            public XtFormat FromNative()
-            {
-                XtFormat result = new XtFormat();
-                result.mix.rate = rate;
-                result.mix.sample = sample;
-                result.channels.inputs = inputs;
-                result.channels.inMask = inMask;
-                result.channels.outputs = outputs;
-                result.channels.outMask = outMask;
-                return result;
-            }
-
-            public static Format ToNative(XtFormat format)
-            {
-                Format result = new Format();
-                result.rate = format.mix.rate;
-                result.sample = format.mix.sample;
-                result.inputs = format.channels.inputs;
-                result.inMask = format.channels.inMask;
-                result.outputs = format.channels.outputs;
-                result.outMask = format.channels.outMask;
-                return result;
-            }
-        }
-
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         internal delegate void FatalCallbackWin32();
@@ -219,13 +184,13 @@ namespace Xt
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceSupportsAccess(IntPtr d, bool interleaved, out bool supports);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetBuffer(IntPtr d, ref Format format, out XtBuffer buffer);
+        internal static extern ulong XtDeviceGetBuffer(IntPtr d, in XtFormat format, out XtBuffer buffer);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceSupportsFormat(IntPtr d, ref Format format, out bool supports);
+        internal static extern ulong XtDeviceSupportsFormat(IntPtr d, in XtFormat format, out bool supports);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, out IntPtr name);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceOpenStream(IntPtr d, ref Format format, bool interleaved,
+        internal static extern ulong XtDeviceOpenStream(IntPtr d, in XtFormat format, bool interleaved,
             double bufferSize, IntPtr streamCallback, IntPtr xRunCallback, IntPtr user, out IntPtr stream);
     }
 }
