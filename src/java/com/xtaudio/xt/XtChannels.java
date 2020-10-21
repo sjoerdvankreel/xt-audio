@@ -27,11 +27,6 @@ public class XtChannels extends Structure {
     }
 
     @Override
-    public String toString() {
-        return XtPrint.channelsToString(this);
-    }
-
-    @Override
     protected List getFieldOrder() {
         return Arrays.asList("inputs", "inMask", "outputs", "outMask");
     }

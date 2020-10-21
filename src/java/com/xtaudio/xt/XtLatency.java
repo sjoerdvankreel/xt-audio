@@ -10,11 +10,6 @@ public final class XtLatency extends Structure {
     public double output;
 
     @Override
-    public String toString() {
-        return XtPrint.latencyToString(this);
-    }
-
-    @Override
     protected List getFieldOrder() {
         return Arrays.asList("input", "output");
     }

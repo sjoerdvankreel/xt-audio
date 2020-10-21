@@ -262,15 +262,8 @@ XT_API const char* XT_CALL XtPrintCauseToString(XtCause cause);
 XT_API const char* XT_CALL XtPrintSetupToString(XtSetup setup);
 XT_API const char* XT_CALL XtPrintSystemToString(XtSystem system);
 XT_API const char* XT_CALL XtPrintSampleToString(XtSample sample);
-
-XT_API char* XT_CALL XtPrintErrorToString(XtError error);
-XT_API char* XT_CALL XtPrintMixToString(const XtMix* mix);
-XT_API char* XT_CALL XtPrintFormatToString(const XtFormat* format);
-XT_API char* XT_CALL XtPrintBufferToString(const XtBuffer* buffer);
-XT_API char* XT_CALL XtPrintLatencyToString(const XtLatency* latency);
-XT_API char* XT_CALL XtPrintChannelsToString(const XtChannels* channels);
 XT_API char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities);
-XT_API char* XT_CALL XtPrintAttributesToString(const XtAttributes* attributes);
+
 /** @} */
 
 /** 

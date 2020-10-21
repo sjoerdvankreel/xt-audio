@@ -11,9 +11,4 @@ public final class XtException extends RuntimeException {
     public long getError() {
         return error;
     }
-
-    @Override
-    public String toString() {
-        return XtPrint.errorToString(getError());
-    }
 }

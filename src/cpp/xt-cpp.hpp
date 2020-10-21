@@ -111,16 +111,9 @@ std::ostream& operator<<(std::ostream& os, Cause cause);
 std::ostream& operator<<(std::ostream& os, Setup setup);
 std::ostream& operator<<(std::ostream& os, System system);
 std::ostream& operator<<(std::ostream& os, Sample sample);
-std::ostream& operator<<(std::ostream& os, const Mix& mix);
-std::ostream& operator<<(std::ostream& os, const Buffer& buffer);
-std::ostream& operator<<(std::ostream& os, const Format& format);
 std::ostream& operator<<(std::ostream& os, const Device& device);
 std::ostream& operator<<(std::ostream& os, const Service& service);
-std::ostream& operator<<(std::ostream& os, const Latency& latency);
-std::ostream& operator<<(std::ostream& os, const Channels& channels);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
-std::ostream& operator<<(std::ostream& os, const Exception& exception);
-std::ostream& operator<<(std::ostream& os, const Attributes& attributes);
 
 typedef void (*FatalCallback)();
 typedef void (*XRunCallback)(int32_t index, void* user);
@@ -147,16 +140,9 @@ public:
   static std::string LevelToString(Level level);
   static std::string CauseToString(Cause cause);
   static std::string SetupToString(Setup setup);
-  static std::string MixToString(const Mix& mix);
-  static std::string ErrorToString(uint64_t error);
   static std::string SystemToString(System system);
   static std::string SampleToString(Sample sample);
-  static std::string FormatToString(const Format& format);
-  static std::string BufferToString(const Buffer& buffer);
-  static std::string LatencyToString(const Latency& latency);
-  static std::string ChannelsToString(const Channels& channels);
   static std::string CapabilitiesToString(Capabilities capabilities);
-  static std::string AttributesToString(const Attributes& attributes);
 };
 
 class Stream final {

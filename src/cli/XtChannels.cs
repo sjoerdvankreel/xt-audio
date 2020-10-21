@@ -21,7 +21,5 @@ namespace Xt
             this.outputs = outputs;
             this.outMask = outMask;
         }
-
-        public override string ToString() => XtPrint.ChannelsToString(this);
     }
 }

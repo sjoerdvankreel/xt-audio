@@ -12,9 +12,4 @@ public final class XtMix {
         this.rate = rate;
         this.sample = sample;
     }
-
-    @Override
-    public String toString() {
-        return XtPrint.mixToString(this);
-    }
 }

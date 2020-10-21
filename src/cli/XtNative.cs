@@ -144,10 +144,6 @@ namespace Xt
         internal static extern IntPtr XtAudioGetErrorText(ulong error);
 
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintErrorToString(ulong error);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintMixToString(XtMix mix);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintLevelToString(XtLevel level);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintCauseToString(XtCause cause);
@@ -157,16 +153,6 @@ namespace Xt
         internal static extern IntPtr XtPrintSystemToString(XtSystem system);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintSampleToString(XtSample sample);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintFormatToString(ref Format format);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintBufferToString(XtBuffer buffer);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintLatencyToString(XtLatency latency);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintChannelsToString(XtChannels channels);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtPrintAttributesToString(in XtAttributes attributes);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtPrintCapabilitiesToString(XtCapabilities capabilities);
 

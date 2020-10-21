@@ -14,7 +14,5 @@ namespace Xt
             this.mix = mix;
             this.channels = channels;
         }
-
-        public override string ToString() => XtPrint.FormatToString(this);
     }
 }

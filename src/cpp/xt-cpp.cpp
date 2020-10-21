@@ -83,18 +83,6 @@ std::ostream& operator<<(std::ostream& os, Sample sample) {
   return os << Print::SampleToString(sample);
 }
 
-std::ostream& operator<<(std::ostream& os, const Mix& mix) {
-  return os << Print::MixToString(mix);
-}
-
-std::ostream& operator<<(std::ostream& os, const Buffer& buffer) {
-  return os << Print::BufferToString(buffer);
-}
-
-std::ostream& operator<<(std::ostream& os, const Format& format) {
-  return os << Print::FormatToString(format);
-}
-
 std::ostream& operator<<(std::ostream& os, const Device& device) {
   return os << device.GetName();
 }
@@ -103,31 +91,11 @@ std::ostream& operator<<(std::ostream& os, const Service& service) {
   return os << service.GetName();
 }
 
-std::ostream& operator<<(std::ostream& os, const Latency& latency) {
-  return os << Print::LatencyToString(latency);
-}
-
-std::ostream& operator<<(std::ostream& os, const Channels& channels) {
-  return os << Print::ChannelsToString(channels);
-}
-
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
   return os << Print::CapabilitiesToString(capabilities);
 }
 
-std::ostream& operator<<(std::ostream& os, const Exception& exception) {
-  return os << Print::ErrorToString(exception.GetError());
-}
-
-std::ostream& operator<<(std::ostream& os, const Attributes& attributes) {
-  return os << Print::AttributesToString(attributes);
-}
-
 // ---- print ----
-
-std::string Print::ErrorToString(uint64_t error) {
-  return WrapAndFreeCString(XtPrintErrorToString(error));
-}
 
 std::string Print::LevelToString(Level level) {
   return XtPrintLevelToString(static_cast<XtLevel>(level));
@@ -149,32 +117,8 @@ std::string Print::SampleToString(Sample sample) {
   return XtPrintSampleToString(static_cast<XtSample>(sample));
 }
 
-std::string Print::MixToString(const Mix& mix) {
-  return WrapAndFreeCString(XtPrintMixToString(reinterpret_cast<const XtMix*>(&mix)));
-}
-
-std::string Print::FormatToString(const Format& format) {
-  return WrapAndFreeCString(XtPrintFormatToString(reinterpret_cast<const XtFormat*>(&format)));
-}
-
-std::string Print::BufferToString(const Buffer& buffer) {
-  return WrapAndFreeCString(XtPrintBufferToString(reinterpret_cast<const XtBuffer*>(&buffer)));
-}
-
-std::string Print::LatencyToString(const Latency& latency) {
-  return WrapAndFreeCString(XtPrintLatencyToString(reinterpret_cast<const XtLatency*>(&latency)));
-}
-
-std::string Print::ChannelsToString(const Channels& channels) {
-  return WrapAndFreeCString(XtPrintChannelsToString(reinterpret_cast<const XtChannels*>(&channels)));
-}
-
 std::string Print::CapabilitiesToString(Capabilities capabilities) {
   return WrapAndFreeCString(XtPrintCapabilitiesToString(static_cast<const XtCapabilities>(capabilities)));
-}
-
-std::string Print::AttributesToString(const Attributes& attributes) {
-  return WrapAndFreeCString(XtPrintAttributesToString(reinterpret_cast<const XtAttributes*>(&attributes)));
 }
 
 // ---- audio ----

@@ -61,12 +61,11 @@ public class PrintDetailed {
             }
         } catch (XtException e) {
 
-            System.out.printf("Error: system %s, fault %s, cause %s, text %s, message: %s.\n",
-                    XtAudio.getErrorSystem(e.getError()),
+            System.out.printf("Error: system %s, fault %s, cause %s, text %s.\n",
+                    XtPrint.systemToString(XtAudio.getErrorSystem(e.getError())),
                     XtAudio.getErrorFault(e.getError()),
-                    XtAudio.getErrorCause(e.getError()),
-                    XtAudio.getErrorText(e.getError()),
-                    e.toString());
+                    XtPrint.causeToString(XtAudio.getErrorCause(e.getError())),
+                    XtAudio.getErrorText(e.getError()));
         }
     }
 }

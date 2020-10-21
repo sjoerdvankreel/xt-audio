@@ -12,9 +12,4 @@ public final class XtFormat {
         this.mix = mix;
         this.channels = channels;
     }
-
-    @Override
-    public String toString() {
-        return XtPrint.formatToString(this);
-    }
 }

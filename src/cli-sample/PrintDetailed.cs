@@ -58,12 +58,11 @@ namespace Xt
                     }
                 } catch (XtException e)
                 {
-                    Console.WriteLine("Error: system %s, fault %s, cause %s, text %s, message: %s.\n",
-                            XtAudio.GetErrorSystem(e.GetError()),
+                    Console.WriteLine("Error: system %s, fault %s, cause %s, text %s.\n",
+                            XtPrint.SystemToString(XtAudio.GetErrorSystem(e.GetError())),
                             XtAudio.GetErrorFault(e.GetError()),
-                            XtAudio.GetErrorCause(e.GetError()),
-                            XtAudio.GetErrorText(e.GetError()),
-                            e.ToString());
+                            XtPrint.CauseToString(XtAudio.GetErrorCause(e.GetError())),
+                            XtAudio.GetErrorText(e.GetError()));
                 }
             }
         }

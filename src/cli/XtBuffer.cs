@@ -8,7 +8,5 @@ namespace Xt
         public double min;
         public double max;
         public double current;
-
-        public override string ToString() => XtPrint.BufferToString(this);
     }
 }

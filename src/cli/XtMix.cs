@@ -17,7 +17,5 @@ namespace Xt
             this.rate = rate;
             this.sample = sample;
         }
-
-        public override string ToString() => XtPrint.MixToString(this);
     }
 }

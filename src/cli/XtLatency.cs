@@ -7,7 +7,5 @@ namespace Xt
     {
         public double input;
         public double output;
-
-        public override string ToString() => XtPrint.LatencyToString(this);
     }
 }

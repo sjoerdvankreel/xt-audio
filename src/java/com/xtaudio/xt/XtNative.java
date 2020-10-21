@@ -157,19 +157,12 @@ final class XtNative {
     static native int XtAudioGetErrorSystem(long error);
     static native String XtAudioGetErrorText(long error);
 
-    static native Pointer XtPrintErrorToString(long error);
-    static native Pointer XtPrintMixToString(Mix mix);
     static native String XtPrintLevelToString(int level);
     static native String XtPrintCauseToString(int cause);
     static native String XtPrintSetupToString(int setup);
     static native String XtPrintSystemToString(int system);
     static native String XtPrintSampleToString(int sample);
-    static native Pointer XtPrintFormatToString(Format format);
-    static native Pointer XtPrintBufferToString(XtBuffer buffer);
-    static native Pointer XtPrintLatencyToString(XtLatency latency);
-    static native Pointer XtPrintChannelsToString(XtChannels channels);
     static native Pointer XtPrintCapabilitiesToString(int capabilities);
-    static native Pointer XtPrintAttributesToString(XtAttributes attributes);
 
     static native void XtStreamDestroy(Pointer s);
     static native long XtStreamStop(Pointer s);
@@ -200,7 +193,7 @@ final class XtNative {
     static native Pointer XtAudioGetServiceByIndex(int index);
     static native Pointer XtAudioGetServiceBySetup(int setup);
     static native Pointer XtAudioGetServiceBySystem(int system);
-    static native XtAttributes.ByValue XtAudioGetSampleAttributes(int sample);
+    static native XtAttributes XtAudioGetSampleAttributes(int sample);
     static native void XtAudioInit(String id, Pointer window, TraceCallback trace, XtFatalCallback fatal);
 
     static native void XtDeviceDestroy(Pointer d);

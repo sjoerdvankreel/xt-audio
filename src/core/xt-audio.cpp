@@ -54,9 +54,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   XT_ASSERT(streamCallback != nullptr);
   XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
 
-  const char* fmt;
-  char* formatCString;
-  std::string formatStdString;
   double rate = format->mix.rate;
   uint64_t inMask = format->channels.inMask;
   int32_t inputs = format->channels.inputs;
@@ -67,13 +64,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   auto attributes = XtAudioGetSampleAttributes(sample);
 
   *stream = nullptr;
-  system = XtDeviceGetSystem(d);
-  formatCString = XtPrintFormatToString(format);
-  formatStdString = formatCString;
-  XtAudioFree(formatCString);
-  fmt = "Opening stream: device %s, bufferSize %f, format %s, interleaved %d...";
-  XT_TRACE(XtLevelInfo, fmt, XtiTryGetDeviceName(d).c_str(), bufferSize, formatStdString.c_str(), interleaved);
-  
+  system = XtDeviceGetSystem(d);  
   if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
     return error;
   if(!supports)
@@ -102,30 +93,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   initInterleaved =  interleaved && !canInterleaved;
   initNonInterleaved = !interleaved && !canNonInterleaved;
   InitStreamBuffers((*stream)->intermediate, initInterleaved, initNonInterleaved, format, frames, attributes.size);
-  fmt = "Opened stream: device %s, bufferSize %f, format %s, interleaved %d.";
-  XT_TRACE(XtLevelInfo, fmt, XtiTryGetDeviceName(d).c_str(), bufferSize, formatStdString.c_str(), interleaved);
   return 0;
-}
-
-// ---- error ----
-
-uint32_t XT_CALL XtAudioGetErrorFault(XtError error) {
-  return static_cast<XtFault>(error & 0x00000000FFFFFFFF);
-}
-
-XtSystem XT_CALL XtAudioGetErrorSystem(XtError error) {
-  XT_ASSERT(error != 0);
-  return static_cast<XtSystem>((error & 0xFFFFFFFF00000000) >> 32ULL);
-}
-
-const char* XT_CALL XtAudioGetErrorText(XtError error) {
-  XT_ASSERT(error != 0);
-  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultText(XtAudioGetErrorFault(error));
-}
-
-XtCause XT_CALL XtAudioGetErrorCause(XtError error) {
-  XT_ASSERT(error != 0);
-  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultCause(XtAudioGetErrorFault(error));
 }
 
 // ---- print ----
@@ -182,51 +150,6 @@ const char* XT_CALL XtPrintSampleToString(XtSample sample) {
   }
 }
 
-char* XT_CALL XtPrintMixToString(const XtMix* mix) {
-  XT_ASSERT(mix != nullptr);
-  std::ostringstream oss;
-  oss << "[" << mix->rate << " ";
-  oss << XtPrintSampleToString(mix->sample) << "]";
-  return strdup(oss.str().c_str());
-}
-
-char* XT_CALL XtPrintBufferToString(const XtBuffer* buffer) {
-  XT_ASSERT(buffer != nullptr);
-  std::ostringstream oss;
-  oss << std::setprecision(3) << std::fixed;
-  oss << "[min: " << buffer->min << ", ";
-  oss << "max: " << buffer->max << ", ";
-  oss << "current: " << buffer->current << "]";
-  return strdup(oss.str().c_str());
-}
-
-char* XT_CALL XtPrintFormatToString(const XtFormat* format) {
-  XT_ASSERT(format != nullptr);
-  std::ostringstream oss;
-  oss << "[" << format->mix.rate << " ";
-  oss << XtPrintSampleToString(format->mix.sample) << " ";
-  oss << format->channels.inputs << " (" << format->channels.inMask << ") ";
-  oss << format->channels.outputs << " (" << format->channels.outMask << ")]";
-  return strdup(oss.str().c_str());
-}
-
-char* XT_CALL XtPrintLatencyToString(const XtLatency* latency) {
-  XT_ASSERT(latency != nullptr);
-  std::ostringstream oss;
-  oss << std::setprecision(3);
-  oss << "[input: " << latency->input << ", ";
-  oss << "output: " << latency->output << "]";
-  return strdup(oss.str().c_str());
-}
-
-char* XT_CALL XtPrintChannelsToString(const XtChannels* channels) {
-  XT_ASSERT(channels != nullptr);
-  std::ostringstream oss;
-  oss << "[inputs: " << channels->inputs << " (" << channels->inMask << "), ";
-  oss << "outputs: " << channels->outputs << " (" << channels->outMask << ")]";
-  return strdup(oss.str().c_str());
-}
-
 char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
   std::ostringstream oss;
   if(capabilities == XtCapabilitiesNone)
@@ -248,29 +171,6 @@ char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
   return strdup(result.c_str());
 }
 
-char* XT_CALL XtPrintAttributesToString(const XtAttributes* attributes) {
-  XT_ASSERT(attributes != nullptr);
-  std::ostringstream oss;
-  oss << std::setprecision(3);
-  oss << "[size: " << attributes->size << ", ";
-  oss << "isFloat: " << attributes->isFloat << ", ";
-  oss << "isSigned: " << attributes->isSigned << "]";
-  return strdup(oss.str().c_str());
-}
-
-char* XT_CALL XtPrintErrorToString(XtError error) {
-  std::ostringstream oss;
-  if(error == 0)
-    return strdup("<No error>");
-  XtCause cause = XtAudioGetErrorCause(error);
-  XtFault fault = XtAudioGetErrorFault(error);
-  XtSystem system = XtAudioGetErrorSystem(error);
-  oss << "[system: " << system << " (" << XtPrintSystemToString(system) << "), ";
-  oss << "cause: " << cause << " (" << XtPrintCauseToString(cause) << ") ", 
-  oss << "fault: " << fault << " (" << XtAudioGetErrorText(error) << ")]";
-  return strdup(oss.str().c_str());
-}
-
 // ---- audio ----
 
 void XT_CALL XtAudioFree(void* ptr) {
@@ -283,6 +183,25 @@ int32_t XT_CALL XtAudioGetVersionMajor(void) {
 
 int32_t XT_CALL XtAudioGetVersionMinor(void) {
   return 7;
+}
+
+uint32_t XT_CALL XtAudioGetErrorFault(XtError error) {
+  return static_cast<XtFault>(error & 0x00000000FFFFFFFF);
+}
+
+XtSystem XT_CALL XtAudioGetErrorSystem(XtError error) {
+  XT_ASSERT(error != 0);
+  return static_cast<XtSystem>((error & 0xFFFFFFFF00000000) >> 32ULL);
+}
+
+const char* XT_CALL XtAudioGetErrorText(XtError error) {
+  XT_ASSERT(error != 0);
+  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultText(XtAudioGetErrorFault(error));
+}
+
+XtCause XT_CALL XtAudioGetErrorCause(XtError error) {
+  XT_ASSERT(error != 0);
+  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultCause(XtAudioGetErrorFault(error));
 }
 
 const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup) {

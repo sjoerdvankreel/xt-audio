@@ -11,11 +11,6 @@ public final class XtBuffer extends Structure {
     public double current;
 
     @Override
-    public String toString() {
-        return XtPrint.bufferToString(this);
-    }
-
-    @Override
     protected List getFieldOrder() {
         return Arrays.asList("min", "max", "current");
     }

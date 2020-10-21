@@ -26,3 +26,5 @@
 * small java driver
 * c++ const noexcept
 * remove utility functions (iswin32, tostring, print)
+* getfaulttext ?
+* check enum tostrings

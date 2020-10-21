@@ -48,7 +48,7 @@ int PrintDetailedMain(int argc, char** argv) {
         std::cout << "  Device " << device->GetName() + ":" << "\n";
         std::cout << "    System: " << device->GetSystem() << "\n";
         if(mix)
-          std::cout << "    Current mix: " << *mix << "\n";
+          std::cout << "    Current mix: " << mix->rate << " " << Xt::Print::SampleToString(mix->sample) << "\n";
         std::cout << "    Input channels: " << device->GetChannelCount(false) << "\n";
         std::cout << "    Output channels: " << device->GetChannelCount(true) << "\n";
         std::cout << "    Interleaved access: " << device->SupportsAccess(true) << "\n";
@@ -61,8 +61,7 @@ int PrintDetailedMain(int argc, char** argv) {
       << "system " << Xt::Audio::GetErrorSystem(e.GetError()) << ", "
       << "fault " << Xt::Audio::GetErrorFault(e.GetError()) << ", "
       << "cause " << Xt::Audio::GetErrorCause(e.GetError()) << ", "
-      << "text " << Xt::Audio::GetErrorText(e.GetError()) << ", "
-      << "message " << e << ".\n";
+      << "text " << Xt::Audio::GetErrorText(e.GetError()) << ".\n";
   }
   return 0;
 }
