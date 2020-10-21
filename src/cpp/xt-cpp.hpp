@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <optional>
 #include <stdexcept>
 
 struct XtStream;
@@ -204,7 +205,7 @@ public:
   void ShowControlPanel();
   System GetSystem() const;
   std::string GetName() const;
-  std::unique_ptr<Mix> GetMix() const;
+  std::optional<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
   bool SupportsAccess(bool interleaved) const;
   Buffer GetBuffer(const Format& format) const;

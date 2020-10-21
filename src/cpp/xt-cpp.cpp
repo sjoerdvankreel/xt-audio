@@ -253,14 +253,11 @@ int32_t Device::GetChannelCount(bool output) const {
   return count; 
 }
 
-std::unique_ptr<Mix> Device::GetMix() const {
-  XtMix* mix;
-  HandleError(XtDeviceGetMix(d, &mix));
-  if(mix == nullptr)
-    return std::unique_ptr<Mix>();
-  std::unique_ptr<Mix> result(new Mix(*reinterpret_cast<Mix*>(mix)));
-  XtAudioFree(mix);
-  return result;
+std::optional<Mix> Device::GetMix() const {
+  Mix mix;
+  XtBool valid;
+  HandleError(XtDeviceGetMix(d, &valid, reinterpret_cast<XtMix*>(&mix)));
+  return valid? std::optional<Mix>(mix): std::optional<Mix>(std::nullopt);
 }
 
 bool Device::SupportsAccess(bool interleaved) const {

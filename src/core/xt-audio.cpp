@@ -419,12 +419,13 @@ XtError XT_CALL XtDeviceShowControlPanel(XtDevice* d) {
   return XtiCreateError(d->GetSystem(), d->ShowControlPanel());
 }
 
-XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtMix** mix) {
+XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix) {
   XT_ASSERT(d != nullptr);
   XT_ASSERT(mix != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  *mix = nullptr;
-  return XtiCreateError(d->GetSystem(), d->GetMix(mix));
+  *valid = XtFalse;
+  memset(mix, 0, sizeof(XtMix));
+  return XtiCreateError(d->GetSystem(), d->GetMix(valid, mix));
 }
 
 XtError XT_CALL XtDeviceGetName(const XtDevice* d, char** name) {

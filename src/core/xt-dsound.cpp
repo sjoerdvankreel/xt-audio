@@ -279,7 +279,7 @@ XtFault DSoundDevice::GetChannelCount(XtBool output, int32_t* count) const {
   return S_OK;
 }
 
-XtFault DSoundDevice::GetMix(XtMix** mix) const {
+XtFault DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
 
   UINT count;
   HRESULT hr;
@@ -313,9 +313,9 @@ XtFault DSoundDevice::GetMix(XtMix** mix) const {
       XT_VERIFY_COM(client->GetMixFormat(&wfx));
       if(!XtwWfxToFormat(*wfx, !input, format))
         return DSERR_BADFORMAT;
-      *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
-      (*mix)->rate = format.mix.rate;
-      (*mix)->sample = format.mix.sample;
+      *valid = XtTrue;
+      mix->rate = format.mix.rate;
+      mix->sample = format.mix.sample;
       return S_OK;
     }
   }

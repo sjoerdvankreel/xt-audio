@@ -251,7 +251,7 @@ namespace Xt
             inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
                 inputBuffer.Value.min.ToString("N1"), inputBuffer.Value.current.ToString("N1"), inputBuffer.Value.max.ToString("N1"));
             var inputDeviceMix = inputDevice?.GetMix();
-            inputMix.Text = inputDeviceMix == null ? "N/A" : inputDeviceMix.rate + " " + inputDeviceMix.sample;
+            inputMix.Text = inputDeviceMix == null ? "N/A" : inputDeviceMix.Value.rate + " " + inputDeviceMix.Value.sample;
             inputInterleaved.Text = inputDevice == null
                 ? "N/A"
                 : inputDevice.SupportsAccess(true) && inputDevice.SupportsAccess(false)
@@ -277,7 +277,7 @@ namespace Xt
             outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
                 outputBuffer.Value.min.ToString("N1"), outputBuffer.Value.current.ToString("N1"), outputBuffer.Value.max.ToString("N1"));
             var outputDeviceMix = outputDevice?.GetMix();
-            outputMix.Text = outputDeviceMix == null ? "N/A" : outputDeviceMix.rate + " " + outputDeviceMix.sample;
+            outputMix.Text = outputDeviceMix == null ? "N/A" : outputDeviceMix.Value.rate + " " + outputDeviceMix.Value.sample;
             outputInterleaved.Text = outputDevice == null
                 ? "N/A"
                 : outputDevice.SupportsAccess(true) && outputDevice.SupportsAccess(false)

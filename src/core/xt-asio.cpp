@@ -364,7 +364,7 @@ XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
   return ASE_OK;
 }
 
-XtFault AsioDevice::GetMix(XtMix** mix) const {
+XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
 
   XtSample sample;
   ASIOSampleRate rate;
@@ -391,10 +391,9 @@ XtFault AsioDevice::GetMix(XtMix** mix) const {
   if(!FromAsioSample(type, sample))
     return ASE_Format;
 
-  *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
-  XT_ASSERT(*mix);
-  (*mix)->sample = sample;
-  (*mix)->rate = static_cast<int32_t>(rate);
+  *valid = XtTrue;
+  mix->sample = sample;
+  mix->rate = static_cast<int32_t>(rate);
   return ASE_OK;
 }
 

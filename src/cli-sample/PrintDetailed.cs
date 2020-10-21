@@ -51,7 +51,7 @@ namespace Xt
 								Console.WriteLine("  Device " + device.GetName() + ":");
 								Console.WriteLine("    System: " + device.GetSystem());
 								if (mix != null)
-									Console.WriteLine("    Current mix: " + mix.rate + " " + mix.sample);
+									Console.WriteLine("    Current mix: " + mix.Value.rate + " " + mix.Value.sample);
 								Console.WriteLine("    Input channels: " + device.GetChannelCount(false));
 								Console.WriteLine("    Output channels: " + device.GetChannelCount(true));
 								Console.WriteLine("    Interleaved access: " + device.SupportsAccess(true));

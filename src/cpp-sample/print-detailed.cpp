@@ -45,7 +45,7 @@ int PrintDetailedMain(int argc, char** argv) {
 
       for(int d = 0; d < service->GetDeviceCount(); d++) {
         std::unique_ptr<Xt::Device> device = service->OpenDevice(d);
-        std::unique_ptr<Xt::Mix> mix = device->GetMix();
+        std::optional<Xt::Mix> mix = device->GetMix();
         std::cout << "  Device " << device->GetName() + ":" << "\n";
         std::cout << "    System: " << device->GetSystem() << "\n";
         if(mix)

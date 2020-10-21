@@ -211,7 +211,7 @@ namespace Xt
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern XtSystem XtDeviceGetSystem(IntPtr d);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetMix(IntPtr d, out IntPtr mix);
+        internal static extern ulong XtDeviceGetMix(IntPtr d, out bool valid, out XtMix mix);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtDeviceGetName(IntPtr d, out IntPtr name);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]

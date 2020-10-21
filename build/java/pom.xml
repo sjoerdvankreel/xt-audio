@@ -11,7 +11,7 @@
     </properties>
     <dependencies>
         <dependency>
-            <version>5.5.0</version>
+            <version>5.6.0</version>
             <artifactId>jna</artifactId>
             <groupId>net.java.dev.jna</groupId>
         </dependency>

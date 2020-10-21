@@ -69,17 +69,17 @@ struct name ## Service: public XtService {                                    \
 static const name ## Service Service ## name;                                 \
 const XtService* XtiService ## name = &Service ## name
 
-#define XT_IMPLEMENT_DEVICE(name)                                                            \
-  XtFault ShowControlPanel() override;                                                       \
-  XtFault GetMix(XtMix** mix) const override;                                                \
-  XtFault GetName(char** name) const override;                                               \
-  XtSystem GetSystem() const override { return XtSystem ## name; }                           \
-  XtFault GetChannelCount(XtBool output, int32_t* count) const override;                     \
-  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const override;                \
-  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;               \
-  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;           \
-  XtFault GetChannelName(XtBool output, int32_t index, char** name) const override;          \
-  XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,          \
+#define XT_IMPLEMENT_DEVICE(name)                                                   \
+  XtFault ShowControlPanel() override;                                              \
+  XtFault GetName(char** name) const override;                                      \
+  XtFault GetMix(XtBool* valid, XtMix* mix) const override;                         \
+  XtSystem GetSystem() const override { return XtSystem ## name; }                  \
+  XtFault GetChannelCount(XtBool output, int32_t* count) const override;            \
+  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const override;       \
+  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;      \
+  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;  \
+  XtFault GetChannelName(XtBool output, int32_t index, char** name) const override; \
+  XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, \
                      bool secondary, XtStreamCallback callback, void* user, XtStream** stream) override
 
 // ---- internal ----
@@ -212,8 +212,8 @@ struct XtDevice {
   virtual ~XtDevice() {};
   virtual XtFault ShowControlPanel() = 0;
   virtual XtSystem GetSystem() const = 0;
-  virtual XtFault GetMix(XtMix** mix) const = 0;
   virtual XtFault GetName(char** name) const = 0;
+  virtual XtFault GetMix(XtBool* valid, XtMix* mix) const = 0;
   virtual XtFault GetChannelCount(XtBool output, int32_t* count) const = 0;
   virtual XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const = 0;
   virtual XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const = 0;

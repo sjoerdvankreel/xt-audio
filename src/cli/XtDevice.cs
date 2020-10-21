@@ -41,13 +41,12 @@ namespace Xt
             return buffer;
         }
 
-        public XtMix GetMix()
+        public XtMix? GetMix()
         {
-            IntPtr mix;
-            XtNative.HandleError(XtNative.XtDeviceGetMix(d, out mix));
-            XtMix result = mix == IntPtr.Zero ? null : (XtMix)Marshal.PtrToStructure(mix, typeof(XtMix));
-            XtNative.XtAudioFree(mix);
-            return result;
+            XtMix mix;
+            bool valid;
+            XtNative.HandleError(XtNative.XtDeviceGetMix(d, out valid, out mix));
+            return valid ? mix : new XtMix?();
         }
 
         public bool SupportsAccess(bool interleaved)

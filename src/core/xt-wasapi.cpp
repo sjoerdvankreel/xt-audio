@@ -281,7 +281,7 @@ XtFault WasapiDevice::GetName(char** name) const {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetMix(XtMix** mix) const {  
+XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const {  
   HRESULT hr;
   XtFormat match;
   UINT32 currentFrames;
@@ -294,9 +294,9 @@ XtFault WasapiDevice::GetMix(XtMix** mix) const {
   else
     XT_VERIFY_COM(client3->GetCurrentSharedModeEnginePeriod(&wfx, &currentFrames));
   if(XtwWfxToFormat(*wfx, options.output, match)) {
-    *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
-    (*mix)->rate = match.mix.rate;
-    (*mix)->sample = match.mix.sample;
+    *valid = XtTrue;
+    mix->rate = match.mix.rate;
+    mix->sample = match.mix.sample;
     return S_OK;
   }
   return S_OK;

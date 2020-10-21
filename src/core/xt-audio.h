@@ -297,8 +297,8 @@ XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** d
 XT_API void XT_CALL XtDeviceDestroy(XtDevice* d);
 XT_API XtError XT_CALL XtDeviceShowControlPanel(XtDevice* d);
 XT_API XtSystem XT_CALL XtDeviceGetSystem(const XtDevice* d);
-XT_API XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtMix** mix);
 XT_API XtError XT_CALL XtDeviceGetName(const XtDevice* d, char** name);
+XT_API XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix);
 XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count);
 XT_API XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer);
 XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports);

@@ -3,6 +3,7 @@ package com.xtaudio.xt;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.Optional;
 
 public class XtDevice implements XtCloseable {
 
@@ -54,12 +55,11 @@ public class XtDevice implements XtCloseable {
         return buffer;
     }
 
-    public XtMix getMix() {
-        PointerByReference mix = new PointerByReference();
-        XtNative.handleError(XtNative.XtDeviceGetMix(d, mix));
-        XtMix result = mix.getValue() == null ? null : new XtNative.Mix(mix.getValue()).fromNative();
-        XtNative.XtAudioFree(mix.getValue());
-        return result;
+    public Optional<XtMix> getMix() {
+        XtMix mix = new XtMix();
+        IntByReference valid = new IntByReference();
+        XtNative.handleError(XtNative.XtDeviceGetMix(d, valid, mix));
+        return valid.getValue() == 0? Optional.empty(): Optional.of(mix);
     }
 
     public boolean supportsFormat(XtFormat format) {

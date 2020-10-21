@@ -8,6 +8,7 @@ import com.xtaudio.xt.XtLevel;
 import com.xtaudio.xt.XtMix;
 import com.xtaudio.xt.XtService;
 import com.xtaudio.xt.XtSetup;
+import java.util.Optional;
 
 public class PrintDetailed {
 
@@ -50,11 +51,11 @@ public class PrintDetailed {
 
                 for (int d = 0; d < service.getDeviceCount(); d++)
                     try (XtDevice device = service.openDevice(d)) {
-                        XtMix mix = device.getMix();
+                        Optional<XtMix> mix = device.getMix();
                         System.out.println("  Device " + device.getName() + ":");
                         System.out.println("    System: " + device.getSystem());
-                        if(mix != null)
-                            System.out.println("    Current mix: " + mix.rate + " " + mix.sample);
+                        if(mix.isPresent())
+                            System.out.println("    Current mix: " + mix.get().rate + " " + mix.get().sample);
                         System.out.println("    Input channels: " + device.getChannelCount(false));
                         System.out.println("    Output channels: " + device.getChannelCount(true));
                         System.out.println("    Interleaved access: " + device.supportsAccess(true));
