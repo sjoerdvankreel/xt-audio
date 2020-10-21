@@ -156,7 +156,7 @@ namespace Xt
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtStreamGetLatency(IntPtr s, [In, Out] XtLatency latency);
+        internal static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr XtStreamGetFormat(IntPtr s);
         [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]

@@ -213,16 +213,14 @@ namespace Xt
 
         public int GetFrames()
         {
-            int frames;
-            XtNative.HandleError(XtNative.XtStreamGetFrames(s, out frames));
-            return frames;
+            XtNative.HandleError(XtNative.XtStreamGetFrames(s, out var result));
+            return result;
         }
 
         public XtLatency GetLatency()
         {
-            XtLatency latency = new XtLatency();
-            XtNative.HandleError(XtNative.XtStreamGetLatency(s, latency));
-            return latency;
+            XtNative.HandleError(XtNative.XtStreamGetLatency(s, out var result));
+            return result;
         }
 
         public XtFormat GetFormat()
