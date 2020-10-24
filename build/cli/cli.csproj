@@ -16,7 +16,6 @@
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="..\..\src\cli\*.cs" />
-        <Compile Remove="..\..\src\cli\XtBuffer.cs" />
         <None Include="..\..\src\cli\App.config">
             <CopyToOutputDirectory>CopyIfNewer</CopyToOutputDirectory>
         </None>
