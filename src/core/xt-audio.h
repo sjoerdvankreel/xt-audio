@@ -269,7 +269,6 @@ XT_API const char* const* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilitie
 
 XT_API XtBool XT_CALL XtAudioIsWin32(void);
 XT_API void XT_CALL XtAudioTerminate(void);
-XT_API void XT_CALL XtAudioFree(void* ptr);
 XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
 XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, XtFatalCallback fatal);
 /** @} */
@@ -297,13 +296,13 @@ XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** d
 XT_API void XT_CALL XtDeviceDestroy(XtDevice* d);
 XT_API XtError XT_CALL XtDeviceShowControlPanel(XtDevice* d);
 XT_API XtSystem XT_CALL XtDeviceGetSystem(const XtDevice* d);
-XT_API XtError XT_CALL XtDeviceGetName(const XtDevice* d, char** name);
 XT_API XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix);
+XT_API XtError XT_CALL XtDeviceGetName(const XtDevice* d, char* buffer, int32_t* size);
 XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count);
 XT_API XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer);
 XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
-XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name);
+XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char* buffer, int32_t* size);
 XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
                                           XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream);
 /** @} */

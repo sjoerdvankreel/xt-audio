@@ -48,12 +48,13 @@ int32_t XtiGetSampleSize(XtSample sample) {
 }
 
 std::string XtiTryGetDeviceName(const XtDevice* d) {
-  char* name;
-  if(d == nullptr || d->GetName(&name) != 0)
+  int32_t size;
+  if(d == nullptr || XtDeviceGetName(d, nullptr, &size) != 0)    
     return "<unknown>";
-  std::string result(name);
-  XtAudioFree(name);
-  return result;
+  std::vector<char> buffer(static_cast<size_t>(size));
+  if(XtDeviceGetName(d, buffer.data(), &size) != 0)
+    return "<unknown>";
+  return std::string(buffer.data());
 }
 
 XtError XtiCreateError(XtSystem system, XtFault fault) {
@@ -114,6 +115,15 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
       std::cerr << "XT-Audio: FATAL: " << oss.str().c_str() << std::endl;
   }
   va_end(argCopy);
+}
+
+void XtiOutputString(const char* source, char* buffer, int32_t* size) {
+  if(buffer == nullptr) {
+    *size = strlen(source) + 1;
+    return;
+  }
+  memcpy(buffer, source, static_cast<size_t>(*size) - 1);
+  buffer[*size - 1] = '\0';
 }
 
 // ---- stream ----

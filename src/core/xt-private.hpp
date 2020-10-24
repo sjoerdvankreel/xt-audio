@@ -69,17 +69,17 @@ struct name ## Service: public XtService {                                    \
 static const name ## Service Service ## name;                                 \
 const XtService* XtiService ## name = &Service ## name
 
-#define XT_IMPLEMENT_DEVICE(name)                                                   \
-  XtFault ShowControlPanel() override;                                              \
-  XtFault GetName(char** name) const override;                                      \
-  XtFault GetMix(XtBool* valid, XtMix* mix) const override;                         \
-  XtSystem GetSystem() const override { return XtSystem ## name; }                  \
-  XtFault GetChannelCount(XtBool output, int32_t* count) const override;            \
-  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const override;       \
-  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;      \
-  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;  \
-  XtFault GetChannelName(XtBool output, int32_t index, char** name) const override; \
-  XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, \
+#define XT_IMPLEMENT_DEVICE(name)                                                                   \
+  XtFault ShowControlPanel() override;                                                              \
+  XtFault GetMix(XtBool* valid, XtMix* mix) const override;                                         \
+  XtFault GetName(char* buffer, int32_t* size) const override;                                      \
+  XtSystem GetSystem() const override { return XtSystem ## name; }                                  \
+  XtFault GetChannelCount(XtBool output, int32_t* count) const override;                            \
+  XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const override;                       \
+  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;                      \
+  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;                  \
+  XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const override; \
+  XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,                 \
                      bool secondary, XtStreamCallback callback, void* user, XtStream** stream) override
 
 // ---- internal ----
@@ -212,13 +212,13 @@ struct XtDevice {
   virtual ~XtDevice() {};
   virtual XtFault ShowControlPanel() = 0;
   virtual XtSystem GetSystem() const = 0;
-  virtual XtFault GetName(char** name) const = 0;
   virtual XtFault GetMix(XtBool* valid, XtMix* mix) const = 0;
+  virtual XtFault GetName(char* buffer, int32_t* size) const = 0;
   virtual XtFault GetChannelCount(XtBool output, int32_t* count) const = 0;
   virtual XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const = 0;
   virtual XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const = 0;
   virtual XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const = 0;
-  virtual XtFault GetChannelName(XtBool output, int32_t index, char** name) const = 0;
+  virtual XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const = 0;
   virtual XtFault OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
                              bool secondary, XtStreamCallback callback, void* user, XtStream** stream) = 0;
 };
@@ -237,6 +237,7 @@ std::string XtiTryGetDeviceName(const XtDevice* d);
 XtError XtiCreateError(XtSystem system, XtFault fault);
 bool XtiValidateFormat(XtSystem system, const XtFormat& format);
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp);
+void XtiOutputString(const char* source, char* buffer, int32_t* size);
 void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, ...);
 void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, va_list arg);

@@ -99,10 +99,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
 
 // ---- audio ----
 
-void XT_CALL XtAudioFree(void* ptr) {
-  free(ptr);
-}
-
 int32_t XT_CALL XtAudioGetVersionMajor(void) {
   return 1;
 }
@@ -428,12 +424,12 @@ XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix) {
   return XtiCreateError(d->GetSystem(), d->GetMix(valid, mix));
 }
 
-XtError XT_CALL XtDeviceGetName(const XtDevice* d, char** name) {
+XtError XT_CALL XtDeviceGetName(const XtDevice* d, char* buffer, int32_t* size) {
   XT_ASSERT(d != nullptr);
-  XT_ASSERT(name != nullptr);
+  XT_ASSERT(size != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  *name = nullptr;
-  return XtiCreateError(d->GetSystem(), d->GetName(name));
+  XT_ASSERT(buffer == nullptr || *size > 0);
+  return XtiCreateError(d->GetSystem(), d->GetName(buffer, size));
 }
 
 XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count) {
@@ -471,13 +467,13 @@ XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtB
   return XtiCreateError(d->GetSystem(), d->GetBuffer(format, buffer));
 }
 
-XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char** name) {
+XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char* buffer, int32_t* size) {
   XT_ASSERT(index >= 0);
   XT_ASSERT(d != nullptr);
-  XT_ASSERT(name != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  *name = nullptr;
-  return XtiCreateError(d->GetSystem(), d->GetChannelName(output, index, name));
+  XT_ASSERT(size != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());  
+  XT_ASSERT(buffer == nullptr || *size > 0);
+  return XtiCreateError(d->GetSystem(), d->GetChannelName(output, index, buffer, size));
 }
 
 XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports) {

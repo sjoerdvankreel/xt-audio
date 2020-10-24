@@ -20,12 +20,6 @@ static void XT_CALLBACK ForwardFatalCallback() {
   throw std::logic_error("Fatal error.");
 }
 
-static std::string WrapAndFreeCString(char* cString) {
-  std::string result(cString == nullptr? "": cString);
-  XtAudioFree(cString);
-  return result;
-}
-
 static void XT_CALLBACK
 ForwardTraceCallback(XtLevel level, const char* message) {
   if(trace)
@@ -238,9 +232,11 @@ System Device::GetSystem() const {
 }
 
 std::string Device::GetName() const { 
-  char* name; 
-  HandleError(XtDeviceGetName(d, &name)); 
-  return WrapAndFreeCString(name);
+  int32_t size;
+  HandleError(XtDeviceGetName(d, nullptr, &size));
+  std::vector<char> buffer(static_cast<size_t>(size));
+  HandleError(XtDeviceGetName(d, buffer.data(), &size));
+  return std::string(buffer.data());
 }
 
 void Device::ShowControlPanel() { 
@@ -267,9 +263,11 @@ bool Device::SupportsAccess(bool interleaved) const {
 }
 
 std::string Device::GetChannelName(bool output, int32_t index) const {
-  char* name;
-  HandleError(XtDeviceGetChannelName(d, output, index, &name)); 
-  return WrapAndFreeCString(name);
+  int32_t size;
+  HandleError(XtDeviceGetChannelName(d, output, index, nullptr, &size));
+  std::vector<char> buffer(static_cast<size_t>(size));
+  HandleError(XtDeviceGetChannelName(d, output, index, buffer.data(), &size));
+  return std::string(buffer.data());
 }
 
 bool Device::SupportsFormat(const Format& f) const {
