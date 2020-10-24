@@ -6,191 +6,180 @@ using System.Text;
 
 namespace Xt
 {
-    [SuppressUnmanagedCodeSecurity]
-    static class XtNative
-    {
-        internal class Utf8Buffer : IDisposable
-        {
-            internal readonly IntPtr ptr = IntPtr.Zero;
+	[SuppressUnmanagedCodeSecurity]
+	static class XtNative
+	{
+		internal class Utf8Buffer : IDisposable
+		{
+			internal readonly IntPtr ptr = IntPtr.Zero;
 
-            internal Utf8Buffer(string s)
-            {
-                if (s == null)
-                    return;
-                byte[] bytes = Encoding.UTF8.GetBytes(s);
-                ptr = Marshal.AllocHGlobal(bytes.Length);
-                Marshal.Copy(bytes, 0, ptr, bytes.Length);
-            }
+			internal Utf8Buffer(string s)
+			{
+				if (s == null)
+					return;
+				byte[] bytes = Encoding.UTF8.GetBytes(s);
+				ptr = Marshal.AllocHGlobal(bytes.Length);
+				Marshal.Copy(bytes, 0, ptr, bytes.Length);
+			}
 
-            public void Dispose()
-            {
-                if (ptr != IntPtr.Zero)
-                    Marshal.FreeHGlobal(ptr);
-            }
-        }
+			public void Dispose()
+			{
+				if (ptr != IntPtr.Zero)
+					Marshal.FreeHGlobal(ptr);
+			}
+		}
 
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void FatalCallbackWin32();
+		[SuppressUnmanagedCodeSecurity]
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		internal delegate void FatalCallbackWin32();
 
-        [SuppressUnmanagedCodeSecurity]
-        internal delegate void FatalCallbackLinux();
+		[SuppressUnmanagedCodeSecurity]
+		internal delegate void FatalCallbackLinux();
 
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void TraceCallbackWin32(XtLevel level, string message);
+		[SuppressUnmanagedCodeSecurity]
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		internal delegate void TraceCallbackWin32(XtLevel level, string message);
 
-        [SuppressUnmanagedCodeSecurity]
-        internal delegate void TraceCallbackLinux(XtLevel level, string message);
+		[SuppressUnmanagedCodeSecurity]
+		internal delegate void TraceCallbackLinux(XtLevel level, string message);
 
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void StreamCallbackWin32(IntPtr stream, IntPtr input, IntPtr output,
-            int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
+		[SuppressUnmanagedCodeSecurity]
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		internal delegate void StreamCallbackWin32(IntPtr stream, IntPtr input, IntPtr output,
+			int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
 
-        [SuppressUnmanagedCodeSecurity]
-        internal delegate void StreamCallbackLinux(IntPtr stream, IntPtr input, IntPtr output,
-            int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
+		[SuppressUnmanagedCodeSecurity]
+		internal delegate void StreamCallbackLinux(IntPtr stream, IntPtr input, IntPtr output,
+			int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
 
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        internal delegate void XRunCallbackWin32(int index, IntPtr user);
+		[SuppressUnmanagedCodeSecurity]
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		internal delegate void XRunCallbackWin32(int index, IntPtr user);
 
-        [SuppressUnmanagedCodeSecurity]
-        internal delegate void XRunCallbackLinux(int index, IntPtr user);
+		[SuppressUnmanagedCodeSecurity]
+		internal delegate void XRunCallbackLinux(int index, IntPtr user);
 
-        internal static void HandleError(ulong error)
-        {
-            if (error != 0)
-                throw new XtException(error);
-        }
+		internal static bool HandleError(ulong error) => error == 0 ? true : throw new XtException(error);
 
-        internal static string FreeStringFromUtf8(IntPtr utf8)
-        {
-            string result = StringFromUtf8(utf8);
-            XtAudioFree(utf8);
-            return result;
-        }
+		internal static string StringFromUtf8(IntPtr utf8)
+		{
+			byte c;
+			int index = 0;
+			List<byte> bytes = new List<byte>();
+			while ((c = Marshal.ReadByte(utf8, index++)) != 0)
+				bytes.Add(c);
+			byte[] array = bytes.ToArray();
+			return Encoding.UTF8.GetString(array);
+		}
 
-        internal static string StringFromUtf8(IntPtr utf8)
-        {
-            byte c;
-            int index = 0;
-            List<byte> bytes = new List<byte>();
-            while ((c = Marshal.ReadByte(utf8, index++)) != 0)
-                bytes.Add(c);
-            byte[] array = bytes.ToArray();
-            return Encoding.UTF8.GetString(array);
-        }
+		private const int RTLD_NOW = 2;
+		[DllImport("kernel32")]
+		private static extern IntPtr LoadLibrary(string library);
+		[DllImport("libdl")]
+		private static extern IntPtr dlopen(string filename, int flags);
 
-        private const int RTLD_NOW = 2;
-        [DllImport("kernel32")]
-        private static extern IntPtr LoadLibrary(string library);
-        [DllImport("libdl")]
-        private static extern IntPtr dlopen(string filename, int flags);
+		static XtNative()
+		{
+			if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+				if (LoadLibrary(Environment.Is64BitProcess ? "win32-x64/xt-core.dll" : "win32-x86/xt-core.dll") == IntPtr.Zero)
+					throw new DllNotFoundException();
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				if (dlopen(Environment.Is64BitProcess ? "linux-x64/libxt-core.so" : "linux-x86/libxt-core.so", RTLD_NOW) == IntPtr.Zero)
+					throw new DllNotFoundException();
+		}
 
-        static XtNative()
-        {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                if(LoadLibrary(Environment.Is64BitProcess ? "win32-x64/xt-core.dll" : "win32-x86/xt-core.dll") == IntPtr.Zero)
-                    throw new DllNotFoundException();
-            if(Environment.OSVersion.Platform == PlatformID.Unix)
-                if(dlopen(Environment.Is64BitProcess ? "linux-x64/libxt-core.so" : "linux-x86/libxt-core.so", RTLD_NOW) == IntPtr.Zero)
-                    throw new DllNotFoundException();
-        }
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern XtCause XtAudioGetErrorCause(ulong error);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern int XtAudioGetErrorFault(ulong error);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern XtSystem XtAudioGetErrorSystem(ulong error);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtAudioGetErrorText(ulong error);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtAudioPrintCapabilitiesToString(XtCapabilities capabilities);
 
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtCause XtAudioGetErrorCause(ulong error);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern int XtAudioGetErrorFault(ulong error);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtSystem XtAudioGetErrorSystem(ulong error);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtAudioGetErrorText(ulong error);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtAudioPrintCapabilitiesToString(XtCapabilities capabilities);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern void XtStreamDestroy(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtStreamStop(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtStreamStart(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern XtSystem XtStreamGetSystem(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtStreamGetFormat(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern bool XtStreamIsInterleaved(IntPtr s);
 
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void XtStreamDestroy(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtStreamStop(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtStreamStart(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtSystem XtStreamGetSystem(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtStreamGetFormat(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern bool XtStreamIsInterleaved(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern XtSystem XtServiceGetSystem(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtServiceGetName(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtServiceGetDeviceCount(IntPtr s, out int count);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtServiceOpenDevice(IntPtr s, int index, out IntPtr device);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtServiceOpenDefaultDevice(IntPtr s, bool output, out IntPtr device);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtServiceAggregateStream(IntPtr s,
+			[MarshalAs(UnmanagedType.LPArray)] IntPtr[] devices, IntPtr channels,
+			[MarshalAs(UnmanagedType.LPArray)] double[] bufferSizes, int count,
+			XtMix mix, bool interleaved, IntPtr master, IntPtr streamCallback,
+			IntPtr xRunCallback, IntPtr user, out IntPtr stream);
 
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtSystem XtServiceGetSystem(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtServiceGetName(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtServiceGetDeviceCount(IntPtr s, out int count);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtServiceOpenDevice(IntPtr s, int index, out IntPtr device);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtServiceOpenDefaultDevice(IntPtr s, bool output, out IntPtr device);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtServiceAggregateStream(IntPtr s,
-            [MarshalAs(UnmanagedType.LPArray)] IntPtr[] devices, IntPtr channels,
-            [MarshalAs(UnmanagedType.LPArray)] double[] bufferSizes, int count,
-            XtMix mix, bool interleaved, IntPtr master, IntPtr streamCallback,
-            IntPtr xRunCallback, IntPtr user, out IntPtr stream);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern bool XtAudioIsWin32();
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern void XtAudioTerminate();
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern void XtAudioFree(IntPtr p);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern int XtAudioGetVersionMajor();
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern int XtAudioGetVersionMinor();
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern int XtAudioGetServiceCount();
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtAudioGetServiceByIndex(int index);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtAudioGetServiceBySetup(XtSetup setup);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtAudioGetServiceBySystem(XtSystem system);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern void XtAudioInit(IntPtr id, IntPtr window, IntPtr trace, IntPtr fatal);
 
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern bool XtAudioIsWin32();
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void XtAudioTerminate();
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void XtAudioFree(IntPtr p);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern int XtAudioGetVersionMajor();
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern int XtAudioGetVersionMinor();
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern int XtAudioGetServiceCount();
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtAudioGetServiceByIndex(int index);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtAudioGetServiceBySetup(XtSetup setup);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr XtAudioGetServiceBySystem(XtSystem system);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void XtAudioInit(IntPtr id, IntPtr window, IntPtr trace, IntPtr fatal);
-
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern void XtDeviceDestroy(IntPtr d);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceShowControlPanel(IntPtr d);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern XtSystem XtDeviceGetSystem(IntPtr d);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetMix(IntPtr d, out bool valid, out XtMix mix);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetName(IntPtr d, out IntPtr name);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetChannelCount(IntPtr d, bool output, out int count);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceSupportsAccess(IntPtr d, bool interleaved, out bool supports);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetBuffer(IntPtr d, in XtFormat format, out XtBuffer buffer);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceSupportsFormat(IntPtr d, in XtFormat format, out bool supports);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, out IntPtr name);
-        [DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-        internal static extern ulong XtDeviceOpenStream(IntPtr d, in XtFormat format, bool interleaved,
-            double bufferSize, IntPtr streamCallback, IntPtr xRunCallback, IntPtr user, out IntPtr stream);
-    }
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern void XtDeviceDestroy(IntPtr d);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceShowControlPanel(IntPtr d);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern XtSystem XtDeviceGetSystem(IntPtr d);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceGetMix(IntPtr d, out bool valid, out XtMix mix);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceGetName(IntPtr d, [Out] byte[] buffer, ref int size);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceGetChannelCount(IntPtr d, bool output, out int count);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceSupportsAccess(IntPtr d, bool interleaved, out bool supports);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceGetBuffer(IntPtr d, in XtFormat format, out XtBuffer buffer);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceSupportsFormat(IntPtr d, in XtFormat format, out bool supports);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, [Out] byte[] buffer, ref int size);
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern ulong XtDeviceOpenStream(IntPtr d, in XtFormat format, bool interleaved,
+			double bufferSize, IntPtr streamCallback, IntPtr xRunCallback, IntPtr user, out IntPtr stream);
+	}
 }
