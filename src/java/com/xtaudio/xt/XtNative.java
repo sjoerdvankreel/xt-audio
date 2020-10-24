@@ -194,12 +194,6 @@ final class XtNative {
         }
     }
 
-    static String wrapAndFreeString(Pointer p) {
-        String result = p.getString(0);
-        XtAudioFree(p);
-        return result;
-    }
-
     static native int XtAudioGetErrorCause(long error);
 
     static native int XtAudioGetErrorFault(long error);
@@ -247,8 +241,6 @@ final class XtNative {
 
     static native void XtAudioTerminate();
 
-    static native void XtAudioFree(Pointer p);
-
     static native int XtAudioGetVersionMajor();
 
     static native int XtAudioGetVersionMinor();
@@ -271,7 +263,7 @@ final class XtNative {
 
     static native int XtDeviceGetSystem(Pointer d);
 
-    static native long XtDeviceGetName(Pointer d, PointerByReference name);
+    static native long XtDeviceGetName(Pointer d, byte[] buffer, IntByReference size);
 
     static native long XtDeviceGetBuffer(Pointer d, Format format, XtBuffer buffer);
 
@@ -283,7 +275,7 @@ final class XtNative {
 
     static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
 
-    static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, PointerByReference name);
+    static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, byte[] buffer, IntByReference size);
 
     static native long XtDeviceOpenStream(Pointer d, Format format, boolean interleaved, double bufferSize, StreamCallback streamCallback, XRunCallback xRunCallback, Pointer user, PointerByReference stream);
 }

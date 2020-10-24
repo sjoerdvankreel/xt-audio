@@ -9,6 +9,7 @@ import com.xtaudio.xt.NativeTypes.XtMix;
 import com.xtaudio.xt.NativeTypes.XtStreamCallback;
 import com.xtaudio.xt.NativeTypes.XtSystem;
 import com.xtaudio.xt.NativeTypes.XtXRunCallback;
+import java.nio.charset.Charset;
 import java.util.Optional;
 
 public class XtDevice implements XtCloseable {
@@ -38,15 +39,18 @@ public class XtDevice implements XtCloseable {
 
     @Override
     public void close() {
-        if (d != null)
+        if (d != null) {
             XtNative.XtDeviceDestroy(d);
+        }
         d = null;
     }
 
     public String getName() {
-        PointerByReference name = new PointerByReference();
-        XtNative.handleError(XtNative.XtDeviceGetName(d, name));
-        return XtNative.wrapAndFreeString(name.getValue());
+        IntByReference size = new IntByReference();
+        XtNative.handleError(XtNative.XtDeviceGetName(d, null, size));
+        byte[] buffer = new byte[size.getValue()];
+        XtNative.handleError(XtNative.XtDeviceGetName(d, buffer, size));
+        return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
     }
 
     public int getChannelCount(boolean output) {
@@ -65,7 +69,7 @@ public class XtDevice implements XtCloseable {
         XtMix mix = new XtMix();
         IntByReference valid = new IntByReference();
         XtNative.handleError(XtNative.XtDeviceGetMix(d, valid, mix));
-        return valid.getValue() == 0? Optional.empty(): Optional.of(mix);
+        return valid.getValue() == 0 ? Optional.empty() : Optional.of(mix);
     }
 
     public boolean supportsFormat(XtFormat format) {
@@ -81,9 +85,11 @@ public class XtDevice implements XtCloseable {
     }
 
     public String getChannelName(boolean output, int index) {
-        PointerByReference name = new PointerByReference();
-        XtNative.handleError(XtNative.XtDeviceGetChannelName(d, output, index, name));
-        return XtNative.wrapAndFreeString(name.getValue());
+        IntByReference size = new IntByReference();
+        XtNative.handleError(XtNative.XtDeviceGetChannelName(d, output, index, null, size));
+        byte[] buffer = new byte[size.getValue()];
+        XtNative.handleError(XtNative.XtDeviceGetChannelName(d, output, index, buffer, size));
+        return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
     }
 
     public XtStream openStream(XtFormat format, boolean interleaved, boolean raw, double bufferSize,
