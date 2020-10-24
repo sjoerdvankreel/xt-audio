@@ -427,8 +427,8 @@ XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix) {
 XtError XT_CALL XtDeviceGetName(const XtDevice* d, char* buffer, int32_t* size) {
   XT_ASSERT(d != nullptr);
   XT_ASSERT(size != nullptr);
+  XT_ASSERT(*size >= 0);
   XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(buffer == nullptr || *size > 0);
   return XtiCreateError(d->GetSystem(), d->GetName(buffer, size));
 }
 
