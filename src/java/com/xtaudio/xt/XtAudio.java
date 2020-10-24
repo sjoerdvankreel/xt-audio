@@ -2,6 +2,14 @@ package com.xtaudio.xt;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.xtaudio.xt.NativeTypes.XtAttributes;
+import com.xtaudio.xt.NativeTypes.XtCause;
+import com.xtaudio.xt.NativeTypes.XtFatalCallback;
+import com.xtaudio.xt.NativeTypes.XtLevel;
+import com.xtaudio.xt.NativeTypes.XtSample;
+import com.xtaudio.xt.NativeTypes.XtSetup;
+import com.xtaudio.xt.NativeTypes.XtSystem;
+import com.xtaudio.xt.NativeTypes.XtTraceCallback;
 import java.util.ArrayList;
 import java.util.List;
 

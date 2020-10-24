@@ -5,6 +5,11 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import com.xtaudio.xt.NativeTypes.XtChannels;
+import com.xtaudio.xt.NativeTypes.XtMix;
+import com.xtaudio.xt.NativeTypes.XtStreamCallback;
+import com.xtaudio.xt.NativeTypes.XtSystem;
+import com.xtaudio.xt.NativeTypes.XtXRunCallback;
 
 public final class XtService {
 

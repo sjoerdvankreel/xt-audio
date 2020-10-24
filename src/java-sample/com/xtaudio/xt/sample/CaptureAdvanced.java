@@ -3,15 +3,10 @@ package com.xtaudio.xt.sample;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.xtaudio.xt.XtAudio;
-import com.xtaudio.xt.XtBuffer;
-import com.xtaudio.xt.XtChannels;
 import com.xtaudio.xt.XtDevice;
-import com.xtaudio.xt.XtFormat;
-import com.xtaudio.xt.XtMix;
-import com.xtaudio.xt.XtSample;
 import com.xtaudio.xt.XtService;
-import com.xtaudio.xt.XtSetup;
 import com.xtaudio.xt.XtStream;
+import static com.xtaudio.xt.NativeTypes.*;
 import java.io.FileOutputStream;
 
 public class CaptureAdvanced {

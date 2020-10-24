@@ -3,6 +3,13 @@ package com.xtaudio.xt;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import com.xtaudio.xt.NativeTypes.XtFormat;
+import com.xtaudio.xt.NativeTypes.XtLatency;
+import com.xtaudio.xt.NativeTypes.XtLevel;
+import com.xtaudio.xt.NativeTypes.XtSample;
+import com.xtaudio.xt.NativeTypes.XtStreamCallback;
+import com.xtaudio.xt.NativeTypes.XtSystem;
+import com.xtaudio.xt.NativeTypes.XtXRunCallback;
 import java.lang.reflect.Array;
 
 public final class XtStream implements XtCloseable {
