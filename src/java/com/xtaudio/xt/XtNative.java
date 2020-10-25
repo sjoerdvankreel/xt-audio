@@ -167,13 +167,12 @@ final class XtNative {
     static interface StreamCallback extends Callback {
 
         void callback(Pointer stream, Pointer input, Pointer output, int frames,
-                double time, long position, boolean timeValid, long error, Pointer user);
+            double time, long position, boolean timeValid, long error, Pointer user);
     }
 
     static void init() {
-        if (initialized) {
+        if (initialized)
             return;
-        }
         boolean isX64 = Native.POINTER_SIZE == 8;
         System.setProperty("jna.encoding", "UTF-8");
         boolean isWin32 = System.getProperty("os.name").contains("Windows");
@@ -182,96 +181,60 @@ final class XtNative {
             options.put(Library.OPTION_FUNCTION_MAPPER, new StdCallFunctionMapper());
             options.put(Library.OPTION_CALLING_CONVENTION, StdCallLibrary.STDCALL_CONVENTION);
         }
-        if (isWin32 && !isX64) {
+        if (isWin32 && !isX64)
             Native.register(NativeLibrary.getInstance("win32-x86/xt-core.dll", options));
-        } else if (isWin32 && isX64) {
+        else if (isWin32 && isX64)
             Native.register(NativeLibrary.getInstance("win32-x64/xt-core.dll", options));
-        } else if (!isWin32 && !isX64) {
+        else if (!isWin32 && !isX64)
             Native.register(NativeLibrary.getInstance("linux-x86/libxt-core.so", options));
-        } else {
+        else
             Native.register(NativeLibrary.getInstance("linux-x64/libxt-core.so", options));
-        }
         initialized = true;
     }
 
     static void handleError(long error) {
-        if (error != 0) {
+        if (error != 0)
             throw new XtException(error);
-        }
     }
 
     static native XtErrorInfo XtAudioGetErrorInfo(long error);
-
     static native String XtAudioPrintCapabilitiesToString(int capabilities);
-
     static native void XtStreamDestroy(Pointer s);
-
     static native long XtStreamStop(Pointer s);
-
     static native long XtStreamStart(Pointer s);
-
     static native int XtStreamGetSystem(Pointer s);
-
     static native long XtStreamGetFrames(Pointer s, IntByReference frames);
-
     static native long XtStreamGetLatency(Pointer s, XtLatency latency);
-
     static native Pointer XtStreamGetFormat(Pointer s);
-
     static native boolean XtStreamIsInterleaved(Pointer s);
-
     static native int XtServiceGetSystem(Pointer s);
-
     static native String XtServiceGetName(Pointer s);
-
     static native int XtServiceGetCapabilities(Pointer s);
-
     static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
-
     static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);
-
     static native long XtServiceOpenDefaultDevice(Pointer s, boolean output, PointerByReference device);
-
     static native long XtServiceAggregateStream(Pointer s, Pointer devices,
-            Pointer channels, double[] bufferSizes, int count, Mix mix,
-            boolean interleaved, Pointer master, StreamCallback streamCallback,
-            XRunCallback xRunCallback, Pointer user, PointerByReference stream);
+        Pointer channels, double[] bufferSizes, int count, Mix mix,
+        boolean interleaved, Pointer master, StreamCallback streamCallback,
+        XRunCallback xRunCallback, Pointer user, PointerByReference stream);
 
     static native void XtAudioTerminate();
-
     static native XtVersion XtAudioGetVersion();
-
     static native int XtAudioGetServiceCount();
-
     static native Pointer XtAudioGetServiceByIndex(int index);
-
     static native Pointer XtAudioGetServiceBySetup(int setup);
-
     static native Pointer XtAudioGetServiceBySystem(int system);
-
     static native XtAttributes XtAudioGetSampleAttributes(int sample);
-
     static native void XtAudioInit(String id, Pointer window, TraceCallback trace, XtFatalCallback fatal);
-
     static native void XtDeviceDestroy(Pointer d);
-
     static native long XtDeviceShowControlPanel(Pointer d);
-
     static native int XtDeviceGetSystem(Pointer d);
-
     static native long XtDeviceGetName(Pointer d, byte[] buffer, IntByReference size);
-
     static native long XtDeviceGetBuffer(Pointer d, Format format, XtBuffer buffer);
-
     static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);
-
     static native long XtDeviceGetChannelCount(Pointer d, boolean output, IntByReference count);
-
     static native long XtDeviceSupportsFormat(Pointer d, Format format, IntByReference supports);
-
     static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
-
     static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, byte[] buffer, IntByReference size);
-
     static native long XtDeviceOpenStream(Pointer d, Format format, boolean interleaved, double bufferSize, StreamCallback streamCallback, XRunCallback xRunCallback, Pointer user, PointerByReference stream);
 }

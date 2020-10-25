@@ -32,5 +32,4 @@
 * drop cli/java callconv?
 * fix tostrings
 * errortofullstring
-* resimplify getmix
 * fix samples
