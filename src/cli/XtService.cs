@@ -11,7 +11,9 @@ namespace Xt
         internal XtService(IntPtr handle) 
             => _handle = handle;
 
-        public XtSystem GetSystem() 
+        public override string ToString()
+            => GetName();
+		public XtSystem GetSystem() 
             => XtServiceGetSystem(_handle);
         public XtCapabilities GetCapabilities() 
             => XtServiceGetCapabilities(_handle);

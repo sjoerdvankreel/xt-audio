@@ -125,6 +125,8 @@ std::ostream& operator<<(std::ostream& os, Cause cause);
 std::ostream& operator<<(std::ostream& os, Setup setup);
 std::ostream& operator<<(std::ostream& os, System system);
 std::ostream& operator<<(std::ostream& os, Sample sample);
+std::ostream& operator<<(std::ostream& os, const Device& device);
+std::ostream& operator<<(std::ostream& os, const Service& service);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
 
 typedef void (*FatalCallback)();

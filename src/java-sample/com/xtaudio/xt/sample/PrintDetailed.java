@@ -14,9 +14,8 @@ public class PrintDetailed {
     }
 
     static void onTrace(XtLevel level, String message) {
-        if (level != XtLevel.INFO) {
+        if (level != XtLevel.INFO)
             System.out.println("-- " + level + ": " + message);
-        }
     }
 
     public static void main(String[] args) {
@@ -26,35 +25,37 @@ public class PrintDetailed {
             XtVersion version = XtAudio.getVersion();
             System.out.println("Version: " + version.major + "." + version.minor);
             XtService pro = XtAudio.getServiceBySetup(XtSetup.PRO_AUDIO);
-            System.out.println("Pro Audio: " + (pro == null ? "None" : pro.getName()));
+            if (pro != null)
+                System.out.println("Pro Audio: " + pro);
             XtService system = XtAudio.getServiceBySetup(XtSetup.SYSTEM_AUDIO);
-            System.out.println("System Audio: " + (system == null ? "None" : system.getName()));
+            if (system != null)
+                System.out.println("System Audio: " + system);
             XtService consumer = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
-            System.out.println("Consumer Audio: " + (consumer == null ? "None" : consumer.getName()));
+            if (consumer != null)
+                System.out.println("Consumer Audio: " + consumer);
 
             for (int s = 0; s < XtAudio.getServiceCount(); s++) {
 
                 XtService service = XtAudio.getServiceByIndex(s);
-                System.out.println("Service " + service.getName() + ":");
+                System.out.println("Service " + service + ":");
                 System.out.println("  System: " + service.getSystem());
                 System.out.println("  Device count: " + service.getDeviceCount());
                 System.out.println("  Capabilities: " + XtCapabilities.toString(service.getCapabilities()));
 
                 try ( XtDevice defaultInput = service.openDefaultDevice(false)) {
-                    System.out.println("  Default input: " + defaultInput.getName());
+                    System.out.println("  Default input: " + defaultInput);
                 }
                 try ( XtDevice defaultOutput = service.openDefaultDevice(true)) {
-                    System.out.println("  Default output: " + defaultOutput.getName());
+                    System.out.println("  Default output: " + defaultOutput);
                 }
 
                 for (int d = 0; d < service.getDeviceCount(); d++)
                     try ( XtDevice device = service.openDevice(d)) {
                     Optional<XtMix> mix = device.getMix();
-                    System.out.println("  Device " + device.getName() + ":");
+                    System.out.println("  Device " + device + ":");
                     System.out.println("    System: " + device.getSystem());
-                    if (mix.isPresent()) {
+                    if (mix.isPresent())
                         System.out.println("    Current mix: " + mix.get().rate + " " + mix.get().sample);
-                    }
                     System.out.println("    Input channels: " + device.getChannelCount(false));
                     System.out.println("    Output channels: " + device.getChannelCount(true));
                     System.out.println("    Interleaved access: " + device.supportsAccess(true));
@@ -65,7 +66,7 @@ public class PrintDetailed {
 
             XtErrorInfo info = XtAudio.getErrorInfo(e.getError());
             System.out.printf("Error: system %s, fault %s, cause %s, text %s.\n",
-                    info.system, info.fault, info.cause, info.text);
+                info.system, info.fault, info.cause, info.text);
         }
     }
 }

@@ -53,6 +53,14 @@ uint64_t Exception::GetError() const {
 
 // ---- ostream ----
 
+std::ostream& operator<<(std::ostream& os, const Device& device) {
+  return os << device.GetName();
+}
+
+std::ostream& operator<<(std::ostream& os, const Service& service) {
+  return os << service.GetName();
+}
+
 std::ostream& operator<<(std::ostream& os, Level level) {
   return os << XtAudioPrintLevelToString(static_cast<XtLevel>(level));
 }

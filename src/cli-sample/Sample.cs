@@ -15,12 +15,12 @@ namespace Xt
                 if (index == -1 || index == 0)
                 {
                     Console.WriteLine("PrintSimple:");
-                    PrintSimple.Main(args);
+                    PrintSimple.Main();
                 }
                 if (index == -1 || index == 1)
                 {
                     Console.WriteLine("PrintDetailed:");
-                    PrintDetailed.Main(args);
+                    PrintDetailed.Main();
                 }
                 if (index == -1 || index == 2)
                 {

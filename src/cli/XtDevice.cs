@@ -10,6 +10,8 @@ namespace Xt
 		internal XtDevice(IntPtr handle) 
 			=> _handle = handle;
 
+		public override string ToString()
+			=> GetName();
 		public XtSystem GetSystem()
 			=> XtDeviceGetSystem(_handle);
 		public void ShowControlPanel()
