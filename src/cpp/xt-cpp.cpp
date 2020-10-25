@@ -219,7 +219,7 @@ System Device::GetSystem() const {
 }
 
 std::string Device::GetName() const { 
-  int32_t size;
+  int32_t size = 0;
   HandleError(XtDeviceGetName(d, nullptr, &size));
   std::vector<char> buffer(static_cast<size_t>(size));
   HandleError(XtDeviceGetName(d, buffer.data(), &size));
@@ -250,7 +250,7 @@ bool Device::SupportsAccess(bool interleaved) const {
 }
 
 std::string Device::GetChannelName(bool output, int32_t index) const {
-  int32_t size;
+  int32_t size = 0;
   HandleError(XtDeviceGetChannelName(d, output, index, nullptr, &size));
   std::vector<char> buffer(static_cast<size_t>(size));
   HandleError(XtDeviceGetChannelName(d, output, index, buffer.data(), &size));

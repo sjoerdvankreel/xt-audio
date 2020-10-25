@@ -117,7 +117,7 @@ struct Format final {
   Mix mix;
   Channels channels;  
   Format() = default;
-  Format(const Mix& mix, const Channels& channels): channels(channels) {}
+  Format(const Mix& mix, const Channels& channels): mix(mix), channels(channels) {}
 };
 
 std::ostream& operator<<(std::ostream& os, Level level);
