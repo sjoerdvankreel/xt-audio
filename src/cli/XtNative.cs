@@ -1,34 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 
 namespace Xt
 {
 	[SuppressUnmanagedCodeSecurity]
 	static class XtNative
 	{
-		internal class Utf8Buffer : IDisposable
-		{
-			internal readonly IntPtr ptr = IntPtr.Zero;
-
-			internal Utf8Buffer(string s)
-			{
-				if (s == null)
-					return;
-				byte[] bytes = Encoding.UTF8.GetBytes(s);
-				ptr = Marshal.AllocHGlobal(bytes.Length);
-				Marshal.Copy(bytes, 0, ptr, bytes.Length);
-			}
-
-			public void Dispose()
-			{
-				if (ptr != IntPtr.Zero)
-					Marshal.FreeHGlobal(ptr);
-			}
-		}
-
 		[SuppressUnmanagedCodeSecurity]
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 		internal delegate void FatalCallbackWin32();
@@ -60,17 +38,6 @@ namespace Xt
 		internal delegate void XRunCallbackLinux(int index, IntPtr user);
 
 		internal static bool HandleError(ulong error) => error == 0 ? true : throw new XtException(error);
-
-		internal static string StringFromUtf8(IntPtr utf8)
-		{
-			byte c;
-			int index = 0;
-			List<byte> bytes = new List<byte>();
-			while ((c = Marshal.ReadByte(utf8, index++)) != 0)
-				bytes.Add(c);
-			byte[] array = bytes.ToArray();
-			return Encoding.UTF8.GetString(array);
-		}
 
 		private const int RTLD_NOW = 2;
 		[DllImport("kernel32")]
@@ -144,7 +111,7 @@ namespace Xt
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern void XtAudioInit(IntPtr id, IntPtr window, IntPtr trace, IntPtr fatal);
+		internal static extern void XtAudioInit([MarshalAs(UnmanagedType.LPUTF8Str)] string id, IntPtr window, IntPtr trace, IntPtr fatal);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtDeviceDestroy(IntPtr d);

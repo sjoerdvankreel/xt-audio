@@ -24,8 +24,7 @@ namespace Xt
 			Delegate fatalDelegate = Environment.OSVersion.Platform == PlatformID.Win32NT ? (Delegate)win32Fatal : linuxFatal;
 			IntPtr tracePtr = trace == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(traceDelegate);
 			IntPtr fatalPtr = fatal == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(fatalDelegate);
-			using (XtNative.Utf8Buffer buffer = new XtNative.Utf8Buffer(id))
-				XtNative.XtAudioInit(buffer.ptr, window, tracePtr, fatalPtr);
+			XtNative.XtAudioInit(id, window, tracePtr, fatalPtr);
 		}
 
 		public void Dispose() => XtNative.XtAudioTerminate();
