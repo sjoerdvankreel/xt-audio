@@ -4,8 +4,8 @@ namespace Xt
 {
 	public sealed class XtException : Exception
 	{
-		private readonly ulong error;
-		public ulong GetError() => error;
-		internal XtException(ulong error) => this.error = error;
+		private readonly ulong _error;
+		public ulong GetError() => _error;
+		internal XtException(ulong error) => _error = error;
 	}
 }
