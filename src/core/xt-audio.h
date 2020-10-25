@@ -276,7 +276,7 @@ XT_API const char* XT_CALL XtAudioPrintCauseToString(XtCause cause);
 XT_API const char* XT_CALL XtAudioPrintSetupToString(XtSetup setup);
 XT_API const char* XT_CALL XtAudioPrintSystemToString(XtSystem system);
 XT_API const char* XT_CALL XtAudioPrintSampleToString(XtSample sample);
-XT_API const char* const* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities);
+XT_API const char* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities);
 
 XT_API XtBool XT_CALL XtAudioIsWin32(void);
 XT_API void XT_CALL XtAudioTerminate(void);

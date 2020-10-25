@@ -74,9 +74,7 @@ std::ostream& operator<<(std::ostream& os, Sample sample) {
 }
 
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
-  auto strings = Audio::PrintCapabilitiesToString(capabilities);
-  auto joiner = [](const std::string& l, const std::string& r) { return l.size() > 0? l + ", " + r: r; };
-  return os << std::accumulate(strings.cbegin(), strings.cend(), std::string(), joiner);  
+  return os << XtAudioPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
 }
 
 // ---- audio ----
@@ -137,15 +135,6 @@ std::unique_ptr<Service> Audio::GetServiceBySetup(Setup setup) {
 std::unique_ptr<Service> Audio::GetServiceBySystem(System system) {
   const XtService* service = XtAudioGetServiceBySystem(static_cast<XtSystem>(system));
   return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
-}
-
-std::vector<std::string> Audio::PrintCapabilitiesToString(Capabilities capabilities) {
-  size_t i = 0;
-  std::vector<std::string> result;
-  const char* const* strings = XtAudioPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
-  while(strings[i] != nullptr)
-    result.emplace_back(std::string(strings[i++]));
-  return result;
 }
 
 // ---- service ----

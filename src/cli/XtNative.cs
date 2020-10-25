@@ -90,8 +90,6 @@ namespace Xt
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern IntPtr XtAudioPrintCapabilitiesToString(XtCapabilities capabilities);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtStreamDestroy(IntPtr s);

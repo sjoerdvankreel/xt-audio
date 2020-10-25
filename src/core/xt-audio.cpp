@@ -189,19 +189,19 @@ const char* XT_CALL XtAudioPrintSampleToString(XtSample sample) {
   }
 }
 
-const char* const* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities) {
+const char* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities) {
   size_t i = 0;
-  static thread_local const char* result[6];
-  static const char* const noCapabilities[] = { "None", nullptr };
-  static const char* const allCapabilities[] = { "Time", "Latency", "FullDuplex", "ChannelMask", "XRunDetection" };
-  std::memset(result, 0, sizeof(result));
-  if(capabilities == XtCapabilitiesNone) return noCapabilities;
-  if((capabilities & XtCapabilitiesTime) != 0) result[i++] = allCapabilities[0];
-  if((capabilities & XtCapabilitiesLatency) != 0) result[i++] = allCapabilities[1];
-  if((capabilities & XtCapabilitiesFullDuplex) != 0) result[i++] = allCapabilities[2];
-  if((capabilities & XtCapabilitiesChannelMask) != 0) result[i++] = allCapabilities[3];
-  if((capabilities & XtCapabilitiesXRunDetection) != 0) result[i++] = allCapabilities[4];
-  return result;
+  std::string result;
+  if(capabilities == 0) return "None";
+  static thread_local char buffer[128];
+  if((capabilities & XtCapabilitiesTime) != 0) result += "Time, ";
+  if((capabilities & XtCapabilitiesLatency) != 0) result += "Latency, ";
+  if((capabilities & XtCapabilitiesFullDuplex) != 0) result += "FullDuplex, ";
+  if((capabilities & XtCapabilitiesChannelMask) != 0) result += "ChannelMask, ";
+  if((capabilities & XtCapabilitiesXRunDetection) != 0) result += "XRunDetection, ";
+  memcpy(buffer, result.data(), result.size() - 2);
+  buffer[result.size() - 2] = '\0';
+  return buffer;
 }
 
 void XT_CALL XtAudioTerminate(void) {

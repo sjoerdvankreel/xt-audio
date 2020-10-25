@@ -202,7 +202,7 @@ final class XtNative {
 
     static native XtErrorInfo XtAudioGetErrorInfo(long error);
 
-    static native Pointer XtAudioPrintCapabilitiesToString(int capabilities);
+    static native String XtAudioPrintCapabilitiesToString(int capabilities);
 
     static native void XtStreamDestroy(Pointer s);
 

@@ -198,7 +198,6 @@ public:
   static std::unique_ptr<Service> GetServiceBySetup(Setup setup);
   static std::unique_ptr<Service> GetServiceByIndex(int32_t index);
   static std::unique_ptr<Service> GetServiceBySystem(System system);
-  static std::vector<std::string> PrintCapabilitiesToString(Capabilities capabilities);
 };
 
 class Device final {

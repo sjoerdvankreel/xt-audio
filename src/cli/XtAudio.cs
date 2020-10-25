@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Xt
@@ -34,17 +33,7 @@ namespace Xt
 		public static XtVersion GetVersion() => XtNative.XtAudioGetVersion();
 		public static int GetServiceCount() => XtNative.XtAudioGetServiceCount();
 		public static XtErrorInfo GetErrorInfo(ulong error) => XtNative.XtAudioGetErrorInfo(error);
-
-		public static unsafe IList<string> PrintCapabilitiesToString(XtCapabilities capabilities)
-		{
-			int i = 0;
-			var result = new List<string>();
-			var strings = (IntPtr*)XtNative.XtAudioPrintCapabilitiesToString(capabilities);
-			while (strings[i] != IntPtr.Zero)
-				result.Add(XtNative.StringFromUtf8(strings[i++]));
-			return result;
-		}
-
+		public static XtAttributes GetSampleAttributes(XtSample sample) => XtNative.XtAudioGetSampleAttributes(sample);
 		public static XtService GetServiceByIndex(int index) => new XtService(XtNative.XtAudioGetServiceByIndex(index));
 
 		public static XtService GetServiceBySetup(XtSetup setup)
@@ -58,7 +47,5 @@ namespace Xt
 			IntPtr service = XtNative.XtAudioGetServiceBySystem(system);
 			return service == IntPtr.Zero ? null : new XtService(service);
 		}
-
-		public static XtAttributes GetSampleAttributes(XtSample sample) => XtNative.XtAudioGetSampleAttributes(sample);
 	}
 }

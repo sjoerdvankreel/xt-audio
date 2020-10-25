@@ -57,7 +57,7 @@ public final class NativeTypes {
         public static final int XRUN_DETECTION = 0x10;
 
         public static String toString(int capabilities) {
-            return String.join(", ", XtAudio.printCapabilitiesToString(capabilities));
+            return String.join(", ", XtNative.XtAudioPrintCapabilitiesToString(capabilities));
         }
     }
     
