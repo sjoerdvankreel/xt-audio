@@ -170,6 +170,13 @@ struct XtVersion {
   int32_t minor;
 };
 
+struct XtErrorInfo {
+  XtSystem system;
+  XtCause cause;
+  const char* text;
+  uint32_t fault;
+};
+
 struct XtMix {
   /** @brief Sample rate in Hz. */
   int32_t rate;
@@ -241,6 +248,7 @@ typedef struct XtBuffer XtBuffer;
 typedef struct XtVersion XtVersion;
 typedef struct XtLatency XtLatency;
 typedef struct XtChannels XtChannels;
+typedef struct XtErrorInfo XtErrorInfo;
 typedef struct XtAttributes XtAttributes;
 /** @endcond */
 
@@ -256,10 +264,7 @@ typedef void (XT_CALLBACK *XtStreamCallback)(
  * @{ 
  */
 XT_API XtVersion XT_CALL XtAudioGetVersion(void);
-XT_API XtCause XT_CALL XtAudioGetErrorCause(XtError error);
-XT_API uint32_t XT_CALL XtAudioGetErrorFault(XtError error);
-XT_API XtSystem XT_CALL XtAudioGetErrorSystem(XtError error);
-XT_API const char* XT_CALL XtAudioGetErrorText(XtError error);
+XT_API XtErrorInfo XT_CALL XtAudioGetErrorInfo(XtError error);
 
 XT_API int32_t XT_CALL XtAudioGetServiceCount(void);
 XT_API const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index);

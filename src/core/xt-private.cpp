@@ -117,6 +117,10 @@ void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, 
   va_end(argCopy);
 }
 
+uint32_t XtiGetErrorFault(XtError error) {
+  return static_cast<XtFault>(error & 0x00000000FFFFFFFF);
+}
+
 void XtiOutputString(const char* source, char* buffer, int32_t* size) {
   if(buffer == nullptr) {
     *size = strlen(source) + 1;

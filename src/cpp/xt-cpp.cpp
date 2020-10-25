@@ -51,10 +51,6 @@ uint64_t Exception::GetError() const {
   return e;
 }
 
-const char* Exception::what() const noexcept {
-  return XtAudioGetErrorText(GetError()); 
-}
-
 // ---- ostream ----
 
 std::ostream& operator<<(std::ostream& os, Level level) {
@@ -110,20 +106,14 @@ bool Audio::IsWin32() {
   return XtAudioIsWin32() != XtFalse;
 }
 
-uint32_t Audio::GetErrorFault(uint64_t error) { 
-  return XtAudioGetErrorFault(error); 
-}
-
-std::string Audio::GetErrorText(uint64_t error) {
-  return XtAudioGetErrorText(error); 
-}
-
-Cause Audio::GetErrorCause(uint64_t error) {
-  return static_cast<Cause>(XtAudioGetErrorCause(error));
-}
-
-System Audio::GetErrorSystem(uint64_t error) { 
-  return static_cast<System>(XtAudioGetErrorSystem(error));
+ErrorInfo Audio::GetErrorInfo(uint64_t error) { 
+  ErrorInfo result;
+  auto info = XtAudioGetErrorInfo(error);
+  result.fault = info.fault;
+  result.text = std::string(info.text);
+  result.cause = static_cast<Cause>(info.cause);
+  result.system = static_cast<System>(info.system);
+  return result;
 }
 
 Attributes Audio::GetSampleAttributes(Sample sample) {

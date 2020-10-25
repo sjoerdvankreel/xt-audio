@@ -14,13 +14,14 @@ public class PrintDetailed {
     }
 
     static void onTrace(XtLevel level, String message) {
-        if (level != XtLevel.INFO)
+        if (level != XtLevel.INFO) {
             System.out.println("-- " + level + ": " + message);
+        }
     }
 
     public static void main(String[] args) {
 
-        try (XtAudio audio = new XtAudio("Sample", null, PrintDetailed::onTrace, PrintDetailed::onFatal)) {
+        try ( XtAudio audio = new XtAudio("Sample", null, PrintDetailed::onTrace, PrintDetailed::onFatal)) {
 
             XtVersion version = XtAudio.getVersion();
             System.out.println("Win32: " + XtAudio.isWin32());
@@ -40,33 +41,32 @@ public class PrintDetailed {
                 System.out.println("  Device count: " + service.getDeviceCount());
                 System.out.println("  Capabilities: " + XtCapabilities.toString(service.getCapabilities()));
 
-                try (XtDevice defaultInput = service.openDefaultDevice(false)) {
+                try ( XtDevice defaultInput = service.openDefaultDevice(false)) {
                     System.out.println("  Default input: " + defaultInput.getName());
                 }
-                try (XtDevice defaultOutput = service.openDefaultDevice(true)) {
+                try ( XtDevice defaultOutput = service.openDefaultDevice(true)) {
                     System.out.println("  Default output: " + defaultOutput.getName());
                 }
 
                 for (int d = 0; d < service.getDeviceCount(); d++)
-                    try (XtDevice device = service.openDevice(d)) {
-                        Optional<XtMix> mix = device.getMix();
-                        System.out.println("  Device " + device.getName() + ":");
-                        System.out.println("    System: " + device.getSystem());
-                        if(mix.isPresent())
-                            System.out.println("    Current mix: " + mix.get().rate + " " + mix.get().sample);
-                        System.out.println("    Input channels: " + device.getChannelCount(false));
-                        System.out.println("    Output channels: " + device.getChannelCount(true));
-                        System.out.println("    Interleaved access: " + device.supportsAccess(true));
-                        System.out.println("    Non-interleaved access: " + device.supportsAccess(false));
+                    try ( XtDevice device = service.openDevice(d)) {
+                    Optional<XtMix> mix = device.getMix();
+                    System.out.println("  Device " + device.getName() + ":");
+                    System.out.println("    System: " + device.getSystem());
+                    if (mix.isPresent()) {
+                        System.out.println("    Current mix: " + mix.get().rate + " " + mix.get().sample);
                     }
+                    System.out.println("    Input channels: " + device.getChannelCount(false));
+                    System.out.println("    Output channels: " + device.getChannelCount(true));
+                    System.out.println("    Interleaved access: " + device.supportsAccess(true));
+                    System.out.println("    Non-interleaved access: " + device.supportsAccess(false));
+                }
             }
         } catch (XtException e) {
 
+            XtErrorInfo info = XtAudio.getErrorInfo(e.getError());
             System.out.printf("Error: system %s, fault %s, cause %s, text %s.\n",
-                    XtAudio.getErrorSystem(e.getError()),
-                    XtAudio.getErrorFault(e.getError()),
-                    XtAudio.getErrorCause(e.getError()),
-                    XtAudio.getErrorText(e.getError()));
+                    info.system, info.fault, info.cause, info.text);
         }
     }
 }

@@ -67,20 +67,27 @@ enum Capabilities {
   CapabilitiesXRunDetection = 0x10
 };
 
-struct Version final {
-  int32_t major;
-  int32_t minor;
-};
-
 struct Buffer final {
   double min;
   double max;
   double current;
 };
 
+struct Version final {
+  int32_t major;
+  int32_t minor;
+};
+
 struct Latency final {
   double input;
   double output;
+};
+
+struct ErrorInfo final {
+  System system;
+  Cause cause;
+  std::string text;
+  uint32_t fault;
 };
 
 struct Attributes final {
@@ -134,7 +141,6 @@ private:
 public:
   Exception(uint64_t e);
   uint64_t GetError() const;
-  const char* what() const noexcept override;
 };
 
 class Stream final {
@@ -187,10 +193,7 @@ public:
   static bool IsWin32();
   static Version GetVersion();
   static int32_t GetServiceCount();
-  static Cause GetErrorCause(uint64_t error);
-  static System GetErrorSystem(uint64_t error);
-  static uint32_t GetErrorFault(uint64_t error);
-  static std::string GetErrorText(uint64_t error);
+  static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
   static std::unique_ptr<Service> GetServiceBySetup(Setup setup);
   static std::unique_ptr<Service> GetServiceByIndex(int32_t index);

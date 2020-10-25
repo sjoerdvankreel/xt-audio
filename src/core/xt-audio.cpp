@@ -103,23 +103,17 @@ XtVersion XT_CALL XtAudioGetVersion(void) {
   return { 1, 7 };
 }
 
-uint32_t XT_CALL XtAudioGetErrorFault(XtError error) {
-  return static_cast<XtFault>(error & 0x00000000FFFFFFFF);
-}
-
-XtSystem XT_CALL XtAudioGetErrorSystem(XtError error) {
+XtErrorInfo XT_CALL XtAudioGetErrorInfo(XtError error) {
+  XtErrorInfo result;
   XT_ASSERT(error != 0);
-  return static_cast<XtSystem>((error & 0xFFFFFFFF00000000) >> 32ULL);
-}
-
-const char* XT_CALL XtAudioGetErrorText(XtError error) {
-  XT_ASSERT(error != 0);
-  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultText(XtAudioGetErrorFault(error));
-}
-
-XtCause XT_CALL XtAudioGetErrorCause(XtError error) {
-  XT_ASSERT(error != 0);
-  return XtAudioGetServiceBySystem(XtAudioGetErrorSystem(error))->GetFaultCause(XtAudioGetErrorFault(error));
+  auto fault = XtiGetErrorFault(error);
+  auto system = static_cast<XtSystem>((error & 0xFFFFFFFF00000000) >> 32ULL);
+  auto service = XtAudioGetServiceBySystem(system);
+  result.fault = fault;
+  result.system = system;
+  result.text = service->GetFaultText(fault);
+  result.cause = service->GetFaultCause(fault);
+  return result;
 }
 
 const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup) {

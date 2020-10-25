@@ -50,10 +50,11 @@ int main(int argc, char** argv) {
     }
     return 0;
   } catch(Xt::Exception const& e) {
+    auto info = Xt::Audio::GetErrorInfo(e.GetError());
     std::cout << "Error:\n";
-    std::cout << "\tSystem: " << Xt::Audio::GetErrorSystem(e.GetError()) << "\n";
-    std::cout << "\tCause: " << Xt::Audio::GetErrorCause(e.GetError()) << "\n";
-    std::cout << "\tFault: " << Xt::Audio::GetErrorFault(e.GetError()) << "\n";
-    std::cout << "\tText: " << Xt::Audio::GetErrorText(e.GetError()) << "\n";
+    std::cout << "\tSystem: " << info.system << "\n";
+    std::cout << "\tCause: " << info.cause << "\n";
+    std::cout << "\tFault: " << info.fault << "\n";
+    std::cout << "\tText: " << info.text << "\n";
   }
 }

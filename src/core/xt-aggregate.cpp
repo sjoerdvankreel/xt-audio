@@ -213,7 +213,7 @@ XtFault XtAggregate::Stop() {
     if(i != static_cast<size_t>(masterIndex))
       if((error = XtStreamStop(streams[i].get())) != 0)
         result = error;
-  return XtAudioGetErrorFault(result);
+  return XtiGetErrorFault(result);
 }
 
 XtFault XtAggregate::Start() {
@@ -230,11 +230,11 @@ XtFault XtAggregate::Start() {
     if(i != static_cast<size_t>(masterIndex))
       if((error = XtStreamStart(streams[i].get()) != 0)) {
         Stop();
-        return XtAudioGetErrorFault(error);
+        return XtiGetErrorFault(error);
       }
   if((error = XtStreamStart(streams[masterIndex].get()) != 0)) {
     Stop();
-    return XtAudioGetErrorFault(error);
+    return XtiGetErrorFault(error);
   }
   XtiCas(&running, 1, 0);
   return 0;

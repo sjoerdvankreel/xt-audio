@@ -33,10 +33,7 @@ namespace Xt
 		public static bool IsWin32() => XtNative.XtAudioIsWin32();
 		public static XtVersion GetVersion() => XtNative.XtAudioGetVersion();
 		public static int GetServiceCount() => XtNative.XtAudioGetServiceCount();
-		public static int GetErrorFault(ulong error) => XtNative.XtAudioGetErrorFault(error);
-		public static XtCause GetErrorCause(ulong error) => XtNative.XtAudioGetErrorCause(error);
-		public static XtSystem GetErrorSystem(ulong error) => XtNative.XtAudioGetErrorSystem(error);
-		public static string GetErrorText(ulong error) => XtNative.StringFromUtf8(XtNative.XtAudioGetErrorText(error));
+		public static XtErrorInfo GetErrorInfo(ulong error) => XtNative.XtAudioGetErrorInfo(error);
 
 		public static unsafe IList<string> PrintCapabilitiesToString(XtCapabilities capabilities)
 		{

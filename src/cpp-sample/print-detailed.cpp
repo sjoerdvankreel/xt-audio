@@ -59,11 +59,12 @@ int PrintDetailedMain(int argc, char** argv) {
     }
   }
   catch(const Xt::Exception& e) {
+    auto info = Xt::Audio::GetErrorInfo(e.GetError());
     std::cout << "Error: "
-      << "system " << Xt::Audio::GetErrorSystem(e.GetError()) << ", "
-      << "fault " << Xt::Audio::GetErrorFault(e.GetError()) << ", "
-      << "cause " << Xt::Audio::GetErrorCause(e.GetError()) << ", "
-      << "text " << Xt::Audio::GetErrorText(e.GetError()) << ".\n";
+      << "system " << info.system << ", "
+      << "fault " << info.fault << ", "
+      << "cause " << info.cause << ", "
+      << "text " << info.text << ".\n";
   }
   return 0;
 }

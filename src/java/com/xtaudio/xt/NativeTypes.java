@@ -6,6 +6,7 @@ import com.sun.jna.Structure;
 import com.sun.jna.TypeMapper;
 import java.util.Arrays;
 import java.util.List;
+import com.xtaudio.xt.XtNative.XtTypeMapper;
 
 public final class NativeTypes {
 
@@ -119,10 +120,25 @@ public final class NativeTypes {
             return Arrays.asList("size", "isFloat", "isSigned");
         }
     }
+    
+    public static final class XtErrorInfo extends Structure implements Structure.ByValue {        
+        
+        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
+        
+        public XtSystem system;
+        public XtCause cause;
+        public String text;
+        public int fault;
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("system", "cause", "text", "fault");
+        }
+    }
 
     public static final class XtMix extends Structure {
 
-        public final static TypeMapper TYPE_MAPPER = new XtNative.TypeMapper();
+        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
 
         public int rate;
         public XtSample sample;

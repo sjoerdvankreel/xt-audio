@@ -29,3 +29,4 @@
 * stream callback params
 * move doxygen to own file
 * java to jdk14
+* drop cli/java callconv?

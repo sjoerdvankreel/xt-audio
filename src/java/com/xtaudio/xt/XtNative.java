@@ -16,12 +16,15 @@ import com.sun.jna.win32.StdCallFunctionMapper;
 import com.sun.jna.win32.StdCallLibrary;
 import com.xtaudio.xt.NativeTypes.XtAttributes;
 import com.xtaudio.xt.NativeTypes.XtBuffer;
+import com.xtaudio.xt.NativeTypes.XtCause;
 import com.xtaudio.xt.NativeTypes.XtChannels;
+import com.xtaudio.xt.NativeTypes.XtErrorInfo;
 import com.xtaudio.xt.NativeTypes.XtFatalCallback;
 import com.xtaudio.xt.NativeTypes.XtFormat;
 import com.xtaudio.xt.NativeTypes.XtLatency;
 import com.xtaudio.xt.NativeTypes.XtMix;
 import com.xtaudio.xt.NativeTypes.XtSample;
+import com.xtaudio.xt.NativeTypes.XtSystem;
 import com.xtaudio.xt.NativeTypes.XtVersion;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,10 +97,12 @@ final class XtNative {
         }
     }
 
-    static class TypeMapper extends DefaultTypeMapper {
+    static class XtTypeMapper extends DefaultTypeMapper {
 
-        TypeMapper() {
+        XtTypeMapper() {
+            addTypeConverter(XtCause.class, new EnumConverter<>(XtCause.class, 0));
             addTypeConverter(XtSample.class, new EnumConverter<>(XtSample.class, 0));
+            addTypeConverter(XtSystem.class, new EnumConverter<>(XtSystem.class, 1));
         }
     }
 
@@ -195,13 +200,7 @@ final class XtNative {
         }
     }
 
-    static native int XtAudioGetErrorCause(long error);
-
-    static native int XtAudioGetErrorFault(long error);
-
-    static native int XtAudioGetErrorSystem(long error);
-
-    static native String XtAudioGetErrorText(long error);
+    static native XtErrorInfo XtAudioGetErrorInfo(long error);
 
     static native Pointer XtAudioPrintCapabilitiesToString(int capabilities);
 

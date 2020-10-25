@@ -1,5 +1,6 @@
 package com.xtaudio.xt.sample;
 
+import static com.xtaudio.xt.NativeTypes.*;
 import com.xtaudio.xt.XtAudio;
 import com.xtaudio.xt.XtException;
 
@@ -44,11 +45,12 @@ public class Sample {
                 Aggregate.main(args);
             }
         } catch (XtException e) {
+            XtErrorInfo info = XtAudio.getErrorInfo(e.getError());
             System.out.println("Error:");
-            System.out.println("\tSystem: " + XtAudio.getErrorSystem(e.getError()));
-            System.out.println("\tCause: " + XtAudio.getErrorCause(e.getError()));
-            System.out.println("\tFault: " + XtAudio.getErrorFault(e.getError()));
-            System.out.println("\tText: " + XtAudio.getErrorText(e.getError()));
+            System.out.println("\tSystem: " +info.system);
+            System.out.println("\tCause: " + info.cause);
+            System.out.println("\tFault: " + info.fault);
+            System.out.println("\tText: " + info.text);
             e.printStackTrace();
         }
     }

@@ -4,6 +4,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.xtaudio.xt.NativeTypes.XtAttributes;
 import com.xtaudio.xt.NativeTypes.XtCause;
+import com.xtaudio.xt.NativeTypes.XtErrorInfo;
 import com.xtaudio.xt.NativeTypes.XtFatalCallback;
 import com.xtaudio.xt.NativeTypes.XtLevel;
 import com.xtaudio.xt.NativeTypes.XtSample;
@@ -50,22 +51,10 @@ public final class XtAudio implements XtCloseable {
         return XtNative.XtAudioGetServiceCount();
     }
 
-    public static XtCause getErrorCause(long error) {
-        return XtCause.class.getEnumConstants()[XtNative.XtAudioGetErrorCause(error)];
+    public static XtErrorInfo getErrorInfo(long error) {
+        return XtNative.XtAudioGetErrorInfo(error);
     }
-
-    public static XtSystem getErrorSystem(long error) {
-        return XtSystem.class.getEnumConstants()[XtNative.XtAudioGetErrorSystem(error) - 1];
-    }
-
-    public static int getErrorFault(long error) {
-        return XtNative.XtAudioGetErrorFault(error);
-    }
-
-    public static String getErrorText(long error) {
-        return XtNative.XtAudioGetErrorText(error);
-    }
-
+    
     public static XtService getServiceByIndex(int index) {
         return new XtService(XtNative.XtAudioGetServiceByIndex(index));
     }

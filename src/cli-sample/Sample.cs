@@ -54,11 +54,12 @@ namespace Xt
                 }
             } catch (XtException e)
             {
+                var info = XtAudio.GetErrorInfo(e.GetError());
                 Console.WriteLine("Error:");
-                Console.WriteLine("\tSystem: " + XtAudio.GetErrorSystem(e.GetError()));
-                Console.WriteLine("\tCause: " + XtAudio.GetErrorCause(e.GetError()));
-                Console.WriteLine("\tFault: " + XtAudio.GetErrorFault(e.GetError()));
-                Console.WriteLine("\tText: " + XtAudio.GetErrorText(e.GetError()));
+                Console.WriteLine("\tSystem: " + info.system);
+                Console.WriteLine("\tCause: " + info.cause);
+                Console.WriteLine("\tFault: " + info.fault);
+                Console.WriteLine("\tText: " + info.text);
                 Console.WriteLine(e.StackTrace);
             }
         }

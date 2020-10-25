@@ -300,7 +300,7 @@ XtFault AsioService::OpenDefaultDevice(XtBool output, XtDevice** device) const  
   if(AsioDriverList().asioGetNumDev() == 0)
     return ASE_OK;
   error = XtServiceOpenDevice(this, 0, device);
-  return XtAudioGetErrorFault(error);
+  return XtiGetErrorFault(error);
 }
 
 XtCause AsioService::GetFaultCause(XtFault fault) const {

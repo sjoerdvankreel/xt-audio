@@ -62,11 +62,9 @@ namespace Xt
 				}
 				catch (XtException e)
 				{
-					Console.WriteLine("Error: system %s, fault %s, cause %s, text %s.\n",
-							XtAudio.GetErrorSystem(e.GetError()),
-							XtAudio.GetErrorFault(e.GetError()),
-							XtAudio.GetErrorCause(e.GetError()),
-							XtAudio.GetErrorText(e.GetError()));
+					var error = XtAudio.GetErrorInfo(e.GetError());
+					Console.WriteLine("Error: system {0}, fault {1}, cause {2}, text {3}.\n", 
+						error.system, error.fault, error.cause, error.text);
 				}
 			}
 		}
