@@ -12,7 +12,7 @@ namespace Xt
         public override string ToString() => GetName();
         public XtSystem GetSystem() => XtNative.XtServiceGetSystem(s);
         public XtCapabilities GetCapabilities() => XtNative.XtServiceGetCapabilities(s);
-        public string GetName() => XtNative.StringFromUtf8(XtNative.XtServiceGetName(s));
+        public string GetName() => NativeUtility.PtrToStringUTF8(XtNative.XtServiceGetName(s));
 
         public int GetDeviceCount()
         {

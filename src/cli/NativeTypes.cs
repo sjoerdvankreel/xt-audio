@@ -1,63 +1,8 @@
 using System;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Xt
 {
-	public enum XtLevel : int
-	{
-		Info,
-		Error,
-		Fatal
-	}
-
-	public enum XtSample : int
-	{
-		UInt8,
-		Int16,
-		Int24,
-		Int32,
-		Float32
-	}
-
-	public enum XtSystem : int
-	{
-		Alsa = 1,
-		Asio,
-		Jack,
-		Pulse,
-		DSound,
-		Wasapi
-	}
-
-	public enum XtCause : int
-	{
-		Format,
-		Service,
-		Generic,
-		Unknown,
-		Endpoint
-	}
-
-	public enum XtSetup : int
-	{
-		ProAudio,
-		SystemAudio,
-		ConsumerAudio
-	}
-
-	[Flags]
-	public enum XtCapabilities : int
-	{
-		None = 0x0,
-		Time = 0x1,
-		Latency = 0x2,
-		FullDuplex = 0x4,
-		ChannelMask = 0x8,
-		XRunDetection = 0x10
-	}
-
 	[StructLayout(LayoutKind.Sequential)]
 	public struct XtVersion
 	{
@@ -85,12 +30,8 @@ namespace Xt
 	{
 		public int rate;
 		public XtSample sample;
-
 		public XtMix(int rate, XtSample sample)
-		{
-			this.rate = rate;
-			this.sample = sample;
-		}
+			=> (this.rate, this.sample) = (rate, sample);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -98,29 +39,18 @@ namespace Xt
 	{
 		public XtMix mix;
 		public XtChannels channels;
-
 		public XtFormat(XtMix mix, XtChannels channels)
-		{
-			this.mix = mix;
-			this.channels = channels;
-		}
+			=> (this.mix, this.channels) = (mix, channels);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct XtChannels
+	public struct XtErrorInfo
 	{
-		public int inputs;
-		public ulong inMask;
-		public int outputs;
-		public ulong outMask;
-
-		public XtChannels(int inputs, ulong inMask, int outputs, ulong outMask)
-		{
-			this.inputs = inputs;
-			this.inMask = inMask;
-			this.outputs = outputs;
-			this.outMask = outMask;
-		}
+		public XtSystem system;
+		public XtCause cause;
+		IntPtr _text;
+		public int fault;
+		public unsafe string text => NativeUtility.PtrToStringUTF8(_text);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -134,22 +64,22 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct XtErrorInfo
+	public struct XtChannels
 	{
-		public XtSystem system;
-		public XtCause cause;
-		IntPtr _text;
-		public int fault;
-		public unsafe string text
-		{
-			get
-			{
-				var bytes = (byte*)_text;
-				var length = Enumerable.Range(0, int.MaxValue).SkipWhile(i => bytes[i] != 0).First();
-				return Encoding.UTF8.GetString(bytes, length);
-			}
-		}
+		public int inputs;
+		public ulong inMask;
+		public int outputs;
+		public ulong outMask;
+		public XtChannels(int inputs, ulong inMask, int outputs, ulong outMask)
+			=> (this.inputs, this.inMask, this.outputs, this.outMask) = (inputs, inMask, outputs, outMask);
 	}
+
+	public enum XtLevel : int { Info, Error, Fatal }
+	public enum XtSetup : int { ProAudio, SystemAudio, ConsumerAudio }
+	public enum XtSample : int { UInt8, Int16, Int24, Int32, Float32 }
+	public enum XtCause : int { Format, Service, Generic, Unknown, Endpoint }
+	public enum XtSystem : int { Alsa = 1, Asio, Jack, Pulse, DSound, Wasapi }
+	[Flags] public enum XtCapabilities : int { None = 0x0, Time = 0x1, Latency = 0x2, FullDuplex = 0x4, ChannelMask = 0x8, XRunDetection = 0x10 }
 
 	public delegate void XtFatalCallback();
 	public delegate void XtXRunCallback(int index, object user);
