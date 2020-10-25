@@ -99,12 +99,8 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
 
 // ---- audio ----
 
-int32_t XT_CALL XtAudioGetVersionMajor(void) {
-  return 1;
-}
-
-int32_t XT_CALL XtAudioGetVersionMinor(void) {
-  return 7;
+XtVersion XT_CALL XtAudioGetVersion(void) {
+  return { 1, 7 };
 }
 
 uint32_t XT_CALL XtAudioGetErrorFault(XtError error) {
@@ -216,9 +212,9 @@ const char* const* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capab
 
 void XT_CALL XtAudioTerminate(void) {
   XT_ASSERT(XtiCalledOnMainThread());
-  XT_TRACE(XtLevelInfo, "Terminating library (version %d.%d)...", XtAudioGetVersionMajor(), XtAudioGetVersionMinor());
+  XT_TRACE(XtLevelInfo, "Terminating library (version %d.%d)...", XtAudioGetVersion().major, XtAudioGetVersion().minor);
   XtiTerminatePlatform();
-  XT_TRACE(XtLevelInfo, "Terminated library (version %d.%d).", XtAudioGetVersionMajor(), XtAudioGetVersionMinor());
+  XT_TRACE(XtLevelInfo, "Terminated library (version %d.%d).", XtAudioGetVersion().major, XtAudioGetVersion().minor);
   free(XtiId);
   XtiId = nullptr;
   XtiTraceCallback = nullptr;
@@ -229,9 +225,9 @@ void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, Xt
   XtiTraceCallback = trace;
   XtiFatalCallback = fatal;
   XtiId = id == nullptr || strlen(id) == 0? strdup("XT-Audio"): strdup(id);
-  XT_TRACE(XtLevelInfo, "Initializing library (version %d.%d, built %s %s) ...", XtAudioGetVersionMajor(), XtAudioGetVersionMinor(), __DATE__, __TIME__);
+  XT_TRACE(XtLevelInfo, "Initializing library (version %d.%d, built %s %s) ...", XtAudioGetVersion().major, XtAudioGetVersion().minor, __DATE__, __TIME__);
   XtiInitPlatform(window);
-  XT_TRACE(XtLevelInfo, "Initialized library (version %d.%d).", XtAudioGetVersionMajor(), XtAudioGetVersionMinor());
+  XT_TRACE(XtLevelInfo, "Initialized library (version %d.%d).", XtAudioGetVersion().major, XtAudioGetVersion().minor);
 }
 
 // ---- service ----

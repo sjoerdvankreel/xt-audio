@@ -10,6 +10,7 @@ import com.xtaudio.xt.NativeTypes.XtSample;
 import com.xtaudio.xt.NativeTypes.XtSetup;
 import com.xtaudio.xt.NativeTypes.XtSystem;
 import com.xtaudio.xt.NativeTypes.XtTraceCallback;
+import com.xtaudio.xt.NativeTypes.XtVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +42,8 @@ public final class XtAudio implements XtCloseable {
         return XtNative.XtAudioIsWin32();
     }
 
-    public static int getVersionMajor() {
-        return XtNative.XtAudioGetVersionMajor();
-    }
-
-    public static int getVersionMinor() {
-        return XtNative.XtAudioGetVersionMinor();
+    public static XtVersion getVersion() {
+        return XtNative.XtAudioGetVersion();
     }
 
     public static int getServiceCount() {

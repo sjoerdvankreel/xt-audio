@@ -26,5 +26,6 @@
 * small java driver
 * c++ const noexcept
 * remove utility functions (iswin32, tostring, print)
-* getfaulttext ?
 * stream callback params
+* move doxygen to own file
+* java to jdk14

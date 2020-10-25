@@ -67,6 +67,11 @@ enum Capabilities {
   CapabilitiesXRunDetection = 0x10
 };
 
+struct Version final {
+  int32_t major;
+  int32_t minor;
+};
+
 struct Buffer final {
   double min;
   double max;
@@ -180,8 +185,7 @@ public:
   Audio(const std::string& id, void* window, TraceCallback trace, FatalCallback fatal);
 
   static bool IsWin32();
-  static int32_t GetVersionMajor();
-  static int32_t GetVersionMinor();  
+  static Version GetVersion();
   static int32_t GetServiceCount();
   static Cause GetErrorCause(uint64_t error);
   static System GetErrorSystem(uint64_t error);

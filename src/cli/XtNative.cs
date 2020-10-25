@@ -140,9 +140,7 @@ namespace Xt
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtAudioTerminate();
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern int XtAudioGetVersionMajor();
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern int XtAudioGetVersionMinor();
+		internal static extern XtVersion XtAudioGetVersion();
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern int XtAudioGetServiceCount();
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]

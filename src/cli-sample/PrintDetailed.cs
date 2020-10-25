@@ -21,8 +21,9 @@ namespace Xt
 			{
 				try
 				{
+					var version = XtAudio.GetVersion();
 					Console.WriteLine("Win32: " + XtAudio.IsWin32());
-					Console.WriteLine("Version: " + XtAudio.GetVersionMajor() + "." + XtAudio.GetVersionMinor());
+					Console.WriteLine("Version: " + version.major + "." + version.minor);
 					XtService pro = XtAudio.GetServiceBySetup(XtSetup.ProAudio);
 					Console.WriteLine("Pro Audio: " + (pro == null ? "None" : pro.GetName()));
 					XtService system = XtAudio.GetServiceBySetup(XtSetup.SystemAudio);

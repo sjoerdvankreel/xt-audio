@@ -163,6 +163,13 @@ typedef enum XtSample XtSample;
 typedef enum XtCapabilities XtCapabilities;
 /** @endcond */
 
+struct XtVersion {
+  /** @brief Library major version. */
+  int32_t major;
+  /** @brief Library minor version. */
+  int32_t minor;
+};
+
 struct XtMix {
   /** @brief Sample rate in Hz. */
   int32_t rate;
@@ -231,6 +238,7 @@ struct XtAttributes {
 typedef struct XtMix XtMix;
 typedef struct XtFormat XtFormat;
 typedef struct XtBuffer XtBuffer;
+typedef struct XtVersion XtVersion;
 typedef struct XtLatency XtLatency;
 typedef struct XtChannels XtChannels;
 typedef struct XtAttributes XtAttributes;
@@ -247,9 +255,7 @@ typedef void (XT_CALLBACK *XtStreamCallback)(
  * @ingroup audio
  * @{ 
  */
-XT_API int32_t XT_CALL XtAudioGetVersionMajor(void);
-XT_API int32_t XT_CALL XtAudioGetVersionMinor(void);
-
+XT_API XtVersion XT_CALL XtAudioGetVersion(void);
 XT_API XtCause XT_CALL XtAudioGetErrorCause(XtError error);
 XT_API uint32_t XT_CALL XtAudioGetErrorFault(XtError error);
 XT_API XtSystem XT_CALL XtAudioGetErrorSystem(XtError error);

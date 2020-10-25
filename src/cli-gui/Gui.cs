@@ -158,6 +158,7 @@ namespace Xt
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
+			var libraryVersion = XtAudio.GetVersion();
 			log = new StreamWriter("xt-audio.log");
 
 			audio = new XtAudio("XT-Gui", Handle, OnTrace, OnFatal);
@@ -167,7 +168,7 @@ namespace Xt
 #endif
 			x64.Text = "X64: " + (IntPtr.Size == 8);
 			isWin32.Text = "Win32: " + XtAudio.IsWin32();
-			version.Text = "Version: " + XtAudio.GetVersionMajor() + "." + XtAudio.GetVersionMinor();
+			version.Text = "Version: " + libraryVersion.major + "." + libraryVersion.minor;
 
 			rate.DataSource = Rates;
 			rate.SelectedItem = 44100;

@@ -17,8 +17,9 @@ int PrintDetailedMain(int argc, char** argv) {
   Xt::Audio audio("Sample", nullptr, OnTrace, OnFatal);
 
   try {
+    auto version = Xt::Audio::GetVersion();
     std::cout << "Win32: " << Xt::Audio::IsWin32() << "\n";
-    std::cout << "Version: " << Xt::Audio::GetVersionMajor() << "." << Xt::Audio::GetVersionMinor() << "\n";
+    std::cout << "Version: " << version.major << "." << version.minor << "\n";
     
     auto pro = Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio);
     std::cout << "Pro Audio: " << (pro? pro->GetName(): "None") << "\n";

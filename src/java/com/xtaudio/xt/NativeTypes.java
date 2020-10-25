@@ -59,6 +59,17 @@ public final class NativeTypes {
             return String.join(", ", XtAudio.printCapabilitiesToString(capabilities));
         }
     }
+    
+    public static final class XtVersion extends Structure implements Structure.ByValue
+    {
+        public int major;
+        public int minor;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList("major", "minor");
+        }
+    }
 
     public static final class XtLatency extends Structure {
 

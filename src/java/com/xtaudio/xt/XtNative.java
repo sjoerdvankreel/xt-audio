@@ -22,6 +22,7 @@ import com.xtaudio.xt.NativeTypes.XtFormat;
 import com.xtaudio.xt.NativeTypes.XtLatency;
 import com.xtaudio.xt.NativeTypes.XtMix;
 import com.xtaudio.xt.NativeTypes.XtSample;
+import com.xtaudio.xt.NativeTypes.XtVersion;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -241,9 +242,7 @@ final class XtNative {
 
     static native void XtAudioTerminate();
 
-    static native int XtAudioGetVersionMajor();
-
-    static native int XtAudioGetVersionMinor();
+    static native XtVersion XtAudioGetVersion();
 
     static native int XtAudioGetServiceCount();
 

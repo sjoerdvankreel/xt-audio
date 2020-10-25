@@ -57,6 +57,13 @@ namespace Xt
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct XtVersion
+    {
+        public int major;
+        public int minor;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct XtLatency
     {
         public double input;
