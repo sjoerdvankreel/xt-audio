@@ -237,8 +237,6 @@ final class XtNative {
             boolean interleaved, Pointer master, StreamCallback streamCallback,
             XRunCallback xRunCallback, Pointer user, PointerByReference stream);
 
-    static native boolean XtAudioIsWin32();
-
     static native void XtAudioTerminate();
 
     static native XtVersion XtAudioGetVersion();

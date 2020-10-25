@@ -111,10 +111,6 @@ const char* XtwWfxChannelNames[18] = {
 
 // ---- api ----
 
-XtBool XT_CALL XtAudioIsWin32(void) {
-  return XtTrue;
-}
-
 int32_t XT_CALL XtAudioGetServiceCount(void) { 
   return sizeof(XtiServices) / sizeof(XtiServices[0]) - 1;
 }

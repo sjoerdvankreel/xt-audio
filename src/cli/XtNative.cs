@@ -95,8 +95,6 @@ namespace Xt
 			IntPtr xRunCallback, IntPtr user, out IntPtr stream);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern bool XtAudioIsWin32();
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtAudioTerminate();
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtVersion XtAudioGetVersion();

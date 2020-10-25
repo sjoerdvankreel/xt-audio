@@ -28,7 +28,6 @@ namespace Xt
 		}
 
 		public void Dispose() => XtNative.XtAudioTerminate();
-		public static bool IsWin32() => XtNative.XtAudioIsWin32();
 		public static XtVersion GetVersion() => XtNative.XtAudioGetVersion();
 		public static int GetServiceCount() => XtNative.XtAudioGetServiceCount();
 		public static XtErrorInfo GetErrorInfo(ulong error) => XtNative.XtAudioGetErrorInfo(error);

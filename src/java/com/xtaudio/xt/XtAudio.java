@@ -35,10 +35,6 @@ public final class XtAudio implements XtCloseable {
         XtNative.XtAudioTerminate();
     }
 
-    public static boolean isWin32() {
-        return XtNative.XtAudioIsWin32();
-    }
-
     public static XtVersion getVersion() {
         return XtNative.XtAudioGetVersion();
     }

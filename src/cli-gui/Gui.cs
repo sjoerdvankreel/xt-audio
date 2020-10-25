@@ -161,15 +161,8 @@ namespace Xt
 			var libraryVersion = XtAudio.GetVersion();
 			log = new StreamWriter("xt-audio.log");
 
+			Text = $"XT-Audio {libraryVersion.major}.{libraryVersion.minor}";
 			audio = new XtAudio("XT-Gui", Handle, OnTrace, OnFatal);
-			debug.Text = "Debug: False";
-#if DEBUG
-			debug.Text = "Debug: True";
-#endif
-			x64.Text = "X64: " + (IntPtr.Size == 8);
-			isWin32.Text = "Win32: " + XtAudio.IsWin32();
-			version.Text = "Version: " + libraryVersion.major + "." + libraryVersion.minor;
-
 			rate.DataSource = Rates;
 			rate.SelectedItem = 44100;
 			sample.DataSource = Samples;

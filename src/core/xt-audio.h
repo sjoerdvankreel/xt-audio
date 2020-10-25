@@ -278,7 +278,6 @@ XT_API const char* XT_CALL XtAudioPrintSystemToString(XtSystem system);
 XT_API const char* XT_CALL XtAudioPrintSampleToString(XtSample sample);
 XT_API const char* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities);
 
-XT_API XtBool XT_CALL XtAudioIsWin32(void);
 XT_API void XT_CALL XtAudioTerminate(void);
 XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
 XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, XtFatalCallback fatal);

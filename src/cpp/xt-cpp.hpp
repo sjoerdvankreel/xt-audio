@@ -190,7 +190,6 @@ public:
   ~Audio();
   Audio(const std::string& id, void* window, TraceCallback trace, FatalCallback fatal);
 
-  static bool IsWin32();
   static Version GetVersion();
   static int32_t GetServiceCount();
   static ErrorInfo GetErrorInfo(uint64_t error);

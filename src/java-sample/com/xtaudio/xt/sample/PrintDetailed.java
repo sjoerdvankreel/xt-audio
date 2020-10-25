@@ -24,7 +24,6 @@ public class PrintDetailed {
         try ( XtAudio audio = new XtAudio("Sample", null, PrintDetailed::onTrace, PrintDetailed::onFatal)) {
 
             XtVersion version = XtAudio.getVersion();
-            System.out.println("Win32: " + XtAudio.isWin32());
             System.out.println("Version: " + version.major + "." + version.minor);
             XtService pro = XtAudio.getServiceBySetup(XtSetup.PRO_AUDIO);
             System.out.println("Pro Audio: " + (pro == null ? "None" : pro.getName()));

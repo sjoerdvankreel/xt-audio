@@ -108,10 +108,6 @@ static void* LinuxBlockingStreamCallback(void* user) {
 
 // ---- api ----
 
-XtBool XT_CALL XtAudioIsWin32(void) {
-  return XtFalse;
-}
-
 int32_t XT_CALL XtAudioGetServiceCount(void) { 
   return sizeof(XtiServices) / sizeof(XtiServices[0]) - 1;
 }

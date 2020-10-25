@@ -100,10 +100,6 @@ int32_t Audio::GetServiceCount() {
   return XtAudioGetServiceCount();
 }
 
-bool Audio::IsWin32() {
-  return XtAudioIsWin32() != XtFalse;
-}
-
 ErrorInfo Audio::GetErrorInfo(uint64_t error) { 
   ErrorInfo result;
   auto info = XtAudioGetErrorInfo(error);
