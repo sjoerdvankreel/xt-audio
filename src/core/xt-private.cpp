@@ -48,7 +48,7 @@ int32_t XtiGetSampleSize(XtSample sample) {
 }
 
 std::string XtiTryGetDeviceName(const XtDevice* d) {
-  int32_t size;
+  int32_t size = 0;
   if(d == nullptr || XtDeviceGetName(d, nullptr, &size) != 0)    
     return "<unknown>";
   std::vector<char> buffer(static_cast<size_t>(size));
