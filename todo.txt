@@ -13,11 +13,8 @@
 * fix compiler warnings
 * merge private implementation stuff
 * simplify xtl/xti/xtw prefixes
-* split types to files
 * check docs
 * major testing
-* remove print of structs
-* naming convention -> camelcase for fields ?
 * naming convention cpp -> prefix with Xt?
 * fix native struct marshalling
 * what is dousememory
@@ -30,7 +27,7 @@
 * move doxygen to own file
 * java to jdk14
 * drop cli/java callconv?
-* fix tostrings
 * errortofullstring
 * fix samples
 * remove getsystem
+* add getsystemcount, remove getservicebyindex
