@@ -161,7 +161,6 @@ public:
   ~Stream();
   void Stop();
   void Start();
-  System GetSystem() const;
   int32_t GetFrames() const;
   bool IsInterleaved() const;
   Latency GetLatency() const;
@@ -210,7 +209,6 @@ private:
 public:
   ~Device();
   void ShowControlPanel();
-  System GetSystem() const;
   std::string GetName() const;
   std::optional<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;

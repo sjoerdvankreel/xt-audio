@@ -33,3 +33,4 @@
 * fix tostrings
 * errortofullstring
 * fix samples
+* remove getsystem

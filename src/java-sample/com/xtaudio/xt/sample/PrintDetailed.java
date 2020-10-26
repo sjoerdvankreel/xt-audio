@@ -53,13 +53,11 @@ public class PrintDetailed {
                     try ( XtDevice device = service.openDevice(d)) {
                     Optional<XtMix> mix = device.getMix();
                     System.out.println("  Device " + device + ":");
-                    System.out.println("    System: " + device.getSystem());
-                    if (mix.isPresent())
-                        System.out.println("    Current mix: " + mix.get().rate + " " + mix.get().sample);
                     System.out.println("    Input channels: " + device.getChannelCount(false));
                     System.out.println("    Output channels: " + device.getChannelCount(true));
                     System.out.println("    Interleaved access: " + device.supportsAccess(true));
                     System.out.println("    Non-interleaved access: " + device.supportsAccess(false));
+                    if (mix.isPresent()) System.out.println("    Current mix: " + mix.get().rate + " " + mix.get().sample);
                 }
             }
         } catch (XtException e) {

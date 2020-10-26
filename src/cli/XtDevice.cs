@@ -12,8 +12,6 @@ namespace Xt
 
 		public override string ToString()
 			=> GetName();
-		public XtSystem GetSystem()
-			=> XtDeviceGetSystem(_handle);
 		public void ShowControlPanel()
 			=> HandleError(XtDeviceShowControlPanel(_handle));
 		public XtBuffer GetBuffer(in XtFormat format)

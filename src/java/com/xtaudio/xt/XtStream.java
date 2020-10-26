@@ -8,7 +8,6 @@ import com.xtaudio.xt.NativeTypes.XtLatency;
 import com.xtaudio.xt.NativeTypes.XtLevel;
 import com.xtaudio.xt.NativeTypes.XtSample;
 import com.xtaudio.xt.NativeTypes.XtStreamCallback;
-import com.xtaudio.xt.NativeTypes.XtSystem;
 import com.xtaudio.xt.NativeTypes.XtXRunCallback;
 import java.lang.reflect.Array;
 
@@ -186,10 +185,6 @@ public final class XtStream implements XtCloseable {
 
     public XtFormat getFormat() {
         return new XtNative.Format(XtNative.XtStreamGetFormat(s)).fromNative();
-    }
-
-    public XtSystem getSystem() {
-        return XtSystem.class.getEnumConstants()[XtNative.XtStreamGetSystem(s) - 1];
     }
 
     @Override

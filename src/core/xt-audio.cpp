@@ -65,7 +65,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   auto attributes = XtAudioGetSampleAttributes(sample);
 
   *stream = nullptr;
-  system = XtDeviceGetSystem(d);  
+  system = d->GetSystem();  
   if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
     return error;
   if(!supports)
@@ -394,11 +394,6 @@ void XT_CALL XtDeviceDestroy(XtDevice* d) {
   XT_TRACE(XtLevelInfo, "Closed device %s.", name.c_str());
 }
 
-XtSystem XT_CALL XtDeviceGetSystem(const XtDevice* d) {
-  XT_ASSERT(d != nullptr);
-  return d->GetSystem();
-}
-
 XtError XT_CALL XtDeviceShowControlPanel(XtDevice* d) {
   XT_ASSERT(d != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
@@ -448,7 +443,7 @@ XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtB
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
 
-  system = XtDeviceGetSystem(d);
+  system = d->GetSystem();
   memset(buffer, 0, sizeof(XtBuffer));
   if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
     return error;
@@ -486,37 +481,19 @@ XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool i
 
 void XT_CALL XtStreamDestroy(XtStream* s) { 
   XT_ASSERT(XtiCalledOnMainThread());
-  if(s == nullptr)
-    return;
-  const char* system = XtAudioPrintSystemToString(XtStreamGetSystem(s));
-  XT_TRACE(XtLevelInfo, "Closing stream on system %s...", system);
   delete s;
-  XT_TRACE(XtLevelInfo, "Closed stream on system %s.", system);
 }
 
 XtError XT_CALL XtStreamStop(XtStream* s) {
   XT_ASSERT(s != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  const char* system = XtAudioPrintSystemToString(XtStreamGetSystem(s));
-  XT_TRACE(XtLevelInfo, "Stopping stream on system %s...", system);
-  XtError error =  XtiCreateError(s->GetSystem(), s->Stop());
-  XT_TRACE(XtLevelInfo, "Stopped stream on system %s.", system);
-  return error;
+  return XtiCreateError(s->GetSystem(), s->Stop());
 }
 
 XtError XT_CALL XtStreamStart(XtStream* s) {
   XT_ASSERT(s != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  const char* system = XtAudioPrintSystemToString(XtStreamGetSystem(s));
-  XT_TRACE(XtLevelInfo, "Starting stream on system %s...", system);
-  XtError error =  XtiCreateError(s->GetSystem(), s->Start());
-  XT_TRACE(XtLevelInfo, "Started stream on system %s.", system);
-  return error;
-}
-
-XtSystem XT_CALL XtStreamGetSystem(const XtStream* s) {
-  XT_ASSERT(s != nullptr);
-  return s->GetSystem();
+  return XtiCreateError(s->GetSystem(), s->Start());
 }
 
 XtBool XT_CALL XtStreamIsInterleaved(const XtStream* s) {

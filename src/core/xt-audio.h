@@ -305,7 +305,6 @@ XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** d
  */
 XT_API void XT_CALL XtDeviceDestroy(XtDevice* d);
 XT_API XtError XT_CALL XtDeviceShowControlPanel(XtDevice* d);
-XT_API XtSystem XT_CALL XtDeviceGetSystem(const XtDevice* d);
 XT_API XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix);
 XT_API XtError XT_CALL XtDeviceGetName(const XtDevice* d, char* buffer, int32_t* size);
 XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count);
@@ -324,7 +323,6 @@ XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, X
 XT_API void XT_CALL XtStreamDestroy(XtStream* s);
 XT_API XtError XT_CALL XtStreamStop(XtStream* s);
 XT_API XtError XT_CALL XtStreamStart(XtStream* s);
-XT_API XtSystem XT_CALL XtStreamGetSystem(const XtStream* s);
 XT_API XtBool XT_CALL XtStreamIsInterleaved(const XtStream* s);
 XT_API const XtFormat* XT_CALL XtStreamGetFormat(const XtStream* s);
 XT_API XtError XT_CALL XtStreamGetFrames(const XtStream* s, int32_t* frames);

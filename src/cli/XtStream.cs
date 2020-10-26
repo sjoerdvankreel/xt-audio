@@ -199,7 +199,6 @@ namespace Xt
         }
 
         public bool IsRaw() => raw;
-        public XtSystem GetSystem() => XtNative.XtStreamGetSystem(s);
         public bool IsInterleaved() => XtNative.XtStreamIsInterleaved(s);
         public void Stop() => XtNative.HandleError(XtNative.XtStreamStop(s));
         public void Start() => XtNative.HandleError(XtNative.XtStreamStart(s));

@@ -65,8 +65,6 @@ namespace Xt
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern ulong XtStreamStart(IntPtr s);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern XtSystem XtStreamGetSystem(IntPtr s);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
@@ -115,8 +113,6 @@ namespace Xt
 		internal static extern void XtDeviceDestroy(IntPtr d);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern ulong XtDeviceShowControlPanel(IntPtr d);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern XtSystem XtDeviceGetSystem(IntPtr d);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern ulong XtDeviceGetMix(IntPtr d, out bool valid, out XtMix mix);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]

@@ -202,7 +202,6 @@ final class XtNative {
     static native void XtStreamDestroy(Pointer s);
     static native long XtStreamStop(Pointer s);
     static native long XtStreamStart(Pointer s);
-    static native int XtStreamGetSystem(Pointer s);
     static native long XtStreamGetFrames(Pointer s, IntByReference frames);
     static native long XtStreamGetLatency(Pointer s, XtLatency latency);
     static native Pointer XtStreamGetFormat(Pointer s);
@@ -228,7 +227,6 @@ final class XtNative {
     static native void XtAudioInit(String id, Pointer window, TraceCallback trace, XtFatalCallback fatal);
     static native void XtDeviceDestroy(Pointer d);
     static native long XtDeviceShowControlPanel(Pointer d);
-    static native int XtDeviceGetSystem(Pointer d);
     static native long XtDeviceGetName(Pointer d, byte[] buffer, IntByReference size);
     static native long XtDeviceGetBuffer(Pointer d, Format format, XtBuffer buffer);
     static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);

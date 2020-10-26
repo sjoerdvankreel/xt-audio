@@ -44,13 +44,11 @@ int PrintDetailedMain(int argc, char** argv) {
         std::unique_ptr<Xt::Device> device = service->OpenDevice(d);
         std::optional<Xt::Mix> mix = device->GetMix();
         std::cout << "  Device " << *device << ":" << "\n";
-        std::cout << "    System: " << device->GetSystem() << "\n";
-        if(mix)
-          std::cout << "    Current mix: " << mix->rate << " " << mix->sample << "\n";
         std::cout << "    Input channels: " << device->GetChannelCount(false) << "\n";
         std::cout << "    Output channels: " << device->GetChannelCount(true) << "\n";
         std::cout << "    Interleaved access: " << device->SupportsAccess(true) << "\n";
         std::cout << "    Non-interleaved access: " << device->SupportsAccess(false) << "\n";
+        if(mix) std::cout << "    Current mix: " << mix->rate << " " << mix->sample << "\n";
       }
     }
   }

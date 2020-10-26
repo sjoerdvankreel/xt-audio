@@ -43,13 +43,11 @@ namespace Xt
 						{
 							var mix = device.GetMix();
 							Console.WriteLine("  Device " + device + ":");
-							Console.WriteLine("    System: " + device.GetSystem());
-							if (mix != null)
-								Console.WriteLine("    Current mix: " + mix.Value.rate + " " + mix.Value.sample);
 							Console.WriteLine("    Input channels: " + device.GetChannelCount(false));
 							Console.WriteLine("    Output channels: " + device.GetChannelCount(true));
 							Console.WriteLine("    Interleaved access: " + device.SupportsAccess(true));
 							Console.WriteLine("    Non-interleaved access: " + device.SupportsAccess(false));
+							if (mix != null) Console.WriteLine("    Current mix: " + mix.Value.rate + " " + mix.Value.sample);
 						}
 				}
 			}

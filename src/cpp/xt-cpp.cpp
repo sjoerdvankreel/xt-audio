@@ -207,10 +207,6 @@ Device::~Device() {
 Device::Device(XtDevice* d): 
 d(d) {}
 
-System Device::GetSystem() const { 
-  return static_cast<System>(XtDeviceGetSystem(d));
-}
-
 std::string Device::GetName() const { 
   int32_t size = 0;
   HandleError(XtDeviceGetName(d, nullptr, &size));
@@ -303,10 +299,6 @@ int32_t Stream::GetFrames() const {
   int32_t frames;
   HandleError(XtStreamGetFrames(s, &frames));
   return frames;
-}
-
-System Stream::GetSystem() const {
-  return static_cast<System>(XtStreamGetSystem(s)); 
 }
 
 const Format& Stream::GetFormat() const {

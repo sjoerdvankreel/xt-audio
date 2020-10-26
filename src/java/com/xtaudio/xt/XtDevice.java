@@ -7,7 +7,6 @@ import com.xtaudio.xt.NativeTypes.XtBuffer;
 import com.xtaudio.xt.NativeTypes.XtFormat;
 import com.xtaudio.xt.NativeTypes.XtMix;
 import com.xtaudio.xt.NativeTypes.XtStreamCallback;
-import com.xtaudio.xt.NativeTypes.XtSystem;
 import com.xtaudio.xt.NativeTypes.XtXRunCallback;
 import java.nio.charset.Charset;
 import java.util.Optional;
@@ -27,10 +26,6 @@ public class XtDevice implements XtCloseable {
     @Override
     public String toString() {
         return getName();
-    }
-
-    public XtSystem getSystem() {
-        return XtSystem.class.getEnumConstants()[XtNative.XtDeviceGetSystem(d) - 1];
     }
 
     public void showControlPanel() {
