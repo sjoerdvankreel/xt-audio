@@ -31,4 +31,4 @@
 * fix samples
 * remove getsystem
 * add getsystemcount, remove getservicebyindex
-* double null terminated array of device ids
+* caller allocated array of device infos
