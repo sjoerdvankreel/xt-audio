@@ -56,7 +56,6 @@ static_assert(sizeof(XtCapabilities) == 4, "sizeof(XtCapabilities) == 4");
 
 #define XT_DECLARE_SERVICE(name)                                              \
 struct name ## Service: public XtService {                                    \
-  const char* GetName() const override;                                       \
   XtFault GetFormatFault() const override;                                    \
   XtCapabilities GetCapabilities() const override;                            \
   XtCause GetFaultCause(XtFault fault) const override;                        \
@@ -141,7 +140,6 @@ struct XtIntermediateBuffers {
 struct XtService {
   virtual ~XtService() {};
   virtual XtSystem GetSystem() const = 0;
-  virtual const char* GetName() const = 0;
   virtual XtFault GetFormatFault() const = 0;
   virtual XtCapabilities GetCapabilities() const = 0;
   virtual XtCause GetFaultCause(XtFault fault) const = 0;
@@ -233,7 +231,6 @@ uint32_t XtiGetErrorFault(XtError error);
 int32_t XtiGetSampleSize(XtSample sample);
 int32_t XtiLockIncr(volatile int32_t* dest);
 int32_t XtiLockDecr(volatile int32_t* dest);
-std::string XtiTryGetDeviceName(const XtDevice* d);
 XtError XtiCreateError(XtSystem system, XtFault fault);
 bool XtiValidateFormat(XtSystem system, const XtFormat& format);
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp);

@@ -19,12 +19,12 @@ int PrintDetailedMain(int argc, char** argv) {
   try {
     auto version = Xt::Audio::GetVersion();
     std::cout << "Version: " << version.major << "." << version.minor << "\n";    
-    auto pro = Xt::Audio::GetService(Xt::Audio::SetupToSystem(Xt::Setup::ProAudio));
-    if(pro) std::cout << "Pro Audio: " << *pro << "\n";
-    auto system = Xt::Audio::GetService(Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio));
-    if(system) std::cout << "System Audio: " << *system << "\n";
-    auto consumer = Xt::Audio::GetService(Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio));
-    if(consumer) std::cout << "Consumer Audio: " << *consumer << "\n";
+    auto pro = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
+    std::cout << "Pro Audio: " << pro << " (" << (Xt::Audio::GetService(pro) != nullptr) << ")\n";
+    auto system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
+    std::cout << "System Audio: " << system << " (" << (Xt::Audio::GetService(system) != nullptr) << ")\n";
+    auto consumer = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
+    std::cout << "Consumer Audio: " << consumer << " (" << (Xt::Audio::GetService(consumer) != nullptr) << ")\n";
 
     for(auto s: Xt::Audio::GetSystems()) {
 

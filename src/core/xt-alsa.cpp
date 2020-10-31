@@ -260,10 +260,6 @@ void XtlTerminateAlsa() {
 
 // ---- service ----
 
-const char* AlsaService::GetName() const {
-  return "ALSA";
-}
-
 XtFault AlsaService::GetFormatFault() const {
   return EINVAL;
 }

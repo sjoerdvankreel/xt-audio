@@ -291,7 +291,6 @@ XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback tr
  * @ingroup service
  * @{ 
  */
-XT_API const char* XT_CALL XtServiceGetName(const XtService* s);
 XT_API XtCapabilities XT_CALL XtServiceGetCapabilities(const XtService* s);
 XT_API XtError XT_CALL XtServiceGetDeviceCount(const XtService* s, int32_t* count);
 XT_API XtError XT_CALL XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device);

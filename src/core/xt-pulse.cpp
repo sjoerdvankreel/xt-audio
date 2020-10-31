@@ -95,10 +95,6 @@ static XtPaSimple CreateDefaultClient(XtBool output) {
 
 // ---- service ----
 
-const char* PulseService::GetName() const {
-  return "PulseAudio";
-}
-
 XtFault PulseService::GetFormatFault() const {
   return XtPaErrFormat;
 }

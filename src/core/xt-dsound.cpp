@@ -148,10 +148,6 @@ static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {
 
 // ---- service ----
 
-const char* DSoundService::GetName() const {
-  return "DirectSound";
-}
-
 XtFault DSoundService::GetFormatFault() const {
   return DSERR_BADFORMAT;
 }

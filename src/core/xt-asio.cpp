@@ -274,10 +274,6 @@ static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
 
 // ---- service ----
 
-const char* AsioService::GetName() const {
-  return "ASIO";
-}
-
 XtFault AsioService::GetFormatFault() const {
   return ASE_Format;
 }

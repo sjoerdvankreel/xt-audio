@@ -57,10 +57,6 @@ std::ostream& operator<<(std::ostream& os, const Device& device) {
   return os << device.GetName();
 }
 
-std::ostream& operator<<(std::ostream& os, const Service& service) {
-  return os << service.GetName();
-}
-
 std::ostream& operator<<(std::ostream& os, Level level) {
   return os << XtPrintLevelToString(static_cast<XtLevel>(level));
 }
@@ -144,10 +140,6 @@ std::unique_ptr<Service> Audio::GetService(System system) {
 
 Service::Service(const XtService* s_):
 s(s_) {}
-
-std::string Service::GetName() const {
-  return XtServiceGetName(s);
-}
 
 int32_t Service::GetDeviceCount() const { 
   int32_t count; 

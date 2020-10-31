@@ -4,12 +4,9 @@
 * Query device info without opening the device.
 * Better document service/list/device/stream lifetime (what needs to be alive when).
 * Cleanup logging and unnecessary class members.
-* IPlatform, IDeviceList
-* Device & stream events in favor of logging
 * Distribute debug binaries
 * Overall code cleanup
 * Check TODOS
-* Move statics into single class
 * fix compiler warnings
 * merge private implementation stuff
 * simplify xtl/xti/xtw prefixes
@@ -22,17 +19,11 @@
 * fix doxygen typedef errors
 * small java driver
 * c++ const noexcept
-* remove utility functions (iswin32, tostring, print)
 * stream callback params
 * move doxygen to own file
-* java to jdk14
 * drop cli/java callconv?
 * errortofullstring
 * fix samples
-* remove getsystem
-* add getsystemcount, remove getservicebyindex
 * caller allocated array of device infos
-* cleanup print
 * java formatting
-* remove service getsystem, getname
 * return disposable from init

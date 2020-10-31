@@ -47,16 +47,6 @@ int32_t XtiGetSampleSize(XtSample sample) {
   return XtAudioGetSampleAttributes(sample).size;
 }
 
-std::string XtiTryGetDeviceName(const XtDevice* d) {
-  int32_t size = 0;
-  if(d == nullptr || XtDeviceGetName(d, nullptr, &size) != 0)    
-    return "<unknown>";
-  std::vector<char> buffer(static_cast<size_t>(size));
-  if(XtDeviceGetName(d, buffer.data(), &size) != 0)
-    return "<unknown>";
-  return std::string(buffer.data());
-}
-
 XtError XtiCreateError(XtSystem system, XtFault fault) {
   if(fault == 0)
     return 0;

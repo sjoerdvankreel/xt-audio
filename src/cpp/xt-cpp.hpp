@@ -126,7 +126,6 @@ std::ostream& operator<<(std::ostream& os, Setup setup);
 std::ostream& operator<<(std::ostream& os, System system);
 std::ostream& operator<<(std::ostream& os, Sample sample);
 std::ostream& operator<<(std::ostream& os, const Device& device);
-std::ostream& operator<<(std::ostream& os, const Service& service);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
 
 typedef void (*FatalCallback)();
@@ -174,8 +173,6 @@ private:
   Service(const XtService* s);
 
 public:
-  System GetSystem() const;
-  std::string GetName() const;
   int32_t GetDeviceCount() const;
   Capabilities GetCapabilities() const;
   std::unique_ptr<Device> OpenDevice(int32_t index) const;

@@ -223,11 +223,6 @@ void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, Xt
 
 // ---- service ----
 
-const char* XT_CALL XtServiceGetName(const XtService* s) { 
-  XT_ASSERT(s != nullptr);
-  return s->GetName(); 
-}
-
 XtCapabilities XT_CALL XtServiceGetCapabilities(const XtService* s) {
   XT_ASSERT(s != nullptr);
   return s->GetCapabilities();
@@ -246,38 +241,16 @@ XtError XT_CALL XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice*
   XT_ASSERT(s != nullptr);
   XT_ASSERT(device != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-
   *device = nullptr;
-  const char* format = "Opening device: service %s, index %d...";
-  XT_TRACE(XtLevelInfo, format, XtServiceGetName(s), index);
-  XtFault fault = s->OpenDevice(index, device);
-  if(fault != 0)
-    return XtiCreateError(s->GetSystem(), fault);
-  format = "Opened device %s: service %s, index %d.";
-  std::string name = XtiTryGetDeviceName(*device);
-  XT_TRACE(XtLevelInfo, format, name.c_str(), XtServiceGetName(s), index);
-  return 0;
+  return XtiCreateError(s->GetSystem(), s->OpenDevice(index, device));
 }
 
 XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, XtDevice** device) {
   XT_ASSERT(s != nullptr);
   XT_ASSERT(device != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-
   *device = nullptr;
-  const char* format = "Opening default device: service %s, output %d...";
-  XT_TRACE(XtLevelInfo, format, XtServiceGetName(s), output);
-  XtFault fault =  s->OpenDefaultDevice(output, device);
-  if(fault != 0)
-    return XtiCreateError(s->GetSystem(), fault);
-  if(*device == nullptr) {
-    format = "Service %s: no default device found (output: %d).";
-    XT_TRACE(XtLevelInfo, format, XtServiceGetName(s), output);
-    return 0;
-  }
-  format = "Opened default device %s: service %s, output %d.";
-  XT_TRACE(XtLevelInfo, format, XtiTryGetDeviceName(*device).c_str(), XtServiceGetName(s), output);
-  return 0;
+  return XtiCreateError(s->GetSystem(), s->OpenDefaultDevice(output, device));
 }
 
 XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, 
@@ -295,9 +268,6 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   XT_ASSERT(bufferSizes != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(streamCallback != nullptr);
-
-  const char* fmt = "Opening aggregate: service %s, count %d...";
-  XT_TRACE(XtLevelInfo, fmt, XtServiceGetName(s), count);
 
   XtSystem system = s->GetSystem();
   auto attrs = XtAudioGetSampleAttributes(mix->sample);
@@ -366,9 +336,6 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
     result->inputRings[i] = XtRingBuffer(interleaved != XtFalse, result->frames, channels[i].inputs, attrs.size);
     result->outputRings[i] = XtRingBuffer(interleaved != XtFalse, result->frames, channels[i].outputs, attrs.size);
   }
-  
-  fmt = "Opened aggregate: service %s, count %d...";
-  XT_TRACE(XtLevelInfo, fmt, XtServiceGetName(s), count);
 
   *stream = result.release();
   return 0;
@@ -378,12 +345,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
 
 void XT_CALL XtDeviceDestroy(XtDevice* d) {
   XT_ASSERT(XtiCalledOnMainThread());
-  if(d == nullptr)
-    return;
-  std::string name = XtiTryGetDeviceName(d);
-  XT_TRACE(XtLevelInfo, "Closing device %s...", name.c_str());
-  delete d; 
-  XT_TRACE(XtLevelInfo, "Closed device %s.", name.c_str());
+  delete d;
 }
 
 XtError XT_CALL XtDeviceShowControlPanel(XtDevice* d) {

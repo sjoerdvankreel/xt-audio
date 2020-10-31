@@ -207,10 +207,6 @@ void XtlTerminateJack() {
 
 // ---- service ----
 
-const char* JackService::GetName() const {
-  return "JACK";
-}
-
 XtFault JackService::GetFormatFault() const {
   return EINVAL;
 }

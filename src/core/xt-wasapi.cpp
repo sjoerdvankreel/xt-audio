@@ -138,10 +138,6 @@ static HRESULT GetDevices(
 
 // ---- service -----
 
-const char* WasapiService::GetName() const {
-  return "WASAPI";
-}
-
 XtFault WasapiService::GetFormatFault() const {
   return AUDCLNT_E_UNSUPPORTED_FORMAT;
 }
