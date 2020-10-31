@@ -33,7 +33,6 @@
 			System.Windows.Forms.Label label3;
 			System.Windows.Forms.Label label4;
 			System.Windows.Forms.Label label6;
-			System.Windows.Forms.Label label7;
 			System.Windows.Forms.Label label5;
 			System.Windows.Forms.Label label8;
 			System.Windows.Forms.Label label10;
@@ -50,12 +49,11 @@
 			System.Windows.Forms.Label label20;
 			System.Windows.Forms.Label label21;
 			this.messages = new System.Windows.Forms.TextBox();
-			this.service = new System.Windows.Forms.ComboBox();
+			this.system = new System.Windows.Forms.ComboBox();
 			this.inputDevice = new System.Windows.Forms.ComboBox();
 			this.capabilities = new System.Windows.Forms.Label();
 			this.defaultInput = new System.Windows.Forms.Label();
 			this.defaultOutput = new System.Windows.Forms.Label();
-			this.system = new System.Windows.Forms.Label();
 			this.outputDevice = new System.Windows.Forms.ComboBox();
 			this.rate = new System.Windows.Forms.ComboBox();
 			this.channelCount = new System.Windows.Forms.ComboBox();
@@ -89,7 +87,6 @@
 			label3 = new System.Windows.Forms.Label();
 			label4 = new System.Windows.Forms.Label();
 			label6 = new System.Windows.Forms.Label();
-			label7 = new System.Windows.Forms.Label();
 			label5 = new System.Windows.Forms.Label();
 			label8 = new System.Windows.Forms.Label();
 			label10 = new System.Windows.Forms.Label();
@@ -115,15 +112,15 @@
 			label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			label1.Location = new System.Drawing.Point(2, 6);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(54, 13);
+			label1.Size = new System.Drawing.Size(51, 13);
 			label1.TabIndex = 3;
-			label1.Text = "Service:";
+			label1.Text = "System:";
 			// 
 			// label2
 			// 
 			label2.AutoSize = true;
 			label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			label2.Location = new System.Drawing.Point(2, 195);
+			label2.Location = new System.Drawing.Point(3, 169);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(82, 13);
 			label2.TabIndex = 5;
@@ -132,7 +129,7 @@
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(2, 87);
+			label3.Location = new System.Drawing.Point(3, 61);
 			label3.Name = "label3";
 			label3.Size = new System.Drawing.Size(73, 13);
 			label3.TabIndex = 12;
@@ -141,7 +138,7 @@
 			// label4
 			// 
 			label4.AutoSize = true;
-			label4.Location = new System.Drawing.Point(2, 113);
+			label4.Location = new System.Drawing.Point(3, 87);
 			label4.Name = "label4";
 			label4.Size = new System.Drawing.Size(77, 13);
 			label4.TabIndex = 13;
@@ -150,20 +147,11 @@
 			// label6
 			// 
 			label6.AutoSize = true;
-			label6.Location = new System.Drawing.Point(2, 60);
+			label6.Location = new System.Drawing.Point(3, 34);
 			label6.Name = "label6";
 			label6.Size = new System.Drawing.Size(63, 13);
 			label6.TabIndex = 15;
 			label6.Text = "Capabilities:";
-			// 
-			// label7
-			// 
-			label7.AutoSize = true;
-			label7.Location = new System.Drawing.Point(2, 33);
-			label7.Name = "label7";
-			label7.Size = new System.Drawing.Size(44, 13);
-			label7.TabIndex = 20;
-			label7.Text = "System:";
 			// 
 			// label5
 			// 
@@ -179,7 +167,7 @@
 			// 
 			label8.AutoSize = true;
 			label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			label8.Location = new System.Drawing.Point(2, 141);
+			label8.Location = new System.Drawing.Point(3, 115);
 			label8.Name = "label8";
 			label8.Size = new System.Drawing.Size(49, 13);
 			label8.TabIndex = 27;
@@ -188,7 +176,7 @@
 			// label10
 			// 
 			label10.AutoSize = true;
-			label10.Location = new System.Drawing.Point(2, 276);
+			label10.Location = new System.Drawing.Point(3, 250);
 			label10.Name = "label10";
 			label10.Size = new System.Drawing.Size(77, 13);
 			label10.TabIndex = 39;
@@ -197,7 +185,7 @@
 			// label11
 			// 
 			label11.AutoSize = true;
-			label11.Location = new System.Drawing.Point(2, 249);
+			label11.Location = new System.Drawing.Point(3, 223);
 			label11.Name = "label11";
 			label11.Size = new System.Drawing.Size(86, 13);
 			label11.TabIndex = 40;
@@ -206,7 +194,7 @@
 			// label12
 			// 
 			label12.AutoSize = true;
-			label12.Location = new System.Drawing.Point(135, 222);
+			label12.Location = new System.Drawing.Point(136, 196);
 			label12.Name = "label12";
 			label12.Size = new System.Drawing.Size(62, 13);
 			label12.TabIndex = 41;
@@ -215,7 +203,7 @@
 			// label13
 			// 
 			label13.AutoSize = true;
-			label13.Location = new System.Drawing.Point(2, 222);
+			label13.Location = new System.Drawing.Point(3, 196);
 			label13.Name = "label13";
 			label13.Size = new System.Drawing.Size(92, 13);
 			label13.TabIndex = 42;
@@ -260,7 +248,7 @@
 			// label9
 			// 
 			label9.AutoSize = true;
-			label9.Location = new System.Drawing.Point(2, 168);
+			label9.Location = new System.Drawing.Point(3, 142);
 			label9.Name = "label9";
 			label9.Size = new System.Drawing.Size(91, 13);
 			label9.TabIndex = 59;
@@ -278,7 +266,7 @@
 			// label15
 			// 
 			label15.AutoSize = true;
-			label15.Location = new System.Drawing.Point(305, 249);
+			label15.Location = new System.Drawing.Point(306, 223);
 			label15.Name = "label15";
 			label15.Size = new System.Drawing.Size(66, 13);
 			label15.TabIndex = 63;
@@ -313,21 +301,21 @@
 			this.messages.Size = new System.Drawing.Size(325, 353);
 			this.messages.TabIndex = 0;
 			// 
-			// service
+			// system
 			// 
-			this.service.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.service.FormattingEnabled = true;
-			this.service.Location = new System.Drawing.Point(100, 3);
-			this.service.Name = "service";
-			this.service.Size = new System.Drawing.Size(316, 21);
-			this.service.TabIndex = 4;
-			this.service.SelectedIndexChanged += new System.EventHandler(this.OnServiceChanged);
+			this.system.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.system.FormattingEnabled = true;
+			this.system.Location = new System.Drawing.Point(100, 3);
+			this.system.Name = "system";
+			this.system.Size = new System.Drawing.Size(316, 21);
+			this.system.TabIndex = 4;
+			this.system.SelectedIndexChanged += new System.EventHandler(this.OnSystemChanged);
 			// 
 			// inputDevice
 			// 
 			this.inputDevice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.inputDevice.FormattingEnabled = true;
-			this.inputDevice.Location = new System.Drawing.Point(100, 192);
+			this.inputDevice.Location = new System.Drawing.Point(101, 166);
 			this.inputDevice.Name = "inputDevice";
 			this.inputDevice.Size = new System.Drawing.Size(316, 21);
 			this.inputDevice.TabIndex = 6;
@@ -336,7 +324,7 @@
 			// capabilities
 			// 
 			this.capabilities.AutoSize = true;
-			this.capabilities.Location = new System.Drawing.Point(97, 60);
+			this.capabilities.Location = new System.Drawing.Point(98, 34);
 			this.capabilities.Name = "capabilities";
 			this.capabilities.Size = new System.Drawing.Size(33, 13);
 			this.capabilities.TabIndex = 7;
@@ -345,7 +333,7 @@
 			// defaultInput
 			// 
 			this.defaultInput.AutoSize = true;
-			this.defaultInput.Location = new System.Drawing.Point(97, 87);
+			this.defaultInput.Location = new System.Drawing.Point(98, 61);
 			this.defaultInput.Name = "defaultInput";
 			this.defaultInput.Size = new System.Drawing.Size(198, 13);
 			this.defaultInput.TabIndex = 9;
@@ -354,20 +342,11 @@
 			// defaultOutput
 			// 
 			this.defaultOutput.AutoSize = true;
-			this.defaultOutput.Location = new System.Drawing.Point(97, 113);
+			this.defaultOutput.Location = new System.Drawing.Point(98, 87);
 			this.defaultOutput.Name = "defaultOutput";
 			this.defaultOutput.Size = new System.Drawing.Size(206, 13);
 			this.defaultOutput.TabIndex = 10;
 			this.defaultOutput.Text = "Realtek Digital Output (Realtek HD Audio)";
-			// 
-			// system
-			// 
-			this.system.AutoSize = true;
-			this.system.Location = new System.Drawing.Point(97, 33);
-			this.system.Name = "system";
-			this.system.Size = new System.Drawing.Size(43, 13);
-			this.system.TabIndex = 11;
-			this.system.Text = "Wasapi";
 			// 
 			// outputDevice
 			// 
@@ -383,7 +362,7 @@
 			// 
 			this.rate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.rate.FormattingEnabled = true;
-			this.rate.Location = new System.Drawing.Point(100, 138);
+			this.rate.Location = new System.Drawing.Point(101, 112);
 			this.rate.Name = "rate";
 			this.rate.Size = new System.Drawing.Size(103, 21);
 			this.rate.TabIndex = 24;
@@ -393,7 +372,7 @@
 			// 
 			this.channelCount.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.channelCount.FormattingEnabled = true;
-			this.channelCount.Location = new System.Drawing.Point(318, 138);
+			this.channelCount.Location = new System.Drawing.Point(319, 112);
 			this.channelCount.Name = "channelCount";
 			this.channelCount.Size = new System.Drawing.Size(98, 21);
 			this.channelCount.TabIndex = 25;
@@ -403,7 +382,7 @@
 			// 
 			this.sample.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.sample.FormattingEnabled = true;
-			this.sample.Location = new System.Drawing.Point(209, 138);
+			this.sample.Location = new System.Drawing.Point(210, 112);
 			this.sample.Name = "sample";
 			this.sample.Size = new System.Drawing.Size(103, 21);
 			this.sample.TabIndex = 26;
@@ -412,7 +391,7 @@
 			// inputFormatSupported
 			// 
 			this.inputFormatSupported.AutoSize = true;
-			this.inputFormatSupported.Location = new System.Drawing.Point(97, 222);
+			this.inputFormatSupported.Location = new System.Drawing.Point(98, 196);
 			this.inputFormatSupported.Name = "inputFormatSupported";
 			this.inputFormatSupported.Size = new System.Drawing.Size(32, 13);
 			this.inputFormatSupported.TabIndex = 43;
@@ -421,7 +400,7 @@
 			// inputMix
 			// 
 			this.inputMix.AutoSize = true;
-			this.inputMix.Location = new System.Drawing.Point(203, 222);
+			this.inputMix.Location = new System.Drawing.Point(204, 196);
 			this.inputMix.Name = "inputMix";
 			this.inputMix.Size = new System.Drawing.Size(64, 13);
 			this.inputMix.TabIndex = 44;
@@ -430,7 +409,7 @@
 			// inputBufferSizes
 			// 
 			this.inputBufferSizes.AutoSize = true;
-			this.inputBufferSizes.Location = new System.Drawing.Point(97, 249);
+			this.inputBufferSizes.Location = new System.Drawing.Point(98, 223);
 			this.inputBufferSizes.Name = "inputBufferSizes";
 			this.inputBufferSizes.Size = new System.Drawing.Size(98, 13);
 			this.inputBufferSizes.TabIndex = 45;
@@ -438,7 +417,7 @@
 			// 
 			// inputControlPanel
 			// 
-			this.inputControlPanel.Location = new System.Drawing.Point(308, 219);
+			this.inputControlPanel.Location = new System.Drawing.Point(309, 193);
 			this.inputControlPanel.Name = "inputControlPanel";
 			this.inputControlPanel.Size = new System.Drawing.Size(108, 23);
 			this.inputControlPanel.TabIndex = 46;
@@ -486,10 +465,10 @@
 			// inputChannels
 			// 
 			this.inputChannels.FormattingEnabled = true;
-			this.inputChannels.Location = new System.Drawing.Point(100, 276);
+			this.inputChannels.Location = new System.Drawing.Point(101, 250);
 			this.inputChannels.Name = "inputChannels";
 			this.inputChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.inputChannels.Size = new System.Drawing.Size(316, 69);
+			this.inputChannels.Size = new System.Drawing.Size(316, 95);
 			this.inputChannels.TabIndex = 56;
 			// 
 			// outputChannels
@@ -504,7 +483,7 @@
 			// attributes
 			// 
 			this.attributes.AutoSize = true;
-			this.attributes.Location = new System.Drawing.Point(97, 168);
+			this.attributes.Location = new System.Drawing.Point(98, 142);
 			this.attributes.Name = "attributes";
 			this.attributes.Size = new System.Drawing.Size(149, 13);
 			this.attributes.TabIndex = 60;
@@ -537,7 +516,7 @@
 			this.panel.Controls.Add(label20);
 			this.panel.Controls.Add(label15);
 			this.panel.Controls.Add(label1);
-			this.panel.Controls.Add(this.service);
+			this.panel.Controls.Add(this.system);
 			this.panel.Controls.Add(this.attributes);
 			this.panel.Controls.Add(label2);
 			this.panel.Controls.Add(label9);
@@ -549,7 +528,6 @@
 			this.panel.Controls.Add(this.outputControlPanel);
 			this.panel.Controls.Add(this.defaultOutput);
 			this.panel.Controls.Add(this.outputBufferSizes);
-			this.panel.Controls.Add(this.system);
 			this.panel.Controls.Add(this.outputMix);
 			this.panel.Controls.Add(label3);
 			this.panel.Controls.Add(this.outputFormatSupported);
@@ -557,7 +535,6 @@
 			this.panel.Controls.Add(label16);
 			this.panel.Controls.Add(label6);
 			this.panel.Controls.Add(label17);
-			this.panel.Controls.Add(label7);
 			this.panel.Controls.Add(label18);
 			this.panel.Controls.Add(label5);
 			this.panel.Controls.Add(label19);
@@ -591,7 +568,7 @@
 			// inputInterleaved
 			// 
 			this.inputInterleaved.AutoSize = true;
-			this.inputInterleaved.Location = new System.Drawing.Point(377, 249);
+			this.inputInterleaved.Location = new System.Drawing.Point(378, 223);
 			this.inputInterleaved.Name = "inputInterleaved";
 			this.inputInterleaved.Size = new System.Drawing.Size(29, 13);
 			this.inputInterleaved.TabIndex = 65;
@@ -713,12 +690,11 @@
         #endregion
 
         private System.Windows.Forms.TextBox messages;
-        private System.Windows.Forms.ComboBox service;
+        private System.Windows.Forms.ComboBox system;
         private System.Windows.Forms.ComboBox inputDevice;
         private System.Windows.Forms.Label capabilities;
         private System.Windows.Forms.Label defaultInput;
         private System.Windows.Forms.Label defaultOutput;
-        private System.Windows.Forms.Label system;
         private System.Windows.Forms.ComboBox outputDevice;
         private System.Windows.Forms.ComboBox rate;
         private System.Windows.Forms.ComboBox channelCount;

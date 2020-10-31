@@ -47,9 +47,9 @@ namespace Xt
 			Stop();
 		}
 
-		private void OnServiceChanged(object sender, EventArgs e)
+		private void OnSystemChanged(object sender, EventArgs e)
 		{
-			ServiceChanged();
+			SystemChanged();
 		}
 
 		private void OnDeviceChanged(object sender, EventArgs e)
@@ -171,16 +171,12 @@ namespace Xt
 			channelCount.SelectedItem = 2;
 			streamType.DataSource = StreamTypes;
 			streamType.SelectedItem = StreamType.Render;
-
-			List<XtService> services = new List<XtService>();
-			for (int i = 0; i < XtAudio.GetServiceCount(); i++)
-				services.Add(XtAudio.GetServiceByIndex(i));
-			service.DataSource = services;
+			system.DataSource = XtAudio.GetSystems();
 		}
 
-		private void ServiceChanged()
+		private void SystemChanged()
 		{
-			XtService s = (XtService)(service.SelectedItem);
+			XtService s = XtAudio.GetService((XtSystem)(system.SelectedItem));
 			inputDevice.DataSource = null;
 			outputDevice.DataSource = null;
 			ClearDevices();
@@ -222,12 +218,11 @@ namespace Xt
 			inputDevice.SelectedIndex = inputViews.Count == 1 ? 0 : 1;
 			outputDevice.SelectedIndex = outputViews.Count == 1 ? 0 : 1;
 
-			system.Text = s.GetSystem().ToString();
 			capabilities.Text = s.GetCapabilities().ToString();
 			defaultInput.Text = inputView.device == null ? "null" : inputView.device.ToString();
 			defaultOutput.Text = outputView.device == null ? "null" : outputView.device.ToString();
-			inputControlPanel.Enabled = s.GetSystem() == XtSystem.Asio;
-			outputControlPanel.Enabled = s.GetSystem() == XtSystem.Asio;
+			inputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.Asio;
+			outputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.Asio;
 		}
 
 		private void FormatOrDeviceChanged()
@@ -383,7 +378,7 @@ namespace Xt
 					return;
 				}
 
-				XtSystem system = ((XtService)service.SelectedItem).GetSystem();
+				XtSystem system = (XtSystem)this.system.SelectedItem;
 				XRunCallback xRunCallbackWrapper = new XRunCallback(AddMessage);
 				bool doLogXRuns = logXRuns.CheckState == CheckState.Checked || (logXRuns.CheckState == CheckState.Indeterminate && system != XtSystem.Jack);
 				XtXRunCallback xRunCallback = doLogXRuns ? xRunCallbackWrapper.OnCallback : (XtXRunCallback)null;
@@ -493,7 +488,7 @@ namespace Xt
 						outputDevice != null ? outputDevice : secondaryOutputDevice);
 
 					AggregateCallback streamCallback = new AggregateCallback(OnStreamError, AddMessage);
-					outputStream = ((XtService)service.SelectedItem).AggregateStream(devicesArray, channelsArray,
+					outputStream = XtAudio.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(devicesArray, channelsArray,
 						bufferSizesArray, devicesArray.Length, outputFormat.mix, streamInterleaved.Checked, streamRaw.Checked,
 						master, streamCallback.OnCallback, xRunCallback, "aggregate-user-data");
 					streamCallback.Init(outputStream.GetFrames());
@@ -521,7 +516,7 @@ namespace Xt
 					};
 					XtDevice master = outputMaster.Checked ? outputDevice : inputDevice;
 					LatencyCallback callback = new LatencyCallback(OnStreamError, AddMessage);
-					outputStream = ((XtService)service.SelectedItem).AggregateStream(devices, channels,
+					outputStream = XtAudio.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(devices, channels,
 						bufferSizes, devices.Length, outputFormat.mix, streamInterleaved.Checked, streamRaw.Checked,
 						master, callback.OnCallback, xRunCallback, "latency-user-data");
 					outputStream.Start();
