@@ -11,12 +11,8 @@ namespace Xt
         internal XtService(IntPtr handle) 
             => _handle = handle;
 
-        public override string ToString()
-            => GetName();
-        public XtCapabilities GetCapabilities() 
+        public XtCapabilities GetCapabilities()
             => XtServiceGetCapabilities(_handle);
-        public string GetName() 
-            => NativeUtility.PtrToStringUTF8(XtServiceGetName(_handle));
         public int GetDeviceCount()
             => HandleError(XtServiceGetDeviceCount(_handle, out var result))? result: default;
         public XtDevice OpenDevice(int index)

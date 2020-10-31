@@ -74,8 +74,6 @@ namespace Xt
 		internal static extern bool XtStreamIsInterleaved(IntPtr s);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern IntPtr XtServiceGetName(IntPtr s);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern ulong XtServiceGetDeviceCount(IntPtr s, out int count);

@@ -19,12 +19,12 @@ namespace Xt
 			{
 				var version = XtAudio.GetVersion();
 				Console.WriteLine("Version: " + version.major + "." + version.minor);
-				XtService pro = XtAudio.GetService(XtAudio.SetupToSystem(XtSetup.ProAudio));
-				if (pro != null) Console.WriteLine("Pro Audio: " + pro);
-				XtService system = XtAudio.GetService(XtAudio.SetupToSystem(XtSetup.SystemAudio));
-				if (system != null) Console.WriteLine("System Audio: " + system);
-				XtService consumer = XtAudio.GetService(XtAudio.SetupToSystem(XtSetup.ConsumerAudio));
-				if (consumer != null) Console.WriteLine("Consumer Audio: " + consumer);
+				var pro = XtAudio.SetupToSystem(XtSetup.ProAudio);
+				Console.WriteLine("Pro Audio: " + pro + " (" + (XtAudio.GetService(pro) != null) + ")");
+				var system = XtAudio.SetupToSystem(XtSetup.SystemAudio);
+				Console.WriteLine("System Audio: " + system + " (" + (XtAudio.GetService(system) != null) + ")");
+				var consumer = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
+				Console.WriteLine("Consumer Audio: " + consumer + " (" + (XtAudio.GetService(consumer) != null) + ")");
 
 				foreach(var s in XtAudio.GetSystems())
 				{

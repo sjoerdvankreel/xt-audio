@@ -12,7 +12,7 @@ namespace Xt
 				var service = XtAudio.GetService(s);
 				for (int d = 0; d < service.GetDeviceCount(); d++)
 					using (var device = service.OpenDevice(d))
-						Console.WriteLine(service + ": " + device);
+						Console.WriteLine(s + ": " + device);
 			}
 		}
 	}
