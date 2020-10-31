@@ -32,3 +32,5 @@
 * remove getsystem
 * add getsystemcount, remove getservicebyindex
 * caller allocated array of device infos
+* cleanup print
+* java formatting
