@@ -60,13 +60,13 @@ std::string XtiTryGetDeviceName(const XtDevice* d) {
 XtError XtiCreateError(XtSystem system, XtFault fault) {
   if(fault == 0)
     return 0;
-  const char* code = XtAudioGetServiceBySystem(system)->GetFaultText(fault);
+  const char* code = XtAudioGetService(system)->GetFaultText(fault);
   XT_TRACE(XtLevelError, "Fault: system %d, code %u (%s).", system, fault, code);
   return static_cast<uint64_t>(system) << 32ULL | fault;
 }
 
 bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
-  const XtService* service = XtAudioGetServiceBySystem(system);
+  const XtService* service = XtAudioGetService(system);
   if(format.channels.inputs < 0 || format.channels.outputs < 0)
     return false;
   if(format.channels.inputs == 0 && format.channels.outputs == 0)

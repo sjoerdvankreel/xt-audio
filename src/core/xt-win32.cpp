@@ -1,4 +1,6 @@
 #ifdef _WIN32
+#include <vector>
+#include <cstring>
 #include "xt-win32.hpp"
 
 // ---- local ----
@@ -10,20 +12,6 @@ static bool XtwOwnWindow = false;
 extern const XtService* XtiServiceAsio;
 extern const XtService* XtiServiceDSound;
 extern const XtService* XtiServiceWasapi;
-
-const XtService* const XtiServices[] =
-{
-#ifndef XT_DISABLE_DSOUND
-  XtiServiceDSound,
-#endif // XT_DISABLE_DSOUND
-#ifndef XT_DISABLE_WASAPI
-  XtiServiceWasapi,
-#endif // XT_DISABLE_WASAPI
-#ifndef XT_DISABLE_ASIO
-  XtiServiceAsio,
-#endif // XT_DISABLE_ASIO
-  nullptr,
-};
 
 static XtBlockingStreamState ReadWin32BlockingStreamState(
   XtwWin32BlockingStream* stream) {
@@ -111,16 +99,19 @@ const char* XtwWfxChannelNames[18] = {
 
 // ---- api ----
 
-int32_t XT_CALL XtAudioGetServiceCount(void) { 
-  return sizeof(XtiServices) / sizeof(XtiServices[0]) - 1;
+void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
+  std::vector<XtSystem> systems;
+  if(XtiServiceAsio != nullptr) systems.push_back(XtSystemAsio);
+  if(XtiServiceDSound != nullptr) systems.push_back(XtSystemDSound);
+  if(XtiServiceWasapi != nullptr) systems.push_back(XtSystemWasapi);
+  auto count = static_cast<int32_t>(systems.size());
+  if(buffer == nullptr) 
+    *size = count;
+  else
+    memcpy(buffer, systems.data(), std::min(*size, count)*sizeof(XtSystem));
 }
 
-const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index) {
-  XT_ASSERT(0 <= index && index < XtAudioGetServiceCount());
-  return XtiServices[index];
-}
-
-const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system) {
+const XtService* XT_CALL XtAudioGetService(XtSystem system) {
   XT_ASSERT(XtSystemAlsa <= system && system <= XtSystemWasapi);
   switch(system) {
   case XtSystemAsio: return XtiServiceAsio;
@@ -133,9 +124,7 @@ const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system) {
   }
 }
 
-// ---- internal ----
-
-XtSystem XtiSetupToSystem(XtSetup setup) {
+XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup) {
   switch(setup) {
   case XtSetupProAudio: return XtSystemAsio;
   case XtSetupSystemAudio: return XtSystemWasapi;
@@ -178,9 +167,9 @@ void XtiInitPlatform(void* wnd) {
     XT_ASSERT(XtwWindow = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0));
     XtwOwnWindow = true;
   }
-  XT_TRACE(XtLevelInfo, "Built with ASIO: %d.", XtAudioGetServiceBySystem(XtSystemAsio) != nullptr);
-  XT_TRACE(XtLevelInfo, "Built with WASAPI: %d.", XtAudioGetServiceBySystem(XtSystemWasapi) != nullptr);
-  XT_TRACE(XtLevelInfo, "Built with DirectSound: %d.", XtAudioGetServiceBySystem(XtSystemDSound) != nullptr);
+  XT_TRACE(XtLevelInfo, "Built with ASIO: %d.", XtAudioGetService(XtSystemAsio) != nullptr);
+  XT_TRACE(XtLevelInfo, "Built with WASAPI: %d.", XtAudioGetService(XtSystemWasapi) != nullptr);
+  XT_TRACE(XtLevelInfo, "Built with DirectSound: %d.", XtAudioGetService(XtSystemDSound) != nullptr);
 }
 
 // ---- win32 ----

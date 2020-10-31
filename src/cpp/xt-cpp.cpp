@@ -104,10 +104,6 @@ Version Audio::GetVersion() {
   return *reinterpret_cast<Version*>(&result);
 }
 
-int32_t Audio::GetServiceCount() {
-  return XtAudioGetServiceCount();
-}
-
 ErrorInfo Audio::GetErrorInfo(uint64_t error) { 
   ErrorInfo result;
   auto info = XtAudioGetErrorInfo(error);
@@ -127,17 +123,20 @@ Attributes Audio::GetSampleAttributes(Sample sample) {
   return result;
 }
 
-std::unique_ptr<Service> Audio::GetServiceByIndex(int32_t index) {
-  return std::unique_ptr<Service>(new Service(XtAudioGetServiceByIndex(index)));
+System Audio::SetupToSystem(Setup setup) {
+  return static_cast<System>(XtAudioSetupToSystem(static_cast<XtSetup>(setup)));
 }
 
-std::unique_ptr<Service> Audio::GetServiceBySetup(Setup setup) {
-  const XtService* service = XtAudioGetServiceBySetup(static_cast<XtSetup>(setup));
-  return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
+std::vector<System> Audio::GetSystems() {
+  int32_t size = 0;
+  XtAudioGetSystems(nullptr, &size);
+  std::vector<System> result(static_cast<size_t>(size));
+  XtAudioGetSystems(reinterpret_cast<XtSystem*>(result.data()), &size);
+  return result;
 }
 
-std::unique_ptr<Service> Audio::GetServiceBySystem(System system) {
-  const XtService* service = XtAudioGetServiceBySystem(static_cast<XtSystem>(system));
+std::unique_ptr<Service> Audio::GetService(System system) {
+  const XtService* service = XtAudioGetService(static_cast<XtSystem>(system));
   return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
 }
 
@@ -148,10 +147,6 @@ s(s_) {}
 
 std::string Service::GetName() const {
   return XtServiceGetName(s);
-}
-
-System Service::GetSystem() const {
-  return static_cast<System>(XtServiceGetSystem(s));
 }
 
 int32_t Service::GetDeviceCount() const { 

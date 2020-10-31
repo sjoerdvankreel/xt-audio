@@ -69,7 +69,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
     return error;
   if(!supports)
-    return XtiCreateError(system, XtAudioGetServiceBySystem(system)->GetFormatFault());
+    return XtiCreateError(system, XtAudioGetService(system)->GetFormatFault());
   if((error = XtDeviceSupportsAccess(d, XtTrue, &canInterleaved)) != 0)
     return error;
   if((error = XtDeviceSupportsAccess(d, XtFalse, &canNonInterleaved)) != 0)
@@ -177,17 +177,12 @@ XtErrorInfo XT_CALL XtAudioGetErrorInfo(XtError error) {
   XT_ASSERT(error != 0);
   auto fault = XtiGetErrorFault(error);
   auto system = static_cast<XtSystem>((error & 0xFFFFFFFF00000000) >> 32ULL);
-  auto service = XtAudioGetServiceBySystem(system);
+  auto service = XtAudioGetService(system);
   result.fault = fault;
   result.system = system;
   result.text = service->GetFaultText(fault);
   result.cause = service->GetFaultCause(fault);
   return result;
-}
-
-const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup) {
-  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
-  return XtAudioGetServiceBySystem(XtiSetupToSystem(setup));
 }
 
 XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample) {
@@ -227,11 +222,6 @@ void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, Xt
 }
 
 // ---- service ----
-
-XtSystem XT_CALL XtServiceGetSystem(const XtService* s) {
-  XT_ASSERT(s != nullptr);
-  return s->GetSystem();
-}
 
 const char* XT_CALL XtServiceGetName(const XtService* s) { 
   XT_ASSERT(s != nullptr);
@@ -309,7 +299,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices,
   const char* fmt = "Opening aggregate: service %s, count %d...";
   XT_TRACE(XtLevelInfo, fmt, XtServiceGetName(s), count);
 
-  XtSystem system = XtServiceGetSystem(s);
+  XtSystem system = s->GetSystem();
   auto attrs = XtAudioGetSampleAttributes(mix->sample);
   std::unique_ptr<XtAggregate> result(new XtAggregate);
   result->user = user;
@@ -413,9 +403,8 @@ XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix) {
 
 XtError XT_CALL XtDeviceGetName(const XtDevice* d, char* buffer, int32_t* size) {
   XT_ASSERT(d != nullptr);
-  XT_ASSERT(size != nullptr);
-  XT_ASSERT(*size >= 0);
   XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(size != nullptr && *size >= 0);
   return XtiCreateError(d->GetSystem(), d->GetName(buffer, size));
 }
 
@@ -450,16 +439,15 @@ XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtB
   if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
     return error;
   if(!supports)
-    return XtiCreateError(system, XtAudioGetServiceBySystem(system)->GetFormatFault());
+    return XtiCreateError(system, XtAudioGetService(system)->GetFormatFault());
   return XtiCreateError(d->GetSystem(), d->GetBuffer(format, buffer));
 }
 
 XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char* buffer, int32_t* size) {
   XT_ASSERT(index >= 0);
   XT_ASSERT(d != nullptr);
-  XT_ASSERT(size != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());  
-  XT_ASSERT(buffer == nullptr || *size > 0);
+  XT_ASSERT(size != nullptr && *size >= 0);
   return XtiCreateError(d->GetSystem(), d->GetChannelName(output, index, buffer, size));
 }
 

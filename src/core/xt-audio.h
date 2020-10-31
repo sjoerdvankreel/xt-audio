@@ -278,10 +278,9 @@ XT_API const char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabiliti
 XT_API XtVersion XT_CALL XtAudioGetVersion(void);
 XT_API XtErrorInfo XT_CALL XtAudioGetErrorInfo(XtError error);
 
-XT_API int32_t XT_CALL XtAudioGetServiceCount(void);
-XT_API const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index);
-XT_API const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup);
-XT_API const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system);
+XT_API XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup);
+XT_API const XtService* XT_CALL XtAudioGetService(XtSystem system);
+XT_API void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size);
 
 XT_API void XT_CALL XtAudioTerminate(void);
 XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
@@ -292,7 +291,6 @@ XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback tr
  * @ingroup service
  * @{ 
  */
-XT_API XtSystem XT_CALL XtServiceGetSystem(const XtService* s);
 XT_API const char* XT_CALL XtServiceGetName(const XtService* s);
 XT_API XtCapabilities XT_CALL XtServiceGetCapabilities(const XtService* s);
 XT_API XtError XT_CALL XtServiceGetDeviceCount(const XtService* s, int32_t* count);

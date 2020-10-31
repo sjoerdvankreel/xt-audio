@@ -192,12 +192,11 @@ public:
   Audio(const std::string& id, void* window, TraceCallback trace, FatalCallback fatal);
 
   static Version GetVersion();
-  static int32_t GetServiceCount();
+  static std::vector<System> GetSystems();
+  static System SetupToSystem(Setup setup); 
   static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
-  static std::unique_ptr<Service> GetServiceBySetup(Setup setup);
-  static std::unique_ptr<Service> GetServiceByIndex(int32_t index);
-  static std::unique_ptr<Service> GetServiceBySystem(System system);
+  static std::unique_ptr<Service> GetService(System system);
 };
 
 class Device final {

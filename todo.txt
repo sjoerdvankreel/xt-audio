@@ -34,3 +34,4 @@
 * caller allocated array of device infos
 * cleanup print
 * java formatting
+* remove service getsystem, getname
