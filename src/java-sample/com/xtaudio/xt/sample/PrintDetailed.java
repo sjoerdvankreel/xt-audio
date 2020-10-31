@@ -40,7 +40,7 @@ public class PrintDetailed {
                 System.out.println("Service " + service + ":");
                 System.out.println("  System: " + service.getSystem());
                 System.out.println("  Device count: " + service.getDeviceCount());
-                System.out.println("  Capabilities: " + XtCapabilities.toString(service.getCapabilities()));
+                System.out.println("  Capabilities: " + service.getCapabilities());
 
                 try ( XtDevice defaultInput = service.openDefaultDevice(false)) {
                     System.out.println("  Default input: " + defaultInput);

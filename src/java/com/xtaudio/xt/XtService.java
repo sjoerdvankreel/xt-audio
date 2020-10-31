@@ -10,6 +10,9 @@ import com.xtaudio.xt.NativeTypes.XtMix;
 import com.xtaudio.xt.NativeTypes.XtStreamCallback;
 import com.xtaudio.xt.NativeTypes.XtSystem;
 import com.xtaudio.xt.NativeTypes.XtXRunCallback;
+import com.xtaudio.xt.NativeTypes.XtCapabilities;
+
+import java.util.EnumSet;
 
 public final class XtService {
 
@@ -32,8 +35,15 @@ public final class XtService {
         return XtNative.XtServiceGetName(s);
     }
 
-    public int getCapabilities() {
-        return XtNative.XtServiceGetCapabilities(s);
+    public EnumSet<XtCapabilities> getCapabilities() {
+        var result = EnumSet.noneOf(XtCapabilities.class);
+        var flags = XtNative.XtServiceGetCapabilities(s);
+        if((flags & XtCapabilities.TIME._flag) != 0) result.add(XtCapabilities.TIME);
+        if((flags & XtCapabilities.LATENCY._flag) != 0) result.add(XtCapabilities.LATENCY);
+        if((flags & XtCapabilities.FULL_DUPLEX._flag) != 0) result.add(XtCapabilities.FULL_DUPLEX);
+        if((flags & XtCapabilities.CHANNEL_MASK._flag) != 0) result.add(XtCapabilities.CHANNEL_MASK);
+        if((flags & XtCapabilities.XRUN_DETECTION._flag) != 0) result.add(XtCapabilities.XRUN_DETECTION);
+        return result;
     }
 
     public int getDeviceCount() {

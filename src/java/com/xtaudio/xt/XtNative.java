@@ -198,7 +198,6 @@ final class XtNative {
     }
 
     static native XtErrorInfo XtAudioGetErrorInfo(long error);
-    static native String XtAudioPrintCapabilitiesToString(int capabilities);
     static native void XtStreamDestroy(Pointer s);
     static native long XtStreamStop(Pointer s);
     static native long XtStreamStart(Pointer s);
