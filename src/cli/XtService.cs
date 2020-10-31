@@ -13,8 +13,6 @@ namespace Xt
 
         public override string ToString()
             => GetName();
-		public XtSystem GetSystem() 
-            => XtServiceGetSystem(_handle);
         public XtCapabilities GetCapabilities() 
             => XtServiceGetCapabilities(_handle);
         public string GetName() 

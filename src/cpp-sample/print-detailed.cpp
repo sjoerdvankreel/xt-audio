@@ -26,10 +26,10 @@ int PrintDetailedMain(int argc, char** argv) {
     auto consumer = Xt::Audio::GetService(Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio));
     if(consumer) std::cout << "Consumer Audio: " << *consumer << "\n";
 
-    for(auto system: Xt::Audio::GetSystems()) {
+    for(auto s: Xt::Audio::GetSystems()) {
 
-      std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
-      std::cout << "System " << system << ":\n";
+      std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(s);
+      std::cout << "System " << s << ":\n";
       std::cout << "  Device count: " << service->GetDeviceCount() << "\n";
       std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";
 

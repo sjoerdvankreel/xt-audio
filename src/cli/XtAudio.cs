@@ -1,16 +1,17 @@
 using System;
 using System.Runtime.InteropServices;
+using static Xt.XtNative;
 
 namespace Xt
 {
 	public sealed class XtAudio : IDisposable
 	{
 		internal static XtTraceCallback trace;
-		private static XtNative.TraceCallbackWin32 win32Trace;
-		private static XtNative.TraceCallbackLinux linuxTrace;
+		private static TraceCallbackWin32 win32Trace;
+		private static TraceCallbackLinux linuxTrace;
 		private static XtFatalCallback fatal;
-		private static XtNative.FatalCallbackWin32 win32Fatal;
-		private static XtNative.FatalCallbackLinux linuxFatal;
+		private static FatalCallbackWin32 win32Fatal;
+		private static FatalCallbackLinux linuxFatal;
 
 		public XtAudio(string id, IntPtr window, XtTraceCallback trace, XtFatalCallback fatal)
 		{
@@ -27,23 +28,25 @@ namespace Xt
 			XtNative.XtAudioInit(id, window, tracePtr, fatalPtr);
 		}
 
-		public void Dispose() => XtNative.XtAudioTerminate();
-		public static XtVersion GetVersion() => XtNative.XtAudioGetVersion();
-		public static int GetServiceCount() => XtNative.XtAudioGetServiceCount();
-		public static XtErrorInfo GetErrorInfo(ulong error) => XtNative.XtAudioGetErrorInfo(error);
-		public static XtAttributes GetSampleAttributes(XtSample sample) => XtNative.XtAudioGetSampleAttributes(sample);
-		public static XtService GetServiceByIndex(int index) => new XtService(XtNative.XtAudioGetServiceByIndex(index));
+		public void Dispose() => XtAudioTerminate();
+		public static XtVersion GetVersion() => XtAudioGetVersion();
+		public static XtErrorInfo GetErrorInfo(ulong error) => XtAudioGetErrorInfo(error);
+		public static XtSystem SetupToSystem(XtSetup setup) => XtAudioSetupToSystem(setup);
+		public static XtAttributes GetSampleAttributes(XtSample sample) => XtAudioGetSampleAttributes(sample);
 
-		public static XtService GetServiceBySetup(XtSetup setup)
+		public static XtService GetService(XtSystem system)
 		{
-			IntPtr service = XtNative.XtAudioGetServiceBySetup(setup);
+			IntPtr service = XtAudioGetService(system);
 			return service == IntPtr.Zero ? null : new XtService(service);
 		}
 
-		public static XtService GetServiceBySystem(XtSystem system)
+		public static XtSystem[] GetSystems()
 		{
-			IntPtr service = XtNative.XtAudioGetServiceBySystem(system);
-			return service == IntPtr.Zero ? null : new XtService(service);
+			int size = 0;
+			XtAudioGetSystems(null, ref size);
+			var result = new XtSystem[size];
+			XtAudioGetSystems(result, ref size);
+			return result;
 		}
 	}
 }

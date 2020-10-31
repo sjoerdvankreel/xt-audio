@@ -19,18 +19,17 @@ namespace Xt
 			{
 				var version = XtAudio.GetVersion();
 				Console.WriteLine("Version: " + version.major + "." + version.minor);
-				XtService pro = XtAudio.GetServiceBySetup(XtSetup.ProAudio);
+				XtService pro = XtAudio.GetService(XtAudio.SetupToSystem(XtSetup.ProAudio));
 				if (pro != null) Console.WriteLine("Pro Audio: " + pro);
-				XtService system = XtAudio.GetServiceBySetup(XtSetup.SystemAudio);
+				XtService system = XtAudio.GetService(XtAudio.SetupToSystem(XtSetup.SystemAudio));
 				if (system != null) Console.WriteLine("System Audio: " + system);
-				XtService consumer = XtAudio.GetServiceBySetup(XtSetup.ConsumerAudio);
+				XtService consumer = XtAudio.GetService(XtAudio.SetupToSystem(XtSetup.ConsumerAudio));
 				if (consumer != null) Console.WriteLine("Consumer Audio: " + consumer);
 
-				for (int s = 0; s < XtAudio.GetServiceCount(); s++)
+				foreach(var s in XtAudio.GetSystems())
 				{
-					XtService service = XtAudio.GetServiceByIndex(s);
-					Console.WriteLine("Service " + service + ":");
-					Console.WriteLine("  System: " + service.GetSystem());
+					XtService service = XtAudio.GetService(s);
+					Console.WriteLine("System: " + s);
 					Console.WriteLine("  Device count: " + service.GetDeviceCount());
 					Console.WriteLine("  Capabilities: " + service.GetCapabilities());
 					using var defaultInput = service.OpenDefaultDevice(false);

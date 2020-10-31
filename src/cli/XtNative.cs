@@ -74,8 +74,6 @@ namespace Xt
 		internal static extern bool XtStreamIsInterleaved(IntPtr s);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern XtSystem XtServiceGetSystem(IntPtr s);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern IntPtr XtServiceGetName(IntPtr s);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);
@@ -97,13 +95,11 @@ namespace Xt
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtVersion XtAudioGetVersion();
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern int XtAudioGetServiceCount();
+		internal static extern void XtAudioGetSystems([Out] XtSystem[] buffer, ref int size);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern IntPtr XtAudioGetServiceByIndex(int index);
+		internal static extern XtSystem XtAudioSetupToSystem(XtSetup setup);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern IntPtr XtAudioGetServiceBySetup(XtSetup setup);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern IntPtr XtAudioGetServiceBySystem(XtSystem system);
+		internal static extern IntPtr XtAudioGetService(XtSystem system);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]

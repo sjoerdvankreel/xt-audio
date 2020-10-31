@@ -20,7 +20,8 @@ namespace Xt
 
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
             {
-                XtService service = XtAudio.GetServiceBySetup(XtSetup.ProAudio);
+                var system = XtAudio.SetupToSystem(XtSetup.ProAudio);
+                XtService service = XtAudio.GetService(system);
                 if (service == null)
                     return;
 

@@ -7,9 +7,9 @@ namespace Xt
 		public static void Main()
 		{
 			using var audio = new XtAudio(null, IntPtr.Zero, null, null);
-			for (int s = 0; s < XtAudio.GetServiceCount(); s++)
+			foreach(var s in XtAudio.GetSystems())
 			{
-				var service = XtAudio.GetServiceByIndex(s);
+				var service = XtAudio.GetService(s);
 				for (int d = 0; d < service.GetDeviceCount(); d++)
 					using (var device = service.OpenDevice(d))
 						Console.WriteLine(service + ": " + device);
