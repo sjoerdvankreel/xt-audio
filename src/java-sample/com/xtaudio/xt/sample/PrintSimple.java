@@ -10,7 +10,7 @@ public class PrintSimple {
                 var service = XtAudio.getService(s);
                 for(int d = 0; d < service.getDeviceCount(); d++)
                     try(var device = service.openDevice(d)) {
-                        System.out.println(service + ": " + device);
+                        System.out.println(s + ": " + device);
                     }
             }
         }

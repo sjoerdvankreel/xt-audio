@@ -24,15 +24,12 @@ public class PrintDetailed {
 
             XtVersion version = XtAudio.getVersion();
             System.out.println("Version: " + version.major + "." + version.minor);
-            XtService pro = XtAudio.getService(XtAudio.setupToSystem(XtSetup.PRO_AUDIO));
-            if (pro != null)
-                System.out.println("Pro Audio: " + pro);
-            XtService system = XtAudio.getService(XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO));
-            if (system != null)
-                System.out.println("System Audio: " + system);
-            XtService consumer = XtAudio.getService(XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO));
-            if (consumer != null)
-                System.out.println("Consumer Audio: " + consumer);
+            var pro = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
+            System.out.println("Pro Audio: " + pro + " (" + (XtAudio.getService(pro) != null) + ")");
+            var system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
+            System.out.println("System Audio: " + system + " (" + (XtAudio.getService(system) != null) + ")");
+            var consumer = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
+            System.out.println("Consumer Audio: " + consumer + " (" + (XtAudio.getService(consumer) != null) + ")");
 
             for (var s: XtAudio.getSystems()) {
                 XtService service = XtAudio.getService(s);

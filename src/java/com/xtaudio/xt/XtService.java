@@ -21,15 +21,6 @@ public final class XtService {
         this.s = s;
     }
 
-    @Override
-    public String toString() {
-        return getName();
-    }
-
-    public String getName() {
-        return XtNative.XtServiceGetName(s);
-    }
-
     public EnumSet<XtCapabilities> getCapabilities() {
         var result = EnumSet.noneOf(XtCapabilities.class);
         var flags = XtNative.XtServiceGetCapabilities(s);
