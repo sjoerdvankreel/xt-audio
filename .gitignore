@@ -12,3 +12,5 @@ build/cli-gui/obj/**
 build/cli-gui/*.user
 build/cli-sample/obj/**
 build/cli-sample/*.user
+build/java/.idea/**
+build/java-sample/.idea**

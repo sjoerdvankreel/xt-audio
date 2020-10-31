@@ -97,6 +97,75 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
   return 0;
 }
 
+// ---- print ----
+
+const char* XT_CALL XtPrintLevelToString(XtLevel level) {
+  switch(level) {
+  case XtLevelInfo: return "Info";
+  case XtLevelError: return "Error";
+  case XtLevelFatal: return "Fatal";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtPrintCauseToString(XtCause cause) {
+  switch(cause) {
+  case XtCauseFormat: return "Format";
+  case XtCauseGeneric: return "Generic";
+  case XtCauseService: return "Service";
+  case XtCauseUnknown: return "Unknown";
+  case XtCauseEndpoint: return "Endpoint";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtPrintSetupToString(XtSetup setup) {
+  switch(setup) {
+  case XtSetupProAudio: return "ProAudio";
+  case XtSetupSystemAudio: return "SystemAudio";
+  case XtSetupConsumerAudio: return "ConsumerAudio";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtPrintSystemToString(XtSystem system) {
+  switch(system) {
+  case XtSystemAlsa: return "Alsa";
+  case XtSystemAsio: return "Asio";
+  case XtSystemJack: return "Jack";
+  case XtSystemPulse: return "Pulse";
+  case XtSystemDSound: return "DSound";
+  case XtSystemWasapi: return "Wasapi";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtPrintSampleToString(XtSample sample) {
+  switch(sample) {
+  case XtSampleUInt8: return "UInt8";
+  case XtSampleInt16: return "Int16";
+  case XtSampleInt24: return "Int24";
+  case XtSampleInt32: return "Int32";
+  case XtSampleFloat32: return "Float32";
+  default: assert(false); return nullptr;
+  }
+}
+
+const char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
+  size_t i = 0;
+  std::string result;
+  if(capabilities == 0) return "None";
+  static thread_local char buffer[128];
+  if((capabilities & XtCapabilitiesTime) != 0) result += "Time, ";
+  if((capabilities & XtCapabilitiesLatency) != 0) result += "Latency, ";
+  if((capabilities & XtCapabilitiesFullDuplex) != 0) result += "FullDuplex, ";
+  if((capabilities & XtCapabilitiesChannelMask) != 0) result += "ChannelMask, ";
+  if((capabilities & XtCapabilitiesXRunDetection) != 0) result += "XRunDetection, ";
+  memcpy(buffer, result.data(), result.size() - 2);
+  buffer[result.size() - 2] = '\0';
+  return buffer;
+}
+
 // ---- audio ----
 
 XtVersion XT_CALL XtAudioGetVersion(void) {
@@ -135,73 +204,6 @@ XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample) {
   default: XT_FAIL("Unknown sample"); break;
   }
   return result;
-}
-
-const char* XT_CALL XtAudioPrintLevelToString(XtLevel level) {
-  switch(level) {
-  case XtLevelInfo: return "Info";
-  case XtLevelError: return "Error";
-  case XtLevelFatal: return "Fatal";
-  default: assert(false); return nullptr;
-  }
-}
-
-const char* XT_CALL XtAudioPrintCauseToString(XtCause cause) {
-  switch(cause) {
-  case XtCauseFormat: return "Format";
-  case XtCauseGeneric: return "Generic";
-  case XtCauseService: return "Service";
-  case XtCauseUnknown: return "Unknown";
-  case XtCauseEndpoint: return "Endpoint";
-  default: assert(false); return nullptr;
-  }
-}
-
-const char* XT_CALL XtAudioPrintSetupToString(XtSetup setup) {
-  switch(setup) {
-  case XtSetupProAudio: return "ProAudio";
-  case XtSetupSystemAudio: return "SystemAudio";
-  case XtSetupConsumerAudio: return "ConsumerAudio";
-  default: assert(false); return nullptr;
-  }
-}
-
-const char* XT_CALL XtAudioPrintSystemToString(XtSystem system) {
-  switch(system) {
-  case XtSystemAlsa: return "Alsa";
-  case XtSystemAsio: return "Asio";
-  case XtSystemJack: return "Jack";
-  case XtSystemPulse: return "Pulse";
-  case XtSystemDSound: return "DSound";
-  case XtSystemWasapi: return "Wasapi";
-  default: assert(false); return nullptr;
-  }
-}
-
-const char* XT_CALL XtAudioPrintSampleToString(XtSample sample) {
-  switch(sample) {
-  case XtSampleUInt8: return "UInt8";
-  case XtSampleInt16: return "Int16";
-  case XtSampleInt24: return "Int24";
-  case XtSampleInt32: return "Int32";
-  case XtSampleFloat32: return "Float32";
-  default: assert(false); return nullptr;
-  }
-}
-
-const char* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities) {
-  size_t i = 0;
-  std::string result;
-  if(capabilities == 0) return "None";
-  static thread_local char buffer[128];
-  if((capabilities & XtCapabilitiesTime) != 0) result += "Time, ";
-  if((capabilities & XtCapabilitiesLatency) != 0) result += "Latency, ";
-  if((capabilities & XtCapabilitiesFullDuplex) != 0) result += "FullDuplex, ";
-  if((capabilities & XtCapabilitiesChannelMask) != 0) result += "ChannelMask, ";
-  if((capabilities & XtCapabilitiesXRunDetection) != 0) result += "XRunDetection, ";
-  memcpy(buffer, result.data(), result.size() - 2);
-  buffer[result.size() - 2] = '\0';
-  return buffer;
 }
 
 void XT_CALL XtAudioTerminate(void) {

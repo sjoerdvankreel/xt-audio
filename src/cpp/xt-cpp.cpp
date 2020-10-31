@@ -62,27 +62,27 @@ std::ostream& operator<<(std::ostream& os, const Service& service) {
 }
 
 std::ostream& operator<<(std::ostream& os, Level level) {
-  return os << XtAudioPrintLevelToString(static_cast<XtLevel>(level));
+  return os << XtPrintLevelToString(static_cast<XtLevel>(level));
 }
 
 std::ostream& operator<<(std::ostream& os, Cause cause) {
-  return os << XtAudioPrintCauseToString(static_cast<XtCause>(cause));
+  return os << XtPrintCauseToString(static_cast<XtCause>(cause));
 }
 
 std::ostream& operator<<(std::ostream& os, Setup setup) {
-  return os << XtAudioPrintSetupToString(static_cast<XtSetup>(setup));
+  return os << XtPrintSetupToString(static_cast<XtSetup>(setup));
 }
 
 std::ostream& operator<<(std::ostream& os, System system) {
-  return os << XtAudioPrintSystemToString(static_cast<XtSystem>(system));
+  return os << XtPrintSystemToString(static_cast<XtSystem>(system));
 }
 
 std::ostream& operator<<(std::ostream& os, Sample sample) {
-  return os << XtAudioPrintSampleToString(static_cast<XtSample>(sample));
+  return os << XtPrintSampleToString(static_cast<XtSample>(sample));
 }
 
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
-  return os << XtAudioPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
+  return os << XtPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities));
 }
 
 // ---- audio ----

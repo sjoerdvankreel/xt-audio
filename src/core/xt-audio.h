@@ -260,6 +260,18 @@ typedef void (XT_CALLBACK *XtStreamCallback)(
   double time, uint64_t position, XtBool timeValid, XtError error, void* user);
 
 /** 
+ * @ingroup print
+ * @{ 
+ */
+XT_API const char* XT_CALL XtPrintLevelToString(XtLevel level);
+XT_API const char* XT_CALL XtPrintCauseToString(XtCause cause);
+XT_API const char* XT_CALL XtPrintSetupToString(XtSetup setup);
+XT_API const char* XT_CALL XtPrintSystemToString(XtSystem system);
+XT_API const char* XT_CALL XtPrintSampleToString(XtSample sample);
+XT_API const char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities);
+/** @} */
+
+/** 
  * @ingroup audio
  * @{ 
  */
@@ -270,13 +282,6 @@ XT_API int32_t XT_CALL XtAudioGetServiceCount(void);
 XT_API const XtService* XT_CALL XtAudioGetServiceByIndex(int32_t index);
 XT_API const XtService* XT_CALL XtAudioGetServiceBySetup(XtSetup setup);
 XT_API const XtService* XT_CALL XtAudioGetServiceBySystem(XtSystem system);
-
-XT_API const char* XT_CALL XtAudioPrintLevelToString(XtLevel level);
-XT_API const char* XT_CALL XtAudioPrintCauseToString(XtCause cause);
-XT_API const char* XT_CALL XtAudioPrintSetupToString(XtSetup setup);
-XT_API const char* XT_CALL XtAudioPrintSystemToString(XtSystem system);
-XT_API const char* XT_CALL XtAudioPrintSampleToString(XtSample sample);
-XT_API const char* XT_CALL XtAudioPrintCapabilitiesToString(XtCapabilities capabilities);
 
 XT_API void XT_CALL XtAudioTerminate(void);
 XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
