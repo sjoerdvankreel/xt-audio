@@ -19,18 +19,17 @@ int PrintDetailedMain(int argc, char** argv) {
   try {
     auto version = Xt::Audio::GetVersion();
     std::cout << "Version: " << version.major << "." << version.minor << "\n";    
-    auto pro = Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio);
+    auto pro = Xt::Audio::GetService(Xt::Audio::SetupToSystem(Xt::Setup::ProAudio));
     if(pro) std::cout << "Pro Audio: " << *pro << "\n";
-    auto system = Xt::Audio::GetServiceBySetup(Xt::Setup::SystemAudio);
+    auto system = Xt::Audio::GetService(Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio));
     if(system) std::cout << "System Audio: " << *system << "\n";
-    auto consumer = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+    auto consumer = Xt::Audio::GetService(Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio));
     if(consumer) std::cout << "Consumer Audio: " << *consumer << "\n";
 
-    for(int s = 0; s < Xt::Audio::GetServiceCount(); s++) {
+    for(auto system: Xt::Audio::GetSystems()) {
 
-      std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceByIndex(s);
-      std::cout << "Service " << *service << ":\n";
-      std::cout << "  System: " << service->GetSystem() << "\n";
+      std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
+      std::cout << "System " << system << ":\n";
       std::cout << "  Device count: " << service->GetDeviceCount() << "\n";
       std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";
 

@@ -61,7 +61,8 @@ int RenderAdvancedMain(int argc, char** argv) {
   Xt::Audio audio("", nullptr, nullptr, nullptr);
   Xt::Format format(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 2, 0));
 
-  std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+  auto system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
+  std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service)
     return 0;
 

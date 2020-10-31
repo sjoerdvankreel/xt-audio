@@ -23,7 +23,8 @@ static void Capture(
 int CaptureSimpleMain(int argc, char** argv) {
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);  
-  std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ConsumerAudio);
+  auto system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
+  std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service)
     return 0;  
 

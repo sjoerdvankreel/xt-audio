@@ -19,7 +19,8 @@ int FullDuplexMain(int argc, char** argv) {
   Xt::Format float48000(Xt::Mix(48000, Xt::Sample::Float32), Xt::Channels(2, 0, 2, 0));
 
   Xt::Audio audio("", nullptr, nullptr, nullptr);
-  std::unique_ptr<Xt::Service> service = Xt::Audio::GetServiceBySetup(Xt::Setup::ProAudio);
+  auto system = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
+  std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service)
     return 0;
 

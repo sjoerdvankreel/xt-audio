@@ -133,6 +133,8 @@ XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup) {
   }
 }
 
+// ---- internal ----
+
 void XtiTerminatePlatform() { 
   XT_ASSERT(!XtwOwnWindow || DestroyWindow(XtwWindow));
   CoUninitialize(); 
