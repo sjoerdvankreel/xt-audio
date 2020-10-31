@@ -23,7 +23,8 @@ public class CaptureSimple {
 
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
 
-            XtService service = XtAudio.getServiceBySetup(XtSetup.CONSUMER_AUDIO);
+            var system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
+            XtService service = XtAudio.getService(system);
             if (service == null)
                 return;
 

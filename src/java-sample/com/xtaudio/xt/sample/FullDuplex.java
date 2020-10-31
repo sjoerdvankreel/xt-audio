@@ -23,7 +23,8 @@ public class FullDuplex {
 
         try (XtAudio audio = new XtAudio(null, null, null, null)) {
 
-            XtService service = XtAudio.getServiceBySetup(XtSetup.PRO_AUDIO);
+            var system = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
+            XtService service = XtAudio.getService(system);
             if (service == null)
                 return;
 

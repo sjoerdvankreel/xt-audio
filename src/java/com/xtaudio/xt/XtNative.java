@@ -19,6 +19,7 @@ import com.xtaudio.xt.NativeTypes.XtBuffer;
 import com.xtaudio.xt.NativeTypes.XtCause;
 import com.xtaudio.xt.NativeTypes.XtChannels;
 import com.xtaudio.xt.NativeTypes.XtErrorInfo;
+import com.xtaudio.xt.NativeTypes.XtSetup;
 import com.xtaudio.xt.NativeTypes.XtFatalCallback;
 import com.xtaudio.xt.NativeTypes.XtFormat;
 import com.xtaudio.xt.NativeTypes.XtLatency;
@@ -26,6 +27,8 @@ import com.xtaudio.xt.NativeTypes.XtMix;
 import com.xtaudio.xt.NativeTypes.XtSample;
 import com.xtaudio.xt.NativeTypes.XtSystem;
 import com.xtaudio.xt.NativeTypes.XtVersion;
+import com.xtaudio.xt.NativeTypes.XtSetup;
+import com.xtaudio.xt.NativeTypes.XtLevel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +103,8 @@ final class XtNative {
     static class XtTypeMapper extends DefaultTypeMapper {
 
         XtTypeMapper() {
+            addTypeConverter(XtLevel.class, new EnumConverter<>(XtLevel.class, 0));
+            addTypeConverter(XtSetup.class, new EnumConverter<>(XtSetup.class, 0));
             addTypeConverter(XtCause.class, new EnumConverter<>(XtCause.class, 0));
             addTypeConverter(XtSample.class, new EnumConverter<>(XtSample.class, 0));
             addTypeConverter(XtSystem.class, new EnumConverter<>(XtSystem.class, 1));
@@ -177,6 +182,7 @@ final class XtNative {
         System.setProperty("jna.encoding", "UTF-8");
         boolean isWin32 = System.getProperty("os.name").contains("Windows");
         Map<String, Object> options = new HashMap<>();
+        options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
         if (isWin32 && !isX64) {
             options.put(Library.OPTION_FUNCTION_MAPPER, new StdCallFunctionMapper());
             options.put(Library.OPTION_CALLING_CONVENTION, StdCallLibrary.STDCALL_CONVENTION);
@@ -205,7 +211,6 @@ final class XtNative {
     static native long XtStreamGetLatency(Pointer s, XtLatency latency);
     static native Pointer XtStreamGetFormat(Pointer s);
     static native boolean XtStreamIsInterleaved(Pointer s);
-    static native int XtServiceGetSystem(Pointer s);
     static native String XtServiceGetName(Pointer s);
     static native int XtServiceGetCapabilities(Pointer s);
     static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
@@ -218,11 +223,10 @@ final class XtNative {
 
     static native void XtAudioTerminate();
     static native XtVersion XtAudioGetVersion();
-    static native int XtAudioGetServiceCount();
-    static native Pointer XtAudioGetServiceByIndex(int index);
-    static native Pointer XtAudioGetServiceBySetup(int setup);
-    static native Pointer XtAudioGetServiceBySystem(int system);
-    static native XtAttributes XtAudioGetSampleAttributes(int sample);
+    static native Pointer XtAudioGetService(XtSystem system);
+    static native XtSystem XtAudioSetupToSystem(XtSetup setup);
+    static native void XtAudioGetSystems(int[] buffer, IntByReference size);
+    static native XtAttributes XtAudioGetSampleAttributes(XtSample sample);
     static native void XtAudioInit(String id, Pointer window, TraceCallback trace, XtFatalCallback fatal);
     static native void XtDeviceDestroy(Pointer d);
     static native long XtDeviceShowControlPanel(Pointer d);

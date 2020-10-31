@@ -1,25 +1,21 @@
 package com.xtaudio.xt;
 
 import com.sun.jna.Pointer;
-import com.xtaudio.xt.NativeTypes.XtAttributes;
-import com.xtaudio.xt.NativeTypes.XtErrorInfo;
-import com.xtaudio.xt.NativeTypes.XtFatalCallback;
-import com.xtaudio.xt.NativeTypes.XtLevel;
-import com.xtaudio.xt.NativeTypes.XtSample;
-import com.xtaudio.xt.NativeTypes.XtSetup;
-import com.xtaudio.xt.NativeTypes.XtSystem;
-import com.xtaudio.xt.NativeTypes.XtTraceCallback;
-import com.xtaudio.xt.NativeTypes.XtVersion;
+import com.sun.jna.ptr.IntByReference;
+import com.xtaudio.xt.NativeTypes.*;
+
+import java.util.Arrays;
+
+import static com.xtaudio.xt.XtNative.*;
 
 public final class XtAudio implements XtCloseable {
 
     static XtTraceCallback trace;
     private static XtFatalCallback fatal;
-    private static XtNative.TraceCallback nativeTrace;
+    private static TraceCallback nativeTrace;
 
     private static void ForwardTrace(int level, String message) {
-        if (trace != null)
-            trace.callback(XtLevel.class.getEnumConstants()[level], message);
+        if(trace != null) trace.callback(XtLevel.class.getEnumConstants()[level], message);
     }
 
     public XtAudio(String id, Pointer window, XtTraceCallback trace, XtFatalCallback fatal) {
@@ -27,41 +23,27 @@ public final class XtAudio implements XtCloseable {
         XtAudio.fatal = fatal;
         XtAudio.nativeTrace = XtAudio::ForwardTrace;
         XtNative.init();
-        XtNative.XtAudioInit(id, window, nativeTrace, fatal);
+        XtAudioInit(id, window, nativeTrace, fatal);
     }
 
-    @Override
-    public void close() {
-        XtNative.XtAudioTerminate();
+    @Override public void close() { XtAudioTerminate(); }
+    public static XtVersion getVersion() { return XtAudioGetVersion(); }
+    public static XtErrorInfo getErrorInfo(long error) { return XtAudioGetErrorInfo(error); }
+    public static XtSystem setupToSystem(XtSetup setup) { return XtAudioSetupToSystem(setup); }
+    public static XtAttributes getSampleAttributes(XtSample sample) { return XtAudioGetSampleAttributes(sample); }
+
+    public static XtService getService(XtSystem system) {
+        Pointer service = XtAudioGetService(system);
+        return service == Pointer.NULL? null: new XtService(service);
     }
 
-    public static XtVersion getVersion() {
-        return XtNative.XtAudioGetVersion();
-    }
-
-    public static int getServiceCount() {
-        return XtNative.XtAudioGetServiceCount();
-    }
-
-    public static XtErrorInfo getErrorInfo(long error) {
-        return XtNative.XtAudioGetErrorInfo(error);
-    }
-    
-    public static XtService getServiceByIndex(int index) {
-        return new XtService(XtNative.XtAudioGetServiceByIndex(index));
-    }
-
-    public static XtService getServiceBySetup(XtSetup setup) {
-        Pointer service = XtNative.XtAudioGetServiceBySetup(setup.ordinal());
-        return service == Pointer.NULL ? null : new XtService(service);
-    }
-
-    public static XtService getServiceBySystem(XtSystem system) {
-        Pointer service = XtNative.XtAudioGetServiceBySystem(system.ordinal() + 1);
-        return service == Pointer.NULL ? null : new XtService(service);
-    }
-
-    public static XtAttributes getSampleAttributes(XtSample sample) {
-        return XtNative.XtAudioGetSampleAttributes(sample.ordinal());
+    public static XtSystem[] getSystems() {
+        var mapper = new XtTypeMapper();
+        var size = new IntByReference();
+        XtNative.XtAudioGetSystems(null, size);
+        var result = new int[size.getValue()];
+        XtNative.XtAudioGetSystems(result, size);
+        var converter = mapper.getFromNativeConverter(XtSystem.class);
+        return Arrays.stream(result).mapToObj(s -> converter.fromNative(s, null)).toArray(XtSystem[]::new);
     }
 }
