@@ -50,7 +50,7 @@ static void CaptureNonInterleaved(
 
 int CaptureAdvancedMain(int argc, char** argv) {
 
-  Xt::Audio audio("", nullptr, nullptr, nullptr);
+  Xt::Audio audio("", nullptr, nullptr);
   Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), Xt::Channels(2, 0, 0, 0));
 
   auto system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);

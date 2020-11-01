@@ -3,18 +3,13 @@
 #include <numeric>
 #include <iostream>
 
-static void OnFatal() {
-  std::cout << "Fatal error.";
-}
-
-static void OnTrace(Xt::Level level, const std::string& message) {
-  if(level != Xt::Level::Info)
-    std::cout << "-- " << level << ": " << message << "\n";
+static void OnError(const std::string& file, int32_t line, const std::string& function, const std::string& message) {
+  std::cout << file << ": " << line << ": in function " << function << ": " << message << std::endl;
 }
 
 int PrintDetailedMain(int argc, char** argv) {
 
-  Xt::Audio audio("Sample", nullptr, OnTrace, OnFatal);
+  Xt::Audio audio("Sample", nullptr, OnError);
 
   try {
     auto version = Xt::Audio::GetVersion();
@@ -52,12 +47,7 @@ int PrintDetailedMain(int argc, char** argv) {
     }
   }
   catch(const Xt::Exception& e) {
-    auto info = Xt::Audio::GetErrorInfo(e.GetError());
-    std::cout << "Error: "
-      << "system " << info.system << ", "
-      << "fault " << info.fault << ", "
-      << "cause " << info.cause << ", "
-      << "text " << info.text << ".\n";
+    std::cout << e.GetInfo() << "\n";
   }
   return 0;
 }

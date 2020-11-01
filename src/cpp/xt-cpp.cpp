@@ -6,24 +6,16 @@ namespace Xt {
 
 // ---- local ----
 
-static TraceCallback trace = nullptr;
-static FatalCallback fatal = nullptr;
+static ErrorCallback error = nullptr;
 
-static void HandleError(XtError e) {
-  if(e != 0)
-    throw Exception(e); 
-}
-
-static void XT_CALLBACK ForwardFatalCallback() {
-  if(fatal)
-    fatal();
-  throw std::logic_error("Fatal error.");
+static void HandleError(XtError error) {
+  if(error != 0) throw Exception(error);
 }
 
 static void XT_CALLBACK
-ForwardTraceCallback(XtLevel level, const char* message) {
-  if(trace)
-    trace(static_cast<Xt::Level>(level), message);
+ForwardErrorCallback(const char* file, int32_t line, const char* func, const char* message) {
+  if(error)
+    error(file, line, func, message);
 }
 
 struct StreamCallbackForwarder {
@@ -44,11 +36,14 @@ struct StreamCallbackForwarder {
 
 // ---- error ----
 
-Exception::Exception(uint64_t e):
-e(e) {}
-
-uint64_t Exception::GetError() const {
-  return e;
+ErrorInfo Exception::GetInfo() const { 
+  ErrorInfo result;
+  auto info = XtAudioGetErrorInfo(_error);
+  result.fault = info.fault;
+  result.text = std::string(info.text);
+  result.cause = static_cast<Cause>(info.cause);
+  result.system = static_cast<System>(info.system);
+  return result;
 }
 
 // ---- ostream ----
@@ -57,8 +52,13 @@ std::ostream& operator<<(std::ostream& os, const Device& device) {
   return os << device.GetName();
 }
 
-std::ostream& operator<<(std::ostream& os, Level level) {
-  return os << XtPrintLevelToString(static_cast<XtLevel>(level));
+std::ostream& operator<<(std::ostream& os, const ErrorInfo& info) {
+  XtErrorInfo i;
+  i.fault = info.fault;
+  i.text = info.text.c_str();
+  i.cause = static_cast<XtCause>(info.cause);
+  i.system = static_cast<XtSystem>(info.system);
+  return os << XtPrintErrorInfoToString(&i);
 }
 
 std::ostream& operator<<(std::ostream& os, Cause cause) {
@@ -85,29 +85,17 @@ std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
 
 Audio::~Audio() { 
   XtAudioTerminate(); 
-  trace = nullptr; 
-  fatal = nullptr;
+  error = nullptr; 
 }
 
-Audio::Audio(const std::string& id, void* window, TraceCallback t, FatalCallback f) {
-  fatal = f;
-  trace = t;
-  XtAudioInit(id.c_str(), window, &ForwardTraceCallback, &ForwardFatalCallback);
+Audio::Audio(const std::string& id, void* window, ErrorCallback e) {
+  error = e;
+  XtAudioInit(id.c_str(), window, &ForwardErrorCallback);
 }
 
 Version Audio::GetVersion() {
   auto result = XtAudioGetVersion();
   return *reinterpret_cast<Version*>(&result);
-}
-
-ErrorInfo Audio::GetErrorInfo(uint64_t error) { 
-  ErrorInfo result;
-  auto info = XtAudioGetErrorInfo(error);
-  result.fault = info.fault;
-  result.text = std::string(info.text);
-  result.cause = static_cast<Cause>(info.cause);
-  result.system = static_cast<System>(info.system);
-  return result;
 }
 
 Attributes Audio::GetSampleAttributes(Sample sample) {

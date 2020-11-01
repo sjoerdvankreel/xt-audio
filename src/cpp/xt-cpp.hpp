@@ -21,12 +21,6 @@ class Device;
 class Service;
 class Exception;
 
-enum class Level {
-  Info,
-  Error,
-  Fatal
-};
-
 enum class Cause {
   Format,
   Service,
@@ -120,28 +114,25 @@ struct Format final {
   Format(const Mix& mix, const Channels& channels): mix(mix), channels(channels) {}
 };
 
-std::ostream& operator<<(std::ostream& os, Level level);
 std::ostream& operator<<(std::ostream& os, Cause cause);
 std::ostream& operator<<(std::ostream& os, Setup setup);
 std::ostream& operator<<(std::ostream& os, System system);
 std::ostream& operator<<(std::ostream& os, Sample sample);
 std::ostream& operator<<(std::ostream& os, const Device& device);
+std::ostream& operator<<(std::ostream& os, const ErrorInfo& info);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
 
-typedef void (*FatalCallback)();
 typedef void (*XRunCallback)(int32_t index, void* user);
-typedef void (*TraceCallback)(Level level, const std::string& message);
+typedef void (*ErrorCallback)(std::string const& file, int32_t line, std::string const& function, std::string const& message);
 typedef void (*StreamCallback)(
   const Stream& stream, const void* input, void* output, int32_t frames, 
   double time, uint64_t position, bool timeValid, uint64_t error, void* user);
 
 class Exception final: public std::exception {
-private:
-  const uint64_t e;
-
+  const uint64_t _error;
 public:
-  Exception(uint64_t e);
-  uint64_t GetError() const;
+  ErrorInfo GetInfo() const;
+  Exception(uint64_t error): _error(error) {}
 };
 
 class Stream final {
@@ -186,12 +177,11 @@ public:
 class Audio final {
 public:
   ~Audio();
-  Audio(const std::string& id, void* window, TraceCallback trace, FatalCallback fatal);
+  Audio(const std::string& id, void* window, ErrorCallback error);
 
   static Version GetVersion();
   static std::vector<System> GetSystems();
   static System SetupToSystem(Setup setup); 
-  static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
   static std::unique_ptr<Service> GetService(System system);
 };

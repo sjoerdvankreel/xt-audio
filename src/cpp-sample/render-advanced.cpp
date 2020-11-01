@@ -58,7 +58,7 @@ static void RenderNonInterleaved(
 
 int RenderAdvancedMain(int argc, char** argv) {
 
-  Xt::Audio audio("", nullptr, nullptr, nullptr);
+  Xt::Audio audio("", nullptr, nullptr);
   Xt::Format format(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 2, 0));
 
   auto system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);

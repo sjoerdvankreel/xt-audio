@@ -33,7 +33,7 @@ int AggregateMain(int argc, char** argv) {
   Xt::Format inputFormat(mix, Xt::Channels(2, 0, 0, 0));
   Xt::Format outputFormat(mix, Xt::Channels(0, 0, 2, 0));
 
-  Xt::Audio audio("", nullptr, nullptr, nullptr);
+  Xt::Audio audio("", nullptr, nullptr);
   auto system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service)

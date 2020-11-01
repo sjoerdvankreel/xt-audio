@@ -29,7 +29,7 @@ static void Render(
 
 int RenderSimpleMain(int argc, char** argv) {
 
-  Xt::Audio audio("", nullptr, nullptr, nullptr);
+  Xt::Audio audio("", nullptr, nullptr);
   auto system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service)

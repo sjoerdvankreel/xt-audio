@@ -52,6 +52,7 @@ XtError XtiCreateError(XtSystem system, XtFault fault) {
   auto result = static_cast<XtError>(system) << 32ULL | fault;
   auto info = XtAudioGetErrorInfo(result);
   XT_TRACE(XtPrintErrorInfoToString(&info));
+  return result;
 }
 
 bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
