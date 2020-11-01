@@ -33,18 +33,6 @@ struct StreamCallbackForwarder {
   }
 };
 
-// ---- error ----
-
-ErrorInfo Exception::GetInfo() const { 
-  ErrorInfo result;
-  auto info = XtAudioGetErrorInfo(_error);
-  result.fault = info.fault;
-  result.text = std::string(info.text);
-  result.cause = static_cast<Cause>(info.cause);
-  result.system = static_cast<System>(info.system);
-  return result;
-}
-
 // ---- ostream ----
 
 std::ostream& operator<<(std::ostream& os, const Device& device) {
@@ -97,6 +85,16 @@ Version Audio::GetVersion() {
   return *reinterpret_cast<Version*>(&result);
 }
 
+ErrorInfo Audio::GetErrorInfo(uint64_t error) { 
+  ErrorInfo result;
+  auto info = XtAudioGetErrorInfo(error);
+  result.fault = info.fault;
+  result.text = std::string(info.text);
+  result.cause = static_cast<Cause>(info.cause);
+  result.system = static_cast<System>(info.system);
+  return result;
+}
+
 Attributes Audio::GetSampleAttributes(Sample sample) {
   Attributes result;
   auto attrs = XtAudioGetSampleAttributes(static_cast<XtSample>(sample));
@@ -106,16 +104,16 @@ Attributes Audio::GetSampleAttributes(Sample sample) {
   return result;
 }
 
-System Audio::SetupToSystem(Setup setup) {
-  return static_cast<System>(XtAudioSetupToSystem(static_cast<XtSetup>(setup)));
-}
-
 std::vector<System> Audio::GetSystems() {
   int32_t size = 0;
   XtAudioGetSystems(nullptr, &size);
   std::vector<System> result(static_cast<size_t>(size));
   XtAudioGetSystems(reinterpret_cast<XtSystem*>(result.data()), &size);
   return result;
+}
+
+System Audio::SetupToSystem(Setup setup) {
+  return static_cast<System>(XtAudioSetupToSystem(static_cast<XtSetup>(setup)));
 }
 
 std::unique_ptr<Service> Audio::GetService(System system) {

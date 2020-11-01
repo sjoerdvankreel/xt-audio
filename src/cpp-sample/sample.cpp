@@ -50,6 +50,6 @@ int main(int argc, char** argv) {
     }
     return 0;
   } catch(Xt::Exception const& e) {
-    std::cout << e.GetInfo() << "\n";
+    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n";
   }
 }

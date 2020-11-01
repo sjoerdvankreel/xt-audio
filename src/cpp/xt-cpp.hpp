@@ -131,8 +131,8 @@ typedef void (*StreamCallback)(
 class Exception final: public std::exception {
   const uint64_t _error;
 public:
-  ErrorInfo GetInfo() const;
   Exception(uint64_t error): _error(error) {}
+  uint64_t GetError() const { return _error; }
 };
 
 class Stream final {
@@ -182,6 +182,7 @@ public:
   static Version GetVersion();
   static std::vector<System> GetSystems();
   static System SetupToSystem(Setup setup); 
+  static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
   static std::unique_ptr<Service> GetService(System system);
 };

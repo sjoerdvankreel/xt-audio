@@ -47,7 +47,7 @@ int PrintDetailedMain(int argc, char** argv) {
     }
   }
   catch(const Xt::Exception& e) {
-    std::cout << e.GetInfo() << "\n";
+    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n";
   }
   return 0;
 }
