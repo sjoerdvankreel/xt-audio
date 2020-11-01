@@ -142,9 +142,6 @@ void XtiInitPlatform(void* wnd) {
   XtlInitAlsa();
   XtlInitJack();
   XtlInitialized = true;
-  XT_TRACE(XtLevelInfo, "Built with ALSA: %d.", XtAudioGetService(XtSystemAlsa) != nullptr);
-  XT_TRACE(XtLevelInfo, "Built with JACK: %d.", XtAudioGetService(XtSystemJack) != nullptr);
-  XT_TRACE(XtLevelInfo, "Built with PulseAudio: %d.", XtAudioGetService(XtSystemPulse) != nullptr);
 }
 
 int32_t XtiLockIncr(volatile int32_t* dest) {

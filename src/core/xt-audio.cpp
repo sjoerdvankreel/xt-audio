@@ -203,9 +203,7 @@ XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample) {
 
 void XT_CALL XtAudioTerminate(void) {
   XT_ASSERT(XtiCalledOnMainThread());
-  XT_TRACE(XtLevelInfo, "Terminating library (version %d.%d)...", XtAudioGetVersion().major, XtAudioGetVersion().minor);
   XtiTerminatePlatform();
-  XT_TRACE(XtLevelInfo, "Terminated library (version %d.%d).", XtAudioGetVersion().major, XtAudioGetVersion().minor);
   free(XtiId);
   XtiId = nullptr;
   XtiTraceCallback = nullptr;
@@ -216,9 +214,7 @@ void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, Xt
   XtiTraceCallback = trace;
   XtiFatalCallback = fatal;
   XtiId = id == nullptr || strlen(id) == 0? strdup("XT-Audio"): strdup(id);
-  XT_TRACE(XtLevelInfo, "Initializing library (version %d.%d, built %s %s) ...", XtAudioGetVersion().major, XtAudioGetVersion().minor, __DATE__, __TIME__);
   XtiInitPlatform(window);
-  XT_TRACE(XtLevelInfo, "Initialized library (version %d.%d).", XtAudioGetVersion().major, XtAudioGetVersion().minor);
 }
 
 // ---- service ----

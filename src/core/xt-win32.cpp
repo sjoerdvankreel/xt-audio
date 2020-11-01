@@ -169,9 +169,6 @@ void XtiInitPlatform(void* wnd) {
     XT_ASSERT(XtwWindow = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0));
     XtwOwnWindow = true;
   }
-  XT_TRACE(XtLevelInfo, "Built with ASIO: %d.", XtAudioGetService(XtSystemAsio) != nullptr);
-  XT_TRACE(XtLevelInfo, "Built with WASAPI: %d.", XtAudioGetService(XtSystemWasapi) != nullptr);
-  XT_TRACE(XtLevelInfo, "Built with DirectSound: %d.", XtAudioGetService(XtSystemDSound) != nullptr);
 }
 
 // ---- win32 ----
