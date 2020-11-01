@@ -30,7 +30,7 @@ namespace Xt
             XtMix mix = new XtMix(48000, XtSample.Int16);
             XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
             XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
-            using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
+            using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null))
             {
                 var system = XtAudio.SetupToSystem(XtSetup.SystemAudio);
                 XtService service = XtAudio.GetService(system);

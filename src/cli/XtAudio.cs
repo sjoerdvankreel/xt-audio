@@ -6,9 +6,9 @@ namespace Xt
 	public sealed class XtAudio : IDisposable
 	{
 		static XtErrorCallback _errorCallback;
-
 		public void Dispose() => XtAudioTerminate();
 		public static XtVersion GetVersion() => XtAudioGetVersion();
+		public static XtErrorInfo GetErrorInfo(ulong error) => XtAudioGetErrorInfo(error);
 		public static XtSystem SetupToSystem(XtSetup setup) => XtAudioSetupToSystem(setup);
 		public static XtAttributes GetSampleAttributes(XtSample sample) => XtAudioGetSampleAttributes(sample);
 

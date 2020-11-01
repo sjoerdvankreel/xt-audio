@@ -77,7 +77,7 @@ namespace Xt
 
         public static void Main(String[] args)
         {
-            using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null, null))
+            using (XtAudio audio = new XtAudio(null, IntPtr.Zero,  null))
             {
                 var system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
                 XtService service = XtAudio.GetService(system);

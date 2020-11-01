@@ -4,17 +4,11 @@ namespace Xt
 {
 	public static class PrintDetailed
 	{
-		static void OnFatal() => Console.WriteLine("Fatal error.");
-
-		static void OnTrace(XtLevel level, String message)
-		{
-			if (level != XtLevel.Info)
-				Console.WriteLine("-- " + level + ": " + message);
-		}
+		static void OnError(string location, string message) => Console.WriteLine($"{location}: {message}");
 
 		public static void Main()
 		{
-			using var audio = new XtAudio("Sample", IntPtr.Zero, OnTrace, OnFatal);
+			using var audio = new XtAudio("Sample", IntPtr.Zero, OnError);
 			try
 			{
 				var version = XtAudio.GetVersion();

@@ -6,7 +6,7 @@ namespace Xt
 	{
 		public static void Main()
 		{
-			using var audio = new XtAudio(null, IntPtr.Zero, null, null);
+			using var audio = new XtAudio(null, IntPtr.Zero,  null);
 			foreach(var s in XtAudio.GetSystems())
 			{
 				var service = XtAudio.GetService(s);
