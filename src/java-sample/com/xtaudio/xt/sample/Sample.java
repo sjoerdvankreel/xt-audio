@@ -45,13 +45,7 @@ public class Sample {
                 Aggregate.main(args);
             }
         } catch (XtException e) {
-            XtErrorInfo info = XtAudio.getErrorInfo(e.getError());
-            System.out.println("Error:");
-            System.out.println("\tSystem: " +info.system);
-            System.out.println("\tCause: " + info.cause);
-            System.out.println("\tFault: " + info.fault);
-            System.out.println("\tText: " + info.text);
-            e.printStackTrace();
+            System.out.println(XtAudio.getErrorInfo(e.getError()));
         }
     }
 }

@@ -21,7 +21,7 @@ public class FullDuplex {
         XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
         XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
 
-        try (XtAudio audio = new XtAudio(null, null, null, null)) {
+        try (XtAudio audio = new XtAudio(null, null, null)) {
 
             var system = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
             XtService service = XtAudio.getService(system);

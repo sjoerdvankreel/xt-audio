@@ -9,18 +9,13 @@ import java.util.Optional;
 
 public class PrintDetailed {
 
-    static void onFatal() {
-        System.out.println("Fatal error.");
-    }
-
-    static void onTrace(XtLevel level, String message) {
-        if (level != XtLevel.INFO)
-            System.out.println("-- " + level + ": " + message);
+    static void onError(String location, String message) {
+        System.out.println(location + ": " + message);
     }
 
     public static void main(String[] args) {
 
-        try ( XtAudio audio = new XtAudio("Sample", null, PrintDetailed::onTrace, PrintDetailed::onFatal)) {
+        try ( XtAudio audio = new XtAudio("Sample", null, PrintDetailed::onError)) {
 
             XtVersion version = XtAudio.getVersion();
             System.out.println("Version: " + version.major + "." + version.minor);
@@ -56,10 +51,7 @@ public class PrintDetailed {
                 }
             }
         } catch (XtException e) {
-
-            XtErrorInfo info = XtAudio.getErrorInfo(e.getError());
-            System.out.printf("Error: system %s, fault %s, cause %s, text %s.\n",
-                info.system, info.fault, info.cause, info.text);
+            System.out.println(XtAudio.getErrorInfo(e.getError()));
         }
     }
 }

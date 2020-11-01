@@ -25,7 +25,7 @@ public class RenderSimple {
 
     public static void main(String[] args) throws Exception {
 
-        try (XtAudio audio = new XtAudio(null, null, null, null)) {
+        try (XtAudio audio = new XtAudio(null, null, null)) {
 
             var system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);

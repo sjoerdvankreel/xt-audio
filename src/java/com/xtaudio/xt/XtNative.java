@@ -14,21 +14,8 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.StdCallFunctionMapper;
 import com.sun.jna.win32.StdCallLibrary;
-import com.xtaudio.xt.NativeTypes.XtAttributes;
-import com.xtaudio.xt.NativeTypes.XtBuffer;
-import com.xtaudio.xt.NativeTypes.XtCause;
-import com.xtaudio.xt.NativeTypes.XtChannels;
-import com.xtaudio.xt.NativeTypes.XtErrorInfo;
+import com.xtaudio.xt.NativeTypes.*;
 import com.xtaudio.xt.NativeTypes.XtSetup;
-import com.xtaudio.xt.NativeTypes.XtFatalCallback;
-import com.xtaudio.xt.NativeTypes.XtFormat;
-import com.xtaudio.xt.NativeTypes.XtLatency;
-import com.xtaudio.xt.NativeTypes.XtMix;
-import com.xtaudio.xt.NativeTypes.XtSample;
-import com.xtaudio.xt.NativeTypes.XtSystem;
-import com.xtaudio.xt.NativeTypes.XtVersion;
-import com.xtaudio.xt.NativeTypes.XtSetup;
-import com.xtaudio.xt.NativeTypes.XtLevel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +90,6 @@ final class XtNative {
     static class XtTypeMapper extends DefaultTypeMapper {
 
         XtTypeMapper() {
-            addTypeConverter(XtLevel.class, new EnumConverter<>(XtLevel.class, 0));
             addTypeConverter(XtSetup.class, new EnumConverter<>(XtSetup.class, 0));
             addTypeConverter(XtCause.class, new EnumConverter<>(XtCause.class, 0));
             addTypeConverter(XtSample.class, new EnumConverter<>(XtSample.class, 0));
@@ -161,18 +147,13 @@ final class XtNative {
 
     static interface XRunCallback extends Callback {
 
-        void callback(int index, Pointer user);
-    }
-
-    static interface TraceCallback extends Callback {
-
-        void callback(int level, String message);
+        void callback(int index, Pointer user) throws Exception;
     }
 
     static interface StreamCallback extends Callback {
 
         void callback(Pointer stream, Pointer input, Pointer output, int frames,
-            double time, long position, boolean timeValid, long error, Pointer user);
+            double time, long position, boolean timeValid, long error, Pointer user) throws Exception;
     }
 
     static void init() {
@@ -203,6 +184,7 @@ final class XtNative {
             throw new XtException(error);
     }
 
+    static native String XtPrintErrorInfoToString(XtErrorInfo info);
     static native XtErrorInfo XtAudioGetErrorInfo(long error);
     static native void XtStreamDestroy(Pointer s);
     static native long XtStreamStop(Pointer s);
@@ -226,7 +208,7 @@ final class XtNative {
     static native XtSystem XtAudioSetupToSystem(XtSetup setup);
     static native void XtAudioGetSystems(int[] buffer, IntByReference size);
     static native XtAttributes XtAudioGetSampleAttributes(XtSample sample);
-    static native void XtAudioInit(String id, Pointer window, TraceCallback trace, XtFatalCallback fatal);
+    static native void XtAudioInit(String id, Pointer window, XtErrorCallback error);
     static native void XtDeviceDestroy(Pointer d);
     static native long XtDeviceShowControlPanel(Pointer d);
     static native long XtDeviceGetName(Pointer d, byte[] buffer, IntByReference size);

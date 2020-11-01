@@ -11,7 +11,6 @@ import java.util.List;
 
 public final class NativeTypes {
 
-    public enum XtLevel { INFO, ERROR, FATAL }
     public enum XtSample { UINT8, INT16, INT24, INT32, FLOAT32 }
     public enum XtSetup { PRO_AUDIO, SYSTEM_AUDIO, CONSUMER_AUDIO }
     public enum XtSystem { ALSA, ASIO, JACK, PULSE, DSOUND, WASAPI }
@@ -65,6 +64,7 @@ public final class NativeTypes {
         public XtCause cause;
         public String text;
         public int fault;
+        @Override public String toString() { return XtNative.XtPrintErrorInfoToString(this); }
         @Override protected List getFieldOrder() { return Arrays.asList("system", "cause", "text", "fault"); }
     }
 
@@ -106,23 +106,15 @@ public final class NativeTypes {
         }
     }
 
-    public static interface XtFatalCallback extends Callback {
-
-        void callback();
-    }
-
-    public static interface XtXRunCallback {
-
+    public interface XtXRunCallback {
         void callback(int index, Object user) throws Exception;
     }
 
-    public static interface XtTraceCallback {
-
-        void callback(XtLevel level, String message);
+    public interface XtErrorCallback extends Callback {
+        void callback(String location, String message) throws Exception;
     }
 
-    public static interface XtStreamCallback {
-
+    public interface XtStreamCallback {
         void callback(XtStream stream, Object input, Object output, int frames, double time, long position, boolean timeValid, long error, Object user) throws Exception;
     }
 }

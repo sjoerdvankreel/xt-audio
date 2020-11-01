@@ -10,20 +10,11 @@ import static com.xtaudio.xt.XtNative.*;
 
 public final class XtAudio implements XtCloseable {
 
-    static XtTraceCallback trace;
-    private static XtFatalCallback fatal;
-    private static TraceCallback nativeTrace;
-
-    private static void ForwardTrace(int level, String message) {
-        if(trace != null) trace.callback(XtLevel.class.getEnumConstants()[level], message);
-    }
-
-    public XtAudio(String id, Pointer window, XtTraceCallback trace, XtFatalCallback fatal) {
-        XtAudio.trace = trace;
-        XtAudio.fatal = fatal;
-        XtAudio.nativeTrace = XtAudio::ForwardTrace;
+    static XtErrorCallback _errorCallback;
+    public XtAudio(String id, Pointer window, XtErrorCallback error) {
+        _errorCallback = error;
         XtNative.init();
-        XtAudioInit(id, window, nativeTrace, fatal);
+        XtAudioInit(id, window, error);
     }
 
     @Override public void close() { XtAudioTerminate(); }

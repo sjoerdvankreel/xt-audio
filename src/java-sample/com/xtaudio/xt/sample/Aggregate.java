@@ -31,7 +31,7 @@ public class Aggregate {
         XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
         XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
 
-        try (XtAudio audio = new XtAudio(null, null, null, null)) {
+        try (XtAudio audio = new XtAudio(null, null, null)) {
 
             var system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
             XtService service = XtAudio.getService(system);
