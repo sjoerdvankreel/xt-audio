@@ -6,16 +6,15 @@ namespace Xt {
 
 // ---- local ----
 
-static ErrorCallback error = nullptr;
+static ErrorCallback _errorCallback = nullptr;
 
 static void HandleError(XtError error) {
   if(error != 0) throw Exception(error);
 }
 
 static void XT_CALLBACK
-ForwardErrorCallback(const char* file, int32_t line, const char* func, const char* message) {
-  if(error)
-    error(file, line, func, message);
+ForwardErrorCallback(const char* location, const char* message) {
+  if(_errorCallback) _errorCallback(location, message);
 }
 
 struct StreamCallbackForwarder {
@@ -85,11 +84,11 @@ std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
 
 Audio::~Audio() { 
   XtAudioTerminate(); 
-  error = nullptr; 
+  _errorCallback = nullptr; 
 }
 
-Audio::Audio(const std::string& id, void* window, ErrorCallback e) {
-  error = e;
+Audio::Audio(const std::string& id, void* window, ErrorCallback error) {
+  _errorCallback = error;
   XtAudioInit(id.c_str(), window, &ForwardErrorCallback);
 }
 

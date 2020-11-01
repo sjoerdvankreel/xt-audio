@@ -3,8 +3,8 @@
 #include <numeric>
 #include <iostream>
 
-static void OnError(const std::string& file, int32_t line, const std::string& function, const std::string& message) {
-  std::cout << file << ": " << line << ": in function " << function << ": " << message << std::endl;
+static void OnError(const std::string& location, const std::string& message) {
+  std::cout << location << ": " << message << std::endl;
 }
 
 int PrintDetailedMain(int argc, char** argv) {

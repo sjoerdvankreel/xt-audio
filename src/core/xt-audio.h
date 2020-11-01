@@ -243,7 +243,7 @@ typedef struct XtAttributes XtAttributes;
 /** @endcond */
 
 typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
-typedef void (XT_CALLBACK *XtErrorCallback)(const char* file, int32_t line, const char* function, const char* message);
+typedef void (XT_CALLBACK *XtErrorCallback)(const char* location, const char* message);
 typedef void (XT_CALLBACK *XtStreamCallback)(
   const XtStream* stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, XtBool timeValid, XtError error, void* user);

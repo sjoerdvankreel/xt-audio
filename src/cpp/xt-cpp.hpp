@@ -123,7 +123,7 @@ std::ostream& operator<<(std::ostream& os, const ErrorInfo& info);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
 
 typedef void (*XRunCallback)(int32_t index, void* user);
-typedef void (*ErrorCallback)(std::string const& file, int32_t line, std::string const& function, std::string const& message);
+typedef void (*ErrorCallback)(const std::string& location, const std::string& message);
 typedef void (*StreamCallback)(
   const Stream& stream, const void* input, void* output, int32_t frames, 
   double time, uint64_t position, bool timeValid, uint64_t error, void* user);

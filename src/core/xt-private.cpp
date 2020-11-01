@@ -88,12 +88,14 @@ void XtiVTrace(const char* file, int32_t line, const char* func, const char* for
   
   va_list argCopy;
   va_copy(argCopy, arg);
+  std::ostringstream location;
+  location << file << ":" << line << ": in function " << func;
   int size = vsnprintf(nullptr, 0, format, arg);
   if(size > 0) {
     std::vector<char> message(static_cast<size_t>(size + 1), '\0');
     vsnprintf(&message[0], size + 1, format, argCopy);
     if(XtiErrorCallback != nullptr)
-      XtiErrorCallback(file, line, func, message.data());
+      XtiErrorCallback(location.str().c_str(), message.data());
   }
   va_end(argCopy);
 }
