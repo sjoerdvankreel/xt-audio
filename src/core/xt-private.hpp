@@ -17,20 +17,18 @@
 // ---- internal ----
 
 #define XT_VERIFY_STREAM_CALLBACK(expr) \
-  VerifyStreamCallback((expr), XT_FILE, __LINE__, __func__, #expr)
+  VerifyStreamCallback((expr), __FILE__, __LINE__, __func__, #expr)
 
 #define XT_WAIT_TIMEOUT_MS 10000
-#define XT_FAIL(m) XtiFail(XT_FILE, __LINE__, __func__, m)
+#define XT_FAIL(m) XtiFail(__FILE__, __LINE__, __func__, m)
 #define XT_ASSERT(c) ((c) || (XT_FAIL("Assertion failed: " #c), 0))
-#define XT_FILE (strrchr(__FILE__, XT_SEPARATOR) ? strrchr(__FILE__, XT_SEPARATOR) + 1 : __FILE__)
-#define XT_TRACE(l, m, ...) XtiTrace(l, XT_FILE, __LINE__, __func__, m, __VA_ARGS__)
+#define XT_TRACE(fmt, ...) XtiTrace(__FILE__, __LINE__, __func__, fmt, __VA_ARGS__)
 
-static_assert(sizeof(XtLevel) == 4, "sizeof(XtLevel) == 4");
-static_assert(sizeof(XtCause) == 4, "sizeof(XtCause) == 4");
-static_assert(sizeof(XtSetup) == 4, "sizeof(XtSetup) == 4");
-static_assert(sizeof(XtSystem) == 4, "sizeof(XtSystem) == 4");
-static_assert(sizeof(XtSample) == 4, "sizeof(XtSample) == 4");
-static_assert(sizeof(XtCapabilities) == 4, "sizeof(XtCapabilities) == 4");
+static_assert(sizeof(XtCause) == 4);
+static_assert(sizeof(XtSetup) == 4);
+static_assert(sizeof(XtSystem) == 4);
+static_assert(sizeof(XtSample) == 4);
+static_assert(sizeof(XtCapabilities) == 4);
 
 // ---- forward ----
 
@@ -86,8 +84,7 @@ const XtService* XtiService ## name = &Service ## name
 extern char* XtiId;
 struct XtAggregate;
 typedef uint32_t XtFault;
-extern XtTraceCallback XtiTraceCallback;
-extern XtFatalCallback XtiFatalCallback;
+extern XtErrorCallback XtiErrorCallback;
 
 enum class XtBlockingStreamState {
   Stopped,
@@ -236,8 +233,8 @@ bool XtiValidateFormat(XtSystem system, const XtFormat& format);
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp);
 void XtiOutputString(const char* source, char* buffer, int32_t* size);
 void XtiFail(const char* file, int line, const char* func, const char* message);
-void XtiTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, ...);
-void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, va_list arg);
+void XtiTrace(const char* file, int32_t line, const char* func, const char* format, ...);
+void XtiVTrace(const char* file, int32_t line, const char* func, const char* format, va_list arg);
 
 void XT_CALLBACK XtiSlaveCallback(
   const XtStream* stream, const void* input, void* output, int32_t frames,

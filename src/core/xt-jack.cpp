@@ -117,12 +117,8 @@ struct JackStream: public XtStream {
 void JackSilentCallback(const char*) {
 }
 
-void JackInfoCallback(const char* msg) {
-  XT_TRACE(XtLevelInfo, "JACK: %s", msg);
-}
-
 void JackErrorCallback(const char* msg) {
-  XT_TRACE(XtLevelError, "JACK: %s", msg);
+  XT_TRACE("JACK: %s", msg);
 }
 
 static int32_t CountPorts(jack_client_t* client, XtBool output) {
@@ -196,12 +192,10 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
 // ---- linux ----
 
 void XtlInitJack() {
-  jack_set_info_function(&JackInfoCallback);
   jack_set_error_function(&JackErrorCallback);
 }
 
 void XtlTerminateJack() {
-  jack_set_info_function(&JackSilentCallback);
   jack_set_error_function(&JackSilentCallback);
 }
 

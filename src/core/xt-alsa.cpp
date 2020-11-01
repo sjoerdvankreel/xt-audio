@@ -13,7 +13,7 @@ const XtService* XtiServiceAlsa = nullptr;
 #include <alsa/asoundlib.h>
 
 #define XT_VERIFY_ALSA(c) do { int e = (c); if(e < 0) \
-  return XT_TRACE(XtLevelError, "%s", #c), e; } while(0)
+  return XT_TRACE("%s", #c), e; } while(0)
 
 // ---- local ----
 
@@ -125,7 +125,7 @@ static void LogError(const char *file, int line,
   va_list arg;
   va_start(arg, fmt);
   if(err != 0)
-    XtiVTrace(XtLevelError, file, line, fun, fmt, arg);
+    XtiVTrace(file, line, fun, fmt, arg);
   va_end(arg);
 }
 

@@ -40,15 +40,6 @@ typedef struct XtStream XtStream;
 typedef struct XtService XtService;
 /** @endcond */
 
-enum XtLevel {
-  /** @brief An informational message. */ 
-  XtLevelInfo,
-  /** @brief An error message. */ 
-  XtLevelError,
-  /** @brief A fatal error message. */ 
-  XtLevelFatal
-};
-
 enum XtCause {
   /** @brief Invalid or unsupported audio format. */
   XtCauseFormat,
@@ -155,7 +146,6 @@ enum XtCapabilities {
 };
 
 /** @cond */
-typedef enum XtLevel XtLevel;
 typedef enum XtCause XtCause;
 typedef enum XtSetup XtSetup;
 typedef enum XtSystem XtSystem;
@@ -252,9 +242,8 @@ typedef struct XtErrorInfo XtErrorInfo;
 typedef struct XtAttributes XtAttributes;
 /** @endcond */
 
-typedef void (XT_CALLBACK *XtFatalCallback)(void);
 typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
-typedef void (XT_CALLBACK *XtTraceCallback)(XtLevel level, const char* message);
+typedef void (XT_CALLBACK *XtErrorCallback)(const char* file, int32_t line, const char* function, const char* message);
 typedef void (XT_CALLBACK *XtStreamCallback)(
   const XtStream* stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, XtBool timeValid, XtError error, void* user);
@@ -263,11 +252,11 @@ typedef void (XT_CALLBACK *XtStreamCallback)(
  * @ingroup print
  * @{ 
  */
-XT_API const char* XT_CALL XtPrintLevelToString(XtLevel level);
 XT_API const char* XT_CALL XtPrintCauseToString(XtCause cause);
 XT_API const char* XT_CALL XtPrintSetupToString(XtSetup setup);
 XT_API const char* XT_CALL XtPrintSystemToString(XtSystem system);
 XT_API const char* XT_CALL XtPrintSampleToString(XtSample sample);
+XT_API const char* XT_CALL XtPrintErrorInfoToString(const XtErrorInfo* info);
 XT_API const char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities);
 /** @} */
 
@@ -284,7 +273,7 @@ XT_API void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size);
 
 XT_API void XT_CALL XtAudioTerminate(void);
 XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
-XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, XtFatalCallback fatal);
+XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback error);
 /** @} */
 
 /** 

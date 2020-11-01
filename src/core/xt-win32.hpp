@@ -19,7 +19,7 @@
 #define XT_VERIFY_COM(e)                   \
 do {                                       \
   if(FAILED(hr = (e)))                     \
-    return XT_TRACE(XtLevelError, #e), hr; \
+    return XT_TRACE(#e), hr; \
 } while(0)
 
 extern const char* XtwWfxChannelNames[18];

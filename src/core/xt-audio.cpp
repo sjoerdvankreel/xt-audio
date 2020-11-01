@@ -6,6 +6,7 @@
 #include "xt-private.hpp"
 #include <cassert>
 #include <sstream>
+#include <cstring>
 #include <iomanip>
 #include <inttypes.h>
 
@@ -99,15 +100,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtFormat* format, XtBool in
 
 // ---- print ----
 
-const char* XT_CALL XtPrintLevelToString(XtLevel level) {
-  switch(level) {
-  case XtLevelInfo: return "Info";
-  case XtLevelError: return "Error";
-  case XtLevelFatal: return "Fatal";
-  default: assert(false); return nullptr;
-  }
-}
-
 const char* XT_CALL XtPrintCauseToString(XtCause cause) {
   switch(cause) {
   case XtCauseFormat: return "Format";
@@ -166,6 +158,18 @@ const char* XT_CALL XtPrintCapabilitiesToString(XtCapabilities capabilities) {
   return buffer;
 }
 
+const char* XT_CALL XtPrintErrorInfoToString(const XtErrorInfo* info) {
+  std::ostringstream stream;
+  static thread_local char buffer[1024];
+  std::memset(buffer, 0, sizeof(buffer));
+  stream << XtPrintSystemToString(info->system);
+  stream << " " << XtPrintCauseToString(info->cause);
+  stream << "error: " << info->fault << " (" << info->text << ")";
+  auto result = stream.str();
+  std::memcpy(buffer, result.c_str(), std::min(static_cast<size_t>(1023), result.size()));
+  return buffer;
+}
+
 // ---- audio ----
 
 XtVersion XT_CALL XtAudioGetVersion(void) {
@@ -206,13 +210,11 @@ void XT_CALL XtAudioTerminate(void) {
   XtiTerminatePlatform();
   free(XtiId);
   XtiId = nullptr;
-  XtiTraceCallback = nullptr;
-  XtiFatalCallback = nullptr;
+  XtiErrorCallback = nullptr;
 }
 
-void XT_CALL XtAudioInit(const char* id, void* window, XtTraceCallback trace, XtFatalCallback fatal) {
-  XtiTraceCallback = trace;
-  XtiFatalCallback = fatal;
+void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback error) {
+  XtiErrorCallback = error;
   XtiId = id == nullptr || strlen(id) == 0? strdup("XT-Audio"): strdup(id);
   XtiInitPlatform(window);
 }

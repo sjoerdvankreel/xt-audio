@@ -29,8 +29,7 @@ static void Deinterleave(
 // ---- internal ----
 
 char* XtiId = nullptr;
-XtTraceCallback XtiTraceCallback = nullptr;
-XtFatalCallback XtiFatalCallback = nullptr;
+XtErrorCallback XtiErrorCallback = nullptr;
 
 int32_t XtiGetPopCount64(uint64_t x) {
   const uint64_t m1 = 0x5555555555555555;
@@ -50,9 +49,9 @@ int32_t XtiGetSampleSize(XtSample sample) {
 XtError XtiCreateError(XtSystem system, XtFault fault) {
   if(fault == 0)
     return 0;
-  const char* code = XtAudioGetService(system)->GetFaultText(fault);
-  XT_TRACE(XtLevelError, "Fault: system %d, code %u (%s).", system, fault, code);
-  return static_cast<uint64_t>(system) << 32ULL | fault;
+  auto result = static_cast<XtError>(system) << 32ULL | fault;
+  auto info = XtAudioGetErrorInfo(result);
+  XT_TRACE(XtPrintErrorInfoToString(&info));
 }
 
 bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
@@ -73,36 +72,27 @@ bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
 }
 
 void XtiFail(const char* file, int line, const char* func, const char* message) {
-  XtiTrace(XtLevelFatal, file, line, func, message);
-  if(XtiFatalCallback)
-    XtiFatalCallback();
+  XtiTrace(file, line, func, message);
   std::abort();
 }
 
-void XtiTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, ...) {
+void XtiTrace(const char* file, int32_t line, const char* func, const char* format, ...) {
   va_list arg;
   va_start(arg, format);
-  XtiVTrace(level, file, line, func, format, arg);
+  XtiVTrace(file, line, func, format, arg);
   va_end(arg);
 }
 
-void XtiVTrace(XtLevel level, const char* file, int32_t line, const char* func, const char* format, va_list arg) {
+void XtiVTrace(const char* file, int32_t line, const char* func, const char* format, va_list arg) {
   
   va_list argCopy;
   va_copy(argCopy, arg);
-  std::ostringstream oss;
-
   int size = vsnprintf(nullptr, 0, format, arg);
   if(size > 0) {
     std::vector<char> message(static_cast<size_t>(size + 1), '\0');
     vsnprintf(&message[0], size + 1, format, argCopy);
-    if(level > XtLevelInfo)
-      oss << file << ":" << line << ": in function " << func << ": ";
-    oss << &message[0];
-    if(XtiTraceCallback)
-      XtiTraceCallback(level, oss.str().c_str());
-    if(level == XtLevelFatal)
-      std::cerr << "XT-Audio: FATAL: " << oss.str().c_str() << std::endl;
+    if(XtiErrorCallback != nullptr)
+      XtiErrorCallback(file, line, func, message.data());
   }
   va_end(argCopy);
 }

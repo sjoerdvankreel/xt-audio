@@ -25,7 +25,7 @@ static const int ASE_Format = ASE_NoMemory + 1;
 #define XT_ASIO_CALL __cdecl
 #define XT_TO_UINT64(lo, hi) ((uint64_t)(lo) | ((uint64_t)(hi) << 32))
 #define XT_VERIFY_ASIO(c) do { auto e = (c); \
-  if(!IsAsioSuccess(e)) return XT_TRACE(XtLevelError, #c), e; } while(0)
+  if(!IsAsioSuccess(e)) return XT_TRACE(#c), e; } while(0)
 
 typedef void (XT_ASIO_CALL* SdkBufferSwitch)(long, ASIOBool);
 typedef void (XT_ASIO_CALL* ContextBufferSwitch)(void*, long, ASIOBool);
