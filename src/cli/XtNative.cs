@@ -9,20 +9,6 @@ namespace Xt
 	{
 		[SuppressUnmanagedCodeSecurity]
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
-		internal delegate void FatalCallbackWin32();
-
-		[SuppressUnmanagedCodeSecurity]
-		internal delegate void FatalCallbackLinux();
-
-		[SuppressUnmanagedCodeSecurity]
-		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
-		internal delegate void TraceCallbackWin32(XtLevel level, string message);
-
-		[SuppressUnmanagedCodeSecurity]
-		internal delegate void TraceCallbackLinux(XtLevel level, string message);
-
-		[SuppressUnmanagedCodeSecurity]
-		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 		internal delegate void StreamCallbackWin32(IntPtr stream, IntPtr input, IntPtr output,
 			int frames, double time, ulong position, bool timeValid, ulong error, IntPtr user);
 
@@ -57,7 +43,8 @@ namespace Xt
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
-
+		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
+		internal static extern IntPtr XtPrintErrorInfoToString(ref XtErrorInfo info);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtStreamDestroy(IntPtr s);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
@@ -101,7 +88,7 @@ namespace Xt
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern void XtAudioInit([MarshalAs(UnmanagedType.LPUTF8Str)] string id, IntPtr window, IntPtr trace, IntPtr fatal);
+		internal static extern void XtAudioInit([MarshalAs(UnmanagedType.LPUTF8Str)] string id, IntPtr window, XtErrorCallback error);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtDeviceDestroy(IntPtr d);

@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Security;
+using static Xt.XtNative;
 
 namespace Xt
 {
@@ -26,34 +28,6 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct XtMix
-	{
-		public int rate;
-		public XtSample sample;
-		public XtMix(int rate, XtSample sample)
-			=> (this.rate, this.sample) = (rate, sample);
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	public struct XtFormat
-	{
-		public XtMix mix;
-		public XtChannels channels;
-		public XtFormat(XtMix mix, XtChannels channels)
-			=> (this.mix, this.channels) = (mix, channels);
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	public struct XtErrorInfo
-	{
-		public XtSystem system;
-		public XtCause cause;
-		IntPtr _text;
-		public int fault;
-		public unsafe string text => NativeUtility.PtrToStringUTF8(_text);
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
 	public struct XtAttributes
 	{
 		public int size;
@@ -61,6 +35,22 @@ namespace Xt
 		int _isSigned;
 		public bool isFloat { get => _isFloat != 0; set => _isFloat = value ? 0 : 1; }
 		public bool isSigned { get => _isSigned != 0; set => _isSigned = value ? 0 : 1; }
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct XtMix
+	{
+		public int rate;
+		public XtSample sample;
+		public XtMix(int rate, XtSample sample) => (this.rate, this.sample) = (rate, sample);
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct XtFormat
+	{
+		public XtMix mix;
+		public XtChannels channels;
+		public XtFormat(XtMix mix, XtChannels channels) => (this.mix, this.channels) = (mix, channels);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -74,15 +64,25 @@ namespace Xt
 			=> (this.inputs, this.inMask, this.outputs, this.outMask) = (inputs, inMask, outputs, outMask);
 	}
 
-	public enum XtLevel : int { Info, Error, Fatal }
+	[StructLayout(LayoutKind.Sequential)]
+	public struct XtErrorInfo
+	{
+		public XtSystem system;
+		public XtCause cause;
+		IntPtr _text;
+		public int fault;
+		public string text => NativeUtility.PtrToStringUTF8(_text);
+		public override string ToString() => NativeUtility.PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
+	}
+
 	public enum XtSetup : int { ProAudio, SystemAudio, ConsumerAudio }
 	public enum XtSample : int { UInt8, Int16, Int24, Int32, Float32 }
 	public enum XtCause : int { Format, Service, Generic, Unknown, Endpoint }
 	public enum XtSystem : int { Alsa = 1, Asio, Jack, Pulse, DSound, Wasapi }
 	[Flags] public enum XtCapabilities : int { None = 0x0, Time = 0x1, Latency = 0x2, FullDuplex = 0x4, ChannelMask = 0x8, XRunDetection = 0x10 }
 
-	public delegate void XtFatalCallback();
 	public delegate void XtXRunCallback(int index, object user);
-	public delegate void XtTraceCallback(XtLevel level, string message);
+	[SuppressUnmanagedCodeSecurity]
+	public delegate void XtErrorCallback(string location, string message);
 	public delegate void XtStreamCallback(XtStream stream, object input, object output, int frames, double time, ulong position, bool timeValid, ulong error, object user);
 }

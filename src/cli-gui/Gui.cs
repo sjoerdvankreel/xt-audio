@@ -67,14 +67,14 @@ namespace Xt
 			bufferTip.SetToolTip(bufferSize, bufferSize.Value.ToString());
 		}
 
-		private void OnTrace(XtLevel level, string message)
+		private void OnError(string location, string message)
 		{
-			AddMessage(() => string.Format("{0}: {1}", level, message), level != XtLevel.Info);
+			AddMessage(() => string.Format("{0}: {1}", location, message));
 		}
 
 		private void OnStreamError(Func<string> error)
 		{
-			AddMessage(error, true);
+			AddMessage(error);
 			BeginInvoke(new Action(() => Stop()));
 		}
 
@@ -97,17 +97,6 @@ namespace Xt
 			deviceViews.Clear();
 		}
 
-		private void OnFatal()
-		{
-			string trace = Environment.StackTrace;
-			string message = "A fatal error occurred." + Environment.NewLine + "StackTrace:" + Environment.NewLine + trace;
-			Invoke(new Action(() =>
-			{
-				MessageBox.Show(this, message, "Fatal error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Environment.FailFast("Fatal error.");
-			}));
-		}
-
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			base.OnClosing(e);
@@ -119,17 +108,11 @@ namespace Xt
 
 		private void AddMessage(Func<string> message)
 		{
-			AddMessage(message, false);
-		}
-
-		private void AddMessage(Func<string> message, bool error)
-		{
 			messages.BeginInvoke(new Action(() =>
 			{
 				string msg = message();
 				log.WriteLine(msg);
-				if (error)
-					log.Flush();
+				log.Flush();
 				messages.Text += string.Format("{0} {1}{2}", DateTime.Now, msg, Environment.NewLine);
 				if (messages.Text.Length > 4000)
 					messages.Text = messages.Text.Substring(messages.Text.Length - 4000);
@@ -162,7 +145,7 @@ namespace Xt
 			log = new StreamWriter("xt-audio.log");
 
 			Text = $"XT-Audio {libraryVersion.major}.{libraryVersion.minor}";
-			audio = new XtAudio("XT-Gui", Handle, OnTrace, OnFatal);
+			audio = new XtAudio("XT-Gui", Handle, OnError);
 			rate.DataSource = Rates;
 			rate.SelectedItem = 44100;
 			sample.DataSource = Samples;
