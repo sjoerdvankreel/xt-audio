@@ -29,8 +29,7 @@ namespace Xt
 		{
 			if (error != 0)
 			{
-				var info = XtAudio.GetErrorInfo(error);
-				onError(() => "Stream callback error: " + info.cause + " (" + info.text + ")");
+				onError(() => "Stream callback error: " + XtAudio.GetErrorInfo(error));
 				return;
 			}
 

@@ -54,13 +54,7 @@ namespace Xt
                 }
             } catch (XtException e)
             {
-                var info = XtAudio.GetErrorInfo(e.GetError());
-                Console.WriteLine("Error:");
-                Console.WriteLine("\tSystem: " + info.system);
-                Console.WriteLine("\tCause: " + info.cause);
-                Console.WriteLine("\tFault: " + info.fault);
-                Console.WriteLine("\tText: " + info.text);
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(XtAudio.GetErrorInfo(e.GetError()));
             }
         }
     }
