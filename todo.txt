@@ -33,3 +33,11 @@
 * move all docs to own file
 * remove formatfault
 * cpp constexpr
+* remove friends
+* Xt::Xt
+* std::make_unique
+* const x -> x const
+* CoreStructs/CoreEnums
+* Split files to device/stream/service
+* drop cpp ctors in favor of uniform initializer
+* d/s/s -> _handle
