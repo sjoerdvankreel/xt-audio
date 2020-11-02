@@ -119,7 +119,7 @@ const XtService* XT_CALL XtAudioGetService(XtSystem system) {
   case XtSystemDirectSound: return XtiServiceDirectSound;
   case XtSystemAlsa:
   case XtSystemJack:
-  case XtSystemPulse: return nullptr;
+  case XtSystemPulseAudio: return nullptr;
   default: return XT_FAIL("Unknown system."), nullptr;
   }
 }

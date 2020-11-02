@@ -9,7 +9,7 @@ static bool XtlInitialized = false;
 
 extern const XtService* XtiServiceAlsa;
 extern const XtService* XtiServiceJack;
-extern const XtService* XtiServicePulse;
+extern const XtService* XtiServicePulseAudio;
 
 static XtBlockingStreamState ReadLinuxBlockingStreamState(
   XtlLinuxBlockingStream* stream) {
@@ -98,7 +98,7 @@ void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
   std::vector<XtSystem> systems;
   if(XtiServiceAlsa != nullptr) systems.push_back(XtSystemAlsa);
   if(XtiServiceJack != nullptr) systems.push_back(XtSystemJack);
-  if(XtiServicePulse != nullptr) systems.push_back(XtSystemPulse);
+  if(XtiServicePulseAudio != nullptr) systems.push_back(XtSystemPulseAudio);
   auto count = static_cast<int32_t>(systems.size());
   if(buffer == nullptr) 
     *size = count;
@@ -111,7 +111,7 @@ const XtService* XT_CALL XtAudioGetService(XtSystem system) {
   switch(system) {
   case XtSystemAlsa: return XtiServiceAlsa;
   case XtSystemJack: return XtiServiceJack;
-  case XtSystemPulse: return XtiServicePulse;
+  case XtSystemPulseAudio: return XtiServicePulseAudio;
   case XtSystemAsio:
   case XtSystemWasapi:
   case XtSystemDirectSound return nullptr;
@@ -123,8 +123,8 @@ XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup) {
   switch(setup) {
   case XtSetupProAudio: return XtSystemJack;
   case XtSetupSystemAudio: return XtSystemAlsa;
-  case XtSetupConsumerAudio: return XtSystemPulse;
-  default: return XT_FAIL("Unknown setup."), XtSystemPulse;
+  case XtSetupConsumerAudio: return XtSystemPulseAudio;
+  default: return XT_FAIL("Unknown setup."), static_cast<XtSystem>(0);
   }
 }
 

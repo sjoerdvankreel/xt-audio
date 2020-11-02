@@ -33,8 +33,8 @@ enum class System {
   Alsa = 1,
   Asio,
   Jack,
-  Pulse,
   Wasapi,
+  PulseAudio,
   DirectSound
 };
 

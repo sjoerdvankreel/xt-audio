@@ -60,10 +60,10 @@ enum XtSystem {
   XtSystemAsio,
   /** @brief Linux JACK backend. */
   XtSystemJack,
-  /** @brief Linux PulseAudio backend. */
-  XtSystemPulse,
   /** @brief Windows WASAPI backend. */
   XtSystemWasapi,
+  /** @brief Linux PulseAudio backend. */
+  XtSystemPulseAudio,
   /** @brief Windows DirectSound backend. */
   XtSystemDirectSound
 };
