@@ -55,13 +55,13 @@ enum XtCause {
 
 enum XtSystem {
   /** @brief Linux ALSA backend. */
-  XtSystemAlsa = 1,
+  XtSystemALSA = 1,
   /** @brief Windows Steinberg ASIO backend. */
-  XtSystemAsio,
+  XtSystemASIO,
   /** @brief Linux JACK backend. */
-  XtSystemJack,
+  XtSystemJACK,
   /** @brief Windows WASAPI backend. */
-  XtSystemWasapi,
+  XtSystemWASAPI,
   /** @brief Linux PulseAudio backend. */
   XtSystemPulseAudio,
   /** @brief Windows DirectSound backend. */

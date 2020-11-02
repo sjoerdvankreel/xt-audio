@@ -32,3 +32,4 @@
 * remove underscores from header guards
 * move all docs to own file
 * remove formatfault
+* cpp constexpr

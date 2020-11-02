@@ -30,10 +30,10 @@ enum class Cause {
 };
 
 enum class System {
-  Alsa = 1,
-  Asio,
-  Jack,
-  Wasapi,
+  ALSA = 1,
+  ASIO,
+  JACK,
+  WASAPI,
   PulseAudio,
   DirectSound
 };

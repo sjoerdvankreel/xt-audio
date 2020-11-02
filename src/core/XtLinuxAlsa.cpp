@@ -74,11 +74,11 @@ struct AlsaHints {
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(Alsa);
+XT_DECLARE_SERVICE(ALSA, Alsa);
 
 struct AlsaDevice: public XtDevice {
   const AlsaDeviceInfo info;
-  XT_IMPLEMENT_DEVICE(Alsa);
+  XT_IMPLEMENT_DEVICE(ALSA);
 
   AlsaDevice(const AlsaDeviceInfo& info): info(info) {}
   XtFault SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
@@ -97,7 +97,7 @@ struct AlsaStream: public XtlLinuxBlockingStream {
   std::vector<char> interleavedAudio;
   std::vector<void*> nonInterleavedAudio;
   std::vector<std::vector<char>> nonInterleavedAudioChannels;  
-  XT_IMPLEMENT_BLOCKING_STREAM(Alsa);
+  XT_IMPLEMENT_BLOCKING_STREAM(ALSA);
 
   ~AlsaStream() { Stop(); }
   AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 

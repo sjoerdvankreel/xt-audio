@@ -34,13 +34,13 @@ typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, 
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(Asio);
+XT_DECLARE_SERVICE(ASIO, Asio);
 
 struct AsioDevice: public XtDevice {
   bool streamOpen;
   const std::string name;
   const CComPtr<IASIO> asio;
-  XT_IMPLEMENT_DEVICE(Asio);
+  XT_IMPLEMENT_DEVICE(ASIO);
   
   ~AsioDevice() { XT_ASSERT(!streamOpen); }
   AsioDevice(const std::string& name, CComPtr<IASIO> asio): 
@@ -58,7 +58,7 @@ struct AsioStream: public XtStream {
   std::vector<void*> outputChannels;
   std::vector<ASIOBufferInfo> buffers;
   const std::unique_ptr<asmjit::JitRuntime> runtime;
-  XT_IMPLEMENT_CALLBACK_STREAM(Asio);
+  XT_IMPLEMENT_CALLBACK_STREAM(ASIO);
 
   ~AsioStream();
   AsioStream(AsioDevice* d, const XtFormat& format, 

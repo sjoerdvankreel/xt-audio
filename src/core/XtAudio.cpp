@@ -122,10 +122,10 @@ const char* XT_CALL XtPrintSetupToString(XtSetup setup) {
 
 const char* XT_CALL XtPrintSystemToString(XtSystem system) {
   switch(system) {
-  case XtSystemAlsa: return "Alsa";
-  case XtSystemAsio: return "Asio";
-  case XtSystemJack: return "Jack";
-  case XtSystemWasapi: return "Wasapi";
+  case XtSystemALSA: return "ALSA";
+  case XtSystemASIO: return "ASIO";
+  case XtSystemJACK: return "JACK";
+  case XtSystemWASAPI: return "WASAPI";
   case XtSystemPulseAudio: return "PulseAudio";
   case XtSystemDirectSound: return "DirectSound";
   default: assert(false); return nullptr;

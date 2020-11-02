@@ -86,11 +86,11 @@ struct XtJackConnection {
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(Jack);
+XT_DECLARE_SERVICE(JACK, Jack);
 
 struct JackDevice: public XtDevice {
   const XtJackClient client;
-  XT_IMPLEMENT_DEVICE(Jack);
+  XT_IMPLEMENT_DEVICE(JACK);
   JackDevice(XtJackClient&& c):
   client(std::move(c)) { XT_ASSERT(client.client != nullptr); }
 };
@@ -102,7 +102,7 @@ struct JackStream: public XtStream {
   std::vector<void*> inputChannels;
   std::vector<void*> outputChannels;
   std::vector<XtJackConnection> connections;
-  XT_IMPLEMENT_CALLBACK_STREAM(Jack);
+  XT_IMPLEMENT_CALLBACK_STREAM(JACK);
 
   JackStream(XtJackClient&& client, 
     std::vector<XtJackPort>&& inputs, std::vector<XtJackPort>&& outputs,

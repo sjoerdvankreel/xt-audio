@@ -21,7 +21,7 @@ static const double XtDsDefaultBufferMs = 500.0;
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(DirectSound);
+XT_DECLARE_SERVICE(DirectSound, DirectSound);
 
 struct DirectSoundDevice: public XtDevice {
   const GUID guid;

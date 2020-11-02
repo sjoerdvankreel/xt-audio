@@ -46,7 +46,7 @@ struct XtPaSimple {
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(PulseAudio);
+XT_DECLARE_SERVICE(PulseAudio, PulseAudio);
 
 struct PulseAudioDevice: public XtDevice {
   const bool output;

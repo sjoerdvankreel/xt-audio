@@ -204,8 +204,8 @@ namespace Xt
 			capabilities.Text = s.GetCapabilities().ToString();
 			defaultInput.Text = inputView.device == null ? "null" : inputView.device.ToString();
 			defaultOutput.Text = outputView.device == null ? "null" : outputView.device.ToString();
-			inputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.Asio;
-			outputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.Asio;
+			inputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.ASIO;
+			outputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.ASIO;
 		}
 
 		private void FormatOrDeviceChanged()
@@ -363,7 +363,7 @@ namespace Xt
 
 				XtSystem system = (XtSystem)this.system.SelectedItem;
 				XRunCallback xRunCallbackWrapper = new XRunCallback(AddMessage);
-				bool doLogXRuns = logXRuns.CheckState == CheckState.Checked || (logXRuns.CheckState == CheckState.Indeterminate && system != XtSystem.Jack);
+				bool doLogXRuns = logXRuns.CheckState == CheckState.Checked || (logXRuns.CheckState == CheckState.Indeterminate && system != XtSystem.JACK);
 				XtXRunCallback xRunCallback = doLogXRuns ? xRunCallbackWrapper.OnCallback : (XtXRunCallback)null;
 
 				XtFormat inputFormat = GetFormat(false).Value;

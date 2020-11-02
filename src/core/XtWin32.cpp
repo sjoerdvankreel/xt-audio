@@ -101,8 +101,8 @@ const char* XtwWfxChannelNames[18] = {
 
 void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
   std::vector<XtSystem> systems;
-  if(XtiServiceAsio != nullptr) systems.push_back(XtSystemAsio);
-  if(XtiServiceWasapi != nullptr) systems.push_back(XtSystemWasapi);
+  if(XtiServiceAsio != nullptr) systems.push_back(XtSystemASIO);
+  if(XtiServiceWasapi != nullptr) systems.push_back(XtSystemWASAPI);
   if(XtiServiceDirectSound != nullptr) systems.push_back(XtSystemDirectSound);
   auto count = static_cast<int32_t>(systems.size());
   if(buffer == nullptr) 
@@ -112,22 +112,23 @@ void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
 }
 
 const XtService* XT_CALL XtAudioGetService(XtSystem system) {
-  XT_ASSERT(XtSystemAlsa <= system && system <= XtSystemWasapi);
+  XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDirectSound);
   switch(system) {
-  case XtSystemAsio: return XtiServiceAsio;
-  case XtSystemWasapi: return XtiServiceWasapi;
+  case XtSystemASIO: return XtiServiceAsio;
+  case XtSystemWASAPI: return XtiServiceWasapi;
   case XtSystemDirectSound: return XtiServiceDirectSound;
-  case XtSystemAlsa:
-  case XtSystemJack:
+  case XtSystemALSA:
+  case XtSystemJACK:
   case XtSystemPulseAudio: return nullptr;
   default: return XT_FAIL("Unknown system."), nullptr;
   }
 }
 
 XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup) {
+  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
   switch(setup) {
-  case XtSetupProAudio: return XtSystemAsio;
-  case XtSetupSystemAudio: return XtSystemWasapi;
+  case XtSetupProAudio: return XtSystemASIO;
+  case XtSetupSystemAudio: return XtSystemWASAPI;
   case XtSetupConsumerAudio: return XtSystemDirectSound;
   default: return XT_FAIL("Unknown setup."), static_cast<XtSystem>(0);
   }

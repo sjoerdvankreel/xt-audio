@@ -27,14 +27,14 @@ static const double XtWsMaxExclusiveBufferMs = 500.0;
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(Wasapi);
+XT_DECLARE_SERVICE(WASAPI, Wasapi);
 
 struct WasapiDevice: public XtDevice {
   const Options options;
   const CComPtr<IMMDevice> device;
   const CComPtr<IAudioClient> client;
   const CComPtr<IAudioClient3> client3;
-  XT_IMPLEMENT_DEVICE(Wasapi);
+  XT_IMPLEMENT_DEVICE(WASAPI);
   
   WasapiDevice(CComPtr<IMMDevice> d, CComPtr<IAudioClient> c, CComPtr<IAudioClient3> c3, const Options& o):
   XtDevice(), options(o), device(d), client(c), client3(c3) {}
@@ -51,7 +51,7 @@ struct WasapiStream: public XtwWin32BlockingStream {
   const CComPtr<IAudioClient> loopback;
   const CComPtr<IAudioRenderClient> render;
   const CComPtr<IAudioCaptureClient> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM(Wasapi);
+  XT_IMPLEMENT_BLOCKING_STREAM(WASAPI);
 
   ~WasapiStream() { Stop(); }
   WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 

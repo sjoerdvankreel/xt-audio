@@ -37,40 +37,40 @@ static_assert(sizeof(XtCapabilities) == 4);
   XtFault Start() override;                          \
   void RequestStop() override;
 
-#define XT_IMPLEMENT_CALLBACK_STREAM(name)               \
+#define XT_IMPLEMENT_CALLBACK_STREAM(system)             \
   XtFault Stop() override;                               \
   XtFault Start() override;                              \
   XtFault GetFrames(int32_t* frames) const override;     \
   XtFault GetLatency(XtLatency* latency) const override; \
-  XtSystem GetSystem() const override { return XtSystem ## name; }
+  XtSystem GetSystem() const override { return XtSystem ## system; }
 
-#define XT_IMPLEMENT_BLOCKING_STREAM(name)               \
+#define XT_IMPLEMENT_BLOCKING_STREAM(system)             \
   void StopStream() override;                            \
   void StartStream() override;                           \
   void ProcessBuffer(bool prefill) override;             \
   XtFault GetFrames(int32_t* frames) const override;     \
   XtFault GetLatency(XtLatency* latency) const override; \
-  XtSystem GetSystem() const override { return XtSystem ## name; }
+  XtSystem GetSystem() const override { return XtSystem ## system; }
 
-#define XT_DECLARE_SERVICE(name)                                              \
+#define XT_DECLARE_SERVICE(system, name)                                      \
 struct name ## Service: public XtService {                                    \
   XtFault GetFormatFault() const override;                                    \
   XtCapabilities GetCapabilities() const override;                            \
   XtCause GetFaultCause(XtFault fault) const override;                        \
   XtFault GetDeviceCount(int32_t* count) const override;                      \
   const char* GetFaultText(XtFault fault) const override;                     \
-  XtSystem GetSystem() const override { return XtSystem ## name; }            \
+  XtSystem GetSystem() const override { return XtSystem ## system; }          \
   XtFault OpenDevice(int32_t index, XtDevice** device) const override;        \
   XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const override; \
 };                                                                            \
 static const name ## Service Service ## name;                                 \
 const XtService* XtiService ## name = &Service ## name
 
-#define XT_IMPLEMENT_DEVICE(name)                                                                   \
+#define XT_IMPLEMENT_DEVICE(system)                                                                 \
   XtFault ShowControlPanel() override;                                                              \
   XtFault GetMix(XtBool* valid, XtMix* mix) const override;                                         \
   XtFault GetName(char* buffer, int32_t* size) const override;                                      \
-  XtSystem GetSystem() const override { return XtSystem ## name; }                                  \
+  XtSystem GetSystem() const override { return XtSystem ## system; }                                \
   XtFault GetChannelCount(XtBool output, int32_t* count) const override;                            \
   XtFault GetBuffer(const XtFormat* format, XtBuffer* buffer) const override;                       \
   XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;                      \
