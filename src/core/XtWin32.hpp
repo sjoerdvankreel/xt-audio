@@ -1,5 +1,5 @@
-#ifndef _XT_WIN32_HPP
-#define _XT_WIN32_HPP
+#ifndef XT_WIN32_HPP
+#define XT_WIN32_HPP
 #ifdef _WIN32
 
 #ifndef NOMINMAX
@@ -76,4 +76,4 @@ struct XtwWin32BlockingStream: public XtBlockingStream {
 };
 
 #endif // _WIN32
-#endif // _XT_WIN32_HPP
+#endif // XT_WIN32_HPP

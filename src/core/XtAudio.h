@@ -1,5 +1,5 @@
-#ifndef _XT_AUDIO_H
-#define _XT_AUDIO_H
+#ifndef XT_AUDIO_H
+#define XT_AUDIO_H
 
 /** @file */
 
@@ -321,4 +321,4 @@ XT_API XtError XT_CALL XtStreamGetLatency(const XtStream* s, XtLatency* latency)
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif /* _XT_AUDIO_H */
+#endif /* XT_AUDIO_H */

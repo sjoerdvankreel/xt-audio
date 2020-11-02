@@ -1,5 +1,5 @@
-#ifndef _XT_PRIVATE_HPP
-#define _XT_PRIVATE_HPP
+#ifndef XT_PRIVATE_HPP
+#define XT_PRIVATE_HPP
 
 #include "XtAudio.h"
 #include <string>
@@ -243,4 +243,4 @@ void XT_CALLBACK XtiMasterCallback(
   const XtStream* stream, const void* input, void* output, int32_t frames,
   double time, uint64_t position, XtBool timeValid, XtError error, void* user);
 
-#endif // _XT_PRIVATE_HPP
+#endif // XT_PRIVATE_HPP

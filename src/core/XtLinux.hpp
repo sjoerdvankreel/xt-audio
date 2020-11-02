@@ -1,5 +1,5 @@
-#ifndef _XT_LINUX_HPP
-#define _XT_LINUX_HPP
+#ifndef XT_LINUX_HPP
+#define XT_LINUX_HPP
 #ifdef __linux__
 
 #include "XtPrivate.hpp"
@@ -42,4 +42,4 @@ struct XtlLinuxBlockingStream: public XtBlockingStream {
 };
 
 #endif // __linux__
-#endif // _XT_LINUX_HPP
+#endif // XT_LINUX_HPP

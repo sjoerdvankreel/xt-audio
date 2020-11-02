@@ -1,5 +1,5 @@
-#ifndef _XT_AUDIO_HPP
-#define _XT_AUDIO_HPP
+#ifndef XT_CPP_HPP
+#define XT_CPP_HPP
 
 /** @file */
 
@@ -208,4 +208,4 @@ public:
 };
 
 } // namespace Xt
-#endif // _XT_AUDIO_HPP
+#endif // XT_CPP_HPP
