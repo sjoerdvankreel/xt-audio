@@ -126,8 +126,8 @@ const char* XT_CALL XtPrintSystemToString(XtSystem system) {
   case XtSystemAsio: return "Asio";
   case XtSystemJack: return "Jack";
   case XtSystemPulse: return "Pulse";
-  case XtSystemDSound: return "DSound";
   case XtSystemWasapi: return "Wasapi";
+  case XtSystemDirectSound: return "DirectSound";
   default: assert(false); return nullptr;
   }
 }

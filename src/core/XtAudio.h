@@ -62,10 +62,10 @@ enum XtSystem {
   XtSystemJack,
   /** @brief Linux PulseAudio backend. */
   XtSystemPulse,
-  /** @brief Windows DirectSound backend. */
-  XtSystemDSound,
   /** @brief Windows WASAPI backend. */
-  XtSystemWasapi
+  XtSystemWasapi,
+  /** @brief Windows DirectSound backend. */
+  XtSystemDirectSound
 };
 
 enum XtSample {

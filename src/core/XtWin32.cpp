@@ -10,8 +10,8 @@ static DWORD XtwMainThreadId = 0;
 static bool XtwOwnWindow = false;
 
 extern const XtService* XtiServiceAsio;
-extern const XtService* XtiServiceDSound;
 extern const XtService* XtiServiceWasapi;
+extern const XtService* XtiServiceDirectSound;
 
 static XtBlockingStreamState ReadWin32BlockingStreamState(
   XtwWin32BlockingStream* stream) {
@@ -102,8 +102,8 @@ const char* XtwWfxChannelNames[18] = {
 void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
   std::vector<XtSystem> systems;
   if(XtiServiceAsio != nullptr) systems.push_back(XtSystemAsio);
-  if(XtiServiceDSound != nullptr) systems.push_back(XtSystemDSound);
   if(XtiServiceWasapi != nullptr) systems.push_back(XtSystemWasapi);
+  if(XtiServiceDirectSound != nullptr) systems.push_back(XtSystemDirectSound);
   auto count = static_cast<int32_t>(systems.size());
   if(buffer == nullptr) 
     *size = count;
@@ -115,8 +115,8 @@ const XtService* XT_CALL XtAudioGetService(XtSystem system) {
   XT_ASSERT(XtSystemAlsa <= system && system <= XtSystemWasapi);
   switch(system) {
   case XtSystemAsio: return XtiServiceAsio;
-  case XtSystemDSound: return XtiServiceDSound;
   case XtSystemWasapi: return XtiServiceWasapi;
+  case XtSystemDirectSound: return XtiServiceDirectSound;
   case XtSystemAlsa:
   case XtSystemJack:
   case XtSystemPulse: return nullptr;
@@ -128,8 +128,8 @@ XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup) {
   switch(setup) {
   case XtSetupProAudio: return XtSystemAsio;
   case XtSetupSystemAudio: return XtSystemWasapi;
-  case XtSetupConsumerAudio: return XtSystemDSound;
-  default: return XT_FAIL("Unknown setup."), XtSystemDSound;
+  case XtSetupConsumerAudio: return XtSystemDirectSound;
+  default: return XT_FAIL("Unknown setup."), static_cast<XtSystem>(0);
   }
 }
 

@@ -13,8 +13,8 @@ public final class NativeTypes {
 
     public enum XtSample { UINT8, INT16, INT24, INT32, FLOAT32 }
     public enum XtSetup { PRO_AUDIO, SYSTEM_AUDIO, CONSUMER_AUDIO }
-    public enum XtSystem { ALSA, ASIO, JACK, PULSE, DSOUND, WASAPI }
     public enum XtCause { FORMAT, SERVICE, GENERIC, UNKNOWN, ENDPOINT }
+    public enum XtSystem { ALSA, ASIO, JACK, PULSE, WASAPI, DIRECT_SOUND }
 
     public enum XtCapabilities {
         NONE(0x0), TIME(0x1), LATENCY(0x2), FULL_DUPLEX(0x4), CHANNEL_MASK(0x8), XRUN_DETECTION(0x10);

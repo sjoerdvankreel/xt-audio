@@ -34,8 +34,8 @@ enum class System {
   Asio,
   Jack,
   Pulse,
-  DSound,
-  Wasapi
+  Wasapi,
+  DirectSound
 };
 
 enum class Sample {
