@@ -271,7 +271,7 @@ XT_API XtErrorInfo XT_CALL XtAudioGetErrorInfo(XtError error);
 XT_API const XtService* XT_CALL XtAudioGetService(XtSystem system);
 XT_API void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size);
 XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
-XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback error);
+XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback callback);
 /** @} */
 
 /** 

@@ -75,8 +75,8 @@ Audio::~Audio() {
   _errorCallback = nullptr; 
 }
 
-Audio::Audio(const std::string& id, void* window, ErrorCallback error) {
-  _errorCallback = error;
+Audio::Audio(const std::string& id, void* window, ErrorCallback callback) {
+  _errorCallback = callback;
   XtAudioInit(id.c_str(), window, &ForwardErrorCallback);
 }
 

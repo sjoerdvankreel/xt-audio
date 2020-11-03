@@ -37,7 +37,7 @@
 * Xt::Xt
 * std::make_unique
 * const x -> x const
-* CoreStructs/CoreEnums
+* CoreStructs/CoreEnums/CoreCallbacks
 * Split files to device/stream/service
 * drop cpp ctors in favor of uniform initializer
 * d/s/s -> _handle

@@ -11,10 +11,10 @@ import static com.xtaudio.xt.XtNative.*;
 public final class XtAudio implements XtCloseable {
 
     static XtErrorCallback _errorCallback;
-    public XtAudio(String id, Pointer window, XtErrorCallback error) {
-        _errorCallback = error;
+    public XtAudio(String id, Pointer window, XtErrorCallback callback) {
+        _errorCallback = callback;
         XtNative.init();
-        XtAudioInit(id, window, error);
+        XtAudioInit(id, window, callback);
     }
 
     @Override public void close() { XtAudioTerminate(); }

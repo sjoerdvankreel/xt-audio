@@ -177,7 +177,7 @@ public:
 class Audio final {
 public:
   ~Audio();
-  Audio(const std::string& id, void* window, ErrorCallback error);
+  Audio(const std::string& id, void* window, ErrorCallback callback);
 
   static Version GetVersion();
   static std::vector<System> GetSystems();

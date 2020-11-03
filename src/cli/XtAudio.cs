@@ -12,10 +12,10 @@ namespace Xt
 		public static XtSystem SetupToSystem(XtSetup setup) => XtAudioSetupToSystem(setup);
 		public static XtAttributes GetSampleAttributes(XtSample sample) => XtAudioGetSampleAttributes(sample);
 
-		public XtAudio(string id, IntPtr window, XtErrorCallback error)
+		public XtAudio(string id, IntPtr window, XtErrorCallback callback)
 		{
-			_errorCallback = error;
-			XtAudioInit(id, window, error);
+			_errorCallback = callback;
+			XtAudioInit(id, window, callback);
 		}
 
 		public static XtSystem[] GetSystems()

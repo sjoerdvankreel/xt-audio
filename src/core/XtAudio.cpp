@@ -213,8 +213,8 @@ void XT_CALL XtAudioTerminate(void) {
   XtiErrorCallback = nullptr;
 }
 
-void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback error) {
-  XtiErrorCallback = error;
+void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback callback) {
+  XtiErrorCallback = callback;
   XtiId = id == nullptr || strlen(id) == 0? strdup("XT-Audio"): strdup(id);
   XtiInitPlatform(window);
 }
