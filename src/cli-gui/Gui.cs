@@ -221,7 +221,7 @@ namespace Xt
 				null : ((DeviceView)(this.inputDevice.SelectedItem)).device;
 			bool inputSupported = inputDevice == null || inputFormat == null ? false : inputDevice.SupportsFormat(inputFormat.Value);
 			inputFormatSupported.Text = inputSupported.ToString();
-			XtBuffer? inputBuffer = !inputSupported ? (XtBuffer?)null : inputDevice.GetBuffer(inputFormat.Value);
+			XtBufferSize? inputBuffer = !inputSupported ? (XtBufferSize?)null : inputDevice.GetBufferSize(inputFormat.Value);
 			inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
 				inputBuffer.Value.min.ToString("N1"), inputBuffer.Value.current.ToString("N1"), inputBuffer.Value.max.ToString("N1"));
 			var inputDeviceMix = inputDevice?.GetMix();
@@ -247,7 +247,7 @@ namespace Xt
 				null : ((DeviceView)(this.outputDevice.SelectedItem)).device;
 			bool outputSupported = outputDevice == null || outputFormat == null ? false : outputDevice.SupportsFormat(outputFormat.Value);
 			outputFormatSupported.Text = outputSupported.ToString();
-			XtBuffer? outputBuffer = !outputSupported ? (XtBuffer?)null : outputDevice.GetBuffer(outputFormat.Value);
+			XtBufferSize? outputBuffer = !outputSupported ? (XtBufferSize?)null : outputDevice.GetBufferSize(outputFormat.Value);
 			outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
 				outputBuffer.Value.min.ToString("N1"), outputBuffer.Value.current.ToString("N1"), outputBuffer.Value.max.ToString("N1"));
 			var outputDeviceMix = outputDevice?.GetMix();

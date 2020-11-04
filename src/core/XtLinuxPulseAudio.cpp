@@ -172,10 +172,10 @@ XtFault PulseAudioDevice::GetChannelCount(XtBool output, int32_t* count) const {
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {  
-  buffer->min = XtPaMinBufferSize;
-  buffer->max = XtPaMaxBufferSize;
-  buffer->current = XtPaDefaultBufferSize;
+XtFault PulseAudioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
+  size->min = XtPaMinBufferSize;
+  size->max = XtPaMaxBufferSize;
+  size->current = XtPaDefaultBufferSize;
   return PA_OK;
 }
 

@@ -206,7 +206,7 @@ struct XtFormat {
   struct XtChannels channels;
 };
 
-struct XtBuffer {
+struct XtBufferSize {
   /** @brief Minimum size in milliseconds. */
   double min;
   /** @brief Maximum size in milliseconds. */
@@ -234,12 +234,12 @@ struct XtAttributes {
 /** @cond */
 typedef struct XtMix XtMix;
 typedef struct XtFormat XtFormat;
-typedef struct XtBuffer XtBuffer;
 typedef struct XtVersion XtVersion;
 typedef struct XtLatency XtLatency;
 typedef struct XtChannels XtChannels;
 typedef struct XtErrorInfo XtErrorInfo;
 typedef struct XtAttributes XtAttributes;
+typedef struct XtBufferSize XtBufferSize;
 /** @endcond */
 
 typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
@@ -297,9 +297,9 @@ XT_API XtError XT_CALL XtDeviceShowControlPanel(XtDevice* d);
 XT_API XtError XT_CALL XtDeviceGetMix(const XtDevice* d, XtBool* valid, XtMix* mix);
 XT_API XtError XT_CALL XtDeviceGetName(const XtDevice* d, char* buffer, int32_t* size);
 XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output, int32_t* count);
-XT_API XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer);
 XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
+XT_API XtError XT_CALL XtDeviceGetBufferSize(const XtDevice* d, const XtFormat* format, XtBufferSize* size);
 XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char* buffer, int32_t* size);
 XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
                                           XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream);

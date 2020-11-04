@@ -270,11 +270,11 @@ XtFault JackDevice::GetChannelCount(XtBool output, int32_t* count) const {
   return 0;
 }
 
-XtFault JackDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {  
+XtFault JackDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
   jack_nframes_t rate = jack_get_sample_rate(client.client);
-  buffer->current = jack_get_buffer_size(client.client) * 1000.0 / rate;
-  buffer->min = buffer->current;
-  buffer->max = buffer->current;
+  size->current = jack_get_buffer_size(client.client) * 1000.0 / rate;
+  size->min = size->current;
+  size->max = size->current;
   return 0;
 }
 

@@ -400,14 +400,14 @@ XtFault AsioDevice::GetChannelCount(XtBool output, int32_t* count) const {
   return ASE_OK;
 }
 
-XtFault AsioDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {  
+XtFault AsioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
   ASIOSampleRate rate;
   long min, max, preferred, granularity;
   XT_VERIFY_ASIO(asio->getSampleRate(&rate));
   XT_VERIFY_ASIO(asio->getBufferSize(&min, &max, &preferred, &granularity));
-  buffer->min = min * 1000.0 / rate;
-  buffer->max = max * 1000.0 / rate;
-  buffer->current = preferred * 1000.0 / rate;
+  size->min = min * 1000.0 / rate;
+  size->max = max * 1000.0 / rate;
+  size->current = preferred * 1000.0 / rate;
   return ASE_OK;
 }
 

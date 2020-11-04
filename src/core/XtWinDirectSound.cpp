@@ -250,10 +250,10 @@ XtFault DirectSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) 
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
-  buffer->min = XtDsMinBufferMs;
-  buffer->max = XtDsMaxBufferMs;
-  buffer->current = XtDsDefaultBufferMs;
+XtFault DirectSoundDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {
+  size->min = XtDsMinBufferMs;
+  size->max = XtDsMaxBufferMs;
+  size->current = XtDsDefaultBufferMs;
   return S_OK;
 }
 

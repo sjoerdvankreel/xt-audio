@@ -350,17 +350,17 @@ XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return QueryDevice(*this, format, true, supports, &min, &max);
 }
 
-XtFault AlsaDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {
+XtFault AlsaDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {
 
   XtBool supports;
   double frameSize = (format->channels.inputs + format->channels.outputs) * XtiGetSampleSize(format->mix.sample);
 
-  XT_VERIFY_ALSA(QueryDevice(*this, format, true, &supports, &buffer->min, &buffer->max));
-  buffer->current = (XtAlsaDefaultBufferBytes / frameSize) / format->mix.rate * 1000.0;
-  if(buffer->current < buffer->min)
-    buffer->current = buffer->min;
-  if(buffer->current > buffer->max)
-    buffer->current = buffer->max;
+  XT_VERIFY_ALSA(QueryDevice(*this, format, true, &supports, &size->min, &size->max));
+  size->current = (XtAlsaDefaultBufferBytes / frameSize) / format->mix.rate * 1000.0;
+  if(size->current < size->min)
+    size->current = size->min;
+  if(buffer->current > size->max)
+    size->current = size->max;
   return 0;
 }
 

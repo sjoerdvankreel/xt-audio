@@ -36,9 +36,9 @@ public class RenderSimple {
                 if (device == null || !device.supportsFormat(FORMAT))
                     return;
 
-                XtBuffer buffer = device.getBuffer(FORMAT);
+                XtBufferSize size = device.getBufferSize(FORMAT);
                 try (XtStream stream = device.openStream(FORMAT, true, false,
-                        buffer.current, RenderSimple::render, null, null)) {
+                        size.current, RenderSimple::render, null, null)) {
                     stream.start();
                     Thread.sleep(1000);
                     stream.stop();

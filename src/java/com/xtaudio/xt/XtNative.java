@@ -211,7 +211,7 @@ final class XtNative {
     static native void XtDeviceDestroy(Pointer d);
     static native long XtDeviceShowControlPanel(Pointer d);
     static native long XtDeviceGetName(Pointer d, byte[] buffer, IntByReference size);
-    static native long XtDeviceGetBuffer(Pointer d, Format format, XtBuffer buffer);
+    static native long XtDeviceGetBufferSize(Pointer d, Format format, XtBufferSize size);
     static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);
     static native long XtDeviceGetChannelCount(Pointer d, boolean output, IntByReference count);
     static native long XtDeviceSupportsFormat(Pointer d, Format format, IntByReference supports);

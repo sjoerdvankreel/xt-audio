@@ -44,7 +44,7 @@ public final class NativeTypes {
         }
     }
 
-    public static final class XtBuffer extends Structure {
+    public static final class XtBufferSize extends Structure {
         public double min;
         public double max;
         public double current;

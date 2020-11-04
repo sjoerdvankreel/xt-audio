@@ -32,9 +32,9 @@ int CaptureSimpleMain(int argc, char** argv) {
   if(!device || !device->SupportsFormat(Format))
     return 0;
 
-  Xt::Buffer buffer = device->GetBuffer(Format);
+  Xt::BufferSize size = device->GetBufferSize(Format);
   std::ofstream recording("xt-audio.raw", std::ios::out | std::ios::binary);
-  std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, buffer.current, Capture, nullptr, &recording);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(Format, true, size.current, Capture, nullptr, &recording);
   stream->Start();
 #if _WIN32
   Sleep(1000);

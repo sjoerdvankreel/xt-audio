@@ -20,7 +20,7 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct XtBuffer
+	public struct XtBufferSize
 	{
 		public double min;
 		public double max;

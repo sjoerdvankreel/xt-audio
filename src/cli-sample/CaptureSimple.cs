@@ -31,11 +31,11 @@ namespace Xt
                     if (device == null || !device.SupportsFormat(Format))
                         return;
 
-                    XtBuffer buffer = device.GetBuffer(Format);
+                    XtBufferSize size = device.GetBufferSize(Format);
                     using (FileStream recording = new FileStream(
                         "xt-audio.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(Format, true, false,
-                        buffer.current, Capture, null, recording))
+                        size.current, Capture, null, recording))
                     {
                         stream.Start();
                         Thread.Sleep(1000);

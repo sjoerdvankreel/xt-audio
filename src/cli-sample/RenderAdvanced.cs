@@ -90,9 +90,9 @@ namespace Xt
                     if (device == null || !device.SupportsFormat(format))
                         return;
 
-                    XtBuffer buffer = device.GetBuffer(format);
+                    XtBufferSize size = device.GetBufferSize(format);
                     using (XtStream stream = device.OpenStream(format, true, false,
-                        buffer.current, RenderInterleaved, XRun, "user-data"))
+                        size.current, RenderInterleaved, XRun, "user-data"))
                     {
                         stream.Start();
                         Console.WriteLine("Rendering interleaved...");
@@ -101,7 +101,7 @@ namespace Xt
                     }
 
                     using (XtStream stream = device.OpenStream(format, true, true,
-                        buffer.current, RenderInterleavedRaw, XRun, "user-data"))
+                        size.current, RenderInterleavedRaw, XRun, "user-data"))
                     {
                         stream.Start();
                         Console.WriteLine("Rendering interleaved, raw buffers...");
@@ -110,7 +110,7 @@ namespace Xt
                     }
 
                     using (XtStream stream = device.OpenStream(format, false, false,
-                        buffer.current, RenderNonInterleaved, XRun, "user-data"))
+                        size.current, RenderNonInterleaved, XRun, "user-data"))
                     {
                         stream.Start();
                         Console.WriteLine("Rendering non-interleaved...");
@@ -119,7 +119,7 @@ namespace Xt
                     }
 
                     using (XtStream stream = device.OpenStream(format, false, true,
-                        buffer.current, RenderNonInterleavedRaw, XRun, "user-data"))
+                        size.current, RenderNonInterleavedRaw, XRun, "user-data"))
                     {
                         stream.Start();
                         Console.WriteLine("Rendering non-interleaved, raw buffers...");
@@ -129,7 +129,7 @@ namespace Xt
 
                     XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 1L << 0));
                     using (XtStream stream = device.OpenStream(sendTo0, true, false,
-                        buffer.current, RenderInterleaved, XRun, "user-data"))
+                        size.current, RenderInterleaved, XRun, "user-data"))
                     {
                         stream.Start();
                         Console.WriteLine("Rendering channel mask, channel 0...");
@@ -138,7 +138,7 @@ namespace Xt
                     }
 
                     XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 1L << 1));
-                    using (XtStream stream = device.OpenStream(sendTo1, true, false, buffer.current,
+                    using (XtStream stream = device.OpenStream(sendTo1, true, false, size.current,
                             RenderInterleaved, XRun, "user-data"))
                     {
                         stream.Start();

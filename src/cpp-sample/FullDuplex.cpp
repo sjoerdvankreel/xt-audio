@@ -39,8 +39,8 @@ int FullDuplexMain(int argc, char** argv) {
   else
     return 0;
 
-  Xt::Buffer buffer = device->GetBuffer(format);
-  std::unique_ptr<Xt::Stream> stream = device->OpenStream(format, true, buffer.current, Callback, nullptr, nullptr);
+  Xt::BufferSize size = device->GetBufferSize(format);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(format, true, size.current, Callback, nullptr, nullptr);
   stream->Start();
   std::cout << "Streaming full-duplex, press any key to continue...\n";
   std::string s;

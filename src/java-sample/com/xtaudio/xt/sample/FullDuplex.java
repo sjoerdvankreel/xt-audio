@@ -43,9 +43,9 @@ public class FullDuplex {
                 else
                     return;
 
-                XtBuffer buffer = device.getBuffer(format);
+                XtBufferSize size = device.getBufferSize(format);
                 try (XtStream stream = device.openStream(format, true, false,
-                        buffer.min, FullDuplex::callback, null, null)) {
+                        size.min, FullDuplex::callback, null, null)) {
                     stream.start();
                     System.out.println("Streaming full-duplex, press any key to continue...");
                     System.console().readLine();

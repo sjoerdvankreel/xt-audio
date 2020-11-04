@@ -103,12 +103,12 @@ namespace Xt
                         return;
 
                     Context context = new Context();
-                    XtBuffer buffer = device.GetBuffer(format);
+                    XtBufferSize size = device.GetBufferSize(format);
 
                     using (FileStream recording = new FileStream(
                         "xt-audio-interleaved.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, true, false,
-                        buffer.current, CaptureInterleaved, XRun, context))
+                        size.current, CaptureInterleaved, XRun, context))
                     {
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
@@ -121,7 +121,7 @@ namespace Xt
                     using (FileStream recording = new FileStream(
                         "xt-audio-interleaved-raw.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, true, true,
-                        buffer.current, CaptureInterleavedRaw, XRun, context))
+                        size.current, CaptureInterleavedRaw, XRun, context))
                     {
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
@@ -134,7 +134,7 @@ namespace Xt
                     using (FileStream recording = new FileStream(
                         "xt-audio-non-interleaved.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, false, false,
-                        buffer.current, CaptureNonInterleaved, XRun, context))
+                        size.current, CaptureNonInterleaved, XRun, context))
                     {
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
@@ -147,7 +147,7 @@ namespace Xt
                     using (FileStream recording = new FileStream(
                         "xt-audio-non-interleaved-raw.raw", FileMode.Create, FileAccess.Write))
                     using (XtStream stream = device.OpenStream(format, false, true,
-                        buffer.current, CaptureNonInterleavedRaw, XRun, context))
+                        size.current, CaptureNonInterleavedRaw, XRun, context))
                     {
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];

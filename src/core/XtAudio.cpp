@@ -384,23 +384,23 @@ XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, Xt
   return XtiCreateError(d->GetSystem(), d->SupportsAccess(interleaved, supports));
 }
 
-XtError XT_CALL XtDeviceGetBuffer(const XtDevice* d, const XtFormat* format, XtBuffer* buffer) {
+XtError XT_CALL XtDeviceGetBufferSize(const XtDevice* d, const XtFormat* format, XtBufferSize* size) {
   XtError error;
   XtBool supports;
   XtSystem system;
   XT_ASSERT(d != nullptr);
-  XT_ASSERT(buffer != nullptr);
+  XT_ASSERT(size != nullptr);
   XT_ASSERT(format != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
 
   system = d->GetSystem();
-  memset(buffer, 0, sizeof(XtBuffer));
+  memset(size, 0, sizeof(XtBufferSize));
   if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0)
     return error;
   if(!supports)
     return XtiCreateError(system, XtAudioGetService(system)->GetFormatFault());
-  return XtiCreateError(d->GetSystem(), d->GetBuffer(format, buffer));
+  return XtiCreateError(d->GetSystem(), d->GetBufferSize(format, size));
 }
 
 XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char* buffer, int32_t* size) {

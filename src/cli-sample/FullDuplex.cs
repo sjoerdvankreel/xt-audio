@@ -41,9 +41,9 @@ namespace Xt
                     else
                         return;
 
-                    XtBuffer buffer = device.GetBuffer(format);
+                    XtBufferSize size = device.GetBufferSize(format);
                     using (XtStream stream = device.OpenStream(format, true,
-                        false, buffer.min, Callback, null, null))
+                        false, size.min, Callback, null, null))
                     {
                         stream.Start();
                         Console.WriteLine("Streaming full-duplex, press any key to continue...");

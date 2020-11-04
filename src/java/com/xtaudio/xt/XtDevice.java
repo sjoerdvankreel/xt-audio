@@ -3,11 +3,8 @@ package com.xtaudio.xt;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import com.xtaudio.xt.NativeTypes.XtBuffer;
-import com.xtaudio.xt.NativeTypes.XtFormat;
-import com.xtaudio.xt.NativeTypes.XtMix;
-import com.xtaudio.xt.NativeTypes.XtStreamCallback;
-import com.xtaudio.xt.NativeTypes.XtXRunCallback;
+import com.xtaudio.xt.NativeTypes.*;
+
 import java.nio.charset.Charset;
 import java.util.Optional;
 
@@ -54,10 +51,10 @@ public class XtDevice implements XtCloseable {
         return count.getValue();
     }
 
-    public XtBuffer getBuffer(XtFormat format) {
-        XtBuffer buffer = new XtBuffer();
-        XtNative.handleError(XtNative.XtDeviceGetBuffer(d, XtNative.Format.toNative(format), buffer));
-        return buffer;
+    public XtBufferSize getBufferSize(XtFormat format) {
+        XtBufferSize result = new XtBufferSize();
+        XtNative.handleError(XtNative.XtDeviceGetBufferSize(d, XtNative.Format.toNative(format), result));
+        return result;
     }
 
     public Optional<XtMix> getMix() {

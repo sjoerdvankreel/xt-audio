@@ -298,7 +298,7 @@ XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const {  
+XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;
   REFERENCE_TIME engine, hardware;
@@ -306,22 +306,22 @@ XtFault WasapiDevice::GetBuffer(const XtFormat* format, XtBuffer* buffer) const 
 
   if(options.exclusive) {
     XT_VERIFY_COM(client->GetDevicePeriod(&engine, &hardware));
-    buffer->max = XtWsMaxExclusiveBufferMs;
-    buffer->min = hardware / XtWsHnsPerMs;
-    buffer->current = hardware / XtWsHnsPerMs;
+    size->max = XtWsMaxExclusiveBufferMs;
+    size->min = hardware / XtWsHnsPerMs;
+    size->current = hardware / XtWsHnsPerMs;
     return S_OK;
   } else if(!client3) {
     XT_VERIFY_COM(client->GetDevicePeriod(&engine, &hardware));
-    buffer->max = XtWsMaxSharedBufferMs;
-    buffer->min = engine / XtWsHnsPerMs;
-    buffer->current = engine / XtWsHnsPerMs;
+    size->max = XtWsMaxSharedBufferMs;
+    size->min = engine / XtWsHnsPerMs;
+    size->current = engine / XtWsHnsPerMs;
     return S_OK;
   } else {
     XT_ASSERT(XtwFormatToWfx(*format, wfx));
     XT_VERIFY_COM(client3->GetSharedModeEnginePeriod(reinterpret_cast<const WAVEFORMATEX*>(&wfx), &default_, &fundamental, &min, &max));
-    buffer->min = min * 1000.0 / format->mix.rate;
-    buffer->max = max * 1000.0 / format->mix.rate;
-    buffer->current = default_ * 1000.0 / format->mix.rate;
+    size->min = min * 1000.0 / format->mix.rate;
+    size->max = max * 1000.0 / format->mix.rate;
+    size->current = default_ * 1000.0 / format->mix.rate;
     return S_OK;
   }
 }

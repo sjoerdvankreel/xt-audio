@@ -14,8 +14,8 @@ namespace Xt
 			=> GetName();
 		public void ShowControlPanel()
 			=> HandleError(XtDeviceShowControlPanel(_handle));
-		public XtBuffer GetBuffer(in XtFormat format)
-			=> HandleError(XtDeviceGetBuffer(_handle, in format, out var result)) ? result : default;
+		public XtBufferSize GetBufferSize(in XtFormat format)
+			=> HandleError(XtDeviceGetBufferSize(_handle, in format, out var result)) ? result : default;
 		public int GetChannelCount(bool output)
 			=> HandleError(XtDeviceGetChannelCount(_handle, output, out var result)) ? result : default;
 		public bool SupportsFormat(in XtFormat format)

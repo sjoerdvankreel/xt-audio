@@ -224,10 +224,10 @@ bool Device::SupportsFormat(const Format& f) const {
   return supports != XtFalse; 
 }
 
-Buffer Device::GetBuffer(const Format& format) const { 
-  Buffer buffer; 
-  HandleError(XtDeviceGetBuffer(d, reinterpret_cast<const XtFormat*>(&format), reinterpret_cast<XtBuffer*>(&buffer)));
-  return buffer;
+BufferSize Device::GetBufferSize(const Format& format) const { 
+  BufferSize result; 
+  HandleError(XtDeviceGetBufferSize(d, reinterpret_cast<const XtFormat*>(&format), reinterpret_cast<XtBufferSize*>(&result)));
+  return result;
 }
 
 std::unique_ptr<Stream> Device::OpenStream(const Format& format, bool interleaved, double bufferSize,

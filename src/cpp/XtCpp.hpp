@@ -61,7 +61,7 @@ enum Capabilities {
   CapabilitiesXRunDetection = 0x10
 };
 
-struct Buffer final {
+struct BufferSize final {
   double min;
   double max;
   double current;
@@ -199,8 +199,8 @@ public:
   std::optional<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
   bool SupportsAccess(bool interleaved) const;
-  Buffer GetBuffer(const Format& format) const;
   bool SupportsFormat(const Format& format) const;
+  BufferSize GetBufferSize(const Format& format) const;
   std::string GetChannelName(bool output, int32_t index) const;
   std::unique_ptr<Stream> OpenStream(const Format& format, bool interleaved, double bufferSize, 
                                      StreamCallback streamCallback, XRunCallback xRunCallback, void* user);

@@ -35,9 +35,9 @@ namespace Xt
 					if (device == null || !device.SupportsFormat(Format))
 						return;
 
-					XtBuffer buffer = device.GetBuffer(Format);
+					XtBufferSize size = device.GetBufferSize(Format);
 					using (XtStream stream = device.OpenStream(Format, true, false,
-							buffer.current, Render, null, null))
+							size.current, Render, null, null))
 					{
 						stream.Start();
 						Thread.Sleep(1000);
