@@ -2,21 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Xt
 {
-	static class NativeUtility
-	{
-		internal static unsafe string PtrToStringUTF8(IntPtr ptr)
-		{
-			var range = Enumerable.Range(0, int.MaxValue);
-			var length = range.SkipWhile(i => ((byte*)ptr)[i] != 0).First();
-			return Encoding.UTF8.GetString((byte*)ptr, length);
-		}
-	}
-
-	class StreamCallbackWrapper
+	class ManagedCallback
 	{
 		byte[] _scratch;
 		XtStream _stream;
@@ -24,7 +13,7 @@ namespace Xt
 		readonly bool _interleaved;
 		readonly XtManagedStreamCallback _callback;
 
-		internal StreamCallbackWrapper(bool interleaved, XtManagedStreamCallback callback)
+		internal ManagedCallback(bool interleaved, XtManagedStreamCallback callback)
 			=> (_interleaved, _callback) = (interleaved, callback);
 
 		internal void Init(XtStream stream)
