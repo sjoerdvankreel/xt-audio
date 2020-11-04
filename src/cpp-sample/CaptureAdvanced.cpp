@@ -25,26 +25,24 @@ static void XRun(int index, void* user) {
 }
 
 static void CaptureInterleaved(
-  const Xt::Stream& stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
 
-  if(frames > 0)
+  if(buffer.frames > 0)
     // Don't do this.
-    static_cast<std::ofstream*>(user)->write(static_cast<const char*>(input), GetBufferSize(stream, frames));
+    static_cast<std::ofstream*>(user)->write(static_cast<const char*>(buffer.input), GetBufferSize(stream, buffer.frames));
 }
 
 static void CaptureNonInterleaved(
-  const Xt::Stream& stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
 
-  if(frames > 0) {
+  if(buffer.frames > 0) {
     const Xt::Format& format = stream.GetFormat();
     int channels = format.channels.inputs;
     int sampleSize = Xt::Audio::GetSampleAttributes(format.mix.sample).size;
-    for(int f = 0; f < frames; f++)
+    for(int f = 0; f < buffer.frames; f++)
       for(int c = 0; c < channels; c++)
         // Don't do this.
-        static_cast<std::ofstream*>(user)->write(&static_cast<char* const*>(input)[c][f * sampleSize], sampleSize);
+        static_cast<std::ofstream*>(user)->write(&static_cast<char* const*>(buffer.input)[c][f * sampleSize], sampleSize);
   }
 }
 

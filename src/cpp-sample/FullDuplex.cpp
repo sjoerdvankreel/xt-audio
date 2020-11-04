@@ -4,10 +4,9 @@
 #include <cstring>
 
 static void Callback(
-  const Xt::Stream& stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
 
-  memcpy(output, input, frames * 2 * 4);
+  memcpy(buffer.output, buffer.input, buffer.frames * 2 * 4);
 }
 
 int FullDuplexMain(int argc, char** argv) {

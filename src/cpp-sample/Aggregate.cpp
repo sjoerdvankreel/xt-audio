@@ -15,13 +15,12 @@ static void XRun(int index, void* user) {
 }
 
 static void Aggregate(
-  const Xt::Stream& stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
 
   const Xt::Format& format = stream.GetFormat();
   Xt::Attributes attrs = Xt::Audio::GetSampleAttributes(format.mix.sample);
-  if(frames > 0)
-    memcpy(output, input, frames * format.channels.inputs * attrs.size);
+  if(buffer.frames > 0)
+    memcpy(buffer.output, buffer.input, buffer.frames * format.channels.inputs * attrs.size);
 }
 
 int AggregateMain(int argc, char** argv) {

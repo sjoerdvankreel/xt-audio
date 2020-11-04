@@ -33,26 +33,24 @@ static void XRun(int index, void* user) {
 }
 
 static void RenderInterleaved(
-  const Xt::Stream& stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
 
   Xt::Format format = stream.GetFormat();
-  for(int f = 0; f < frames; f++) {
+  for(int f = 0; f < buffer.frames; f++) {
     float sine = NextSine(format.mix.rate);
     for(int c = 0; c < format.channels.outputs; c++)
-      ((float*)output)[f * format.channels.outputs + c] = sine;
+      ((float*)buffer.output)[f * format.channels.outputs + c] = sine;
   }
 }
 
 static void RenderNonInterleaved(
-  const Xt::Stream& stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
 
   Xt::Format format = stream.GetFormat();
-  for(int f = 0; f < frames; f++) {
+  for(int f = 0; f < buffer.frames; f++) {
     float sine = NextSine(format.mix.rate);
     for(int c = 0; c < format.channels.outputs; c++)
-      ((float**)output)[c][f] = sine;
+      ((float**)buffer.output)[c][f] = sine;
   }
 }
 

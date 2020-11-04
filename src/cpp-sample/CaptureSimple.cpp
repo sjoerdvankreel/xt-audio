@@ -12,12 +12,11 @@ static const int SampleSize = 3;
 static const Xt::Format Format(Xt::Mix(44100, Xt::Sample::Int24), Xt::Channels(1, 0, 0, 0));
 
 static void Capture(
-  const Xt::Stream& stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
 
-  if(frames > 0)
+  if(buffer.frames > 0)
     // Don't do this.
-    static_cast<std::ofstream*>(user)->write(static_cast<const char*>(input), frames * SampleSize);
+    static_cast<std::ofstream*>(user)->write(static_cast<const char*>(buffer.input), buffer.frames * SampleSize);
 }
 
 int CaptureSimpleMain(int argc, char** argv) {
