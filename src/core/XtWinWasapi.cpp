@@ -524,6 +524,8 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   uint64_t wasapiPosition;
   XtBool timeValid = XtFalse;
   DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
+  XtBuffer buffer;
+  XtTime xtTime;
 
   if(!prefill && !secondary) {
     waitResult = WaitForSingleObject(streamEvent.event, bufferMillis);
@@ -545,7 +547,13 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     timeValid = (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) == 0;
     position = !timeValid? 0: wasapiPosition;
     time = !timeValid? 0: wasapiTime / XtWsHnsPerMs;
-    ProcessCallback(data, nullptr, frames, time, position, timeValid, 0);
+    buffer.input = data;
+    buffer.output = nullptr;
+    buffer.frames = frames;
+    xtTime.time = time;
+    xtTime.position = position;
+    xtTime.valid = timeValid;
+    ProcessCallback(&buffer, &xtTime, 0);
     XT_VERIFY_STREAM_CALLBACK(capture->ReleaseBuffer(frames));
   }
   
@@ -574,7 +582,13 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->GetBuffer(frames, &data)))
       return;
-    ProcessCallback(nullptr, data, frames, time, position, timeValid, 0);
+    buffer.input = nullptr;
+    buffer.output = data;
+    buffer.frames = frames;
+    xtTime.time = time;
+    xtTime.position = position;
+    xtTime.valid = timeValid;
+    ProcessCallback(&buffer, &xtTime, 0);
     XT_VERIFY_STREAM_CALLBACK(render->ReleaseBuffer(frames, 0));
   }
 }

@@ -153,6 +153,18 @@ typedef enum XtSample XtSample;
 typedef enum XtCapabilities XtCapabilities;
 /** @endcond */
 
+struct XtBuffer {
+  const void* input;
+  void* output;
+  int32_t frames;
+};
+
+struct XtTime {
+  double time;
+  uint64_t position;
+  XtBool valid;  
+};
+
 struct XtVersion {
   /** @brief Library major version. */
   int32_t major;
@@ -233,6 +245,8 @@ struct XtAttributes {
 
 /** @cond */
 typedef struct XtMix XtMix;
+typedef struct XtTime XtTime;
+typedef struct XtBuffer XtBuffer;
 typedef struct XtFormat XtFormat;
 typedef struct XtVersion XtVersion;
 typedef struct XtLatency XtLatency;
@@ -244,9 +258,7 @@ typedef struct XtBufferSize XtBufferSize;
 
 typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
 typedef void (XT_CALLBACK *XtErrorCallback)(const char* location, const char* message);
-typedef void (XT_CALLBACK *XtStreamCallback)(
-  const XtStream* stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, XtBool timeValid, XtError error, void* user);
+typedef void (XT_CALLBACK *XtStreamCallback)(const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user);
 
 /** 
  * @ingroup print

@@ -61,6 +61,18 @@ enum Capabilities {
   CapabilitiesXRunDetection = 0x10
 };
 
+struct Buffer final {
+  const void* input;
+  void* output;
+  int32_t frames;
+};
+
+struct Time final {
+  double time;
+  uint64_t position;
+  bool valid;  
+};
+
 struct BufferSize final {
   double min;
   double max;
@@ -124,9 +136,7 @@ std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
 
 typedef void (*XRunCallback)(int32_t index, void* user);
 typedef void (*ErrorCallback)(const std::string& location, const std::string& message);
-typedef void (*StreamCallback)(
-  const Stream& stream, const void* input, void* output, int32_t frames, 
-  double time, uint64_t position, bool timeValid, uint64_t error, void* user);
+typedef void (*StreamCallback)(const Stream& stream, const Buffer& buffer, const Time& time, uint64_t error, void* user);
 
 class Exception final: public std::exception {
   const uint64_t _error;

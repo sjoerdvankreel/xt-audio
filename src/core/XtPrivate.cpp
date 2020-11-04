@@ -7,19 +7,19 @@
 // ---- local ----
 
 static void Interleave(
-  void* dest, void** source, int32_t frames, int32_t channels, int32_t sampleSize) {
+  void* dest, const void* const* source, int32_t frames, int32_t channels, int32_t sampleSize) {
 
   char* dst = static_cast<char*>(dest);
-  char** src = reinterpret_cast<char**>(source);
+  const char* const* src = reinterpret_cast<const char* const*>(source);
   for(int32_t f = 0; f < frames; f++)
     for(int32_t c = 0; c < channels; c++)
       memcpy(&dst[(f * channels + c) * sampleSize], &src[c][f * sampleSize], sampleSize);
 }
 
 static void Deinterleave(
-  void** dest, void* source, int32_t frames, int32_t channels, int32_t sampleSize) {
+  void** dest, const void* source, int32_t frames, int32_t channels, int32_t sampleSize) {
 
-  char* src = static_cast<char*>(source);
+  const char* src = static_cast<const char*>(source);
   char** dst = reinterpret_cast<char**>(dest);
   for(int32_t f = 0; f < frames; f++)
     for(int32_t c = 0; c < channels; c++)
@@ -132,33 +132,46 @@ void XtStream::ProcessXRun() {
     xRunCallback(0, user);
 }
 
-void XtStream::ProcessCallback(void* input, void* output, int32_t frames, double time, 
-                               uint64_t position, XtBool timeValid, XtError error) {
+void XtStream::ProcessCallback(const XtBuffer* buffer, const XtTime* time, XtError error) {
 
-  void* inData;
-  void* outData;
-  bool haveInput = input != nullptr && frames > 0;
-  bool haveOutput = output != nullptr && frames > 0;
+  if(error != 0)
+  {
+    XtBuffer emptyBuffer;
+    emptyBuffer.frames = 0;
+    emptyBuffer.input = nullptr;
+    emptyBuffer.output = nullptr;
+    XtTime noTime;
+    noTime.position = 0;
+    noTime.time = 0;
+    noTime.valid = XtFalse;
+    streamCallback(this, &emptyBuffer, &noTime, error, user);
+    return;
+  }
+
+  XtBuffer converted;
+  converted.frames = buffer->frames;
+  bool haveInput = buffer->input != nullptr && buffer->frames > 0;
+  bool haveOutput = buffer->output != nullptr && buffer->frames > 0;
 
   if(interleaved && canInterleaved || !interleaved && canNonInterleaved) {
-    inData = haveInput? input: nullptr;
-    outData = haveOutput? output: nullptr;
-    streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
+    converted.input = haveInput? buffer->input: nullptr;
+    converted.output = haveOutput? buffer->output: nullptr;
+    streamCallback(this, &converted, time, 0, user);
   } else if(interleaved) {
-    inData = haveInput? &intermediate.inputInterleaved[0]: nullptr;
-    outData = haveOutput? &intermediate.outputInterleaved[0]: nullptr;
+    converted.input = haveInput? &intermediate.inputInterleaved[0]: nullptr;
+    converted.output = haveOutput? &intermediate.outputInterleaved[0]: nullptr;
     if(haveInput)
-      Interleave(&intermediate.inputInterleaved[0], static_cast<void**>(input), frames, format.channels.inputs, sampleSize);
-    streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
+      Interleave(&intermediate.inputInterleaved[0], static_cast<const void* const*>(buffer->input), buffer->frames, format.channels.inputs, sampleSize);
+    streamCallback(this, &converted, time, 0, user);
     if(haveOutput)
-      Deinterleave(static_cast<void**>(output), &intermediate.outputInterleaved[0], frames, format.channels.outputs, sampleSize);
+      Deinterleave(static_cast<void**>(buffer->output), &intermediate.outputInterleaved[0], buffer->frames, format.channels.outputs, sampleSize);
   } else {
-    inData = haveInput? &intermediate.inputNonInterleaved[0]: nullptr;
-    outData = haveOutput? &intermediate.outputNonInterleaved[0]: nullptr;
+    converted.input = haveInput? &intermediate.inputNonInterleaved[0]: nullptr;
+    converted.output = haveOutput? &intermediate.outputNonInterleaved[0]: nullptr;
     if(haveInput)
-      Deinterleave(&intermediate.inputNonInterleaved[0], input, frames, format.channels.inputs, sampleSize);
-    streamCallback(this, inData, outData, frames, time, position, timeValid, error, user);
+      Deinterleave(&intermediate.inputNonInterleaved[0], buffer->input, buffer->frames, format.channels.inputs, sampleSize);
+    streamCallback(this, &converted, time, 0, user);
     if(haveOutput)
-      Interleave(output, &intermediate.outputNonInterleaved[0], frames, format.channels.outputs, sampleSize);
+      Interleave(buffer->output, &intermediate.outputNonInterleaved[0], buffer->frames, format.channels.outputs, sampleSize);
   }
 }

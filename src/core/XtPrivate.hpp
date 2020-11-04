@@ -168,8 +168,7 @@ struct XtStream {
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
   void ProcessXRun();
-  void ProcessCallback(void* input, void* output, int32_t frames, double time,
-                       uint64_t position, XtBool timeValid, XtError error);
+  void ProcessCallback(const XtBuffer* buffer, const XtTime* time, XtError error);
 };
 
 struct XtBlockingStream: public XtStream {
@@ -236,11 +235,7 @@ void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(const char* file, int32_t line, const char* func, const char* format, ...);
 void XtiVTrace(const char* file, int32_t line, const char* func, const char* format, va_list arg);
 
-void XT_CALLBACK XtiSlaveCallback(
-  const XtStream* stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, XtBool timeValid, XtError error, void* user);
-void XT_CALLBACK XtiMasterCallback(
-  const XtStream* stream, const void* input, void* output, int32_t frames,
-  double time, uint64_t position, XtBool timeValid, XtError error, void* user);
+void XT_CALLBACK XtiSlaveCallback(const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user);
+void XT_CALLBACK XtiMasterCallback(const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user);
 
 #endif // XT_PRIVATE_HPP

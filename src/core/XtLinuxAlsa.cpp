@@ -492,6 +492,8 @@ void AlsaStream::ProcessBuffer(bool prefill) {
   snd_timestamp_t timeStamp;
   snd_pcm_sframes_t available;
   const snd_pcm_channel_area_t* areas;
+  XtBuffer xtBuffer;
+  XtTime xtTime;
 
   snd_pcm_status_alloca(&status);
   if(!XT_VERIFY_STREAM_CALLBACK(snd_pcm_status(pcm.pcm, status)))
@@ -519,7 +521,13 @@ void AlsaStream::ProcessBuffer(bool prefill) {
             return;
           }
         }        
-        ProcessCallback(&interleavedAudio[0], nullptr, sframes, time, position, timeValid, 0);
+        xtBuffer.input = &interleavedAudio[0];
+        xtBuffer.output = nullptr;
+        xtBuffer.frames = sframes;
+        xtTime.time = time;
+        xtTime.position = position;
+        xtTime.valid = timeValid;
+        ProcessCallback(&xtBuffer, &xtTime, 0);
       } else {
         if((sframes = snd_pcm_readn(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
           if(sframes == -EPIPE)
@@ -531,11 +539,23 @@ void AlsaStream::ProcessBuffer(bool prefill) {
             return;
           }
         }
-        ProcessCallback(&nonInterleavedAudio[0], nullptr, sframes, time, position, timeValid, 0);
+        xtBuffer.input = &nonInterleavedAudio[0];
+        xtBuffer.output = nullptr;
+        xtBuffer.frames = sframes;
+        xtTime.time = time;
+        xtTime.position = position;
+        xtTime.valid = timeValid;
+        ProcessCallback(&xtBuffer, &xtTime, 0);
       }
     } else {
-      if(alsaInterleaved) {
-        ProcessCallback(nullptr, &interleavedAudio[0], bufferFrames, time, position, timeValid, 0);
+      if(alsaInterleaved) {        
+        xtBuffer.input = nullptr;
+        xtBuffer.output = &interleavedAudio[0];
+        xtBuffer.frames = bufferFrames;
+        xtTime.time = time;
+        xtTime.position = position;
+        xtTime.valid = timeValid;
+        ProcessCallback(&xtBuffer, &xtTime, 0);
         if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0) {
           if(sframes == -EPIPE)
             ProcessXRun();
@@ -544,8 +564,14 @@ void AlsaStream::ProcessBuffer(bool prefill) {
           if((sframes = snd_pcm_writei(pcm.pcm, &interleavedAudio[0], bufferFrames)) < 0)
             XT_VERIFY_STREAM_CALLBACK(sframes);
         }
-      } else {
-        ProcessCallback(nullptr, &nonInterleavedAudio[0], bufferFrames, time, position, timeValid, 0);
+      } else {        
+        xtBuffer.input = nullptr;
+        xtBuffer.output = &nonInterleavedAudio[0];
+        xtBuffer.frames = bufferFrames;
+        xtTime.time = time;
+        xtTime.position = position;
+        xtTime.valid = timeValid;
+        ProcessCallback(&xtBuffer, &xtTime, 0);
         if((sframes = snd_pcm_writen(pcm.pcm, &nonInterleavedAudio[0], bufferFrames)) < 0) {
           if(sframes == -EPIPE)
             ProcessXRun();
@@ -577,9 +603,25 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       }
     }
     if(!output)
-      ProcessCallback(data, nullptr, uframes, time, position, timeValid, 0);
+    {
+      xtBuffer.input = data;
+      xtBuffer.output = nullptr;
+      xtBuffer.frames = uframes;
+      xtTime.time = time;
+      xtTime.position = position;
+      xtTime.valid = timeValid;
+      ProcessCallback(&xtBuffer, &xtTime, 0);
+    }
     else
-      ProcessCallback(nullptr, data, uframes, time, position, timeValid, 0);
+    {
+      xtBuffer.input = nullptr;
+      xtBuffer.output = data;
+      xtBuffer.frames = uframes;
+      xtTime.time = time;
+      xtTime.position = position;
+      xtTime.valid = timeValid;
+      ProcessCallback(&xtBuffer, &xtTime, 0);
+    }
     fault = snd_pcm_mmap_commit(pcm.pcm, offset, uframes);
     if(fault >= 0 && fault != uframes)
       ProcessXRun();

@@ -260,6 +260,8 @@ XtFault PulseAudioStream::GetLatency(XtLatency* latency) const {
 
 void PulseAudioStream::ProcessBuffer(bool prefill) {
   int fault;
+  XtTime xtTime;
+  XtBuffer xtBuffer;
   void* inData = output? nullptr: &audio[0];
   void* outData = !output? nullptr: &audio[0];
 
@@ -267,6 +269,12 @@ void PulseAudioStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_STREAM_CALLBACK(fault);
     return;
   }
+  xtBuffer.input = inData;
+  xtBuffer.output = outData;
+  xtBuffer.frames = bufferFrames;
+  xtTime.time = 0;
+  xtTime.valid = XtFalse;
+  xtTime.position = 0;
   ProcessCallback(inData, outData, bufferFrames, 0.0, 0, XtFalse, 0);
   if(output && pa_simple_write(client.simple, &audio[0], audio.size(), &fault) < 0)
     XT_VERIFY_STREAM_CALLBACK(fault);

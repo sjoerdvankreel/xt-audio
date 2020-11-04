@@ -411,6 +411,12 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
   DWORD size1, size2, read, write, lockPosition, waitResult;
   DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
 
+  XtBuffer xtBuffer;
+  XtTime time;
+  time.position = 0;
+  time.valid = XtFalse;
+  time.time = 0;
+
   if(!prefill && !secondary) {
     waitResult = WaitForSingleObject(timer.timer, bufferMillis);
     if(waitResult == WAIT_TIMEOUT)
@@ -422,9 +428,15 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
-      ProcessCallback(nullptr, audio1, bufferFrames, 0.0, 0, XtFalse, DS_OK);
+      xtBuffer.input = nullptr;
+      xtBuffer.output = audio1;
+      xtBuffer.frames = bufferFrames;
+      ProcessCallback(&xtBuffer, &time, DS_OK);
     } else {
-      ProcessCallback(nullptr, &buffer[0], bufferFrames, 0.0, 0, XtFalse, DS_OK);
+      xtBuffer.input = nullptr;
+      xtBuffer.output = &buffer[0];
+      xtBuffer.frames = bufferFrames;
+      ProcessCallback(&xtBuffer, &time, DS_OK);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
@@ -451,14 +463,20 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(capture->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
-      ProcessCallback(audio1, nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK);
+      xtBuffer.input = audio1;
+      xtBuffer.output = nullptr;
+      xtBuffer.frames = available / frameSize;
+      ProcessCallback(&xtBuffer, &time, S_OK);
       if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
         return;
     } else {
       CombineBufferParts(buffer, audio1, size1, audio2, size2);
       if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
         return;
-      ProcessCallback(&buffer[0], nullptr, available / frameSize, 0.0, 0, XtFalse, S_OK);
+      xtBuffer.input = &buffer[0];
+      xtBuffer.output = nullptr;
+      xtBuffer.frames = available / frameSize;
+      ProcessCallback(&xtBuffer, &time, S_OK);
     }
     xtBytesProcessed += available;
   }
@@ -481,9 +499,15 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_STREAM_CALLBACK(render->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0)))
       return;
     if(size2 == 0) {
-      ProcessCallback(nullptr, audio1, available / frameSize, 0.0, 0, XtFalse, DS_OK);
+      xtBuffer.input = nullptr;
+      xtBuffer.output = audio1;
+      xtBuffer.frames = available / frameSize;
+      ProcessCallback(&xtBuffer, &time, S_OK);
     } else {
-      ProcessCallback(nullptr, &buffer[0], available / frameSize, 0.0, 0, XtFalse, DS_OK);
+      xtBuffer.input = nullptr;
+      xtBuffer.output = &buffer[0];
+      xtBuffer.frames = available / frameSize;
+      ProcessCallback(&xtBuffer, &time, S_OK);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
