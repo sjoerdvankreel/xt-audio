@@ -13,6 +13,21 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	public struct XtBuffer
+	{
+		public IntPtr input;
+		public IntPtr output;
+		public int frames;
+	}
+
+	public class XtManagedBuffer
+	{
+		public Array input;
+		public Array output;
+		public int frames;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	public struct XtLatency
 	{
 		public double input;
@@ -28,13 +43,22 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	public struct XtTime
+	{
+		public double time;
+		public ulong position;
+		int _valid;
+		public bool valid => _valid != 0;
+	};
+
+	[StructLayout(LayoutKind.Sequential)]
 	public struct XtAttributes
 	{
 		public int size;
 		int _isFloat;
 		int _isSigned;
-		public bool isFloat { get => _isFloat != 0; set => _isFloat = value ? 0 : 1; }
-		public bool isSigned { get => _isSigned != 0; set => _isSigned = value ? 0 : 1; }
+		public bool isFloat => _isFloat != 0;
+		public bool isSigned => _isSigned != 0;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -42,7 +66,8 @@ namespace Xt
 	{
 		public int rate;
 		public XtSample sample;
-		public XtMix(int rate, XtSample sample) => (this.rate, this.sample) = (rate, sample);
+		public XtMix(int rate, XtSample sample) 
+			=> (this.rate, this.sample) = (rate, sample);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -50,7 +75,8 @@ namespace Xt
 	{
 		public XtMix mix;
 		public XtChannels channels;
-		public XtFormat(XtMix mix, XtChannels channels) => (this.mix, this.channels) = (mix, channels);
+		public XtFormat(XtMix mix, XtChannels channels) 
+			=> (this.mix, this.channels) = (mix, channels);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -81,8 +107,12 @@ namespace Xt
 	public enum XtSystem : int { ALSA = 1, ASIO, JACK, WASAPI, PulseAudio, DirectSound }
 	[Flags] public enum XtCapabilities : int { None = 0x0, Time = 0x1, Latency = 0x2, FullDuplex = 0x4, ChannelMask = 0x8, XRunDetection = 0x10 }
 
-	public delegate void XtXRunCallback(int index, object user);
 	[SuppressUnmanagedCodeSecurity]
 	public delegate void XtErrorCallback(string location, string message);
-	public delegate void XtStreamCallback(XtStream stream, object input, object output, int frames, double time, ulong position, bool timeValid, ulong error, object user);
+	[SuppressUnmanagedCodeSecurity]
+	public delegate void XtXRunCallback(int index, IntPtr user);
+	public delegate void XtManagedXRunCallback(int index);
+	[SuppressUnmanagedCodeSecurity]
+	public delegate void XtStreamCallback(IntPtr stream, in XtBuffer buffer, in XtTime time, ulong error, IntPtr user);
+	public delegate void XtManagedStreamCallback(XtStream stream, XtManagedBuffer buffer, in XtTime time, ulong error);
 }
