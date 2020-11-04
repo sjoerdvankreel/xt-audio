@@ -213,7 +213,7 @@ namespace Xt
 			if (sample.SelectedItem != null)
 			{
 				var attrs = XtAudio.GetSampleAttributes((XtSample)sample.SelectedItem);
-				attributes.Text = $"Size: {attrs.size}, Float: {attrs.isFloat}, Signed: {attrs.isSigned}";
+				attributes.Text = $"Size: {attrs.size}, Count: {attrs.count}, Float: {attrs.isFloat}, Signed: {attrs.isSigned}";
 			}
 
 			XtFormat? inputFormat = GetFormat(false);

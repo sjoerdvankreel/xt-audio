@@ -98,6 +98,7 @@ struct ErrorInfo final {
 
 struct Attributes final {
   int32_t size;
+  int32_t count;
   bool isFloat;
   bool isSigned;
 };

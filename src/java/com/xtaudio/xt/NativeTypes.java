@@ -53,6 +53,7 @@ public final class NativeTypes {
 
     public static final class XtAttributes extends Structure implements Structure.ByValue {
         public int size;
+        public int count;
         public boolean isFloat;
         public boolean isSigned;
         @Override protected List getFieldOrder() { return Arrays.asList("size", "isFloat", "isSigned"); }
