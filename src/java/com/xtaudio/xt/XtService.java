@@ -54,7 +54,7 @@ public final class XtService {
             boolean interleaved, boolean raw, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
 
         PointerByReference str = new PointerByReference();
-        XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
+        XtStream stream = new XtStream(interleaved, raw, streamCallback, xRunCallback, user);
         XtNative.Mix nativeMix = XtNative.Mix.toNative(mix);
         Pointer ds = new Memory(count * Native.POINTER_SIZE);
         Pointer cs = new Memory(count * Native.getNativeSize(XtNative.ChannelsByValue.class));

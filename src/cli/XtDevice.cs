@@ -51,7 +51,7 @@ namespace Xt
 
 		public XtStream OpenStream(in XtFormat format, bool interleaved, bool raw, double bufferSize, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
 		{
-			XtStream result = new XtStream(raw, streamCallback, xRunCallback, user);
+			XtStream result = new XtStream(interleaved, raw, streamCallback, xRunCallback, user);
 			HandleError(XtDeviceOpenStream(_handle, in format, interleaved, bufferSize, result.streamCallbackPtr, result.xRunCallbackPtr, IntPtr.Zero, out var stream));
 			result.Init(stream);
 			return result;

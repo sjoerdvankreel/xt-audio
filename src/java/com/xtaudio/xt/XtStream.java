@@ -147,6 +147,7 @@ public final class XtStream implements XtCloseable {
 
     private final Object user;
     private final boolean raw;
+    private final boolean interleaved;
     private final XtXRunCallback userXRunCallback;
     private final XtStreamCallback userStreamCallback;
 
@@ -158,17 +159,14 @@ public final class XtStream implements XtCloseable {
     final XtNative.XRunCallback nativeXRunCallback;
     final XtNative.StreamCallback nativeStreamCallback;
 
-    XtStream(boolean raw, XtStreamCallback userStreamCallback, XtXRunCallback userXRunCallback, Object user) {
+    XtStream(boolean interleaved, boolean raw, XtStreamCallback userStreamCallback, XtXRunCallback userXRunCallback, Object user) {
         this.raw = raw;
         this.user = user;
+        this.interleaved = interleaved;
         this.userXRunCallback = userXRunCallback;
         this.userStreamCallback = userStreamCallback;
         this.nativeXRunCallback = this::xRunCallback;
         this.nativeStreamCallback = this::streamCallback;
-    }
-
-    public boolean isRaw() {
-        return raw;
     }
 
     public void stop() {
@@ -177,10 +175,6 @@ public final class XtStream implements XtCloseable {
 
     public void start() {
         XtNative.handleError(XtNative.XtStreamStart(s));
-    }
-
-    public boolean isInterleaved() {
-        return XtNative.XtStreamIsInterleaved(s);
     }
 
     public XtFormat getFormat() {
@@ -206,10 +200,10 @@ public final class XtStream implements XtCloseable {
 
     void init(Pointer s) {
         this.s = s;
-        if(!isRaw()) {
+        if(!raw) {
             int frames = getFrames();
             XtFormat format = getFormat();
-            if(isInterleaved()) {
+            if(interleaved) {
                 inputInterleaved = createInterleavedBuffer(format.mix.sample, format.channels.inputs, frames);
                 outputInterleaved = createInterleavedBuffer(format.mix.sample, format.channels.outputs, frames);
             } else {
@@ -226,7 +220,6 @@ public final class XtStream implements XtCloseable {
     void streamCallback(Pointer stream, Pointer input, Pointer output, int frames, double time, long position, boolean timeValid, long error, Pointer u) throws Exception {
 
         XtFormat format = getFormat();
-        boolean interleaved = isInterleaved();
         Object inData = raw? input: input == null? null: interleaved? inputInterleaved: inputNonInterleaved;
         Object outData = raw? output: output == null? null: interleaved? outputInterleaved: outputNonInterleaved;
 

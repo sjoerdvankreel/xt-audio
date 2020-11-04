@@ -161,6 +161,7 @@ namespace Xt
 
 		private readonly bool raw;
 		private readonly object user;
+		private readonly bool interleaved;
 		private readonly XtXRunCallback xRunCallback;
 		private readonly XtStreamCallback streamCallback;
 		private readonly XtNative.XRunCallbackWin32 win32XRunCallback;
@@ -177,10 +178,11 @@ namespace Xt
 		private Array inputNonInterleaved;
 		private Array outputNonInterleaved;
 
-		internal XtStream(bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
+		internal XtStream(bool interleaved, bool raw, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
 		{
 			this.raw = raw;
 			this.user = user;
+			this.interleaved = interleaved;
 			this.xRunCallback = xRunCallback;
 			this.streamCallback = streamCallback;
 			this.win32StreamCallback = new XtNative.StreamCallbackWin32(StreamCallback);
@@ -198,8 +200,6 @@ namespace Xt
 			}
 		}
 
-		public bool IsRaw() => raw;
-		public bool IsInterleaved() => XtNative.XtStreamIsInterleaved(s);
 		public void Stop() => XtNative.HandleError(XtNative.XtStreamStop(s));
 		public void Start() => XtNative.HandleError(XtNative.XtStreamStart(s));
 
@@ -230,11 +230,11 @@ namespace Xt
 		internal void Init(IntPtr s)
 		{
 			this.s = s;
-			if (!IsRaw())
+			if (!raw)
 			{
 				int frames = GetFrames();
 				XtFormat format = GetFormat();
-				if (IsInterleaved())
+				if (interleaved)
 				{
 					inputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.channels.inputs, frames);
 					outputInterleaved = CreateInterleavedBuffer(format.mix.sample, format.channels.outputs, frames);
@@ -256,7 +256,6 @@ namespace Xt
 			int frames, double time, ulong position, bool timeValid, ulong error, IntPtr u)
 		{
 			XtFormat format = GetFormat();
-			bool interleaved = IsInterleaved();
 			object inData = raw ? (object)input : input == IntPtr.Zero ? null : interleaved ? inputInterleaved : inputNonInterleaved;
 			object outData = raw ? (object)output : output == IntPtr.Zero ? null : interleaved ? outputInterleaved : outputNonInterleaved;
 

@@ -263,10 +263,6 @@ void Stream::Start() {
   HandleError(XtStreamStart(s));
 }
 
-bool Stream::IsInterleaved() const { 
-  return XtStreamIsInterleaved(s) != XtFalse;
-}
-
 int32_t Stream::GetFrames() const {
   int32_t frames;
   HandleError(XtStreamGetFrames(s, &frames));

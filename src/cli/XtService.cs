@@ -27,7 +27,7 @@ namespace Xt
             IntPtr str;
             IntPtr channelsPtr = IntPtr.Zero;
             IntPtr[] ds = devices.Select(d => d._handle).ToArray();
-            XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
+            XtStream stream = new XtStream(interleaved, raw, streamCallback, xRunCallback, user);
             try
             {
                 int size = Marshal.SizeOf(typeof(XtChannels));

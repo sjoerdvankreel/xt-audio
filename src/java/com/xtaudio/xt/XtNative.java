@@ -192,7 +192,6 @@ final class XtNative {
     static native long XtStreamGetFrames(Pointer s, IntByReference frames);
     static native long XtStreamGetLatency(Pointer s, XtLatency latency);
     static native Pointer XtStreamGetFormat(Pointer s);
-    static native boolean XtStreamIsInterleaved(Pointer s);
     static native int XtServiceGetCapabilities(Pointer s);
     static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
     static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);

@@ -57,8 +57,6 @@ namespace Xt
 		internal static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern IntPtr XtStreamGetFormat(IntPtr s);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern bool XtStreamIsInterleaved(IntPtr s);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);

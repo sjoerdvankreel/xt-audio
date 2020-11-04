@@ -5,15 +5,19 @@ namespace Xt
 	abstract class StreamCallback
 	{
 		int processed;
+		readonly bool raw;
+		readonly bool interleaved;
 		protected string name;
 		protected readonly Action<Func<string>> onError;
 		protected readonly Action<Func<string>> onMessage;
 
-		internal StreamCallback(string name, Action<Func<string>> onError, Action<Func<string>> onMessage)
+		internal StreamCallback(bool interleaved, bool raw, string name, Action<Func<string>> onError, Action<Func<string>> onMessage)
 		{
+			this.raw = raw;
 			this.name = name;
 			this.onError = onError;
 			this.onMessage = onMessage;
+			this.interleaved = interleaved;
 		}
 
 		internal abstract void OnCallback(XtFormat format, bool interleaved,
@@ -34,8 +38,7 @@ namespace Xt
 			}
 
 			XtFormat format = stream.GetFormat();
-			bool interleaved = stream.IsInterleaved();
-			OnCallback(format, interleaved, stream.IsRaw(), input, output, frames);
+			OnCallback(format, interleaved, raw, input, output, frames);
 			processed += frames;
 			if (processed < format.mix.rate * 3)
 				return;

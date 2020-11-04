@@ -7,8 +7,8 @@ namespace Xt
         private double attenuate = 1.0;
         private double[] aggregateChannel;
 
-        internal AggregateCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
-            base("Aggregate", onError, onMessage)
+        internal AggregateCallback(bool interleaved, bool raw, Action<Func<string>> onError, Action<Func<string>> onMessage) :
+            base(interleaved, raw, "Aggregate", onError, onMessage)
         {
         }
 

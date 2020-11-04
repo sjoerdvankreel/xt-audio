@@ -446,11 +446,6 @@ XtError XT_CALL XtStreamStart(XtStream* s) {
   return XtiCreateError(s->GetSystem(), s->Start());
 }
 
-XtBool XT_CALL XtStreamIsInterleaved(const XtStream* s) {
-  XT_ASSERT(s != nullptr);
-  return s->interleaved;
-}
-
 const XtFormat* XT_CALL XtStreamGetFormat(const XtStream* s) {
   XT_ASSERT(s != nullptr);
   return &s->format;

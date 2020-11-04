@@ -7,8 +7,8 @@ namespace Xt
         private long pulseSend;
         private long framesProcessed;
 
-        internal LatencyCallback(Action<Func<string>> onError, Action<Func<string>> onMessage) :
-            base("Latency", onError, onMessage)
+        internal LatencyCallback(bool interleaved, bool raw, Action<Func<string>> onError, Action<Func<string>> onMessage) :
+            base(interleaved, raw, "Latency", onError, onMessage)
         {
         }
 

@@ -152,7 +152,6 @@ public:
   void Stop();
   void Start();
   int32_t GetFrames() const;
-  bool IsInterleaved() const;
   Latency GetLatency() const;
   const Format& GetFormat() const;
 };

@@ -91,7 +91,7 @@ public class XtDevice implements XtCloseable {
             XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
 
         PointerByReference s = new PointerByReference();
-        XtStream stream = new XtStream(raw, streamCallback, xRunCallback, user);
+        XtStream stream = new XtStream(interleaved, raw, streamCallback, xRunCallback, user);
         XtNative.Format formatNative = XtNative.Format.toNative(format);
         XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, interleaved, bufferSize,
                 stream.nativeStreamCallback, xRunCallback == null ? null : stream.nativeXRunCallback, null, s));
