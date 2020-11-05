@@ -16,13 +16,12 @@ namespace Xt
             Console.WriteLine("XRun on device " + index + ", user = " + user + ".");
         }
 
-        static void OnAggregate(XtStream stream, object input, object output, int frames, double time,
-                ulong position, bool timeValid, ulong error, object user)
+        static void OnAggregate(XtStream stream, in XtManagedBuffer buffer, in XtTime time, ulong error, object user)
         {
             XtFormat format = stream.GetFormat();
             XtAttributes attrs = XtAudio.GetSampleAttributes(format.mix.sample);
-            if (frames > 0)
-                Buffer.BlockCopy((Array)input, 0, (Array)output, 0, frames * format.channels.inputs * attrs.size);
+            if (buffer.frames > 0)
+                Buffer.BlockCopy(buffer.input, 0, buffer.output, 0, buffer.frames * format.channels.inputs * attrs.size);
         }
 
         public static void Main(string[] args)
@@ -49,7 +48,7 @@ namespace Xt
                             new XtDevice[] { input, output },
                             new XtChannels[] { inputFormat.channels, outputFormat.channels },
                             new double[] { 30.0, 30.0 },
-                            2, mix, true, false, output, OnAggregate, XRun, "user-data"))
+                            2, mix, true, output, OnAggregate, XRun, "user-data"))
                     {
                         stream.Start();
                         Console.WriteLine("Streaming aggregate, press any key to continue...");

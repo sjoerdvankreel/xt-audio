@@ -55,8 +55,8 @@ namespace Xt
 		internal static extern ulong XtServiceAggregateStream(IntPtr s,
 			[MarshalAs(UnmanagedType.LPArray)] IntPtr[] devices, IntPtr channels,
 			[MarshalAs(UnmanagedType.LPArray)] double[] bufferSizes, int count,
-			XtMix mix, bool interleaved, IntPtr master, XtStreamCallback streamCallback,
-			XtXRunCallback xRunCallback, IntPtr user, out IntPtr stream);
+			in XtMix mix, bool interleaved, IntPtr master, StreamCallback streamCallback,
+			XRunCallback xRunCallback, IntPtr user, out IntPtr stream);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtAudioTerminate();
@@ -93,6 +93,6 @@ namespace Xt
 		internal static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, [Out] byte[] buffer, ref int size);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern ulong XtDeviceOpenStream(IntPtr d, in XtFormat format, bool interleaved,
-			double bufferSize, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, IntPtr user, out IntPtr stream);
+			double bufferSize, StreamCallback streamCallback, XRunCallback xRunCallback, IntPtr user, out IntPtr stream);
 	}
 }
