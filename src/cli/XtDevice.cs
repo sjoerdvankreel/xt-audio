@@ -31,8 +31,8 @@ namespace Xt
 		public bool SupportsAccess(bool interleaved) => HandleError(XtDeviceSupportsAccess(_d, interleaved, out var r), r);
 		public XtBufferSize GetBufferSize(in XtFormat format) => HandleError(XtDeviceGetBufferSize(_d, in format, out var r), r);
 
-		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, IntPtr user)
-		=> HandleError(XtDeviceOpenStream(_d, in format, interleaved, bufferSize, streamCallback, xRunCallback, user, out var r), new XtStream(r, streamCallback, xRunCallback));
+		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtStreamCallback streamCallback, XtXRunCallback xRunCallback)
+		=> HandleError(XtDeviceOpenStream(_d, in format, interleaved, bufferSize, streamCallback, xRunCallback, IntPtr.Zero, out var r), new XtStream(r, streamCallback, xRunCallback));
 
 		public string GetName()
 		{

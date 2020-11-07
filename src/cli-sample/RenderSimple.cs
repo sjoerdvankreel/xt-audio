@@ -3,48 +3,41 @@ using System.Threading;
 
 namespace Xt
 {
+	class State
+	{
+		public double phase = 0.0;
+		public readonly double Frequency = 440.0;
+		public readonly XtFormat Format = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 0));
+	}
+
 	public class RenderSimple
 	{
-		static double phase = 0.0;
-		const double Frequency = 440.0;
-		static readonly XtFormat Format = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 0));
-
-		static void Render(XtStream stream, object input, object output, int frames,
-				double time, ulong position, bool timeValid, ulong error, object user)
+		static void Render(IntPtr s, in XtBuffer b, in XtTime time, ulong error, IntPtr u)
 		{
-			for (int f = 0; f < frames; f++)
+			var adapter = XtAdapter.Get(s);
+			var state = (State)adapter.User;
+			using var io = adapter.IO();
+			for (int f = 0; f < b.frames; f++)
 			{
-				phase += Frequency / Format.mix.rate;
-				if (phase >= 1.0)
-					phase = -1.0;
-				((float[])output)[f] = (float)Math.Sin(2.0 * phase * Math.PI);
+				state.phase += state.Frequency / state.Format.mix.rate;
+				if (state.phase >= 1.0) state.phase = -1.0;
+				((float[])adapter.Output)[f] = (float)Math.Sin(2.0 * state.phase * Math.PI);
 			}
 		}
 
 		public static void Main(string[] args)
 		{
-			using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null))
-			{
-				var system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
-				XtService service = XtAudio.GetService(system);
-				if (service == null)
-					return;
-
-				using (XtDevice device = service.OpenDefaultDevice(true))
-				{
-					if (device == null || !device.SupportsFormat(Format))
-						return;
-
-					XtBufferSize size = device.GetBufferSize(Format);
-					using (XtStream stream = device.OpenStream(Format, true, false,
-							size.current, Render, null, null))
-					{
-						stream.Start();
-						Thread.Sleep(1000);
-						stream.Stop();
-					}
-				}
-			}
+			using XtAudio audio = new XtAudio(null, IntPtr.Zero, null);
+			XtService service = XtAudio.GetService(XtAudio.SetupToSystem(XtSetup.ConsumerAudio));
+			if (service == null) return;
+			using XtDevice device = service.OpenDefaultDevice(true);
+			if (device?.SupportsFormat(Format) != true) return;
+			XtBufferSize size = device.GetBufferSize(Format);
+			using XtStream stream = device.OpenStream(Format, true, size.current, Render, null);
+			using XtAdapter adapter = XtAdapter.Register(stream, null);
+			stream.Start();
+			Thread.Sleep(1000);
+			stream.Stop();
 		}
 	}
 }

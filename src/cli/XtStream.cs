@@ -7,6 +7,7 @@ namespace Xt
 	public sealed class XtStream : IDisposable
 	{
 		readonly IntPtr _s;
+		internal IntPtr Handle => _s;
 		readonly XtXRunCallback _xRunCallback;
 		readonly XtStreamCallback _streamCallback;
 		internal XtStream(IntPtr s, XtStreamCallback streamCallback, XtXRunCallback xRunCallback)
