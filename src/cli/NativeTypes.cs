@@ -20,7 +20,7 @@ namespace Xt
 		public int frames;
 	}
 
-	public struct XtManagedBuffer
+	public class XtManagedBuffer
 	{
 		public Array input;
 		public Array output;
@@ -109,10 +109,11 @@ namespace Xt
 	[Flags] public enum XtCapabilities : int { None = 0x0, Time = 0x1, Latency = 0x2, FullDuplex = 0x4, ChannelMask = 0x8, XRunDetection = 0x10 }
 
 	[SuppressUnmanagedCodeSecurity]
-	public delegate void XtXRunCallback(int index, IntPtr user);
-	[SuppressUnmanagedCodeSecurity]
 	public delegate void XtErrorCallback(string location, string message);
 	[SuppressUnmanagedCodeSecurity]
+	public delegate void XtXRunCallback(int index, IntPtr user);
+	public delegate void XtManagedXRunCallback(int index);
+	[SuppressUnmanagedCodeSecurity]
 	public delegate void XtStreamCallback(IntPtr stream, in XtBuffer buffer, in XtTime time, ulong error, IntPtr user);
-	public delegate void XtManagedStreamCallback(XtStream stream, in XtManagedBuffer buffer, in XtTime time, ulong error);
+	public delegate void XtManagedStreamCallback(XtStream stream, XtManagedBuffer buffer, in XtTime time, ulong error);
 }

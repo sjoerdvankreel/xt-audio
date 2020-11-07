@@ -38,13 +38,13 @@ namespace Xt
 			return Encoding.UTF8.GetString(buffer, 0, size - 1);
 		}
 
-		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtManagedStreamCallback streamCallback, XtXRunCallback xRunCallback)
+		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtManagedStreamCallback streamCallback, XtManagedXRunCallback xRunCallback)
 		{
-			var streamWrapper = new StreamCallbackWrapper(in format, interleaved, streamCallback);
-			var result = OpenStream(in format, interleaved, bufferSize, streamWrapper.Callback, xRunCallback, IntPtr.Zero);
-			streamWrapper._stream = result;
-			streamWrapper._frames = result.GetFrames();
-			return result;
+			var xRunWrapper = new XRunCallbackWrapper(xRunCallback);
+			var streamWrapper = new StreamCallbackWrapper(streamCallback);
+			XtStreamCallback streamNative = streamWrapper.Callback;
+			XtXRunCallback xRunNative = xRunCallback == null ? (XtXRunCallback)null : xRunWrapper.Callback;
+			return OpenStream(in format, interleaved, bufferSize, streamNative, xRunNative, IntPtr.Zero);
 		}
 	}
 }

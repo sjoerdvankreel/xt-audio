@@ -42,5 +42,3 @@
 * drop cpp ctors in favor of uniform initializer
 * d/s/s -> _handle
 * XtService::init/cleanup
-* XYZCallback->OnXYZ
-*
