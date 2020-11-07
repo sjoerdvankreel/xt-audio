@@ -26,7 +26,7 @@ namespace Xt
         {
             IntPtr str;
             IntPtr channelsPtr = IntPtr.Zero;
-            IntPtr[] ds = devices.Select(d => d._d).ToArray();
+            IntPtr[] ds = devices.Select(d => d._handle).ToArray();
             XtStream stream = new XtStream(interleaved, raw, streamCallback, xRunCallback, user);
             try
             {
@@ -35,7 +35,7 @@ namespace Xt
                 for (int i = 0; i < count; i++)
                     Marshal.StructureToPtr(channels[i], new IntPtr((byte*)channelsPtr + i * size), false);
                 XtNative.HandleError(XtNative.XtServiceAggregateStream(_handle, ds, channelsPtr, bufferSizes, count,
-                    mix, interleaved, master._d, stream.streamCallbackPtr, stream.xRunCallbackPtr, IntPtr.Zero, out str));
+                    mix, interleaved, master._handle, stream.streamCallbackPtr, stream.xRunCallbackPtr, IntPtr.Zero, out str));
             } finally
             {
                 if (channelsPtr != IntPtr.Zero)
