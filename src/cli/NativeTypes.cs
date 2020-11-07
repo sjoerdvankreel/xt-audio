@@ -13,6 +13,22 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	public struct XtBuffer
+	{
+		public IntPtr input;
+		public IntPtr output;
+		public int frames;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct XtTime
+	{
+		public double time;
+		public ulong position;
+		public bool valid;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	public struct XtLatency
 	{
 		public double input;
@@ -28,6 +44,24 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	public struct XtMix
+	{
+		public int rate;
+		public XtSample sample;
+		public XtMix(int rate, XtSample sample) 
+		=> (this.rate, this.sample) = (rate, sample);
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct XtFormat
+	{
+		public XtMix mix;
+		public XtChannels channels;
+		public XtFormat(XtMix mix, XtChannels channels) 
+		=> (this.mix, this.channels) = (mix, channels);
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	public struct XtAttributes
 	{
 		public int size;
@@ -38,22 +72,6 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct XtMix
-	{
-		public int rate;
-		public XtSample sample;
-		public XtMix(int rate, XtSample sample) => (this.rate, this.sample) = (rate, sample);
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	public struct XtFormat
-	{
-		public XtMix mix;
-		public XtChannels channels;
-		public XtFormat(XtMix mix, XtChannels channels) => (this.mix, this.channels) = (mix, channels);
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
 	public struct XtChannels
 	{
 		public int inputs;
@@ -61,7 +79,7 @@ namespace Xt
 		public int outputs;
 		public ulong outMask;
 		public XtChannels(int inputs, ulong inMask, int outputs, ulong outMask)
-			=> (this.inputs, this.inMask, this.outputs, this.outMask) = (inputs, inMask, outputs, outMask);
+		=> (this.inputs, this.inMask, this.outputs, this.outMask) = (inputs, inMask, outputs, outMask);
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -75,14 +93,16 @@ namespace Xt
 		public override string ToString() => NativeUtility.PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
 	}
 
+	[SuppressUnmanagedCodeSecurity]
+	public delegate void XtXRunCallback(int index, IntPtr user);
+	[SuppressUnmanagedCodeSecurity]
+	public delegate void XtErrorCallback(string location, string message);
+	[SuppressUnmanagedCodeSecurity]
+	public delegate void XtStreamCallback(IntPtr stream, in XtBuffer buffer, in XtTime time, ulong error, IntPtr user);
+
 	public enum XtSetup : int { ProAudio, SystemAudio, ConsumerAudio }
 	public enum XtSample : int { UInt8, Int16, Int24, Int32, Float32 }
 	public enum XtCause : int { Format, Service, Generic, Unknown, Endpoint }
 	public enum XtSystem : int { ALSA = 1, ASIO, JACK, WASAPI, PulseAudio, DirectSound }
 	[Flags] public enum XtCapabilities : int { None = 0x0, Time = 0x1, Latency = 0x2, FullDuplex = 0x4, ChannelMask = 0x8, XRunDetection = 0x10 }
-
-	public delegate void XtXRunCallback(int index, object user);
-	[SuppressUnmanagedCodeSecurity]
-	public delegate void XtErrorCallback(string location, string message);
-	public delegate void XtStreamCallback(XtStream stream, object input, object output, int frames, double time, ulong position, bool timeValid, ulong error, object user);
 }
