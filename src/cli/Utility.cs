@@ -18,6 +18,8 @@ namespace Xt
 
 	class StreamCallbackWrapper
 	{
+		Array _input;
+		Array _output;
 		byte[] _scratch;
 		XtStream _stream;
 		XtManagedBuffer _buffer;
@@ -29,7 +31,6 @@ namespace Xt
 
 		internal void Init(XtStream stream)
 		{
-			_stream = stream;
 			var types = new Dictionary<XtSample, Type>();
 			types.Add(XtSample.UInt8, typeof(byte));
 			types.Add(XtSample.Int16, typeof(short));
@@ -40,14 +41,14 @@ namespace Xt
 			var frames = stream.GetFrames();
 			var type = types[format.mix.sample];
 			var attrs = XtAudio.GetSampleAttributes(format.mix.sample);
-			var elems = frames * attrs.count;
-			var ins = format.channels.inputs;
-			var outs = format.channels.outputs;
-			_scratch = new byte[Math.Max(ins, outs) * frames * attrs.size];
-			Func<int, Array> create = i => Array.CreateInstance(type, i);
-			Func<int, IEnumerable<int>> chans = i => Enumerable.Range(0, i);
-			_buffer.input = _interleaved ? create(ins * elems) : chans(ins).Select(_ => create(elems)).ToArray();
-			_buffer.output = _interleaved ? create(outs * elems) : chans(outs).Select(_ => create(elems)).ToArray();
+			_stream = stream;
+			_scratch = new byte[Math.Max(format.channels.inputs, format.channels.outputs) * frames * attrs.size];
+			_buffer.input = _interleaved 
+				? Array.CreateInstance(type, format.channels.inputs * frames * attrs.count) 
+				: Enumerable.Range(0, format.channels.inputs).Select(_ => Array.CreateInstance(type, frames * attrs.count)).ToArray();
+			_buffer.output = _interleaved 
+				? Array.CreateInstance(type, format.channels.outputs * frames * attrs.count) 
+				: Enumerable.Range(0, format.channels.outputs).Select(_ => Array.CreateInstance(type, frames * attrs.count)).ToArray();
 		}
 
 		internal unsafe void Callback(IntPtr stream, in XtBuffer buffer, in XtTime time, ulong error, IntPtr user)
