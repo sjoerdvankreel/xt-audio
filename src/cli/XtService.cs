@@ -5,53 +5,44 @@ using static Xt.XtNative;
 
 namespace Xt
 {
-	public sealed class XtService
-	{
-		readonly IntPtr _handle;
-		internal XtService(IntPtr handle) => _handle = handle;
+    public sealed class XtService
+    {
+        readonly IntPtr _handle;
+        internal XtService(IntPtr handle) 
+            => _handle = handle;
 
-		public XtCapabilities GetCapabilities() 
-		=> XtServiceGetCapabilities(_handle);
-		public int GetDeviceCount() 
-		=> HandleError(XtServiceGetDeviceCount(_handle, out var r), r);
-		public XtDevice OpenDevice(int index) 
-		=> HandleError(XtServiceOpenDevice(_handle, index, out var r), new XtDevice(r));
-		public XtDevice OpenDefaultDevice(bool output) 
-		=> HandleError(XtServiceOpenDefaultDevice(_handle, output, out var r), new XtDevice(r));
+        public XtCapabilities GetCapabilities()
+            => XtServiceGetCapabilities(_handle);
+        public int GetDeviceCount()
+            => HandleError(XtServiceGetDeviceCount(_handle, out var result))? result: default;
+        public XtDevice OpenDevice(int index)
+            => HandleError(XtServiceOpenDevice(_handle, index, out var result))? new XtDevice(result): default;
+        public XtDevice OpenDefaultDevice(bool output)
+            => HandleError(XtServiceOpenDefaultDevice(_handle, output, out var result)) ? new XtDevice(result) : default;
 
-		public unsafe XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels,
-			double[] bufferSizes, int count, in XtMix mix, bool interleaved,
-			XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, IntPtr user)
-		{
-			IntPtr str;
-			IntPtr channelsPtr = IntPtr.Zero;
-			IntPtr[] ds = devices.Select(d => d.Handle).ToArray();
-			try
-			{
-				int size = Marshal.SizeOf(typeof(XtChannels));
-				channelsPtr = Marshal.AllocHGlobal(count * size);
-				for (int i = 0; i < count; i++)
-					Marshal.StructureToPtr(channels[i], new IntPtr((byte*)channelsPtr + i * size), false);
-				HandleError(XtServiceAggregateStream(_handle, ds, channelsPtr, bufferSizes, count,
-					in mix, interleaved, master.Handle, streamCallback, xRunCallback, user, out str));
-			}
-			finally
-			{
-				if (channelsPtr != IntPtr.Zero)
-					Marshal.FreeHGlobal(channelsPtr);
-			}
-			return new XtStream(str, streamCallback, xRunCallback);
-		}
-
-		public XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels,
-			double[] bufferSizes, int count, XtMix mix, bool interleaved,
-			XtDevice master, XtManagedStreamCallback streamCallback, XtManagedXRunCallback xRunCallback, object user)
-		{
-			var streamWrapper = new ManagedStreamCallback(streamCallback, interleaved, user);
-			var xRunWrapper = xRunCallback == null ? (XtXRunCallback)null : new ManagedXRunCallback(xRunCallback, user).Callback;
-			var result = AggregateStream(devices, channels, bufferSizes, count, in mix, interleaved, master, streamWrapper.Callback, xRunWrapper, IntPtr.Zero);
-			streamWrapper.Init(result);
-			return result;
-		}
-	}
+        public unsafe XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels,
+            double[] bufferSizes, int count, XtMix mix, bool interleaved, bool raw,
+            XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
+        {
+            IntPtr str;
+            IntPtr channelsPtr = IntPtr.Zero;
+            IntPtr[] ds = devices.Select(d => d._d).ToArray();
+            XtStream stream = new XtStream(interleaved, raw, streamCallback, xRunCallback, user);
+            try
+            {
+                int size = Marshal.SizeOf(typeof(XtChannels));
+                channelsPtr = Marshal.AllocHGlobal(count * size);
+                for (int i = 0; i < count; i++)
+                    Marshal.StructureToPtr(channels[i], new IntPtr((byte*)channelsPtr + i * size), false);
+                XtNative.HandleError(XtNative.XtServiceAggregateStream(_handle, ds, channelsPtr, bufferSizes, count,
+                    mix, interleaved, master._d, stream.streamCallbackPtr, stream.xRunCallbackPtr, IntPtr.Zero, out str));
+            } finally
+            {
+                if (channelsPtr != IntPtr.Zero)
+                    Marshal.FreeHGlobal(channelsPtr);
+            }
+            stream.Init(str);
+            return stream;
+        }
+    }
 }

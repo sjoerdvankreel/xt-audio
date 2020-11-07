@@ -9,14 +9,15 @@ namespace Xt
 		const double Frequency = 440.0;
 		static readonly XtFormat Format = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 0));
 
-		static void Render(XtStream stream, in XtManagedBuffer buffer, in XtTime time, ulong error, object user)
+		static void Render(XtStream stream, object input, object output, int frames,
+				double time, ulong position, bool timeValid, ulong error, object user)
 		{
-			for (int f = 0; f < buffer.frames; f++)
+			for (int f = 0; f < frames; f++)
 			{
 				phase += Frequency / Format.mix.rate;
 				if (phase >= 1.0)
 					phase = -1.0;
-				((float[])buffer.output)[f] = (float)Math.Sin(2.0 * phase * Math.PI);
+				((float[])output)[f] = (float)Math.Sin(2.0 * phase * Math.PI);
 			}
 		}
 
@@ -35,7 +36,8 @@ namespace Xt
 						return;
 
 					XtBufferSize size = device.GetBufferSize(Format);
-					using (XtStream stream = device.OpenStream(Format, true, size.current, Render, null, null))
+					using (XtStream stream = device.OpenStream(Format, true, false,
+							size.current, Render, null, null))
 					{
 						stream.Start();
 						Thread.Sleep(1000);

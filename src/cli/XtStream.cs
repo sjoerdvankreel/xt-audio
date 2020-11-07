@@ -5,12 +5,11 @@ namespace Xt
 {
 	public class XtStream : IDisposable
 	{
-		readonly IntPtr _s;
-		readonly XRunCallback _xRunCallback;
-		readonly StreamCallback _streamCallback;
-
-		internal XtStream(IntPtr s, StreamCallback streamCallback, XRunCallback xRunCallback)
-		=> (_s, _xRunCallback, _streamCallback) = (s, xRunCallback, streamCallback);
+		IntPtr _s;
+		readonly XtXRunCallback _xRunCallback;
+		readonly XtStreamCallback _streamCallback;
+		internal XtStream(IntPtr s, XtStreamCallback streamCallback, XtXRunCallback xRunCallback)
+			=> (_s, _xRunCallback, _streamCallback) = (s, xRunCallback, streamCallback);
 
 		public void Dispose() => XtStreamDestroy(_s);
 		public void Stop() => HandleError(XtStreamStop(_s));

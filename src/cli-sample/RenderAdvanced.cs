@@ -21,30 +21,25 @@ namespace Xt
             return (float)Math.Sin(2.0 * phase * Math.PI);
         }
 
-        static void XRunManaged(int index, object user)
+        static void XRun(int index, object user)
         {
             // Don't do this.
             Console.WriteLine("XRun on device " + index + ", user = " + user + ".");
         }
 
-        static void XRunNative(int index, IntPtr user)
-        {
-            // Don't do this.
-            Console.WriteLine("XRun on device " + index + ", user = " + user + ".");
-        }
-
-        static void RenderInterleavedManaged(XtStream stream, in XtManagedBuffer buffer, in XtTime time, ulong error, object user)
+        static void RenderInterleaved(XtStream stream, object input, object output,
+            int frames, double time, ulong position, bool timeValid, ulong error, object user)
         {
             XtFormat format = stream.GetFormat();
-            for (int f = 0; f < buffer.frames; f++)
+            for (int f = 0; f < frames; f++)
             {
                 float sine = NextSine(format.mix.rate);
                 for (int c = 0; c < format.channels.outputs; c++)
-                    ((float[])buffer.output)[f * format.channels.outputs + c] = sine;
+                    ((float[])output)[f * format.channels.outputs + c] = sine;
             }
         }
 
-        static unsafe void RenderInterleavedNative (XtStream stream, object input, object output,
+        static unsafe void RenderInterleavedRaw(XtStream stream, object input, object output,
             int frames, double time, ulong position, bool timeValid, ulong error, object user)
         {
             XtFormat format = stream.GetFormat();

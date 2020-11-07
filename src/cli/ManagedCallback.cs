@@ -5,42 +5,16 @@ using System.Runtime.InteropServices;
 
 namespace Xt
 {
-	class XRunCallbackAdapter
-	{
-		readonly object _user;
-		readonly XtXRunCallback _callback;
-
-		internal void Callback(int index, IntPtr _) 
-		=> _callback(index, _user);
-		internal XRunCallbackAdapter(XtXRunCallback callback, object user) 
-		=> (_callback, _user) = (callback, user);
-	}
-
-	class NativeStreamCallbackAdapter
-	{
-		XtStream _stream;
-		readonly object _user;
-		readonly XtNativeStreamCallback _callback;
-
-		internal void Init(XtStream stream) 
-		=> _stream = stream;
-		internal NativeStreamCallbackAdapter(XtNativeStreamCallback callback, object user)
-		=> (_callback, _user) = (callback, user);
-		internal void Callback(IntPtr _s, in XtBuffer buffer, in XtTime time, ulong error, IntPtr _u)
-		=> _callback(_stream, in buffer, in time, error, _user);
-	}
-
-	class ManagedStreamCallbackAdapter
+	class ManagedCallback
 	{
 		byte[] _scratch;
 		XtStream _stream;
 		XtManagedBuffer _buffer;
-		readonly object _user;
 		readonly bool _interleaved;
 		readonly XtManagedStreamCallback _callback;
 
-		internal ManagedStreamCallbackAdapter(XtManagedStreamCallback callback, bool interleaved, object user)
-		=> (_callback, _interleaved, _user) = (callback, interleaved, user);
+		internal ManagedCallback(bool interleaved, XtManagedStreamCallback callback)
+			=> (_interleaved, _callback) = (interleaved, callback);
 
 		internal void Init(XtStream stream)
 		{
@@ -81,7 +55,7 @@ namespace Xt
 				Marshal.Copy(data[i], _scratch, 0, frames * attrs.size);
 				Buffer.BlockCopy(_scratch, 0, (Array)_buffer.input.GetValue(i), 0, frames * attrs.size);
 			}
-			_callback(_stream, in _buffer, in time, error, _user);
+			_callback(_stream, in _buffer, in time, error);
 			if (_interleaved && buffer.output != IntPtr.Zero)
 			{
 				Buffer.BlockCopy(_buffer.output, 0, _scratch, 0, frames * format.channels.outputs * attrs.size);

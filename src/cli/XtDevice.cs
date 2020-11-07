@@ -7,7 +7,6 @@ namespace Xt
 	public sealed class XtDevice : IDisposable
 	{
 		readonly IntPtr _d;
-		internal IntPtr Handle => _d;
 		internal XtDevice(IntPtr d) => _d = d;
 
 		public void Dispose() => XtDeviceDestroy(_d);
@@ -18,6 +17,8 @@ namespace Xt
 		public bool SupportsFormat(in XtFormat format) => HandleError(XtDeviceSupportsFormat(_d, in format, out var r), r);
 		public bool SupportsAccess(bool interleaved) => HandleError(XtDeviceSupportsAccess(_d, interleaved, out var r), r);
 		public XtBufferSize GetBufferSize(in XtFormat format) => HandleError(XtDeviceGetBufferSize(_d, in format, out var r), r);
+		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, IntPtr user)
+			=> HandleError(XtDeviceOpenStream(_d, in format, interleaved, bufferSize, streamCallback, xRunCallback, user, out IntPtr s), new XtStream(s, streamCallback, xRunCallback));
 
 		public string GetName()
 		{
@@ -37,25 +38,12 @@ namespace Xt
 			return Encoding.UTF8.GetString(buffer, 0, size - 1);
 		}
 
-		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtNativeStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
+		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtManagedStreamCallback streamCallback, XtXRunCallback xRunCallback)
 		{
-			var streamWrapper = new NativeStreamCallbackAdapter(streamCallback, user);
-			StreamCallback streamDelegate = streamWrapper.Callback;
-			var xRunWrapper = xRunCallback == null ? (XRunCallback)null: new XRunCallbackAdapter(xRunCallback, user).Callback;
-			var stream = HandleError(XtDeviceOpenStream(_d, in format, interleaved, bufferSize, streamDelegate, xRunWrapper, IntPtr.Zero, out IntPtr r), r);
-			var result = new XtStream(stream, streamDelegate, xRunWrapper);
-			streamWrapper.Init(result);
-			return result;
-		}
-
-		public XtStream OpenStream(in XtFormat format, bool interleaved, double bufferSize, XtManagedStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
-		{
-			var streamWrapper = new ManagedStreamCallbackAdapter(streamCallback, interleaved, user);
-			StreamCallback streamDelegate = streamWrapper.Callback;
-			var xRunWrapper = xRunCallback == null ? (XRunCallback)null : new XRunCallbackAdapter(xRunCallback, user).Callback;
-			var stream = HandleError(XtDeviceOpenStream(_d, in format, interleaved, bufferSize, streamDelegate, xRunWrapper, IntPtr.Zero, out IntPtr r), r);
-			var result = new XtStream(stream, streamDelegate, xRunWrapper);
-			streamWrapper.Init(result);
+			var streamWrapper = new StreamCallbackWrapper(in format, interleaved, streamCallback);
+			var result = OpenStream(in format, interleaved, bufferSize, streamWrapper.Callback, xRunCallback, IntPtr.Zero);
+			streamWrapper._stream = result;
+			streamWrapper._frames = result.GetFrames();
 			return result;
 		}
 	}
