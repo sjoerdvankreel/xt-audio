@@ -237,7 +237,6 @@ struct XtLatency {
 struct XtAttributes {
   /** @brief Sample size in bytes. */
   int32_t size;
-  int32_t count;
   /** @brief Indicates whether samples are integer or floating point. */
   XtBool isFloat;
   /** @brief Indicates whether samples are signed or unsigned. */

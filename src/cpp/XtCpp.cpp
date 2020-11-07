@@ -106,7 +106,6 @@ Attributes Audio::GetSampleAttributes(Sample sample) {
   Attributes result;
   auto attrs = XtAudioGetSampleAttributes(static_cast<XtSample>(sample));
   result.size = attrs.size;
-  result.count = attrs.count;
   result.isFloat = attrs.isFloat != XtFalse;
   result.isSigned = attrs.isSigned != XtFalse;
   return result;
