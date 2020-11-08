@@ -64,8 +64,9 @@ namespace Xt
 			var type = SampleTypes[_format.mix.sample];
 			int elems = _frames * _attrs.count;
 			if (_interleaved) return Array.CreateInstance(type, channels * elems);
-			var chans = Enumerable.Range(0, channels);
-			return chans.Select(_ => Array.CreateInstance(type, elems)).ToArray();
+			var result = Array.CreateInstance(type.MakeArrayType(), channels);
+			for (int i = 0; i < channels; i++) result.SetValue(Array.CreateInstance(type, elems), i);
+			return result;
 		}
 
 		public void LockBuffer(in XtBuffer buffer)
