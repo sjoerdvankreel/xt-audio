@@ -13,22 +13,6 @@ namespace Xt
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct XtBuffer
-	{
-		public IntPtr input;
-		public IntPtr output;
-		public int frames;
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	public struct XtTime
-	{
-		public double time;
-		public ulong position;
-		public bool valid;
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
 	public struct XtLatency
 	{
 		public double input;
@@ -42,6 +26,19 @@ namespace Xt
 		public double max;
 		public double current;
 	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct XtBuffer
+	{
+		public IntPtr input;
+		public IntPtr output;
+		public double time;
+		public ulong position;
+		public ulong error;
+		public int frames;
+		int _timeValid;
+		public bool timeValid => _timeValid != 0;
+	};
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct XtMix
@@ -98,7 +95,7 @@ namespace Xt
 	[SuppressUnmanagedCodeSecurity]
 	public delegate void XtErrorCallback(string location, string message);
 	[SuppressUnmanagedCodeSecurity]
-	public delegate void XtStreamCallback(IntPtr stream, in XtBuffer buffer, in XtTime time, ulong error, IntPtr user);
+	public delegate void XtStreamCallback(IntPtr stream, in XtBuffer buffer, IntPtr user);
 
 	public enum XtSetup : int { ProAudio, SystemAudio, ConsumerAudio }
 	public enum XtSample : int { UInt8, Int16, Int24, Int32, Float32 }

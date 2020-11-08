@@ -18,7 +18,7 @@ namespace Xt
 			return (float)Math.Sin(2.0 * _phase * Math.PI);
 		}
 
-		static void OnBuffer(IntPtr stream, in XtBuffer buffer, in XtTime time, ulong error, IntPtr _)
+		static void Callback(IntPtr stream, in XtBuffer buffer, IntPtr _)
 		{
 			var adapter = XtAdapter.Get(stream);
 			adapter.LockBuffer(buffer);
@@ -30,13 +30,13 @@ namespace Xt
 		public static void Main()
 		{
 			using XtAudio audio = new XtAudio(null, IntPtr.Zero, null);
-			var system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
+			XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
 			XtService service = XtAudio.GetService(system);
 			if (service == null) return;
 			using XtDevice device = service.OpenDefaultDevice(true);
 			if (device?.SupportsFormat(Format) != true) return;
 			XtBufferSize size = device.GetBufferSize(Format);
-			using XtStream stream = device.OpenStream(Format, true, size.current, OnBuffer, null);
+			using XtStream stream = device.OpenStream(Format, true, size.current, Callback, null);
 			using XtAdapter adapter = XtAdapter.Register(stream, null);
 			stream.Start();
 			Thread.Sleep(1000);
