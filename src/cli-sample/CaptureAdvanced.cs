@@ -37,7 +37,7 @@ namespace Xt
             adapter.LockBuffer(in buffer);
             // Don't do this.
             if (buffer.frames > 0)
-                ((Context)adapter.GetUser()).recording.Write((byte[])adapter.GetInput(), 0, GetBufferSize(adapter.GetStream(), adapter.GetStream().GetFrames()));
+                ((Context)adapter.GetUser()).recording.Write((byte[])adapter.GetInput(), 0, GetBufferSize(adapter.GetStream(), buffer.frames));
             adapter.UnlockBuffer(in buffer);
         }
 
