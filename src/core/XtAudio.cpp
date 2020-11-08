@@ -8,6 +8,7 @@
 #include <sstream>
 #include <cstring>
 #include <iomanip>
+#include <algorithm>
 #include <inttypes.h>
 
 // ---- local ----

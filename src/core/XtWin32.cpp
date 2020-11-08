@@ -1,6 +1,7 @@
 #ifdef _WIN32
 #include <vector>
 #include <cstring>
+#include <algorithm>
 #include "XtWin32.hpp"
 
 // ---- local ----
