@@ -24,21 +24,12 @@ public final class XtAdapter implements XtCloseable {
         return result;
     }
 
-    static void fromNative(Pointer source, Object dest, XtSample sample, int count)
-    {
-        switch(sample)
-        {
-
-        }
-    }
-
     private final int _frames;
     private final int _inputs;
     private final int _outputs;
     private final Object _user;
     private final Object _input;
     private final Object _output;
-    private final byte[] _scratch;
     private final XtStream _stream;
     private final XtFormat _format;
     private final XtAttributes _attrs;
@@ -62,8 +53,6 @@ public final class XtAdapter implements XtCloseable {
         _attrs = XtAudio.getSampleAttributes(_format.mix.sample);
         _input = createBuffer(_inputs);
         _output = createBuffer(_outputs);
-        int chans = Math.max(_inputs, _outputs);
-        _scratch = new byte[chans * _frames * _attrs.size];
     }
 
     Object createBuffer(int channels) {
@@ -88,26 +77,46 @@ public final class XtAdapter implements XtCloseable {
     }
 
     void lockInterleaved(XtBuffer buffer) {
-        int bytes = _inputs * buffer.frames * _attrs.size;
-        Marshal.Copy(buffer.input, _scratch, 0, bytes);
-        Buffer.BlockCopy(_scratch, 0, _input, 0, bytes);
+        int elems = _inputs * buffer.frames * _attrs.count;
+        fromNative(buffer.input, _input, elems);
     }
 
     void unlockInterleaved(XtBuffer buffer) {
-        int bytes = _outputs * buffer.frames * _attrs.size;
-        Buffer.BlockCopy(_output, 0, _scratch, 0, bytes);
-        Marshal.Copy(_scratch, 0, buffer.output, bytes);
+        int elems = _outputs * buffer.frames * _attrs.count;
+        toNative(_output, buffer.output, elems);
     }
 
     void lockChannel(XtBuffer buffer, int channel) {
-        int bytes = buffer.frames * _attrs.size;
-        Marshal.Copy(((IntPtr *)buffer.input)[channel], _scratch, 0, bytes);
-        Buffer.BlockCopy(_scratch, 0, (Array)_input.GetValue(channel), 0, bytes);
+        int elems = buffer.frames * _attrs.count;
+        var channelBuffer = buffer.input.getPointer(channel * Native.POINTER_SIZE);
+        fromNative(channelBuffer, Array.get(_input, channel), elems);
     }
 
     void unlockChannel(XtBuffer buffer, int channel) {
-        int bytes = buffer.frames * _attrs.size;
-        Buffer.BlockCopy((Array)_output.GetValue(channel), 0, _scratch, 0, bytes);
-        Marshal.Copy(_scratch, 0, ((IntPtr *)buffer.output)[channel], bytes);
+        int elems = buffer.frames * _attrs.count;
+        var channelBuffer = buffer.output.getPointer(channel * Native.POINTER_SIZE);
+        toNative(Array.get(_output, channel), channelBuffer, elems);
+    }
+
+    void toNative(Object source, Pointer dest, int count) {
+        switch(_format.mix.sample) {
+        case UINT8: dest.write(0, (byte[])source, 0, count);
+        case INT16: dest.write(0, (short[])source, 0, count);
+        case INT24: dest.write(0, (byte[])source, 0, count);
+        case INT32: dest.write(0, (int[])source, 0, count);
+        case FLOAT32: dest.write(0, (float[])source, 0, count);
+        default: throw new IllegalArgumentException();
+        }
+    }
+
+    void fromNative(Pointer source, Object dest, int count) {
+        switch(_format.mix.sample) {
+        case UINT8: source.read(0, (byte[])dest, 0, count);
+        case INT16: source.read(0, (short[])dest, 0, count);
+        case INT24: source.read(0, (byte[])dest, 0, count);
+        case INT32: source.read(0, (int[])dest, 0, count);
+        case FLOAT32: source.read(0, (float[])dest, 0, count);
+        default: throw new IllegalArgumentException();
+        }
     }
 }
