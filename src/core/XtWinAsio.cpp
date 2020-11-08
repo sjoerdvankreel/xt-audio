@@ -188,15 +188,14 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   for(int32_t i = 0; i < s->format.channels.outputs; i++)
     s->outputChannels[i] = s->buffers[s->format.channels.inputs + i].buffers[index];
 
-  XtBuffer buffer;
+  XtBuffer buffer = { 0 };
   buffer.input = input;
   buffer.output = output;
   buffer.frames = s->bufferSize;
-  XtTime xtTime;
-  xtTime.time = time;
-  xtTime.position = position;
-  xtTime.valid = timeValid;
-  s->ProcessCallback(&buffer, &xtTime, ASE_OK);
+  buffer.time = time;
+  buffer.position = position;
+  buffer.timeValid = timeValid;
+  s->ProcessCallback(&buffer);
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
 

@@ -172,8 +172,7 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   jack_time_t jackTime, nextTime;
   JackStream* s = static_cast<JackStream*>(arg);
   int32_t sampleSize = XtiGetSampleSize(s->format.mix.sample);
-  XtBuffer xtBuffer;
-  XtTime xtTime;
+  XtBuffer xtBuffer = { 0 };
 
   input = s->inputs.size() == 0? nullptr: &s->inputChannels[0];
   output = s->outputs.size() == 0? nullptr: &s->outputChannels[0];  
@@ -190,10 +189,10 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   xtBuffer.input = input;
   xtBuffer.output = output;
   xtBuffer.frames = frames;
-  xtTime.time = time;
-  xtTime.position = position;
-  xtTime.valid = timeValid;
-  s->ProcessCallback(&xtBuffer, &xtTime, 0);
+  xtBuffer.time = time;
+  xtBuffer.position = position;
+  xtBuffer.timeValid = timeValid;
+  s->ProcessCallback(&xtBuffer);
   return 0;
 }
 

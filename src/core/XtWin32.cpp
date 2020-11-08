@@ -225,7 +225,9 @@ bool XtwWin32BlockingStream::VerifyStreamCallback(HRESULT hr, const char* file, 
     return true;
   RequestStop();
   XtiTrace(file, line, func, expr);
-  ProcessCallback(nullptr, nullptr, XtiCreateError(GetSystem(), hr));
+  XtBuffer buffer = { 0 };
+  buffer.error = XtiCreateError(GetSystem(), hr);
+  ProcessCallback(&buffer);
   return false;
 }
 

@@ -267,7 +267,7 @@ XtFault XtAggregate::GetLatency(XtLatency* latency) const {
 // ---- sync callbacks ---
 
 void XT_CALLBACK XtiSlaveCallback(
-  const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user) {
+  const XtStream* stream, const XtBuffer* buffer, void* user) {
 
   size_t i;
   int32_t read, written;
@@ -281,13 +281,11 @@ void XT_CALLBACK XtiSlaveCallback(
 
   XtiLockIncr(&aggregate->insideCallbackCount);
 
-  if(error != 0) {
-    XtTime noTime = { 0 };
-    XtBuffer emptyBuffer = { 0 };
+  if(buffer->error != 0) {
     for(i = 0; i < aggregate->streams.size(); i++)
       if(i != static_cast<size_t>(index))
         aggregate->streams[i]->RequestStop();
-    aggregate->streamCallback(aggregate, &emptyBuffer, &noTime, error, aggregate->user);
+    aggregate->streamCallback(aggregate, buffer, aggregate->user);
   } else {
 
     if(XtiCas(&aggregate->running, 1, 1) != 1) {
@@ -319,7 +317,7 @@ void XT_CALLBACK XtiSlaveCallback(
 }
 
 void XT_CALLBACK XtiMasterCallback(
-  const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user) {
+  const XtStream* stream, const XtBuffer* buffer, void* user) {
 
   size_t i;
   void* appInput;
@@ -348,8 +346,8 @@ void XT_CALLBACK XtiMasterCallback(
       if(i != static_cast<size_t>(aggregate->masterIndex))
         static_cast<XtBlockingStream*>(aggregate->streams[i].get())->ProcessBuffer(false);
 
-  XtiSlaveCallback(stream, buffer, time, error, user);
-  if(error != 0) {
+  XtiSlaveCallback(stream, buffer, user);
+  if(buffer->error != 0) {
     return;
   }
 
@@ -395,11 +393,10 @@ void XT_CALLBACK XtiMasterCallback(
     }
   }
 
-  XtBuffer appBuffer;
-  appBuffer.frames = buffer->frames;
+  XtBuffer appBuffer = *buffer;
   appBuffer.input = appInput;
   appBuffer.output = appOutput;
-  aggregate->streamCallback(aggregate, &appBuffer, time, error, aggregate->user);
+  aggregate->streamCallback(aggregate, &appBuffer, aggregate->user);
 
   totalChannels = 0;
   for(i = 0; i < aggregate->streams.size(); i++) {

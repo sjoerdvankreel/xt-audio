@@ -25,18 +25,18 @@ struct StreamCallbackForwarder {
   }
 
   static void XT_CALLBACK ForwardStream(
-    const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user) {
+    const XtStream* stream, const XtBuffer* buffer, void* user) {
 
-    Time t;
     Buffer b;
     auto s = static_cast<Stream*>(user);
-    t.position = time->position;
-    t.time = time->time;
-    t.valid = time->valid != XtFalse;
+    b.position = buffer->position;
+    b.time = buffer->time;
+    b.timeValid = buffer->timeValid != XtFalse;
     b.frames = buffer->frames;
     b.input = buffer->input; 
     b.output = buffer->output; 
-    s->streamCallback(*s, b, t, error, s->user);
+    b.error = buffer->error;
+    s->streamCallback(*s, b, s->user);
   }
 };
 

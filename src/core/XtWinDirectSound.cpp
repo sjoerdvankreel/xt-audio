@@ -411,11 +411,7 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
   DWORD size1, size2, read, write, lockPosition, waitResult;
   DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
 
-  XtBuffer xtBuffer;
-  XtTime time;
-  time.position = 0;
-  time.valid = XtFalse;
-  time.time = 0;
+  XtBuffer xtBuffer = { 0 };
 
   if(!prefill && !secondary) {
     waitResult = WaitForSingleObject(timer.timer, bufferMillis);
@@ -431,12 +427,12 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = nullptr;
       xtBuffer.output = audio1;
       xtBuffer.frames = bufferFrames;
-      ProcessCallback(&xtBuffer, &time, DS_OK);
+      ProcessCallback(&xtBuffer);
     } else {
       xtBuffer.input = nullptr;
       xtBuffer.output = &buffer[0];
       xtBuffer.frames = bufferFrames;
-      ProcessCallback(&xtBuffer, &time, DS_OK);
+      ProcessCallback(&xtBuffer);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))
@@ -466,7 +462,7 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = audio1;
       xtBuffer.output = nullptr;
       xtBuffer.frames = available / frameSize;
-      ProcessCallback(&xtBuffer, &time, S_OK);
+      ProcessCallback(&xtBuffer);
       if(!XT_VERIFY_STREAM_CALLBACK(capture->Unlock(audio1, size1, audio2, size2)))
         return;
     } else {
@@ -476,7 +472,7 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = &buffer[0];
       xtBuffer.output = nullptr;
       xtBuffer.frames = available / frameSize;
-      ProcessCallback(&xtBuffer, &time, S_OK);
+      ProcessCallback(&xtBuffer);
     }
     xtBytesProcessed += available;
   }
@@ -502,12 +498,12 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = nullptr;
       xtBuffer.output = audio1;
       xtBuffer.frames = available / frameSize;
-      ProcessCallback(&xtBuffer, &time, S_OK);
+      ProcessCallback(&xtBuffer);
     } else {
       xtBuffer.input = nullptr;
       xtBuffer.output = &buffer[0];
       xtBuffer.frames = available / frameSize;
-      ProcessCallback(&xtBuffer, &time, S_OK);
+      ProcessCallback(&xtBuffer);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_STREAM_CALLBACK(render->Unlock(audio1, size1, audio2, size2)))

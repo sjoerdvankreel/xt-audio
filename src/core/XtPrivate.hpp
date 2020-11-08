@@ -168,7 +168,7 @@ struct XtStream {
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
   void ProcessXRun();
-  void ProcessCallback(const XtBuffer* buffer, const XtTime* time, XtError error);
+  void ProcessCallback(const XtBuffer* buffer);
 };
 
 struct XtBlockingStream: public XtStream {
@@ -235,7 +235,7 @@ void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(const char* file, int32_t line, const char* func, const char* format, ...);
 void XtiVTrace(const char* file, int32_t line, const char* func, const char* format, va_list arg);
 
-void XT_CALLBACK XtiSlaveCallback(const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user);
-void XT_CALLBACK XtiMasterCallback(const XtStream* stream, const XtBuffer* buffer, const XtTime* time, XtError error, void* user);
+void XT_CALLBACK XtiSlaveCallback(const XtStream* stream, const XtBuffer* buffer, void* user);
+void XT_CALLBACK XtiMasterCallback(const XtStream* stream, const XtBuffer* buffer, void* user);
 
 #endif // XT_PRIVATE_HPP

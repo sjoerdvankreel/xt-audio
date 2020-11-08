@@ -227,7 +227,9 @@ bool XtlLinuxBlockingStream::VerifyStreamCallback(int error, const char* file, i
     return true;
   RequestStop();
   XtiTrace(file, line, func, expr);
-  ProcessCallback(nullptr, nullptr, XtiCreateError(GetSystem(), error));
+  XtBuffer buffer = { 0 };
+  buffer.error = XtiCreateError(GetSystem(), error);
+  ProcessCallback(&buffer);
   return false;
 }
 
