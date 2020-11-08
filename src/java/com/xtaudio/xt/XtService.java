@@ -3,7 +3,7 @@ package com.xtaudio.xt;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import com.sun.jna.Pointer;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import static com.xtaudio.xt.XtNative.*;
@@ -11,11 +11,12 @@ import static com.xtaudio.xt.NativeTypes.*;
 
 public final class XtService {
 
+    static { Native.register(XtNative.getLibrary()); }
     private static native int XtServiceGetCapabilities(Pointer s);
     private static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
     private static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);
     private static native long XtServiceOpenDefaultDevice(Pointer s, boolean output, PointerByReference device);
-    private static native long XtServiceAggregateStream(Pointer s, Pointer[] devices,
+    private static native long XtServiceAggregateStream(Pointer s, PointerWrapper[] devices,
                                                         XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
                                                         boolean interleaved, Pointer master, XtStreamCallback streamCallback,
                                                         XtXRunCallback xRunCallback, Pointer user, PointerByReference stream);
@@ -55,7 +56,7 @@ public final class XtService {
                                     boolean interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
 
         var stream = new PointerByReference();
-        var handles = Arrays.stream(devices).map(d -> d.handle()).toArray(Pointer[]::new);
+        var handles = Arrays.stream(devices).map(d -> new PointerWrapper(d.handle())).toArray(PointerWrapper[]::new);
         handleError(XtServiceAggregateStream(_s, handles, channels, bufferSizes, count, mix, interleaved, master.handle(), streamCallback, xRunCallback, Pointer.NULL, stream));
         return new XtStream(stream.getValue(), streamCallback, xRunCallback);
     }

@@ -1,12 +1,13 @@
 package com.xtaudio.xt;
 
-import com.sun.jna.Pointer;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 import static com.xtaudio.xt.XtNative.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
 public final class XtStream implements XtCloseable {
 
+    static { Native.register(XtNative.getLibrary()); }
     private static native long XtStreamStop(Pointer s);
     private static native long XtStreamStart(Pointer s);
     private static native void XtStreamDestroy(Pointer s);

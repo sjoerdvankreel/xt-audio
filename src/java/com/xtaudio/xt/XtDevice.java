@@ -3,7 +3,7 @@ package com.xtaudio.xt;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import com.sun.jna.Pointer;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import static com.xtaudio.xt.XtNative.*;
@@ -11,6 +11,7 @@ import static com.xtaudio.xt.NativeTypes.*;
 
 public final class XtDevice implements XtCloseable {
 
+    static { Native.register(XtNative.getLibrary()); }
     private static native void XtDeviceDestroy(Pointer d);
     private static native long XtDeviceShowControlPanel(Pointer d);
     private static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);

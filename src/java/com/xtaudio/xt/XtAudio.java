@@ -13,7 +13,6 @@ public final class XtAudio implements XtCloseable {
     static XtErrorCallback _errorCallback;
     public XtAudio(String id, Pointer window, XtErrorCallback callback) {
         _errorCallback = callback;
-        XtNative.init();
         XtAudioInit(id, window, callback);
     }
 
