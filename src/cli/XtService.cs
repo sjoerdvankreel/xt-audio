@@ -19,7 +19,7 @@ namespace Xt
 			=> HandleError(XtServiceOpenDefaultDevice(_s, output, out var r), new XtDevice(r));
 		public XtStream AggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, in XtMix mix,
 			bool interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback)
-		=> HandleError(XtServiceAggregateStream(_s, devices.Select(d => d.Handle).ToArray(), channels, bufferSizes, count, in mix, 
-			interleaved, master.Handle, streamCallback, xRunCallback, IntPtr.Zero, out var r), new XtStream(r, streamCallback, xRunCallback));
+		=> HandleError(XtServiceAggregateStream(_s, devices.Select(d => d.Handle()).ToArray(), channels, bufferSizes, count, in mix, 
+			interleaved, master.Handle(), streamCallback, xRunCallback, IntPtr.Zero, out var r), new XtStream(r, streamCallback, xRunCallback));
 	}
 }

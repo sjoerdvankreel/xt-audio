@@ -15,6 +15,7 @@ public final class XtStream implements XtCloseable {
     private static native long XtStreamGetFrames(Pointer s, IntByReference frames);
 
     private final Pointer _s;
+    Pointer handle() { return _s; }
     private final XtXRunCallback _xRunCallback;
     private final XtStreamCallback _streamCallback;
 

@@ -19,7 +19,7 @@ namespace Xt
 		[DllImport("xt-core")] static extern ulong XtDeviceOpenStream(IntPtr d, in XtFormat format, bool interleaved, double bufferSize, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, IntPtr user, out IntPtr stream);
 
 		readonly IntPtr _d;
-		internal IntPtr Handle => _d;
+		internal IntPtr Handle() => _d;
 		internal XtDevice(IntPtr d) => _d = d;
 
 		public void Dispose() => XtDeviceDestroy(_d);

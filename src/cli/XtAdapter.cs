@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Xt
 {
-	public class XtAdapter : IDisposable
+	public sealed class XtAdapter : IDisposable
 	{
 		static readonly Dictionary<IntPtr, XtAdapter> _map = new Dictionary<IntPtr, XtAdapter>();
-		static readonly Dictionary<XtSample, Type> SampleTypes = new Dictionary<XtSample, Type>()
+		static readonly Dictionary<XtSample, Type> _types = new Dictionary<XtSample, Type>()
 		{
 			{ XtSample.UInt8, typeof(byte) },
 			{ XtSample.Int16, typeof(short) },
@@ -20,7 +19,7 @@ namespace Xt
 		public static XtAdapter Register(XtStream stream, bool interleaved, object user)
 		{
 			var result = new XtAdapter(stream, interleaved, user);
-			_map.Add(stream.Handle, result);
+			_map.Add(stream.Handle(), result);
 			return result;
 		}
 
@@ -40,7 +39,7 @@ namespace Xt
 		public Array GetInput() => _input;
 		public Array GetOutput() => _output;
 		public XtStream GetStream() => _stream;
-		public void Dispose() => _map.Remove(_stream.Handle);
+		public void Dispose() => _map.Remove(_stream.Handle());
 		public static XtAdapter Get(IntPtr stream) => _map[stream];
 
 		internal XtAdapter(XtStream stream, bool interleaved, object user)
@@ -61,7 +60,7 @@ namespace Xt
 
 		Array CreateBuffer(int channels)
 		{
-			var type = SampleTypes[_format.mix.sample];
+			var type = _types[_format.mix.sample];
 			int elems = _frames * _attrs.count;
 			if (_interleaved) return Array.CreateInstance(type, channels * elems);
 			var result = Array.CreateInstance(type.MakeArrayType(), channels);
