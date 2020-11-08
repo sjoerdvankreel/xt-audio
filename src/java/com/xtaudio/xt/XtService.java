@@ -16,8 +16,8 @@ public final class XtService {
     private static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
     private static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);
     private static native long XtServiceOpenDefaultDevice(Pointer s, boolean output, PointerByReference device);
-    private static native long XtServiceAggregateStream(Pointer s, PointerWrapper[] devices,
-                                                        XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
+    private static native long XtServiceAggregateStream(Pointer s, Pointer devices,
+                                                        Pointer channels, double[] bufferSizes, int count, XtMix mix,
                                                         boolean interleaved, Pointer master, XtStreamCallback streamCallback,
                                                         XtXRunCallback xRunCallback, Pointer user, PointerByReference stream);
     private final Pointer _s;
@@ -54,10 +54,14 @@ public final class XtService {
 
     public XtStream aggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
                                     boolean interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
-
         var stream = new PointerByReference();
-        var handles = Arrays.stream(devices).map(d -> new PointerWrapper(d.handle())).toArray(PointerWrapper[]::new);
-        handleError(XtServiceAggregateStream(_s, handles, channels, bufferSizes, count, mix, interleaved, master.handle(), streamCallback, xRunCallback, Pointer.NULL, stream));
+        Structure[] cs = new XtChannels().toArray(count);
+        Pointer ds = new Memory(count * Native.POINTER_SIZE);
+        for (int i = 0; i < count; i++) {
+            cs[i] = channels[i];
+            ds.setPointer(i * Native.POINTER_SIZE, devices[i].handle());
+        }
+        handleError(XtServiceAggregateStream(_s, ds, cs[0].getPointer(), bufferSizes, count, mix, interleaved, master.handle(), streamCallback, xRunCallback, Pointer.NULL, stream));
         return new XtStream(stream.getValue(), streamCallback, xRunCallback);
     }
 }
