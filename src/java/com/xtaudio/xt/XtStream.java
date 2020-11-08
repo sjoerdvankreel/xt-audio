@@ -1,236 +1,43 @@
 package com.xtaudio.xt;
 
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import com.xtaudio.xt.NativeTypes.XtFormat;
-import com.xtaudio.xt.NativeTypes.XtLatency;
-import com.xtaudio.xt.NativeTypes.XtSample;
-import com.xtaudio.xt.NativeTypes.XtStreamCallback;
-import com.xtaudio.xt.NativeTypes.XtXRunCallback;
-
-import java.lang.reflect.Array;
+import static com.xtaudio.xt.XtNative.*;
+import static com.xtaudio.xt.NativeTypes.*;
 
 public final class XtStream implements XtCloseable {
 
-    private static Object createNonInterleavedBuffer(XtSample sample, int channels, int frames) {
-        switch(sample) {
-            case UINT8:
-                return Array.newInstance(byte.class, channels, frames);
-            case INT16:
-                return Array.newInstance(short.class, channels, frames);
-            case INT24:
-                return Array.newInstance(byte.class, channels, frames * 3);
-            case INT32:
-                return Array.newInstance(int.class, channels, frames);
-            case FLOAT32:
-                return Array.newInstance(float.class, channels, frames);
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
+    private static native long XtStreamStop(Pointer s);
+    private static native long XtStreamStart(Pointer s);
+    private static native void XtStreamDestroy(Pointer s);
+    private static native XtFormat.ByValue XtStreamGetFormat(Pointer s);
+    private static native long XtStreamGetLatency(Pointer s, XtLatency latency);
+    private static native long XtStreamGetFrames(Pointer s, IntByReference frames);
 
-    private static Object createInterleavedBuffer(XtSample sample, int channels, int frames) {
-        switch(sample) {
-            case UINT8:
-                return Array.newInstance(byte.class, channels * frames);
-            case INT16:
-                return Array.newInstance(short.class, channels * frames);
-            case INT24:
-                return Array.newInstance(byte.class, channels * frames * 3);
-            case INT32:
-                return Array.newInstance(int.class, channels * frames);
-            case FLOAT32:
-                return Array.newInstance(float.class, channels * frames);
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
+    private final Pointer _s;
+    private final XtXRunCallback _xRunCallback;
+    private final XtStreamCallback _streamCallback;
 
-    private static void copyInterleavedBufferFromNative(XtSample sample, Pointer raw, Object managed, int channels, int frames) {
-        switch(sample) {
-            case UINT8:
-                raw.read(0, (byte[]) managed, 0, channels * frames);
-                break;
-            case INT16:
-                raw.read(0, (short[]) managed, 0, channels * frames);
-                break;
-            case INT24:
-                raw.read(0, (byte[]) managed, 0, channels * frames * 3);
-                break;
-            case INT32:
-                raw.read(0, (int[]) managed, 0, channels * frames);
-                break;
-            case FLOAT32:
-                raw.read(0, (float[]) managed, 0, channels * frames);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
+    public void stop() { handleError(XtStreamStop(_s)); }
+    @Override public void close() { XtStreamDestroy(_s); }
+    public void start() { handleError(XtStreamStart(_s)); }
+    public XtFormat getFormat() {return XtStreamGetFormat(_s); }
 
-    private static void copyInterleavedBufferToNative(XtSample sample, Object managed, Pointer raw, int channels, int frames) {
-        switch(sample) {
-            case UINT8:
-                raw.write(0, (byte[]) managed, 0, channels * frames);
-                break;
-            case INT16:
-                raw.write(0, (short[]) managed, 0, channels * frames);
-                break;
-            case INT24:
-                raw.write(0, (byte[]) managed, 0, channels * frames * 3);
-                break;
-            case INT32:
-                raw.write(0, (int[]) managed, 0, channels * frames);
-                break;
-            case FLOAT32:
-                raw.write(0, (float[]) managed, 0, channels * frames);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
-    private static void copyNonInterleavedBufferFromNative(XtSample sample, Pointer raw, Object managed, int channels, int frames) {
-        switch(sample) {
-            case UINT8:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((byte[][]) managed)[i], 0, frames);
-                break;
-            case INT16:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((short[][]) managed)[i], 0, frames);
-                break;
-            case INT24:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((byte[][]) managed)[i], 0, frames * 3);
-                break;
-            case INT32:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((int[][]) managed)[i], 0, frames);
-                break;
-            case FLOAT32:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).read(0, ((float[][]) managed)[i], 0, frames);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
-    private static void copyNonInterleavedBufferToNative(XtSample sample, Object managed, Pointer raw, int channels, int frames) {
-        switch(sample) {
-            case UINT8:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((byte[][]) managed)[i], 0, frames);
-                break;
-            case INT16:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((short[][]) managed)[i], 0, frames);
-                break;
-            case INT24:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((byte[][]) managed)[i], 0, frames * 3);
-                break;
-            case INT32:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((int[][]) managed)[i], 0, frames);
-                break;
-            case FLOAT32:
-                for(int i = 0; i < channels; i++)
-                    raw.getPointer(i * Native.POINTER_SIZE).write(0, ((float[][]) managed)[i], 0, frames);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
-
-    private final Object user;
-    private final boolean raw;
-    private final boolean interleaved;
-    private final XtXRunCallback userXRunCallback;
-    private final XtStreamCallback userStreamCallback;
-
-    private Pointer s;
-    private Object inputInterleaved;
-    private Object outputInterleaved;
-    private Object inputNonInterleaved;
-    private Object outputNonInterleaved;
-    final XtNative.XRunCallback nativeXRunCallback;
-    final XtNative.StreamCallback nativeStreamCallback;
-
-    XtStream(boolean interleaved, boolean raw, XtStreamCallback userStreamCallback, XtXRunCallback userXRunCallback, Object user) {
-        this.raw = raw;
-        this.user = user;
-        this.interleaved = interleaved;
-        this.userXRunCallback = userXRunCallback;
-        this.userStreamCallback = userStreamCallback;
-        this.nativeXRunCallback = this::xRunCallback;
-        this.nativeStreamCallback = this::streamCallback;
-    }
-
-    public void stop() {
-        XtNative.handleError(XtNative.XtStreamStop(s));
-    }
-
-    public void start() {
-        XtNative.handleError(XtNative.XtStreamStart(s));
-    }
-
-    public XtFormat getFormat() {
-        return new XtNative.Format(XtNative.XtStreamGetFormat(s)).fromNative();
-    }
-
-    @Override public void close() {
-        if(s != null) XtNative.XtStreamDestroy(s);
-        s = null;
+    XtStream(Pointer s, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
+        _s = s;
+        _xRunCallback = xRunCallback;
+        _streamCallback = streamCallback;
     }
 
     public int getFrames() {
-        IntByReference frames = new IntByReference();
-        XtNative.handleError(XtNative.XtStreamGetFrames(s, frames));
+        var frames = new IntByReference();
+        handleError(XtStreamGetFrames(_s, frames));
         return frames.getValue();
     }
 
     public XtLatency getLatency() {
-        XtLatency latency = new XtLatency();
-        XtNative.handleError(XtNative.XtStreamGetLatency(s, latency));
+        var latency = new XtLatency();
+        handleError(XtStreamGetLatency(_s, latency));
         return latency;
-    }
-
-    void init(Pointer s) {
-        this.s = s;
-        if(!raw) {
-            int frames = getFrames();
-            XtFormat format = getFormat();
-            if(interleaved) {
-                inputInterleaved = createInterleavedBuffer(format.mix.sample, format.channels.inputs, frames);
-                outputInterleaved = createInterleavedBuffer(format.mix.sample, format.channels.outputs, frames);
-            } else {
-                inputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.channels.inputs, frames);
-                outputNonInterleaved = createNonInterleavedBuffer(format.mix.sample, format.channels.outputs, frames);
-            }
-        }
-    }
-
-    void xRunCallback(int index, Pointer user) throws Exception {
-        userXRunCallback.callback(index, this.user);
-    }
-
-    void streamCallback(Pointer stream, Pointer input, Pointer output, int frames, double time, long position, boolean timeValid, long error, Pointer u) throws Exception {
-
-        XtFormat format = getFormat();
-        Object inData = raw? input: input == null? null: interleaved? inputInterleaved: inputNonInterleaved;
-        Object outData = raw? output: output == null? null: interleaved? outputInterleaved: outputNonInterleaved;
-
-        if(!raw && inData != null) if(interleaved)
-            copyInterleavedBufferFromNative(format.mix.sample, input, inData, format.channels.inputs, frames);
-        else copyNonInterleavedBufferFromNative(format.mix.sample, input, inData, format.channels.inputs, frames);
-
-        userStreamCallback.callback(this, inData, outData, frames, time, position, timeValid, error, user);
-
-        if(!raw && outData != null) if(interleaved)
-            copyInterleavedBufferToNative(format.mix.sample, outData, output, format.channels.outputs, frames);
-        else copyNonInterleavedBufferToNative(format.mix.sample, outData, output, format.channels.outputs, frames);
     }
 }

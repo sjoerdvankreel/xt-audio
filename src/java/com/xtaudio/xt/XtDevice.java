@@ -1,98 +1,89 @@
 package com.xtaudio.xt;
 
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.PointerByReference;
-import com.xtaudio.xt.NativeTypes.*;
-
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-public class XtDevice implements XtCloseable {
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
+import static com.xtaudio.xt.XtNative.*;
+import static com.xtaudio.xt.NativeTypes.*;
 
-    Pointer d;
+public final class XtDevice implements XtCloseable {
 
-    XtDevice() {
+    private static native void XtDeviceDestroy(Pointer d);
+    private static native long XtDeviceShowControlPanel(Pointer d);
+    private static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);
+    private static native long XtDeviceGetName(Pointer d, byte[] buffer, IntByReference size);
+    private static native long XtDeviceGetBufferSize(Pointer d, XtFormat format, XtBufferSize size);
+    private static native long XtDeviceGetChannelCount(Pointer d, boolean output, IntByReference count);
+    private static native long XtDeviceSupportsFormat(Pointer d, XtFormat format, IntByReference supports);
+    private static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
+    private static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, byte[] buffer, IntByReference size);
+    private static native long XtDeviceOpenStream(Pointer d, XtFormat format, boolean interleaved, double bufferSize,
+                                                  XtStreamCallback streamCallback, XtXRunCallback xRunCallback,
+                                                  Pointer user, PointerByReference stream);
 
-    }
+    private final Pointer _d;
+    Pointer handle() { return _d; }
+    XtDevice(Pointer d) { _d = d; }
 
-    XtDevice(Pointer d) {
-        this.d = d;
-    }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
-
-    public void showControlPanel() {
-        XtNative.handleError(XtNative.XtDeviceShowControlPanel(d));
-    }
-
-    @Override
-    public void close() {
-        if (d != null) {
-            XtNative.XtDeviceDestroy(d);
-        }
-        d = null;
-    }
-
-    public String getName() {
-        IntByReference size = new IntByReference();
-        XtNative.handleError(XtNative.XtDeviceGetName(d, null, size));
-        byte[] buffer = new byte[size.getValue()];
-        XtNative.handleError(XtNative.XtDeviceGetName(d, buffer, size));
-        return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
-    }
-
-    public int getChannelCount(boolean output) {
-        IntByReference count = new IntByReference();
-        XtNative.handleError(XtNative.XtDeviceGetChannelCount(d, output, count));
-        return count.getValue();
-    }
+    @Override public void close() { XtDeviceDestroy(_d); }
+    @Override public String toString() { return getName(); }
+    public void showControlPanel() { handleError(XtDeviceShowControlPanel(_d)); }
 
     public XtBufferSize getBufferSize(XtFormat format) {
-        XtBufferSize result = new XtBufferSize();
-        XtNative.handleError(XtNative.XtDeviceGetBufferSize(d, XtNative.Format.toNative(format), result));
+        var result = new XtBufferSize();
+        handleError(XtDeviceGetBufferSize(_d, format, result));
         return result;
     }
 
-    public Optional<XtMix> getMix() {
-        XtMix mix = new XtMix();
-        IntByReference valid = new IntByReference();
-        XtNative.handleError(XtNative.XtDeviceGetMix(d, valid, mix));
-        return valid.getValue() == 0 ? Optional.empty() : Optional.of(mix);
+    public int getChannelCount(boolean output) {
+        var count = new IntByReference();
+        handleError(XtDeviceGetChannelCount(_d, output, count));
+        return count.getValue();
     }
 
     public boolean supportsFormat(XtFormat format) {
-        IntByReference supports = new IntByReference();
-        XtNative.handleError(XtNative.XtDeviceSupportsFormat(d, XtNative.Format.toNative(format), supports));
+        var supports = new IntByReference();
+        handleError(XtDeviceSupportsFormat(_d, format, supports));
         return supports.getValue() != 0;
     }
 
     public boolean supportsAccess(boolean interleaved) {
-        IntByReference supports = new IntByReference();
-        XtNative.handleError(XtNative.XtDeviceSupportsAccess(d, interleaved, supports));
+        var supports = new IntByReference();
+        handleError(XtDeviceSupportsAccess(_d, interleaved, supports));
         return supports.getValue() != 0;
     }
 
-    public String getChannelName(boolean output, int index) {
-        IntByReference size = new IntByReference();
-        XtNative.handleError(XtNative.XtDeviceGetChannelName(d, output, index, null, size));
+    public Optional<XtMix> getMix() {
+        XtMix mix = new XtMix();
+        var valid = new IntByReference();
+        handleError(XtDeviceGetMix(_d, valid, mix));
+        return valid.getValue() == 0? Optional.empty(): Optional.of(mix);
+    }
+
+    public String getName() {
+        var size = new IntByReference();
+        handleError(XtDeviceGetName(_d, null, size));
         byte[] buffer = new byte[size.getValue()];
-        XtNative.handleError(XtNative.XtDeviceGetChannelName(d, output, index, buffer, size));
+        handleError(XtDeviceGetName(_d, buffer, size));
         return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
     }
 
-    public XtStream openStream(XtFormat format, boolean interleaved, boolean raw, double bufferSize,
-            XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
+    public String getChannelName(boolean output, int index) {
+        var size = new IntByReference();
+        handleError(XtDeviceGetChannelName(_d, output, index, null, size));
+        byte[] buffer = new byte[size.getValue()];
+        handleError(XtDeviceGetChannelName(_d, output, index, buffer, size));
+        return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
+    }
 
-        PointerByReference s = new PointerByReference();
-        XtStream stream = new XtStream(interleaved, raw, streamCallback, xRunCallback, user);
-        XtNative.Format formatNative = XtNative.Format.toNative(format);
-        XtNative.handleError(XtNative.XtDeviceOpenStream(d, formatNative, interleaved, bufferSize,
-                stream.nativeStreamCallback, xRunCallback == null ? null : stream.nativeXRunCallback, null, s));
-        stream.init(s.getValue());
-        return stream;
+    public XtStream openStream(XtFormat format, boolean interleaved, double bufferSize,
+                               XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Pointer user) {
+
+        var stream = new PointerByReference();
+        handleError(XtDeviceOpenStream(_d, format, interleaved, bufferSize, streamCallback, xRunCallback, user, stream));
+        return new XtStream(stream.getValue(), streamCallback, xRunCallback);
     }
 }

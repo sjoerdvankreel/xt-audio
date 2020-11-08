@@ -22,100 +22,99 @@ public final class NativeTypes {
         private XtCapabilities(int flag) { _flag = flag; }
     }
 
-    public static final class XtVersion extends Structure implements Structure.ByValue {
+    public static class XtVersion extends Structure {
         public int major;
         public int minor;
+        public static class ByValue extends XtVersion implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("major", "minor"); }
     }
 
-    public static final class XtLatency extends Structure {
+    public static class XtLatency extends Structure {
         public double input;
         public double output;
+        public static class ByValue extends XtLatency implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("input", "output"); }
     }
 
-    public static final class XtFormat extends Structure {
+    public static class XtFormat extends Structure {
+        public XtFormat() { }
         public XtMix mix = new XtMix();
         public XtChannels channels = new XtChannels();
-        public XtFormat() { }
-        public XtFormat(XtMix mix, XtChannels channels) {
-            this.mix = mix;
-            this.channels = channels;
-        }
+        public static class ByValue extends XtFormat implements Structure.ByValue {}
+        @Override protected List getFieldOrder() { return Arrays.asList("mix", "channels"); }
+        public XtFormat(XtMix mix, XtChannels channels) { this.mix = mix; this.channels = channels; }
     }
 
-    public static final class XtBufferSize extends Structure {
+    public static class XtMix extends Structure {
+        public XtMix() { }
+        public int rate;
+        public XtSample sample;
+        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
+        public static class ByValue extends XtMix implements Structure.ByValue {}
+        public XtMix(int rate, XtSample sample) { this.rate = rate; this.sample = sample; }
+        @Override protected List getFieldOrder() { return Arrays.asList("rate", "sample"); }
+    }
+
+    public static class XtBufferSize extends Structure {
         public double min;
         public double max;
         public double current;
+        public static class ByValue extends XtBufferSize implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("min", "max", "current"); }
     }
 
-    public static final class XtAttributes extends Structure implements Structure.ByValue {
-        public int size;
-        public int count;
-        public boolean isFloat;
-        public boolean isSigned;
-        @Override protected List getFieldOrder() { return Arrays.asList("size", "isFloat", "isSigned"); }
-    }
-
-    public static final class XtErrorInfo extends Structure implements Structure.ByValue {
-        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
+    public static class XtErrorInfo extends Structure {
         public XtSystem system;
         public XtCause cause;
         public String text;
         public int fault;
+        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
+        public static class ByValue extends XtErrorInfo implements Structure.ByValue {}
         @Override public String toString() { return XtNative.XtPrintErrorInfoToString(this); }
         @Override protected List getFieldOrder() { return Arrays.asList("system", "cause", "text", "fault"); }
     }
 
-    public static final class XtMix extends Structure {
-        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
-        public int rate;
-        public XtSample sample;
-        public XtMix() { }
-        public XtMix(int rate, XtSample sample) {
-            this.rate = rate;
-            this.sample = sample;
-        }
-        @Override protected List getFieldOrder() { return Arrays.asList("rate", "sample"); }
+    public static class XtAttributes extends Structure {
+        public int size;
+        public int count;
+        public boolean isFloat;
+        public boolean isSigned;
+        public static class ByValue extends XtAttributes implements Structure.ByValue {}
+        @Override protected List getFieldOrder() { return Arrays.asList("size", "count", "isFloat", "isSigned"); }
+    }
+
+    public static class XtBuffer extends Structure {
+        public Pointer input;
+        public Pointer output;
+        public double time;
+        public long position;
+        public long error;
+        public int frames;
+        public boolean timeValid;
+        public static class ByValue extends XtBuffer implements Structure.ByValue {}
+        @Override protected List getFieldOrder() { return Arrays.asList("input", "output", "time", "position", "error", "frames", "timeValid"); }
     }
 
     public static class XtChannels extends Structure {
-
         public int inputs;
         public long inMask;
         public int outputs;
         public long outMask;
-
-        public XtChannels() {
-        }
-
-        public XtChannels(int inputs, long inMask, int outputs, long outMask) {
-            this.inputs = inputs;
-            this.inMask = inMask;
-            this.outputs = outputs;
-            this.outMask = outMask;
-        }
-
-        void doUseMemory(Pointer m, int offset) {
-            super.useMemory(m, offset);
-        }
-
-        @Override protected List getFieldOrder() {
-            return Arrays.asList("inputs", "inMask", "outputs", "outMask");
-        }
+        public XtChannels() { }
+        public static class ByValue extends XtChannels implements Structure.ByValue {}
+        @Override protected List getFieldOrder() { return Arrays.asList("inputs", "inMask", "outputs", "outMask"); }
+        public XtChannels(int inputs, long inMask, int outputs, long outMask) { this.inputs = inputs; this.inMask = inMask; this.outputs = outputs; this.outMask = outMask; }
     }
 
-    public interface XtXRunCallback {
-        void callback(int index, Object user) throws Exception;
+    public interface XtXRunCallback extends Callback {
+        void callback(int index, Pointer user) throws Exception;
     }
 
     public interface XtErrorCallback extends Callback {
         void callback(String location, String message) throws Exception;
     }
 
-    public interface XtStreamCallback {
-        void callback(XtStream stream, Object input, Object output, int frames, double time, long position, boolean timeValid, long error, Object user) throws Exception;
+    public interface XtStreamCallback extends Callback {
+        void callback(Pointer stream, XtBuffer buffer, Pointer user) throws Exception;
     }
 }
