@@ -80,10 +80,10 @@ public final class XtDevice implements XtCloseable {
     }
 
     public XtStream openStream(XtFormat format, boolean interleaved, double bufferSize,
-                               XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Pointer user) {
+                               XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
 
         var stream = new PointerByReference();
-        handleError(XtDeviceOpenStream(_d, format, interleaved, bufferSize, streamCallback, xRunCallback, user, stream));
+        handleError(XtDeviceOpenStream(_d, format, interleaved, bufferSize, streamCallback, xRunCallback, Pointer.NULL, stream));
         return new XtStream(stream.getValue(), streamCallback, xRunCallback);
     }
 }

@@ -46,3 +46,4 @@
 * OnBuffer, OnXRun, OnError
 * example without adapter
 * drop 32bit support?
+* remove scratch from cli adapter (mirror java)

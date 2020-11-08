@@ -1,9 +1,7 @@
 package com.xtaudio.xt.sample;
 
-import com.xtaudio.xt.XtAudio;
-import com.xtaudio.xt.XtDevice;
-import com.xtaudio.xt.XtService;
-import com.xtaudio.xt.XtStream;
+import com.sun.jna.*;
+import com.xtaudio.xt.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
 public class Aggregate {
@@ -13,16 +11,17 @@ public class Aggregate {
         System.console().readLine();
     }
 
-    static void xRun(int index, Object user) {
+    static void xRun(int index, Pointer user) {
         // Don't do this.
-        System.out.println("XRun on device " + index + ", user = " + user + ".");
+        System.out.println("XRun on device " + index + ".");
     }
 
-    static void aggregate(XtStream stream, Object input, Object output, int frames, double time,
-            long position, boolean timeValid, long error, Object user) throws Exception {
-
-        if (frames > 0)
-            System.arraycopy(input, 0, output, 0, frames * stream.getFormat().channels.inputs);
+    static void aggregate(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
+        XtAdapter adapter = XtAdapter.get(stream);
+        adapter.lockBuffer(buffer);
+        if(buffer.frames > 0)
+            System.arraycopy(adapter.getInput(), 0, adapter.getOutput(), 0, buffer.frames * adapter.getStream().getFormat().channels.inputs);
+        adapter.unlockBuffer(buffer);
     }
 
     public static void main(String[] args) throws Exception {
@@ -31,25 +30,26 @@ public class Aggregate {
         XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
         XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
 
-        try (XtAudio audio = new XtAudio(null, null, null)) {
+        try(XtAudio audio = new XtAudio(null, null, null)) {
 
             var system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
             XtService service = XtAudio.getService(system);
-            if (service == null)
+            if(service == null)
                 return;
 
-            try (XtDevice input = service.openDefaultDevice(false);
-                    XtDevice output = service.openDefaultDevice(true)) {
-                if (input == null || !input.supportsFormat(inputFormat))
+            try(XtDevice input = service.openDefaultDevice(false);
+                XtDevice output = service.openDefaultDevice(true)) {
+                if(input == null || !input.supportsFormat(inputFormat))
                     return;
-                if (output == null || !output.supportsFormat(outputFormat))
+                if(output == null || !output.supportsFormat(outputFormat))
                     return;
 
-                try (XtStream stream = service.aggregateStream(
+                try(XtStream stream = service.aggregateStream(
                         new XtDevice[]{input, output},
                         new XtChannels[]{inputFormat.channels, outputFormat.channels},
                         new double[]{30.0, 30.0},
-                        2, mix, true, false, output, Aggregate::aggregate, Aggregate::xRun, "user-data")) {
+                        2, mix, true, output, Aggregate::aggregate, Aggregate::xRun);
+                    XtAdapter adapter = XtAdapter.register(stream, true, null)) {
                     stream.start();
                     System.out.println("Streaming aggregate, press any key to continue...");
                     System.console().readLine();

@@ -2,11 +2,9 @@ package com.xtaudio.xt.sample;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.xtaudio.xt.XtAudio;
-import com.xtaudio.xt.XtDevice;
-import com.xtaudio.xt.XtService;
-import com.xtaudio.xt.XtStream;
+import com.xtaudio.xt.*;
 import static com.xtaudio.xt.NativeTypes.*;
+
 import java.io.FileOutputStream;
 
 public class CaptureAdvanced {
@@ -28,56 +26,56 @@ public class CaptureAdvanced {
         return frames * format.channels.inputs * sampleSize;
     }
 
-    static void xRun(int index, Object user) {
+    static void xRun(int index, Pointer user) {
         // Don't do this.
         System.out.println("XRun on device " + index + ".");
     }
 
-    static void captureInterleaved(XtStream stream, Object input, Object output, int frames,
-            double time, long position, boolean timeValid, long error, Object user) throws Exception {
-
+    static void captureInterleavedManaged(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
+        XtAdapter adapter = XtAdapter.get(stream);
+        adapter.lockBuffer(buffer);
         // Don't do this.
-        if (frames > 0)
-            ((Context) user).out.write((byte[]) input, 0, getBufferSize(stream, frames));
+        if(buffer.frames > 0)
+            ((Context)adapter.getUser()).out.write((byte[])adapter.getInput(), 0, getBufferSize(adapter.getStream(), buffer.frames));
+        adapter.unlockBuffer(buffer);
     }
 
-    static void captureInterleavedRaw(XtStream stream, Object input, Object output, int frames,
-            double time, long position, boolean timeValid, long error, Object user) throws Exception {
-
-        if (frames > 0) {
-            Context ctx = (Context) user;
-            ((Pointer) input).read(0, ctx.intermediate, 0, getBufferSize(stream, frames));
+    static void captureInterleavedNative(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
+        XtAdapter adapter = XtAdapter.get(stream);
+        if(buffer.frames > 0) {
+            Context ctx = (Context)adapter.getUser();
+            ((Pointer)buffer.input).read(0, ctx.intermediate, 0, getBufferSize(adapter.getStream(), buffer.frames));
             // Don't do this.
-            ctx.out.write(ctx.intermediate, 0, getBufferSize(stream, frames));
+            ctx.out.write(ctx.intermediate, 0, getBufferSize(adapter.getStream(), buffer.frames));
         }
     }
 
-    static void captureNonInterleaved(XtStream stream, Object input, Object output, int frames,
-            double time, long position, boolean timeValid, long error, Object user) throws Exception {
-
-        if (frames > 0) {
-            Context ctx = (Context) user;
-            XtFormat format = stream.getFormat();
+    static void captureNonInterleavedManaged(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
+        XtAdapter adapter = XtAdapter.get(stream);
+        adapter.lockBuffer(buffer);
+        if(buffer.frames > 0) {
+            Context ctx = (Context)adapter.getUser();
+            XtFormat format = adapter.getStream().getFormat();
             int channels = format.channels.inputs;
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
-            for (int f = 0; f < frames; f++)
-                for (int c = 0; c < channels; c++)
+            for(int f = 0; f < buffer.frames; f++)
+                for(int c = 0; c < channels; c++)
                     // Don't do this.
-                    ctx.out.write(((byte[][]) input)[c], f * sampleSize, sampleSize);
+                    ctx.out.write(((byte[][])adapter.getInput())[c], f * sampleSize, sampleSize);
         }
+        adapter.unlockBuffer(buffer);
     }
 
-    static void captureNonInterleavedRaw(XtStream stream, Object input, Object output, int frames,
-            double time, long position, boolean timeValid, long error, Object user) throws Exception {
-
-        if (frames > 0) {
-            Context ctx = (Context) user;
-            XtFormat format = stream.getFormat();
+    static void captureNonInterleavedNative(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
+        XtAdapter adapter = XtAdapter.get(stream);
+        if(buffer.frames > 0) {
+            Context ctx = (Context)adapter.getUser();
+            XtFormat format = adapter.getStream().getFormat();
             int channels = format.channels.inputs;
             int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
-            for (int f = 0; f < frames; f++)
-                for (int c = 0; c < channels; c++) {
-                    ((Pointer) input).getPointer(c * Native.POINTER_SIZE).read(f * sampleSize, ctx.intermediate, 0, sampleSize);
+            for(int f = 0; f < buffer.frames; f++)
+                for(int c = 0; c < channels; c++) {
+                    buffer.input.getPointer(c * Native.POINTER_SIZE).read(f * sampleSize, ctx.intermediate, 0, sampleSize);
                     // Don't do this.
                     ctx.out.write(ctx.intermediate, 0, sampleSize);
                 }
@@ -86,24 +84,25 @@ public class CaptureAdvanced {
 
     public static void main(String[] args) throws Exception {
 
-        try (XtAudio audio = new XtAudio(null, null, null)) {
+        try(XtAudio audio = new XtAudio(null, null, null)) {
 
             var system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
-            if (service == null)
+            if(service == null)
                 return;
 
             XtFormat format = new XtFormat(new XtMix(44100, XtSample.INT24), new XtChannels(2, 0, 0, 0));
-            try (XtDevice device = service.openDefaultDevice(false)) {
-                if (device == null || !device.supportsFormat(format))
+            try(XtDevice device = service.openDefaultDevice(false)) {
+                if(device == null || !device.supportsFormat(format))
                     return;
 
                 Context context = new Context();
                 XtBufferSize size = device.getBufferSize(format);
 
-                try (FileOutputStream recording = new FileOutputStream("xt-audio-interleaved.raw");
-                        XtStream stream = device.openStream(format, true, false, size.current,
-                                CaptureAdvanced::captureInterleaved, CaptureAdvanced::xRun, context)) {
+                try(FileOutputStream recording = new FileOutputStream("xt-audio-interleaved.raw");
+                    XtStream stream = device.openStream(format, true, size.current,
+                            CaptureAdvanced::captureInterleavedManaged, CaptureAdvanced::xRun);
+                    XtAdapter adapter = XtAdapter.register(stream, true, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -112,9 +111,10 @@ public class CaptureAdvanced {
                     stream.stop();
                 }
 
-                try (FileOutputStream recording = new FileOutputStream("xt-audio-interleaved-raw.raw");
-                        XtStream stream = device.openStream(format, true, true, size.current,
-                                CaptureAdvanced::captureInterleavedRaw, CaptureAdvanced::xRun, context)) {
+                try(FileOutputStream recording = new FileOutputStream("xt-audio-interleaved-raw.raw");
+                    XtStream stream = device.openStream(format, true, size.current,
+                            CaptureAdvanced::captureInterleavedNative, CaptureAdvanced::xRun);
+                    XtAdapter adapter = XtAdapter.register(stream, true, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -123,9 +123,10 @@ public class CaptureAdvanced {
                     stream.stop();
                 }
 
-                try (FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved.raw");
-                        XtStream stream = device.openStream(format, false, false, size.current,
-                                CaptureAdvanced::captureNonInterleaved, CaptureAdvanced::xRun, context)) {
+                try(FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved.raw");
+                    XtStream stream = device.openStream(format, false, size.current,
+                            CaptureAdvanced::captureNonInterleavedManaged, CaptureAdvanced::xRun);
+                    XtAdapter adapter=XtAdapter.register(stream, false, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();
@@ -134,9 +135,10 @@ public class CaptureAdvanced {
                     stream.stop();
                 }
 
-                try (FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved-raw.raw");
-                        XtStream stream = device.openStream(format, false, true, size.current,
-                                CaptureAdvanced::captureNonInterleavedRaw, CaptureAdvanced::xRun, context)) {
+                try(FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved-raw.raw");
+                    XtStream stream = device.openStream(format, false, size.current,
+                            CaptureAdvanced::captureNonInterleavedNative, CaptureAdvanced::xRun);
+                    XtAdapter adapter = XtAdapter.register(stream, false, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(stream, stream.getFrames())];
                     stream.start();

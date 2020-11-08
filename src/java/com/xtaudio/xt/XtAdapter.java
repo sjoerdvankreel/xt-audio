@@ -1,7 +1,6 @@
 package com.xtaudio.xt;
 
 import java.lang.reflect.*;
-import java.nio.*;
 import java.util.*;
 
 import com.sun.jna.*;
@@ -9,7 +8,7 @@ import com.xtaudio.xt.NativeTypes.*;
 
 public final class XtAdapter implements XtCloseable {
 
-    static final Map<Pointer, XtAdapter> _map = new HashMap<Pointer, XtAdapter>();
+    static final Map<Pointer, XtAdapter> _map = new HashMap<>();
     static final Map<XtSample, Class<?>> _types = Map.of(
             XtSample.UINT8, byte.class,
             XtSample.INT16, short.class,
