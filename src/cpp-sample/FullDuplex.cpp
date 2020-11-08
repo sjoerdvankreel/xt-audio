@@ -4,7 +4,7 @@
 #include <cstring>
 
 static void Callback(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
 
   memcpy(buffer.output, buffer.input, buffer.frames * 2 * 4);
 }

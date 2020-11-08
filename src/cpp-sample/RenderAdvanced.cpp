@@ -33,7 +33,7 @@ static void XRun(int index, void* user) {
 }
 
 static void RenderInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
 
   Xt::Format format = stream.GetFormat();
   for(int f = 0; f < buffer.frames; f++) {
@@ -44,7 +44,7 @@ static void RenderInterleaved(
 }
 
 static void RenderNonInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
 
   Xt::Format format = stream.GetFormat();
   for(int f = 0; f < buffer.frames; f++) {

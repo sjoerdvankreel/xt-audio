@@ -25,7 +25,7 @@ static void XRun(int index, void* user) {
 }
 
 static void CaptureInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
 
   if(buffer.frames > 0)
     // Don't do this.
@@ -33,7 +33,7 @@ static void CaptureInterleaved(
 }
 
 static void CaptureNonInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
 
   if(buffer.frames > 0) {
     const Xt::Format& format = stream.GetFormat();

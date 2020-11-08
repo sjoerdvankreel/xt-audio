@@ -16,7 +16,7 @@ static const double Frequency = 440.0;
 static const Xt::Format Format(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 1, 0));
 
 static void Render(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
 
   for(int f = 0; f < buffer.frames; f++) {
     phase += Frequency / Format.mix.rate;

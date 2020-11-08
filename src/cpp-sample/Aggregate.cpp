@@ -15,7 +15,7 @@ static void XRun(int index, void* user) {
 }
 
 static void Aggregate(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, const Xt::Time& time, uint64_t error, void* user) {
+  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
 
   const Xt::Format& format = stream.GetFormat();
   Xt::Attributes attrs = Xt::Audio::GetSampleAttributes(format.mix.sample);
