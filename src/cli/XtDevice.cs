@@ -25,7 +25,7 @@ namespace Xt
 		public void Dispose() => XtDeviceDestroy(_d);
 		public override string ToString() => GetName();
 		public void ShowControlPanel() => HandleError(XtDeviceShowControlPanel(_d));
-		public XtMix? GetMix() => HandleError(XtDeviceGetMix(_d, out var v, out var r)) && v ? r : default;
+		public XtMix? GetMix() => HandleError(XtDeviceGetMix(_d, out var v, out var r)) && v ? r : (XtMix?)null;
 		public int GetChannelCount(bool output) => HandleError(XtDeviceGetChannelCount(_d, output, out var r), r);
 		public bool SupportsFormat(in XtFormat format) => HandleError(XtDeviceSupportsFormat(_d, in format, out var r), r);
 		public bool SupportsAccess(bool interleaved) => HandleError(XtDeviceSupportsAccess(_d, interleaved, out var r), r);
