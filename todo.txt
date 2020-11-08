@@ -44,3 +44,4 @@
 * XtService::init/cleanup
 * merge buffer and time -> ref struct
 * OnBuffer, OnXRun, OnError
+* example without adapter

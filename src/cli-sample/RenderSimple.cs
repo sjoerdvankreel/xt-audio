@@ -18,13 +18,13 @@ namespace Xt
 			return (float)Math.Sin(2.0 * _phase * Math.PI);
 		}
 
-		static void Callback(IntPtr stream, in XtBuffer buffer, IntPtr _)
+		static void Callback(IntPtr stream, in XtBuffer buffer, IntPtr user)
 		{
 			var adapter = XtAdapter.Get(stream);
-			adapter.LockBuffer(buffer);
-			float[] output = (float[])adapter.Output;
+			adapter.LockBuffer(in buffer);
+			float[] output = (float[])adapter.GetOutput();
 			for (int f = 0; f < buffer.frames; f++) output[f] = NextSample();
-			adapter.UnlockBuffer(buffer);
+			adapter.UnlockBuffer(in buffer);
 		}
 
 		public static void Main()
@@ -37,7 +37,7 @@ namespace Xt
 			if (device?.SupportsFormat(Format) != true) return;
 			XtBufferSize size = device.GetBufferSize(Format);
 			using XtStream stream = device.OpenStream(Format, true, size.current, Callback, null);
-			using XtAdapter adapter = XtAdapter.Register(stream, null);
+			using XtAdapter adapter = XtAdapter.Register(stream, true, null);
 			stream.Start();
 			Thread.Sleep(1000);
 			stream.Stop();

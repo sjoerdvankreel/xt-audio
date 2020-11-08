@@ -25,61 +25,65 @@ namespace Xt
             return frames * format.channels.inputs * sampleSize;
         }
 
-        static void XRun(int index, object user)
+        static void XRun(int index, IntPtr user)
         {
             // Don't do this.
             Console.WriteLine("XRun on device " + index + ".");
         }
 
-        static void CaptureInterleaved(XtStream stream, object input, object output,
-            int frames, double time, ulong position, bool timeValid, ulong error, object user)
+        static void CaptureInterleavedManaged(IntPtr stream, in XtBuffer buffer, IntPtr user)
         {
+            XtAdapter adapter = XtAdapter.Get(stream);
+            adapter.LockBuffer(in buffer);
             // Don't do this.
-            if (frames > 0)
-                ((Context)user).recording.Write((byte[])input, 0, GetBufferSize(stream, frames));
+            if (buffer.frames > 0)
+                ((Context)adapter.GetUser()).recording.Write((byte[])adapter.GetInput(), 0, GetBufferSize(adapter.GetStream(), adapter.GetStream().GetFrames()));
+            adapter.UnlockBuffer(in buffer);
         }
 
-        static void CaptureInterleavedRaw(XtStream stream, object input, object output,
-            int frames, double time, ulong position, bool timeValid, ulong error, object user)
+        static void CaptureInterleavedNative(IntPtr stream, in XtBuffer buffer, IntPtr user)
         {
-            if (frames > 0)
+            XtAdapter adapter = XtAdapter.Get(stream);
+            if (buffer.frames > 0)
             {
-                Context ctx = (Context)user;
-                Marshal.Copy((IntPtr)input, ctx.intermediate, 0, GetBufferSize(stream, frames));
+                Context ctx = (Context)adapter.GetUser();
+                Marshal.Copy(buffer.input, ctx.intermediate, 0, GetBufferSize(adapter.GetStream(), buffer.frames));
                 // Don't do this.
-                ctx.recording.Write(ctx.intermediate, 0, GetBufferSize(stream, frames));
+                ctx.recording.Write(ctx.intermediate, 0, GetBufferSize(adapter.GetStream(), buffer.frames));
             }
         }
 
-        static void CaptureNonInterleaved(XtStream stream, object input, object output,
-            int frames, double time, ulong position, bool timeValid, ulong error, object user)
+        static void CaptureNonInterleavedManaged(IntPtr stream, in XtBuffer buffer, IntPtr user)
         {
-            if (frames > 0)
+            XtAdapter adapter = XtAdapter.Get(stream);
+            adapter.LockBuffer(in buffer);
+            if (buffer.frames > 0)
             {
-                Context ctx = (Context)user;
-                XtFormat format = stream.GetFormat();
+                Context ctx = (Context)adapter.GetUser();
+                XtFormat format = adapter.GetStream().GetFormat();
                 int channels = format.channels.inputs;
                 int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
-                for (int f = 0; f < frames; f++)
+                for (int f = 0; f < buffer.frames; f++)
                     for (int c = 0; c < channels; c++)
                         // Don't do this.
-                        ctx.recording.Write(((byte[][])input)[c], f * sampleSize, sampleSize);
+                        ctx.recording.Write(((byte[][])adapter.GetInput())[c], f * sampleSize, sampleSize);
             }
+            adapter.UnlockBuffer(in buffer);
         }
 
-        static unsafe void CaptureNonInterleavedRaw(XtStream stream, object input, object output,
-            int frames, double time, ulong position, bool timeValid, ulong error, object user)
+        static unsafe void CaptureNonInterleavedNative(IntPtr stream, in XtBuffer buffer, IntPtr user)
         {
-            if (frames > 0)
+            XtAdapter adapter = XtAdapter.Get(stream);
+            if (buffer.frames > 0)
             {
-                Context ctx = (Context)user;
-                XtFormat format = stream.GetFormat();
+                Context ctx = (Context)adapter.GetUser();
+                XtFormat format = adapter.GetStream().GetFormat();
                 int channels = format.channels.inputs;
                 int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
-                for (int f = 0; f < frames; f++)
+                for (int f = 0; f < buffer.frames; f++)
                     for (int c = 0; c < channels; c++)
                     {
-                        IntPtr source = new IntPtr(&(((byte**)(IntPtr)input)[c][f * sampleSize]));
+                        IntPtr source = new IntPtr(&(((byte**)(IntPtr)buffer.input)[c][f * sampleSize]));
                         Marshal.Copy(source, ctx.intermediate, 0, sampleSize);
                         // Don't do this.
                         ctx.recording.Write(ctx.intermediate, 0, sampleSize);
@@ -107,9 +111,10 @@ namespace Xt
 
                     using (FileStream recording = new FileStream(
                         "xt-audio-interleaved.raw", FileMode.Create, FileAccess.Write))
-                    using (XtStream stream = device.OpenStream(format, true, false,
-                        size.current, CaptureInterleaved, XRun, context))
+                    using (XtStream stream = device.OpenStream(format, true, 
+                        size.current, CaptureInterleavedManaged, XRun))
                     {
+                        using var adapter = XtAdapter.Register(stream, true, context);
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();
@@ -120,9 +125,10 @@ namespace Xt
 
                     using (FileStream recording = new FileStream(
                         "xt-audio-interleaved-raw.raw", FileMode.Create, FileAccess.Write))
-                    using (XtStream stream = device.OpenStream(format, true, true,
-                        size.current, CaptureInterleavedRaw, XRun, context))
+                    using (XtStream stream = device.OpenStream(format, true, 
+                        size.current, CaptureInterleavedNative, XRun))
                     {
+                        using var adapter = XtAdapter.Register(stream, true, context);
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();
@@ -133,9 +139,10 @@ namespace Xt
 
                     using (FileStream recording = new FileStream(
                         "xt-audio-non-interleaved.raw", FileMode.Create, FileAccess.Write))
-                    using (XtStream stream = device.OpenStream(format, false, false,
-                        size.current, CaptureNonInterleaved, XRun, context))
+                    using (XtStream stream = device.OpenStream(format, false, 
+                        size.current, CaptureNonInterleavedManaged, XRun))
                     {
+                        using var adapter = XtAdapter.Register(stream, false, context);
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();
@@ -146,9 +153,10 @@ namespace Xt
 
                     using (FileStream recording = new FileStream(
                         "xt-audio-non-interleaved-raw.raw", FileMode.Create, FileAccess.Write))
-                    using (XtStream stream = device.OpenStream(format, false, true,
-                        size.current, CaptureNonInterleavedRaw, XRun, context))
+                    using (XtStream stream = device.OpenStream(format, false, 
+                        size.current, CaptureNonInterleavedNative, XRun))
                     {
+                        using var adapter = XtAdapter.Register(stream, false, context);
                         context.recording = recording;
                         context.intermediate = new byte[GetBufferSize(stream, stream.GetFrames())];
                         stream.Start();

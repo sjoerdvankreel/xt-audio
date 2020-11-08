@@ -30,7 +30,7 @@ namespace Xt
                 if (index == -1 || index == 3)
                 {
                     Console.WriteLine("RenderSimple:");
-                    RenderSimple.Main(args);
+                    RenderSimple.Main();
                 }
                 if (index == -1 || index == 4)
                 {

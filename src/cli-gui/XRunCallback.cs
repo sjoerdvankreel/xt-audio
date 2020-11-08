@@ -10,9 +10,9 @@ namespace Xt
             this.onMessage = onMessage;
         }
 
-        internal void OnCallback(int index, object user)
+        internal void OnCallback(int index, IntPtr user)
         {
-            onMessage(() => string.Format("XRun on stream {0}, user: {1}", index, user));
+            onMessage(() => string.Format("XRun on stream {0}", index));
         }
     }
 }

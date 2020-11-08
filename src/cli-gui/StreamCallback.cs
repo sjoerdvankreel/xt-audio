@@ -28,18 +28,27 @@ namespace Xt
 			onMessage.Invoke(message);
 		}
 
-		internal void OnCallback(XtStream stream, object input, object output, int frames,
-			double time, ulong position, bool timeValid, ulong error, object user)
+		internal void OnCallback(IntPtr s, in XtBuffer buffer, IntPtr user)
 		{
+			ulong error = buffer.error;
 			if (error != 0)
 			{
 				onError(() => "Stream callback error: " + XtAudio.GetErrorInfo(error));
 				return;
 			}
 
+			XtAdapter adapter = XtAdapter.Get(s);
+			XtStream stream = adapter.GetStream();
 			XtFormat format = stream.GetFormat();
-			OnCallback(format, interleaved, raw, input, output, frames);
-			processed += frames;
+			if(raw)
+				OnCallback(format, interleaved, raw, buffer.input, buffer.output, buffer.frames);
+			else
+			{
+				adapter.LockBuffer(in buffer);
+				OnCallback(format, interleaved, raw, adapter.GetInput(), adapter.GetOutput(), buffer.frames);
+				adapter.UnlockBuffer(in buffer);
+			}
+			processed += buffer.frames;
 			if (processed < format.mix.rate * 3)
 				return;
 
@@ -47,8 +56,9 @@ namespace Xt
 			XtLatency latency = stream.GetLatency();
 			string formatString = "Stream {1}:{0}\tinput latency:{2}{0}\toutput latency:{3}{0}\t" +
 				"buffer frames:{4}{0}\tcurrent frames:{5}{0}\ttime:{6}{0}\tposition:{7}{0}\ttimeValid:{8}{0}\tuser:{9}.";
+			XtBuffer bufferLocal = buffer;
 			OnMessage(() => string.Format(formatString, Environment.NewLine, name, latency.input,
-				latency.output, stream.GetFrames(), frames, time, position, timeValid, user));
+				latency.output, stream.GetFrames(), bufferLocal.frames, bufferLocal.time, bufferLocal.position, bufferLocal.timeValid, user));
 		}
 	}
 }

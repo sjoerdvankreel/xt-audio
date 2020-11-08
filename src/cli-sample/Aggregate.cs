@@ -4,25 +4,21 @@ namespace Xt
 {
     public class Aggregate
     {
-        static void ReadLine()
-        {
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadLine();
-        }
-
-        static void XRun(int index, object user)
+        static void XRun(int index, IntPtr user)
         {
             // Don't do this.
-            Console.WriteLine("XRun on device " + index + ", user = " + user + ".");
+            Console.WriteLine("XRun on device " + index + ".");
         }
 
-        static void OnAggregate(XtStream stream, object input, object output, int frames, double time,
-                ulong position, bool timeValid, ulong error, object user)
+        static void OnAggregate(IntPtr stream, in XtBuffer buffer, IntPtr user)
         {
-            XtFormat format = stream.GetFormat();
+            XtAdapter adapter = XtAdapter.Get(stream);
+            XtFormat format = adapter.GetStream().GetFormat();
             XtAttributes attrs = XtAudio.GetSampleAttributes(format.mix.sample);
-            if (frames > 0)
-                Buffer.BlockCopy((Array)input, 0, (Array)output, 0, frames * format.channels.inputs * attrs.size);
+            adapter.LockBuffer(in buffer);
+            if (buffer.frames > 0)
+                Buffer.BlockCopy(adapter.GetInput(), 0, adapter.GetOutput(), 0, buffer.frames * format.channels.inputs * attrs.size);
+            adapter.UnlockBuffer(in buffer);
         }
 
         public static void Main(string[] args)
@@ -49,8 +45,9 @@ namespace Xt
                             new XtDevice[] { input, output },
                             new XtChannels[] { inputFormat.channels, outputFormat.channels },
                             new double[] { 30.0, 30.0 },
-                            2, mix, true, false, output, OnAggregate, XRun, "user-data"))
+                            2, mix, true, output, OnAggregate, XRun))
                     {
+                        using XtAdapter adapter = XtAdapter.Register(stream, true, null);
                         stream.Start();
                         Console.WriteLine("Streaming aggregate, press any key to continue...");
                         Console.ReadLine();
