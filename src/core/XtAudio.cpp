@@ -194,6 +194,7 @@ XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample) {
   XtAttributes result;
   result.isSigned = sample != XtSampleUInt8;
   result.isFloat = sample == XtSampleFloat32;
+  result.count = sample == XtSampleInt24? 3: 1;
   switch(sample) {
   case XtSampleUInt8: result.size = 1; break;
   case XtSampleInt16: result.size = 2; break;

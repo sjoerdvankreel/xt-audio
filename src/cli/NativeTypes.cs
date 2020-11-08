@@ -62,6 +62,7 @@ namespace Xt
 	public struct XtAttributes
 	{
 		public int size;
+		public int count;
 		int _isFloat;
 		int _isSigned;
 		public bool isFloat { get => _isFloat != 0; set => _isFloat = value ? 0 : 1; }
