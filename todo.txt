@@ -45,3 +45,4 @@
 * merge buffer and time -> ref struct
 * OnBuffer, OnXRun, OnError
 * example without adapter
+* drop 32bit support?
