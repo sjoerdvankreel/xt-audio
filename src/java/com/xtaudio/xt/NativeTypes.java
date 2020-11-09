@@ -32,7 +32,6 @@ public final class NativeTypes {
     public static class XtLatency extends Structure {
         public double input;
         public double output;
-        public static class ByValue extends XtLatency implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("input", "output"); }
     }
 
@@ -40,7 +39,6 @@ public final class NativeTypes {
         public XtFormat() { }
         public XtMix mix = new XtMix();
         public XtChannels channels = new XtChannels();
-        public static class ByValue extends XtFormat implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("mix", "channels"); }
         public XtFormat(XtMix mix, XtChannels channels) { this.mix = mix; this.channels = channels; }
     }
@@ -50,7 +48,6 @@ public final class NativeTypes {
         public int rate;
         public XtSample sample;
         public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
-        public static class ByValue extends XtMix implements Structure.ByValue {}
         public XtMix(int rate, XtSample sample) { this.rate = rate; this.sample = sample; }
         @Override protected List getFieldOrder() { return Arrays.asList("rate", "sample"); }
     }
@@ -59,7 +56,6 @@ public final class NativeTypes {
         public double min;
         public double max;
         public double current;
-        public static class ByValue extends XtBufferSize implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("min", "max", "current"); }
     }
 
@@ -91,7 +87,6 @@ public final class NativeTypes {
         public long error;
         public int frames;
         public boolean timeValid;
-        public static class ByValue extends XtBuffer implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("input", "output", "time", "position", "error", "frames", "timeValid"); }
     }
 
@@ -101,7 +96,6 @@ public final class NativeTypes {
         public int outputs;
         public long outMask;
         public XtChannels() { }
-        public static class ByValue extends XtChannels implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("inputs", "inMask", "outputs", "outMask"); }
         public XtChannels(int inputs, long inMask, int outputs, long outMask) { this.inputs = inputs; this.inMask = inMask; this.outputs = outputs; this.outMask = outMask; }
     }

@@ -11,7 +11,7 @@ public final class XtStream implements XtCloseable {
     private static native long XtStreamStop(Pointer s);
     private static native long XtStreamStart(Pointer s);
     private static native void XtStreamDestroy(Pointer s);
-    private static native XtFormat.ByValue XtStreamGetFormat(Pointer s);
+    private static native XtFormat XtStreamGetFormat(Pointer s);
     private static native long XtStreamGetLatency(Pointer s, XtLatency latency);
     private static native long XtStreamGetFrames(Pointer s, IntByReference frames);
 
