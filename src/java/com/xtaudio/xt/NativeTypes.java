@@ -96,6 +96,7 @@ public final class NativeTypes {
         public int outputs;
         public long outMask;
         public XtChannels() { }
+        public static class ByValue extends XtChannels implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("inputs", "inMask", "outputs", "outMask"); }
         public XtChannels(int inputs, long inMask, int outputs, long outMask) { this.inputs = inputs; this.inMask = inMask; this.outputs = outputs; this.outMask = outMask; }
     }
