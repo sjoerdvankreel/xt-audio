@@ -55,13 +55,14 @@ public final class XtService {
     public XtStream aggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
                                     boolean interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
         var stream = new PointerByReference();
-        Structure[] cs = new XtChannels().toArray(count);
-        Pointer ds = new Memory(count * Native.POINTER_SIZE);
+        var ds = new Memory(count * Native.POINTER_SIZE);
+        var cs = new Memory(count * Native.getNativeSize(XtChannels.ByValue.class));;
         for (int i = 0; i < count; i++) {
-            cs[i] = channels[i];
             ds.setPointer(i * Native.POINTER_SIZE, devices[i].handle());
+            var bytes = channels[i].getPointer().getByteArray(0, channels[i].size());
+            cs.write(0, bytes, 0, bytes.length);
         }
-        handleError(XtServiceAggregateStream(_s, ds, cs[0].getPointer(), bufferSizes, count, mix, interleaved, master.handle(), streamCallback, xRunCallback, Pointer.NULL, stream));
+        handleError(XtServiceAggregateStream(_s, ds, cs, bufferSizes, count, mix, interleaved, master.handle(), streamCallback, xRunCallback, Pointer.NULL, stream));
         return new XtStream(stream.getValue(), streamCallback, xRunCallback);
     }
 }
