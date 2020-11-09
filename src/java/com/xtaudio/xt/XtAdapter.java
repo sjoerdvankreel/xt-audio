@@ -99,22 +99,22 @@ public final class XtAdapter implements XtCloseable {
 
     void toNative(Object source, Pointer dest, int count) {
         switch(_format.mix.sample) {
-        case UINT8: dest.write(0, (byte[])source, 0, count);
-        case INT16: dest.write(0, (short[])source, 0, count);
-        case INT24: dest.write(0, (byte[])source, 0, count);
-        case INT32: dest.write(0, (int[])source, 0, count);
-        case FLOAT32: dest.write(0, (float[])source, 0, count);
+        case UINT8: dest.write(0, (byte[])source, 0, count); break;
+        case INT16: dest.write(0, (short[])source, 0, count); break;
+        case INT24: dest.write(0, (byte[])source, 0, count); break;
+        case INT32: dest.write(0, (int[])source, 0, count); break;
+        case FLOAT32: dest.write(0, (float[])source, 0, count); break;
         default: throw new IllegalArgumentException();
         }
     }
 
     void fromNative(Pointer source, Object dest, int count) {
         switch(_format.mix.sample) {
-        case UINT8: source.read(0, (byte[])dest, 0, count);
-        case INT16: source.read(0, (short[])dest, 0, count);
-        case INT24: source.read(0, (byte[])dest, 0, count);
-        case INT32: source.read(0, (int[])dest, 0, count);
-        case FLOAT32: source.read(0, (float[])dest, 0, count);
+        case UINT8: source.read(0, (byte[])dest, 0, count); break;
+        case INT16: source.read(0, (short[])dest, 0, count); break;
+        case INT24: source.read(0, (byte[])dest, 0, count); break;
+        case INT32: source.read(0, (int[])dest, 0, count); break;
+        case FLOAT32: source.read(0, (float[])dest, 0, count); break;
         default: throw new IllegalArgumentException();
         }
     }
