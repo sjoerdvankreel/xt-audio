@@ -110,6 +110,6 @@ public final class NativeTypes {
     }
 
     public interface XtStreamCallback extends Callback {
-        void callback(Pointer stream, XtBuffer buffer, Pointer user) throws Exception;
+        void callback(Pointer stream, Pointer buffer, Pointer user) throws Exception;
     }
 }
