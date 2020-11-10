@@ -1,6 +1,5 @@
 package com.xtaudio.xt.sample;
 
-import com.sun.jna.*;
 import com.xtaudio.xt.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
@@ -18,12 +17,12 @@ public class RenderSimple {
         return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 
-    static void render(Pointer stream, XtBuffer buffer, Pointer user) {
-        XtAdapter adapter = XtAdapter.get(stream);
-        adapter.lockBuffer(buffer);
-        float[] output = (float[])adapter.getOutput();
+    static void render(XtStream stream, XtBuffer buffer, Object user) {
+        XtSafeBuffer safe = XtSafeBuffer.get(stream);
+        safe.lock(buffer);
+        float[] output = (float[])safe.getOutput();
         for(int f = 0; f < buffer.frames; f++) output[f] = nextSample();
-        adapter.unlockBuffer(buffer);
+        safe.unlock(buffer);
     }
 
     public static void main(String[] args) throws Exception {
@@ -34,10 +33,10 @@ public class RenderSimple {
             try(XtDevice device = service.openDefaultDevice(true)) {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
                 XtBufferSize size = device.getBufferSize(FORMAT);
-                try(XtStream stream = device.openStream(FORMAT, true, size.current, RenderSimple::render, null);
-                    XtAdapter adapter = XtAdapter.register(stream, true, null)) {
+                try(XtStream stream = device.openStream(FORMAT, true, size.current, RenderSimple::render, null, null);
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                     stream.stop();
                 }
             }

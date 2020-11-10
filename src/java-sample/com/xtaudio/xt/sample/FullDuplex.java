@@ -1,16 +1,15 @@
 package com.xtaudio.xt.sample;
 
-import com.sun.jna.*;
 import com.xtaudio.xt.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
 public class FullDuplex {
 
-    static void callback(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
-        XtAdapter adapter = XtAdapter.get(stream);
-        adapter.lockBuffer(buffer);
-        System.arraycopy(adapter.getInput(), 0, adapter.getOutput(), 0, buffer.frames * 2);
-        adapter.unlockBuffer(buffer);
+    static void callback(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+        XtSafeBuffer safe = XtSafeBuffer.get(stream);
+        safe.lock(buffer);
+        System.arraycopy(safe.getInput(), 0, safe.getOutput(), 0, buffer.frames * 2);
+        safe.unlock(buffer);
     }
 
     public static void main(String[] args) throws Exception {
@@ -31,11 +30,10 @@ public class FullDuplex {
                 else if(device.supportsFormat(float48000)) format = float48000;
                 else return;
                 XtBufferSize size = device.getBufferSize(format);
-                try(XtStream stream = device.openStream(format, true, size.min, FullDuplex::callback, null);
-                    XtAdapter adapter = XtAdapter.register(stream, true, null)) {
+                try(XtStream stream = device.openStream(format, true, size.min, FullDuplex::callback, null, null);
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
-                    System.out.println("Streaming full-duplex, press any key to continue...");
-                    System.console().readLine();
+                    Thread.sleep(3000);
                     stream.stop();
                 }
             }

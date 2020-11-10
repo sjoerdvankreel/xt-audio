@@ -2,28 +2,27 @@ package com.xtaudio.xt.sample;
 
 import java.io.FileOutputStream;
 
-import com.sun.jna.*;
 import com.xtaudio.xt.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
 public class CaptureSimple {
 
-    static final int SAMPLE_SIZE = 3;
     static final XtMix MIX = new XtMix(44100, XtSample.INT24);
     static final XtChannels CHANNELS = new XtChannels(1, 0, 0, 0);
     static final XtFormat FORMAT = new XtFormat(MIX, CHANNELS);
 
-    static void capture(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
-        XtAdapter adapter = XtAdapter.get(stream);
-        adapter.lockBuffer(buffer);
-        // Don't do this.
-        if(buffer.frames > 0)
-            ((FileOutputStream)adapter.getUser()).write((byte[])adapter.getInput(), 0, buffer.frames * SAMPLE_SIZE);
-        adapter.unlockBuffer(buffer);
+    // Better don't do I/O in the callback.
+    static void capture(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+        var output = (FileOutputStream)user;
+        XtSafeBuffer safe = XtSafeBuffer.get(stream);
+        var input = (byte[])safe.getInput();
+        safe.lock(buffer);
+        var size = XtAudio.getSampleAttributes(MIX.sample).size;
+        if(buffer.frames > 0) output.write(input, 0, buffer.frames * size);
+        safe.unlock(buffer);
     }
 
     public static void main(String[] args) throws Exception {
-
         try(XtAudio audio = new XtAudio(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
@@ -32,10 +31,10 @@ public class CaptureSimple {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
                 XtBufferSize size = device.getBufferSize(FORMAT);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio.raw");
-                    XtStream stream = device.openStream(FORMAT, true, size.current, CaptureSimple::capture, null);
-                    XtAdapter adapter = XtAdapter.register(stream, true, recording)) {
+                    XtStream stream = device.openStream(FORMAT, true, size.current, CaptureSimple::capture, null, null);
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                     stream.stop();
                 }
             }
