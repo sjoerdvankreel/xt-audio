@@ -29,7 +29,6 @@ public final class XtStream implements XtCloseable {
     public void start() { handleError(XtStreamStart(_s)); }
     public XtFormat getFormat() { return XtStreamGetFormat(_s); }
 
-    Pointer handle() { return _s; }
     void init(Pointer s) { _s = s; }
     XRunCallback nativeXRunCallback() { return _nativeXRunCallback; }
     StreamCallback nativeStreamCallback() { return _nativeStreamCallback; }

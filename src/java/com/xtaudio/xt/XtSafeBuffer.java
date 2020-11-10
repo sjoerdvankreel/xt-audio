@@ -1,14 +1,14 @@
 package com.xtaudio.xt;
 
-import java.lang.reflect.*;
 import java.util.*;
 
 import com.sun.jna.*;
+import java.lang.reflect.*;
 import com.xtaudio.xt.NativeTypes.*;
 
-public final class XtAdapter implements XtCloseable {
+public final class XtSafeBuffer implements XtCloseable {
 
-    static final Map<Pointer, XtAdapter> _map = new HashMap<>();
+    static final Map<XtStream, XtSafeBuffer> _map = new HashMap<>();
     static final Map<XtSample, Class<?>> _types = Map.of(
             XtSample.UINT8, byte.class,
             XtSample.INT16, short.class,
@@ -17,16 +17,15 @@ public final class XtAdapter implements XtCloseable {
             XtSample.FLOAT32, float.class
     );
 
-    public static XtAdapter register(XtStream stream, boolean interleaved, Object user) {
-        var result = new XtAdapter(stream, interleaved, user);
-        _map.put(stream.handle(), result);
+    public static XtSafeBuffer register(XtStream stream, boolean interleaved) {
+        var result = new XtSafeBuffer(stream, interleaved);
+        _map.put(stream, result);
         return result;
     }
 
     private final int _frames;
     private final int _inputs;
     private final int _outputs;
-    private final Object _user;
     private final Object _input;
     private final Object _output;
     private final XtStream _stream;
@@ -34,15 +33,12 @@ public final class XtAdapter implements XtCloseable {
     private final XtAttributes _attrs;
     private final boolean _interleaved;
 
-    public Object getUser() { return _user; }
     public Object getInput() { return _input; }
     public Object getOutput() { return _output; }
-    public XtStream getStream() { return _stream; }
-    public void close() { _map.remove(_stream.handle()); }
-    public static XtAdapter get(Pointer stream) { return _map.get(stream); }
+    public void close() { _map.remove(_stream); }
+    public static XtSafeBuffer get(XtStream stream) { return _map.get(stream); }
 
-    XtAdapter(XtStream stream, boolean interleaved, Object user) {
-        _user = user;
+    XtSafeBuffer(XtStream stream, boolean interleaved) {
         _stream = stream;
         _interleaved = interleaved;
         _format = stream.getFormat();
@@ -63,13 +59,13 @@ public final class XtAdapter implements XtCloseable {
         return result;
     }
 
-    public void lockBuffer(XtBuffer buffer) {
+    public void lock(XtBuffer buffer) {
         if(buffer.input == Pointer.NULL) return;
         if(_interleaved) lockInterleaved(buffer);
         else for(int i = 0; i < _inputs; i++) lockChannel(buffer, i);
     }
 
-    public void unlockBuffer(XtBuffer buffer) {
+    public void unlock(XtBuffer buffer) {
         if(buffer.output == Pointer.NULL) return;
         if(_interleaved) unlockInterleaved(buffer);
         else for(int i = 0; i < _outputs; i++) unlockChannel(buffer, i);
