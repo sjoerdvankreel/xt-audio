@@ -22,7 +22,7 @@ public final class XtDevice implements XtCloseable {
     private static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
     private static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, byte[] buffer, IntByReference size);
     private static native long XtDeviceOpenStream(Pointer d, XtFormat format, boolean interleaved, double bufferSize,
-                                                  XtStreamCallback streamCallback, XtXRunCallback xRunCallback,
+                                                  StreamCallback streamCallback, XtXRunCallback xRunCallback,
                                                   Pointer user, PointerByReference stream);
 
     private final Pointer _d;
@@ -84,7 +84,9 @@ public final class XtDevice implements XtCloseable {
                                XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
 
         var stream = new PointerByReference();
-        handleError(XtDeviceOpenStream(_d, format, interleaved, bufferSize, streamCallback, xRunCallback, Pointer.NULL, stream));
-        return new XtStream(stream.getValue(), streamCallback, xRunCallback);
+        var result = new XtStream(streamCallback, xRunCallback);
+        handleError(XtDeviceOpenStream(_d, format, interleaved, bufferSize, result.nativeStreamCallback(), xRunCallback, Pointer.NULL, stream));
+        result.init(stream.getValue());
+        return result;
     }
 }

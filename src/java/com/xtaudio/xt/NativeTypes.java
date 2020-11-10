@@ -87,6 +87,7 @@ public final class NativeTypes {
         public long error;
         public int frames;
         public boolean timeValid;
+        public static class ByValue extends XtBuffer implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("input", "output", "time", "position", "error", "frames", "timeValid"); }
     }
 
@@ -109,7 +110,11 @@ public final class NativeTypes {
         void callback(String location, String message) throws Exception;
     }
 
-    public interface XtStreamCallback extends Callback {
+    interface StreamCallback extends Callback {
         void callback(Pointer stream, Pointer buffer, Pointer user) throws Exception;
+    }
+
+    public interface XtStreamCallback {
+        void callback(Pointer stream, XtBuffer buffer, Pointer user) throws Exception;
     }
 }

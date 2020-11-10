@@ -47,4 +47,4 @@
 * example without adapter
 * drop 32bit support?
 * remove scratch from cli adapter (mirror java)
-* streamlock/managedbuffers + only for managed (revert to xtstream + object userdata arguments)
+* do object and xtstream in callbacks, keep buffer native

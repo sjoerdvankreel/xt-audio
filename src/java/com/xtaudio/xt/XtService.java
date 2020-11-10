@@ -18,7 +18,7 @@ public final class XtService {
     private static native long XtServiceOpenDefaultDevice(Pointer s, boolean output, PointerByReference device);
     private static native long XtServiceAggregateStream(Pointer s, Pointer devices,
                                                         Pointer channels, double[] bufferSizes, int count, XtMix mix,
-                                                        boolean interleaved, Pointer master, XtStreamCallback streamCallback,
+                                                        boolean interleaved, Pointer master, StreamCallback streamCallback,
                                                         XtXRunCallback xRunCallback, Pointer user, PointerByReference stream);
     private final Pointer _s;
     XtService(Pointer s) { _s = s; }
@@ -55,6 +55,7 @@ public final class XtService {
     public XtStream aggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
                                     boolean interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
         var stream = new PointerByReference();
+        var result = new XtStream(streamCallback, xRunCallback);
         var ds = new Memory(count * Native.POINTER_SIZE);
         var cs = new Memory(count * Native.getNativeSize(XtChannels.ByValue.class)); ;
         for(int i = 0; i < count; i++) {
@@ -62,7 +63,8 @@ public final class XtService {
             var bytes = channels[i].getPointer().getByteArray(0, channels[i].size());
             cs.write(i * channels[i].size(), bytes, 0, bytes.length);
         }
-        handleError(XtServiceAggregateStream(_s, ds, cs, bufferSizes, count, mix, interleaved, master.handle(), streamCallback, xRunCallback, Pointer.NULL, stream));
-        return new XtStream(stream.getValue(), streamCallback, xRunCallback);
+        handleError(XtServiceAggregateStream(_s, ds, cs, bufferSizes, count, mix, interleaved, master.handle(), result.nativeStreamCallback(), xRunCallback, Pointer.NULL, stream));
+        result.init(stream.getValue());
+        return result;
     }
 }
