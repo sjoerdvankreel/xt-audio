@@ -16,22 +16,29 @@ public final class XtStream implements XtCloseable {
     private static native long XtStreamGetFrames(Pointer s, IntByReference frames);
 
     private Pointer _s;
-    Pointer handle() { return _s; }
-    private final XtXRunCallback _xRunCallback;
+    private XRunCallback _nativeXRunCallback;
     private StreamCallback _nativeStreamCallback;
+
+    private final Object _user;
+    private final XtXRunCallback _xRunCallback;
     private final XtStreamCallback _streamCallback;
     private final XtBuffer _buffer = new XtBuffer();
-    StreamCallback nativeStreamCallback() { return _nativeStreamCallback; }
 
-    void init(Pointer s) { _s = s; }
     public void stop() { handleError(XtStreamStop(_s)); }
     @Override public void close() { XtStreamDestroy(_s); }
     public void start() { handleError(XtStreamStart(_s)); }
-    public XtFormat getFormat() {return XtStreamGetFormat(_s); }
+    public XtFormat getFormat() { return XtStreamGetFormat(_s); }
 
-    XtStream(XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
+    Pointer handle() { return _s; }
+    void init(Pointer s) { _s = s; }
+    XRunCallback nativeXRunCallback() { return _nativeXRunCallback; }
+    StreamCallback nativeStreamCallback() { return _nativeStreamCallback; }
+
+    XtStream(XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
+        _user = user;
         _xRunCallback = xRunCallback;
         _streamCallback = streamCallback;
+        _nativeXRunCallback = this::xRunCallback;
         _nativeStreamCallback = this::streamCallback;
     }
 
@@ -47,10 +54,14 @@ public final class XtStream implements XtCloseable {
         return latency;
     }
 
+    private void xRunCallback(int index, Pointer user) throws Exception {
+        _xRunCallback.callback(index, _user);
+    }
+
     private void streamCallback(Pointer stream, Pointer buffer, Pointer user) throws Exception {
         for(int i = 0; i < Native.getNativeSize(XtBuffer.ByValue.class); i++)
             _buffer.getPointer().setByte(i, buffer.getByte(i));
         _buffer.read();
-        _streamCallback.callback(stream, _buffer, user);
+        _streamCallback.callback(this, _buffer, _user);
     }
 }

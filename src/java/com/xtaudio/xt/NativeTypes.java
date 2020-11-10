@@ -102,8 +102,12 @@ public final class NativeTypes {
         public XtChannels(int inputs, long inMask, int outputs, long outMask) { this.inputs = inputs; this.inMask = inMask; this.outputs = outputs; this.outMask = outMask; }
     }
 
-    public interface XtXRunCallback extends Callback {
+    interface XRunCallback extends Callback {
         void callback(int index, Pointer user) throws Exception;
+    }
+
+    public interface XtXRunCallback extends Callback {
+        void callback(int index, Object user) throws Exception;
     }
 
     public interface XtErrorCallback extends Callback {
@@ -115,6 +119,6 @@ public final class NativeTypes {
     }
 
     public interface XtStreamCallback {
-        void callback(Pointer stream, XtBuffer buffer, Pointer user) throws Exception;
+        void callback(XtStream stream, XtBuffer buffer, Object user) throws Exception;
     }
 }

@@ -53,9 +53,9 @@ public final class XtService {
     }
 
     public XtStream aggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
-                                    boolean interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
+                                    boolean interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
         var stream = new PointerByReference();
-        var result = new XtStream(streamCallback, xRunCallback);
+        var result = new XtStream(streamCallback, xRunCallback, user);
         var ds = new Memory(count * Native.POINTER_SIZE);
         var cs = new Memory(count * Native.getNativeSize(XtChannels.ByValue.class)); ;
         for(int i = 0; i < count; i++) {
