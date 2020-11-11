@@ -46,7 +46,5 @@
 * OnBuffer, OnXRun, OnError
 * example without adapter
 * drop 32bit support?
-* remove scratch from cli adapter (mirror java)
 * do object and xtstream in callbacks, keep buffer native
 * explain no io in callback
-* java aggregate xruns
