@@ -104,7 +104,7 @@ namespace Xt
 
             Console.WriteLine("Capture non-interleaved, safe buffers...");
             using (FileStream recording = new FileStream("xt-audio-non-interleaved-safe.raw", FileMode.Create, FileAccess.Write))
-            using (XtStream stream = device.OpenStream(Format, false, size.current, CaptureNonInterleavedNative, XRun, recording))
+            using (XtStream stream = device.OpenStream(Format, false, size.current, CaptureNonInterleavedSafe, XRun, recording))
             using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, false))
                 RunStream(stream);
 
