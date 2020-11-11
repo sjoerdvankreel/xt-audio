@@ -153,6 +153,10 @@ typedef enum XtSample XtSample;
 typedef enum XtCapabilities XtCapabilities;
 /** @endcond */
 
+typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
+typedef void (XT_CALLBACK *XtErrorCallback)(const char* location, const char* message);
+typedef void (XT_CALLBACK *XtStreamCallback)(const struct XtStream* stream, const struct XtBuffer* buffer, void* user);
+
 struct XtBuffer {
   const void* input;
   void* output;
@@ -242,6 +246,26 @@ struct XtAttributes {
   XtBool isSigned;
 };
 
+struct XtStreamParams {
+  double bufferSize;
+  XtBool interleaved;
+  struct XtFormat format;
+  XtXRunCallback xRunCallback;
+  XtStreamCallback streamCallback;
+};
+
+struct XtAggregateParams {
+  int32_t count;
+  struct XtMix mix;
+  XtDevice* master;
+  XtBool interleaved;
+  XtDevice** devices;
+  double* bufferSizes;
+  struct XtChannels* channels;
+  XtXRunCallback xRunCallback;
+  XtStreamCallback streamCallback;
+};
+
 /** @cond */
 typedef struct XtMix XtMix;
 typedef struct XtBuffer XtBuffer;
@@ -252,11 +276,9 @@ typedef struct XtChannels XtChannels;
 typedef struct XtErrorInfo XtErrorInfo;
 typedef struct XtAttributes XtAttributes;
 typedef struct XtBufferSize XtBufferSize;
+typedef struct XtStreamParams XtStreamParams;
+typedef struct XtAggregateParams XtAggregateParams;
 /** @endcond */
-
-typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
-typedef void (XT_CALLBACK *XtErrorCallback)(const char* location, const char* message);
-typedef void (XT_CALLBACK *XtStreamCallback)(const XtStream* stream, const XtBuffer* buffer, void* user);
 
 /** 
  * @ingroup print
@@ -292,10 +314,7 @@ XT_API XtCapabilities XT_CALL XtServiceGetCapabilities(const XtService* s);
 XT_API XtError XT_CALL XtServiceGetDeviceCount(const XtService* s, int32_t* count);
 XT_API XtError XT_CALL XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device);
 XT_API XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, XtDevice** device);
-XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, XtDevice** devices, const XtChannels* channels, 
-                                                const double* bufferSizes, int32_t count, const XtMix* mix,
-                                                XtBool interleaved, XtDevice* master, XtStreamCallback streamCallback, 
-                                                XtXRunCallback xRunCallback, void* user, XtStream** stream); 
+XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateParams* params, void* user, XtStream** stream); 
 /** @} */
 
 /** 
@@ -310,9 +329,8 @@ XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output,
 XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceGetBufferSize(const XtDevice* d, const XtFormat* format, XtBufferSize* size);
+XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtStreamParams* params, void* user, XtStream** stream);
 XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char* buffer, int32_t* size);
-XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtFormat* format, XtBool interleaved, double bufferSize, 
-                                          XtStreamCallback streamCallback, XtXRunCallback xRunCallback, void* user, XtStream** stream);
 /** @} */
 
 /** 
