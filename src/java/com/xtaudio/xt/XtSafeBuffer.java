@@ -23,7 +23,6 @@ public final class XtSafeBuffer implements XtCloseable {
         return result;
     }
 
-    private final int _frames;
     private final int _inputs;
     private final int _outputs;
     private final Object _input;
@@ -42,7 +41,6 @@ public final class XtSafeBuffer implements XtCloseable {
         _stream = stream;
         _interleaved = interleaved;
         _format = stream.getFormat();
-        _frames = stream.getFrames();
         _inputs = _format.channels.inputs;
         _outputs = _format.channels.outputs;
         _attrs = XtAudio.getSampleAttributes(_format.mix.sample);
@@ -52,7 +50,7 @@ public final class XtSafeBuffer implements XtCloseable {
 
     Object createBuffer(int channels) {
         var type = _types.get(_format.mix.sample);
-        int elems = _frames * _attrs.count;
+        int elems = _stream.getFrames() * _attrs.count;
         if(_interleaved) return Array.newInstance(type, channels * elems);
         var result = Array.newInstance(type.arrayType(), channels);
         for(int i = 0; i < channels; i++) Array.set(result, i, Array.newInstance(type, elems));

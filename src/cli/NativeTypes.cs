@@ -92,11 +92,14 @@ namespace Xt
 	}
 
 	[SuppressUnmanagedCodeSecurity]
-	public delegate void XtXRunCallback(int index, IntPtr user);
+	delegate void XRunCallback(int index, IntPtr user);
+	[SuppressUnmanagedCodeSecurity]
+	delegate void StreamCallback(IntPtr stream, in XtBuffer buffer, IntPtr user);
 	[SuppressUnmanagedCodeSecurity]
 	public delegate void XtErrorCallback(string location, string message);
-	[SuppressUnmanagedCodeSecurity]
-	public delegate void XtStreamCallback(IntPtr stream, in XtBuffer buffer, IntPtr user);
+
+	public delegate void XtXRunCallback(int index, object user);
+	public delegate void XtStreamCallback(XtStream stream, in XtBuffer buffer, object user);
 
 	public enum XtSetup : int { ProAudio, SystemAudio, ConsumerAudio }
 	public enum XtSample : int { UInt8, Int16, Int24, Int32, Float32 }

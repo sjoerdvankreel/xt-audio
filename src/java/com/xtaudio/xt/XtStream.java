@@ -17,12 +17,12 @@ public final class XtStream implements XtCloseable {
 
     private Pointer _s;
     private XtFormat _format;
-    private XRunCallback _nativeXRunCallback;
-    private StreamCallback _nativeStreamCallback;
 
     private final Object _user;
     private final XtXRunCallback _xRunCallback;
     private final XtStreamCallback _streamCallback;
+    private final XRunCallback _nativeXRunCallback;
+    private final StreamCallback _nativeStreamCallback;
     private final XtBuffer _buffer = new XtBuffer();
     private final XtLatency _latency = new XtLatency();
     private final IntByReference _frames = new IntByReference();

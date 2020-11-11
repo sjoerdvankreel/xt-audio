@@ -106,7 +106,7 @@ public final class NativeTypes {
         void callback(int index, Pointer user) throws Exception;
     }
 
-    public interface XtXRunCallback extends Callback {
+    public interface XtXRunCallback {
         void callback(int index, Object user) throws Exception;
     }
 

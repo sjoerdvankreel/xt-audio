@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace Xt
 {
-    public sealed class XtAdapter : IDisposable
+    public sealed class XtSafeBuffer : IDisposable
     {
-        static readonly Dictionary<IntPtr, XtAdapter> _map = new Dictionary<IntPtr, XtAdapter>();
+        static readonly Dictionary<XtStream, XtSafeBuffer> _map = new Dictionary<XtStream, XtSafeBuffer>();
         static readonly Dictionary<XtSample, Type> _types = new Dictionary<XtSample, Type>()
         {
             { XtSample.UInt8, typeof(byte) },
@@ -16,17 +16,15 @@ namespace Xt
             { XtSample.Float32, typeof(float) }
         };
 
-        public static XtAdapter Register(XtStream stream, bool interleaved, object user)
+        public static XtSafeBuffer Register(XtStream stream, bool interleaved)
         {
-            var result = new XtAdapter(stream, interleaved, user);
-            _map.Add(stream.Handle(), result);
+            var result = new XtSafeBuffer(stream, interleaved);
+            _map.Add(stream, result);
             return result;
         }
 
-        readonly int _frames;
         readonly int _inputs;
         readonly int _outputs;
-        readonly object _user;
         readonly Array _input;
         readonly Array _output;
         readonly XtStream _stream;
@@ -34,20 +32,16 @@ namespace Xt
         readonly bool _interleaved;
         readonly XtAttributes _attrs;
 
-        public object GetUser() => _user;
         public Array GetInput() => _input;
         public Array GetOutput() => _output;
-        public XtStream GetStream() => _stream;
-        public void Dispose() => _map.Remove(_stream.Handle());
-        public static XtAdapter Get(IntPtr stream) => _map[stream];
+        public void Dispose() => _map.Remove(_stream);
+        public static XtSafeBuffer Get(XtStream stream) => _map[stream];
 
-        internal XtAdapter(XtStream stream, bool interleaved, object user)
+        internal XtSafeBuffer(XtStream stream, bool interleaved)
         {
-            _user = user;
             _stream = stream;
             _interleaved = interleaved;
             _format = stream.GetFormat();
-            _frames = stream.GetFrames();
             _inputs = _format.channels.inputs;
             _outputs = _format.channels.outputs;
             _attrs = XtAudio.GetSampleAttributes(_format.mix.sample);
@@ -58,7 +52,7 @@ namespace Xt
         Array CreateBuffer(int channels)
         {
             var type = _types[_format.mix.sample];
-            int elems = _frames * _attrs.count;
+            int elems = _stream.GetFrames() * _attrs.count;
             if (_interleaved) return Array.CreateInstance(type, channels * elems);
             var result = Array.CreateInstance(type.MakeArrayType(), channels);
             for (int i = 0; i < channels; i++) result.SetValue(Array.CreateInstance(type, elems), i);

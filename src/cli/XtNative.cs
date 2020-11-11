@@ -31,20 +31,6 @@ namespace Xt
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern IntPtr XtPrintErrorInfoToString(ref XtErrorInfo info);
 
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern ulong XtServiceGetDeviceCount(IntPtr s, out int count);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern ulong XtServiceOpenDevice(IntPtr s, int index, out IntPtr device);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern ulong XtServiceOpenDefaultDevice(IntPtr s, bool output, out IntPtr device);
-		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern ulong XtServiceAggregateStream(IntPtr s,
-			IntPtr[] devices, XtChannels[] channels,
-			double[] bufferSizes, int count,
-			in XtMix mix, bool interleaved, IntPtr master, XtStreamCallback streamCallback,
-			XtXRunCallback xRunCallback, IntPtr user, out IntPtr stream);
 
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern void XtAudioTerminate();
