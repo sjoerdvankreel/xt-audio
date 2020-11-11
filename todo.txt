@@ -1,9 +1,6 @@
-* Rename files
 * Figure out JACK support on Ubuntu 20.
-* Have aggregate stream open the device.
 * Query device info without opening the device.
 * Better document service/list/device/stream lifetime (what needs to be alive when).
-* Cleanup logging and unnecessary class members.
 * Distribute debug binaries
 * Overall code cleanup
 * Check TODOS
@@ -13,23 +10,14 @@
 * check docs
 * major testing
 * naming convention cpp -> prefix with Xt?
-* fix native struct marshalling
-* what is dousememory
 * change disable_service to enable_service
 * fix doxygen typedef errors
-* small java driver
 * c++ const noexcept
-* stream callback params
 * move doxygen to own file
 * drop cli/java callconv?
-* errortofullstring
 * fix samples
 * caller allocated array of device infos
-* java formatting
 * return disposable from init
-* rename systems
-* rename services
-* remove underscores from header guards
 * move all docs to own file
 * remove formatfault
 * cpp constexpr
@@ -40,11 +28,9 @@
 * CoreStructs/CoreEnums/CoreCallbacks
 * Split files to device/stream/service
 * drop cpp ctors in favor of uniform initializer
-* d/s/s -> _handle
 * XtService::init/cleanup
-* merge buffer and time -> ref struct
 * OnBuffer, OnXRun, OnError
-* example without adapter
 * drop 32bit support?
-* do object and xtstream in callbacks, keep buffer native
 * explain no io in callback
+* openstream/aggrstream params
+* XtCore.dll + project structure

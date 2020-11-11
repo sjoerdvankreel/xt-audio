@@ -4,54 +4,35 @@ namespace Xt
 {
     public class Sample
     {
+        static readonly Action[] Samples =
+        {
+            PrintSimple.Main, PrintDetailed.Main, CaptureSimple.Main, RenderSimple.Main,
+            CaptureAdvanced.Main, RenderAdvanced.Main, FullDuplex.Main, Aggregate.Main
+         };
+
+        static readonly string[] Names =
+        {
+            nameof(PrintSimple), nameof(PrintDetailed), nameof(CaptureSimple), nameof(RenderSimple),
+            nameof(CaptureAdvanced), nameof(RenderAdvanced), nameof(FullDuplex), nameof(Aggregate)
+        };
+
+        static void RunSample(int index)
+        {
+            Console.WriteLine(Names[index] + ":");
+            Samples[index]();
+        }
+
         [STAThread]
         public static void Main(string[] args)
         {
-            int index = -1;
-            if (args.Length == 1)
-                index = int.Parse(args[0]);
+            int index = args.Length == 1 ? int.Parse(args[0]) : -1;
             try
             {
-                if (index == -1 || index == 0)
-                {
-                    Console.WriteLine("PrintSimple:");
-                    PrintSimple.Main();
-                }
-                if (index == -1 || index == 1)
-                {
-                    Console.WriteLine("PrintDetailed:");
-                    PrintDetailed.Main();
-                }
-                if (index == -1 || index == 2)
-                {
-                    Console.WriteLine("CaptureSimple:");
-                    CaptureSimple.Main(args);
-                }
-                if (index == -1 || index == 3)
-                {
-                    Console.WriteLine("RenderSimple:");
-                    RenderSimple.Main();
-                }
-                if (index == -1 || index == 4)
-                {
-                    Console.WriteLine("CaptureAdvanced:");
-                    CaptureAdvanced.Main(args);
-                }
-                if (index == -1 || index == 5)
-                {
-                    Console.WriteLine("RenderAdvanced:");
-                    RenderAdvanced.Main(args);
-                }
-                if (index == -1 || index == 6)
-                {
-                    Console.WriteLine("FullDuplex:");
-                    FullDuplex.Main(args);
-                }
-                if (index == -1 || index == 7)
-                {
-                    Console.WriteLine("Aggregate:");
-                    Aggregate.Main(args);
-                }
+                if (index >= 0)
+                    RunSample(index);
+                else
+                    for (int i = 0; i < Samples.Length; i++)
+                        RunSample(i);
             } catch (XtException e)
             {
                 Console.WriteLine(XtAudio.GetErrorInfo(e.GetError()));

@@ -59,14 +59,14 @@ namespace Xt
             return result;
         }
 
-        public void LockBuffer(in XtBuffer buffer)
+        public void Lock(in XtBuffer buffer)
         {
             if (buffer.input == IntPtr.Zero) return;
             if (_interleaved) LockInterleaved(buffer);
             else for (int i = 0; i < _inputs; i++) LockChannel(buffer, i);
         }
 
-        public void UnlockBuffer(in XtBuffer buffer)
+        public void Unlock(in XtBuffer buffer)
         {
             if (buffer.output == IntPtr.Zero) return;
             if (_interleaved) UnlockInterleaved(buffer);

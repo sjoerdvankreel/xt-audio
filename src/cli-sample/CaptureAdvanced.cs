@@ -91,7 +91,7 @@ namespace Xt
             }
         }
 
-        public static void Main(string[] args)
+        public static void Main()
         {
             using (XtAudio audio = new XtAudio(null, IntPtr.Zero, null))
             {
