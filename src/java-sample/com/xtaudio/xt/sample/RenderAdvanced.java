@@ -20,6 +20,12 @@ public class RenderAdvanced {
         System.out.println("XRun on device " + index + ".");
     }
 
+    static void runStream(XtStream stream) throws Exception {
+        stream.start();
+        Thread.sleep(2000);
+        stream.stop();
+    }
+
     static void renderInterleavedSafe(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         int channels = stream.getFormat().channels.outputs;
@@ -78,34 +84,26 @@ public class RenderAdvanced {
                 try(XtStream stream = device.openStream(format, true, size.current,
                         RenderAdvanced::renderInterleavedSafe, RenderAdvanced::xRun, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Render interleaved, native buffers...");
                 try(XtStream stream = device.openStream(format, true, size.current,
                         RenderAdvanced::renderInterleavedNative, RenderAdvanced::xRun, null)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Render non-interleaved, safe buffers...");
                 try(XtStream stream = device.openStream(format, false, size.current,
                         RenderAdvanced::renderNonInterleavedSafe, RenderAdvanced::xRun, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, false)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Render non-interleaved, native buffers...");
                 try(XtStream stream = device.openStream(format, false, size.current,
                         RenderAdvanced::renderNonInterleavedNative, RenderAdvanced::xRun, null)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Render interleaved, safe buffers (channel 0)...");
@@ -113,18 +111,14 @@ public class RenderAdvanced {
                 try(XtStream stream = device.openStream(sendTo0, true, size.current,
                         RenderAdvanced::renderInterleavedSafe, RenderAdvanced::xRun, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Render interleaved, native buffers (channel 1)...");
                 XtFormat sendTo1 = new XtFormat(MIX, new XtChannels(0, 0, 1, 1L << 1));
                 try(XtStream stream = device.openStream(sendTo1, true, size.current,
                         RenderAdvanced::renderInterleavedNative, RenderAdvanced::xRun, null)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
             }
         }

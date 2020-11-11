@@ -20,6 +20,13 @@ namespace Xt
         static void XRun(int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
+        static void RunStream(XtStream stream)
+        {
+            stream.Start();
+            Thread.Sleep(2000);
+            stream.Stop();
+        }
+
         static int GetBufferSize(int channels, int frames)
         {
             int size = XtAudio.GetSampleAttributes(Mix.sample).size;
@@ -83,11 +90,7 @@ namespace Xt
             using (FileStream recording = new FileStream("xt-audio-interleaved-safe.raw", FileMode.Create, FileAccess.Write))
             using (XtStream stream = device.OpenStream(Format, true, size.current, CaptureInterleavedSafe, XRun, recording))
             using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, true))
-            {
-                stream.Start();
-                Thread.Sleep(2000);
-                stream.Stop();
-            }
+                RunStream(stream);
 
             Console.WriteLine("Capture interleaved, native buffers...");
             var context = new Context();
@@ -96,20 +99,14 @@ namespace Xt
             {
                 context.recording = recording;
                 context.intermediate = new byte[GetBufferSize(Channels.inputs, stream.GetFrames())];
-                stream.Start();
-                Thread.Sleep(2000);
-                stream.Stop();
+                RunStream(stream);
             }
 
             Console.WriteLine("Capture non-interleaved, safe buffers...");
             using (FileStream recording = new FileStream("xt-audio-non-interleaved-safe.raw", FileMode.Create, FileAccess.Write))
             using (XtStream stream = device.OpenStream(Format, false, size.current, CaptureNonInterleavedNative, XRun, recording))
             using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, false))
-            {
-                stream.Start();
-                Thread.Sleep(2000);
-                stream.Stop();
-            }
+                RunStream(stream);
 
             Console.WriteLine("Capture non-interleaved, native buffers...");
             context = new Context();
@@ -118,9 +115,7 @@ namespace Xt
             {
                 context.recording = recording;
                 context.intermediate = new byte[GetBufferSize(Channels.inputs, stream.GetFrames())];
-                stream.Start();
-                Thread.Sleep(2000);
-                stream.Stop();
+                RunStream(stream);
             }
         }
     }

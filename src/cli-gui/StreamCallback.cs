@@ -28,7 +28,7 @@ namespace Xt
 			onMessage.Invoke(message);
 		}
 
-		internal void OnCallback(IntPtr s, in XtBuffer buffer, IntPtr user)
+		internal void OnCallback(XtStream stream, in XtBuffer buffer, object user)
 		{
 			ulong error = buffer.error;
 			if (error != 0)
@@ -37,16 +37,15 @@ namespace Xt
 				return;
 			}
 
-			XtAdapter adapter = XtAdapter.Get(s);
-			XtStream stream = adapter.GetStream();
 			XtFormat format = stream.GetFormat();
+			XtSafeBuffer safe = XtSafeBuffer.Get(stream);
 			if(raw)
 				OnCallback(format, interleaved, raw, buffer.input, buffer.output, buffer.frames);
 			else
 			{
-				adapter.LockBuffer(in buffer);
-				OnCallback(format, interleaved, raw, adapter.GetInput(), adapter.GetOutput(), buffer.frames);
-				adapter.UnlockBuffer(in buffer);
+				safe.Lock(in buffer);
+				OnCallback(format, interleaved, raw, safe.GetInput(), safe.GetOutput(), buffer.frames);
+				safe.Unlock(in buffer);
 			}
 			processed += buffer.frames;
 			if (processed < format.mix.rate * 3)

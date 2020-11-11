@@ -27,6 +27,12 @@ public class CaptureAdvanced {
         return channels * frames * size;
     }
 
+    static void runStream(XtStream stream) throws Exception {
+        stream.start();
+        Thread.sleep(2000);
+        stream.stop();
+    }
+
     static void captureInterleavedSafe(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var out = (FileOutputStream)user;
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
@@ -79,9 +85,7 @@ public class CaptureAdvanced {
                     XtStream stream = device.openStream(FORMAT, true, size.current,
                             CaptureAdvanced::captureInterleavedSafe, CaptureAdvanced::xRun, recording);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Capture interleaved, native buffers...");
@@ -91,9 +95,7 @@ public class CaptureAdvanced {
                             CaptureAdvanced::captureInterleavedNative, CaptureAdvanced::xRun, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(CHANNELS.inputs, stream.getFrames())];
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Capture non-interleaved, safe buffers...");
@@ -101,9 +103,7 @@ public class CaptureAdvanced {
                     XtStream stream = device.openStream(FORMAT, false, size.current,
                             CaptureAdvanced::captureNonInterleavedSafe, CaptureAdvanced::xRun, recording);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, false)) {
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
 
                 System.out.println("Capture non-interleaved, native buffers...");
@@ -113,9 +113,7 @@ public class CaptureAdvanced {
                             CaptureAdvanced::captureNonInterleavedNative, CaptureAdvanced::xRun, context)) {
                     context.out = recording;
                     context.intermediate = new byte[getBufferSize(1, stream.getFrames())];
-                    stream.start();
-                    Thread.sleep(2000);
-                    stream.stop();
+                    runStream(stream);
                 }
             }
         }

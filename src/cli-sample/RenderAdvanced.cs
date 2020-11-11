@@ -1,163 +1,120 @@
 using System;
+using System.Threading;
 
 namespace Xt
 {
     public class RenderAdvanced
     {
-        static double phase = 0.0;
-        const double Frequency = 440.0;
+        static float _phase = 0.0f;
+        const float Frequency = 440.0f;
+        static readonly XtMix Mix = new XtMix(44100, XtSample.Float32);
 
-        static void ReadLine()
+        static float NextSample()
         {
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadLine();
+            _phase += Frequency / Mix.rate;
+            if (_phase >= 1.0) _phase = -1.0f;
+            return (float)Math.Sin(2.0 * _phase * Math.PI);
         }
 
-        static float NextSine(double sampleRate)
+        static void XRun(int index, object user)
+        => Console.WriteLine("XRun on device " + index + ".");
+
+        static void RunStream(XtStream stream)
         {
-            phase += Frequency / sampleRate;
-            if (phase >= 1.0)
-                phase = -1.0;
-            return (float)Math.Sin(2.0 * phase * Math.PI);
+            stream.Start();
+            Thread.Sleep(2000);
+            stream.Stop();
         }
 
-        static void XRun(int index, IntPtr user)
+        static void RenderInterleavedSafe(XtStream stream, in XtBuffer buffer, object user)
         {
-            // Don't do this.
-            Console.WriteLine("XRun on device " + index + ".");
-        }
-
-        static void RenderInterleavedManaged(IntPtr stream, in XtBuffer buffer, IntPtr user)
-        {
-            XtAdapter adapter = XtAdapter.Get(stream);
-            XtFormat format = adapter.GetStream().GetFormat();
-            adapter.LockBuffer(in buffer);
+            XtSafeBuffer safe = XtSafeBuffer.Get(stream);
+            int channels = stream.GetFormat().channels.outputs;
+            safe.Lock(in buffer);
+            float[] output = (float[])safe.GetOutput();
             for (int f = 0; f < buffer.frames; f++)
             {
-                float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.channels.outputs; c++)
-                    ((float[])adapter.GetOutput())[f * format.channels.outputs + c] = sine;
+                float sample = NextSample();
+                for (int c = 0; c < channels; c++) output[f * channels + c] = sample;
             }
-            adapter.UnlockBuffer(in buffer);
+            safe.Unlock(buffer);
         }
 
-        static unsafe void RenderInterleavedNative(IntPtr stream, in XtBuffer buffer, IntPtr user)
+        static unsafe void RenderInterleavedNative(XtStream stream, in XtBuffer buffer, object user)
         {
-            XtAdapter adapter = XtAdapter.Get(stream);
-            XtFormat format = adapter.GetStream().GetFormat();
+            int channels = stream.GetFormat().channels.outputs;
+            int size = XtAudio.GetSampleAttributes(Mix.sample).size;
             for (int f = 0; f < buffer.frames; f++)
             {
-                float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.channels.outputs; c++)
-                    ((float*)buffer.output)[f * format.channels.outputs + c] = sine;
+                float sample = NextSample();
+                for (int c = 0; c < channels; c++) ((float*)buffer.output)[f * channels + c] = sample;
             }
         }
 
-        static void RenderNonInterleavedManaged(IntPtr stream, in XtBuffer buffer, IntPtr user)
+        static void RenderNonInterleavedSafe(XtStream stream, in XtBuffer buffer, object user)
         {
-            XtAdapter adapter = XtAdapter.Get(stream);
-            XtFormat format = adapter.GetStream().GetFormat();
-            adapter.LockBuffer(in buffer);
+            XtSafeBuffer safe = XtSafeBuffer.Get(stream);
+            int channels = stream.GetFormat().channels.outputs;
+            safe.Lock(buffer);
+            float[][] output = (float[][])safe.GetOutput();
             for (int f = 0; f < buffer.frames; f++)
             {
-                float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.channels.outputs; c++)
-                    ((float[][])adapter.GetOutput())[c][f] = sine;
+                float sample = NextSample();
+                for (int c = 0; c < channels; c++) output[c][f] = sample;
             }
-            adapter.UnlockBuffer(in buffer);
+            safe.Unlock(buffer);
         }
 
-        static unsafe void RenderNonInterleavedNative(IntPtr stream, in XtBuffer buffer, IntPtr user)
+        static unsafe void RenderNonInterleavedNative(XtStream stream, in XtBuffer buffer, object user)
         {
-            XtAdapter adapter = XtAdapter.Get(stream);
-            XtFormat format = adapter.GetStream().GetFormat();
+            int channels = stream.GetFormat().channels.outputs;
+            int size = XtAudio.GetSampleAttributes(Mix.sample).size;
             for (int f = 0; f < buffer.frames; f++)
             {
-                float sine = NextSine(format.mix.rate);
-                for (int c = 0; c < format.channels.outputs; c++)
-                    ((float**)buffer.output)[c][f] = sine;
+                float sample = NextSample();
+                for (int c = 0; c < channels; c++) ((float**)buffer.output)[c][f] = sample;
             }
         }
 
         public static void Main()
         {
-            using (XtAudio audio = new XtAudio(null, IntPtr.Zero,  null))
-            {
-                var system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
-                XtService service = XtAudio.GetService(system);
-                if (service == null)
-                    return;
+            using XtAudio audio = new XtAudio(null, IntPtr.Zero, null);
+            XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
+            XtService service = XtAudio.GetService(system);
+            if (service == null) return;
+            XtFormat format = new XtFormat(Mix, new XtChannels(0, 0, 2, 0));
+            using XtDevice device = service.OpenDefaultDevice(true);
+            if (device?.SupportsFormat(format) != true) return;
+            XtBufferSize size = device.GetBufferSize(format);
 
-                XtFormat format = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 2, 0));
-                using (XtDevice device = service.OpenDefaultDevice(true))
-                {
-                    if (device == null || !device.SupportsFormat(format))
-                        return;
+            Console.WriteLine("Render interleaved, safe buffers...");
+            using (XtStream stream = device.OpenStream(format, true, size.current, RenderInterleavedSafe, XRun, null))
+            using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, true))
+                RunStream(stream);
 
-                    XtBufferSize size = device.GetBufferSize(format);
-                    using (XtStream stream = device.OpenStream(format, true, 
-                        size.current, RenderInterleavedManaged, XRun))
-                    {
-                        using var adapter = XtAdapter.Register(stream, true, null);
-                        stream.Start();
-                        Console.WriteLine("Rendering interleaved...");
-                        ReadLine();
-                        stream.Stop();
-                    }
+            Console.WriteLine("Render interleaved, native buffers...");
+            using (XtStream stream = device.OpenStream(format, true, size.current, RenderInterleavedNative, XRun, null))
+                RunStream(stream);
 
-                    using (XtStream stream = device.OpenStream(format, true, 
-                        size.current, RenderInterleavedNative, XRun))
-                    {
-                        using var adapter = XtAdapter.Register(stream, true, null);
-                        stream.Start();
-                        Console.WriteLine("Rendering interleaved, raw buffers...");
-                        ReadLine();
-                        stream.Stop();
-                    }
+            Console.WriteLine("Render non-interleaved, safe buffers...");
+            using (XtStream stream = device.OpenStream(format, false, size.current, RenderNonInterleavedSafe, XRun, null))
+            using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, false))
+                RunStream(stream);
 
-                    using (XtStream stream = device.OpenStream(format, false, 
-                        size.current, RenderNonInterleavedManaged, XRun))
-                    {
-                        using var adapter = XtAdapter.Register(stream, false, null);
-                        stream.Start();
-                        Console.WriteLine("Rendering non-interleaved...");
-                        ReadLine();
-                        stream.Stop();
-                    }
+            Console.WriteLine("Render non-interleaved, native buffers...");
+            using (XtStream stream = device.OpenStream(format, false, size.current, RenderNonInterleavedNative, XRun, null))
+                RunStream(stream);
 
-                    using (XtStream stream = device.OpenStream(format, false, 
-                        size.current, RenderNonInterleavedNative, XRun))
-                    {
-                        using var adapter = XtAdapter.Register(stream, false, null);
-                        stream.Start();
-                        Console.WriteLine("Rendering non-interleaved, raw buffers...");
-                        ReadLine();
-                        stream.Stop();
-                    }
+            Console.WriteLine("Render interleaved, safe buffers (channel 0)...");
+            XtFormat sendTo0 = new XtFormat(Mix, new XtChannels(0, 0, 1, 1L << 0));
+            using (XtStream stream = device.OpenStream(sendTo0, true, size.current, RenderInterleavedSafe, XRun, null))
+            using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, true))
+                RunStream(stream);
 
-                    XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 1L << 0));
-                    using (XtStream stream = device.OpenStream(sendTo0, true, 
-                        size.current, RenderInterleavedManaged, XRun))
-                    {
-                        using var adapter = XtAdapter.Register(stream, true, null);
-                        stream.Start();
-                        Console.WriteLine("Rendering channel mask, channel 0...");
-                        ReadLine();
-                        stream.Stop();
-                    }
-
-                    XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(0, 0, 1, 1L << 1));
-                    using (XtStream stream = device.OpenStream(sendTo1, true,  size.current,
-                            RenderInterleavedManaged, XRun))
-                    {
-                        using var adapter = XtAdapter.Register(stream, true, null);
-                        stream.Start();
-                        Console.WriteLine("Rendering channel mask, channel 1...");
-                        ReadLine();
-                        stream.Stop();
-                    }
-                }
-            }
+            Console.WriteLine("Render interleaved, native buffers (channel 1)...");
+            XtFormat sendTo1 = new XtFormat(Mix, new XtChannels(0, 0, 1, 1L << 1));
+            using (XtStream stream = device.OpenStream(sendTo1, true, size.current, RenderInterleavedNative, XRun, null))
+                RunStream(stream);
         }
     }
 }
