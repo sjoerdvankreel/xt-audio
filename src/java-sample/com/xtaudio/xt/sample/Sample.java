@@ -1,6 +1,5 @@
 package com.xtaudio.xt.sample;
 
-import static com.xtaudio.xt.NativeTypes.*;
 import com.xtaudio.xt.XtAudio;
 import com.xtaudio.xt.XtException;
 

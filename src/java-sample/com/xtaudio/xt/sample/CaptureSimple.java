@@ -13,10 +13,10 @@ public class CaptureSimple {
     static void capture(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var output = (FileOutputStream)user;
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
-        var input = (byte[])safe.getInput();
         safe.lock(buffer);
+        var input = (byte[])safe.getInput();
         var size = XtAudio.getSampleAttributes(MIX.sample).size;
-        if(buffer.frames > 0) output.write(input, 0, buffer.frames * size);
+        output.write(input, 0, buffer.frames * size);
         safe.unlock(buffer);
     }
 
