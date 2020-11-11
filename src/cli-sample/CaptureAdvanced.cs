@@ -70,8 +70,8 @@ namespace Xt
             for (int f = 0; f < buffer.frames; f++)
                 for (int c = 0; c < Channels.inputs; c++)
                 {
-                    IntPtr channel = ((IntPtr*)buffer.input)[c];
-                    Marshal.Copy(channel, ctx.intermediate, 0, size);
+                    IntPtr source = new IntPtr(&(((byte**)buffer.input)[c][f * size]));
+                    Marshal.Copy(source, ctx.intermediate, 0, size);
                     ctx.recording.Write(ctx.intermediate, 0, size);
                 }
         }
