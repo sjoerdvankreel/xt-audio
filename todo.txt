@@ -35,3 +35,4 @@
 * openstream/aggrstream params
 * XtCore.dll + project structure
 * cleanup cpp/cli/java sample driver
+* fix javadoc warnings
