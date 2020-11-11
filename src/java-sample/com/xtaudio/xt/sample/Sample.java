@@ -3,47 +3,36 @@ package com.xtaudio.xt.sample;
 import com.xtaudio.xt.XtAudio;
 import com.xtaudio.xt.XtException;
 
-public class Sample {
+public final class Sample {
+
+    interface Runner {
+        void run(String[] args) throws Exception;
+    }
+
+    static final Runner[] SAMPLES = new Runner[]{
+            PrintSimple::main, PrintDetailed::main, CaptureSimple::main, RenderSimple::main,
+            CaptureAdvanced::main, RenderAdvanced::main, FullDuplex::main, Aggregate::main
+    };
+
+    static final String[] NAMES = new String[]{
+            "PrintSimple", "PrintDetailed", "CaptureSimple", "RenderSimple",
+            "CaptureAdvanced", "RenderAdvanced", "FullDuplex", "Aggregate"
+    };
+
+    static void runSample(int index) throws Exception {
+        System.out.println(NAMES[index] + ":");
+        SAMPLES[index].run(null);
+    }
 
     public static void main(String[] args) throws Exception {
-        int index = -1;
-        if (args.length == 1) {
-            index = Integer.parseInt(args[0]);
-        }
+        int index = args.length == 1? Integer.parseInt(args[0]): -1;
         try {
-            if (index == -1 || index == 0) {
-                System.out.println("PrintSimple:");
-                PrintSimple.main(args);
-            }
-            if (index == -1 || index == 1) {
-                System.out.println("PrintDetailed:");
-                PrintDetailed.main(args);
-            }
-            if (index == -1 || index == 2) {
-                System.out.println("CaptureSimple:");
-                CaptureSimple.main(args);
-            }
-            if (index == -1 || index == 3) {
-                System.out.println("RenderSimple:");
-                RenderSimple.main(args);
-            }
-            if (index == -1 || index == 4) {
-                System.out.println("CaptureAdvanced:");
-                CaptureAdvanced.main(args);
-            }
-            if (index == -1 || index == 5) {
-                System.out.println("RenderAdvanced:");
-                RenderAdvanced.main(args);
-            }
-            if (index == -1 || index == 6) {
-                System.out.println("FullDuplex:");
-                FullDuplex.main(args);
-            }
-            if (index == -1 || index == 7) {
-                System.out.println("Aggregate:");
-                Aggregate.main(args);
-            }
-        } catch (XtException e) {
+            if(index >= 0)
+                runSample(index);
+            else
+                for(int i = 0; i < SAMPLES.length; i++)
+                    runSample(i);
+        } catch(XtException e) {
             System.out.println(XtAudio.getErrorInfo(e.getError()));
         }
     }

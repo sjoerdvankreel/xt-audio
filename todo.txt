@@ -34,3 +34,4 @@
 * explain no io in callback
 * openstream/aggrstream params
 * XtCore.dll + project structure
+* cleanup cpp/cli/java sample driver
