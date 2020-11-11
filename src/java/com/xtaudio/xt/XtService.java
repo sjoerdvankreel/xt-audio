@@ -19,7 +19,7 @@ public final class XtService {
     private static native long XtServiceAggregateStream(Pointer s, Pointer devices,
                                                         Pointer channels, double[] bufferSizes, int count, XtMix mix,
                                                         boolean interleaved, Pointer master, StreamCallback streamCallback,
-                                                        XtXRunCallback xRunCallback, Pointer user, PointerByReference stream);
+                                                        XRunCallback xRunCallback, Pointer user, PointerByReference stream);
     private final Pointer _s;
     XtService(Pointer s) { _s = s; }
 
@@ -63,7 +63,7 @@ public final class XtService {
             var bytes = channels[i].getPointer().getByteArray(0, channels[i].size());
             cs.write(i * channels[i].size(), bytes, 0, bytes.length);
         }
-        handleError(XtServiceAggregateStream(_s, ds, cs, bufferSizes, count, mix, interleaved, master.handle(), result.nativeStreamCallback(), xRunCallback, Pointer.NULL, stream));
+        handleError(XtServiceAggregateStream(_s, ds, cs, bufferSizes, count, mix, interleaved, master.handle(), result.nativeStreamCallback(), result.nativeXRunCallback(), Pointer.NULL, stream));
         result.init(stream.getValue());
         return result;
     }

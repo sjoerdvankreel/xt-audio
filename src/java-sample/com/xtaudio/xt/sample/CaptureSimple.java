@@ -1,7 +1,6 @@
 package com.xtaudio.xt.sample;
 
 import java.io.FileOutputStream;
-
 import com.xtaudio.xt.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
@@ -11,7 +10,6 @@ public class CaptureSimple {
     static final XtChannels CHANNELS = new XtChannels(1, 0, 0, 0);
     static final XtFormat FORMAT = new XtFormat(MIX, CHANNELS);
 
-    // Better don't do I/O in the callback.
     static void capture(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var output = (FileOutputStream)user;
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
@@ -31,10 +29,10 @@ public class CaptureSimple {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
                 XtBufferSize size = device.getBufferSize(FORMAT);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio.raw");
-                    XtStream stream = device.openStream(FORMAT, true, size.current, CaptureSimple::capture, null, null);
+                    XtStream stream = device.openStream(FORMAT, true, size.current, CaptureSimple::capture, null, recording);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
-                    Thread.sleep(3000);
+                    Thread.sleep(2000);
                     stream.stop();
                 }
             }

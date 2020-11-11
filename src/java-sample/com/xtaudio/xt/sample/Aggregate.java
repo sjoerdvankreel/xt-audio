@@ -36,7 +36,7 @@ public class Aggregate {
                         2, mix, true, output, Aggregate::aggregate, Aggregate::xRun, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
-                    Thread.sleep(3000);
+                    Thread.sleep(2000);
                     stream.stop();
                 }
             }

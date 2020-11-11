@@ -1,148 +1,129 @@
 package com.xtaudio.xt.sample;
 
 import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import com.xtaudio.xt.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
 public class RenderAdvanced {
 
-    static double phase = 0.0;
-    static final double FREQUENCY = 440.0;
+    static float _phase = 0.0f;
+    static final float FREQUENCY = 440.0f;
+    static final XtMix MIX = new XtMix(44100, XtSample.FLOAT32);
 
-    static void readLine() {
-        System.out.println("Press any key to continue...");
-        System.console().readLine();
+    static float nextSample() {
+        _phase += FREQUENCY / MIX.rate;
+        if(_phase >= 1.0) _phase = -1.0f;
+        return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 
-    static float nextSine(double sampleRate) {
-        phase += FREQUENCY / sampleRate;
-        if(phase >= 1.0)
-            phase = -1.0;
-        return (float)Math.sin(2.0 * phase * Math.PI);
+    static void xRun(int index, Object user) {
+        System.out.println("XRun on device " + index + ".");
     }
 
-    static void xRun(int index, Pointer user) {
-        // Don't do this.
-        System.out.println("XRun on device " + index + ", user = " + user + ".");
-    }
-
-    static void renderInterleavedManaged(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
-
-        XtAdapter adapter = XtAdapter.get(stream);
-        adapter.lockBuffer(buffer);
-        XtFormat format = adapter.getStream().getFormat();
+    static void renderInterleavedSafe(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+        XtSafeBuffer safe = XtSafeBuffer.get(stream);
+        int channels = stream.getFormat().channels.outputs;
+        safe.lock(buffer);
+        float[] output = (float[])safe.getOutput();
         for(int f = 0; f < buffer.frames; f++) {
-            float sine = nextSine(format.mix.rate);
-            for(int c = 0; c < format.channels.outputs; c++)
-                ((float[])adapter.getOutput())[f * format.channels.outputs + c] = sine;
+            float sample = nextSample();
+            for(int c = 0; c < channels; c++) output[f * channels + c] = sample;
         }
-        adapter.unlockBuffer(buffer);
+        safe.unlock(buffer);
     }
 
-    static void renderInterleavedNative(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
-        XtAdapter adapter = XtAdapter.get(stream);
-        XtFormat format = adapter.getStream().getFormat();
-        int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
+    static void renderInterleavedNative(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+        int channels = stream.getFormat().channels.outputs;
+        int size = XtAudio.getSampleAttributes(MIX.sample).size;
         for(int f = 0; f < buffer.frames; f++) {
-            float sine = nextSine(format.mix.rate);
-            for(int c = 0; c < format.channels.outputs; c++)
-                buffer.output.setFloat((f * format.channels.outputs + c) * sampleSize, sine);
+            float sample = nextSample();
+            for(int c = 0; c < channels; c++)
+                buffer.output.setFloat((f * channels + c) * size, sample);
         }
     }
 
-    static void renderNonInterleavedManaged(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
-        XtAdapter adapter = XtAdapter.get(stream);
-        adapter.lockBuffer(buffer);
-        XtFormat format = adapter.getStream().getFormat();
+    static void renderNonInterleavedSafe(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+        XtSafeBuffer safe = XtSafeBuffer.get(stream);
+        int channels = stream.getFormat().channels.outputs;
+        safe.lock(buffer);
+        float[][] output = (float[][])safe.getOutput();
         for(int f = 0; f < buffer.frames; f++) {
-            float sine = nextSine(format.mix.rate);
-            for(int c = 0; c < format.channels.outputs; c++)
-                ((float[][])adapter.getOutput())[c][f] = sine;
+            float sample = nextSample();
+            for(int c = 0; c < channels; c++) output[c][f] = sample;
         }
-        adapter.unlockBuffer(buffer);
+        safe.unlock(buffer);
     }
 
-    static void renderNonInterleavedNative(Pointer stream, XtBuffer buffer, Pointer user) throws Exception {
-        XtAdapter adapter = XtAdapter.get(stream);
-        XtFormat format = adapter.getStream().getFormat();
-        int sampleSize = XtAudio.getSampleAttributes(format.mix.sample).size;
+    static void renderNonInterleavedNative(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+        int channels = stream.getFormat().channels.outputs;
+        int size = XtAudio.getSampleAttributes(MIX.sample).size;
         for(int f = 0; f < buffer.frames; f++) {
-            float sine = nextSine(format.mix.rate);
-            for(int c = 0; c < format.channels.outputs; c++)
-                buffer.output.getPointer(c * Native.POINTER_SIZE).setFloat(f * sampleSize, sine);
+            float sample = nextSample();
+            for(int c = 0; c < channels; c++)
+                buffer.output.getPointer(c * Native.POINTER_SIZE).setFloat(f * size, sample);
         }
     }
 
     public static void main(String[] args) throws Exception {
-
         try(XtAudio audio = new XtAudio(null, null, null)) {
-
-            var system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
+            XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
-            if(service == null)
-                return;
-
-            XtFormat format = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(0, 0, 2, 0));
+            if(service == null) return;
+            XtFormat format = new XtFormat(MIX, new XtChannels(0, 0, 2, 0));
             try(XtDevice device = service.openDefaultDevice(true)) {
-                if(device == null || !device.supportsFormat(format))
-                    return;
-
+                if(device == null || !device.supportsFormat(format)) return;
                 XtBufferSize size = device.getBufferSize(format);
 
+                System.out.println("Render interleaved, safe buffers...");
                 try(XtStream stream = device.openStream(format, true, size.current,
-                        RenderAdvanced::renderInterleavedManaged, RenderAdvanced::xRun);
-                    XtAdapter adapter = XtAdapter.register(stream, true, null)) {
+                        RenderAdvanced::renderInterleavedSafe, RenderAdvanced::xRun, null);
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
-                    System.out.println("Rendering interleaved...");
-                    readLine();
+                    Thread.sleep(2000);
                     stream.stop();
                 }
 
+                System.out.println("Render interleaved, native buffers...");
                 try(XtStream stream = device.openStream(format, true, size.current,
-                        RenderAdvanced::renderInterleavedNative, RenderAdvanced::xRun);
-                    XtAdapter adapter = XtAdapter.register(stream, true, null)) {
+                        RenderAdvanced::renderInterleavedNative, RenderAdvanced::xRun, null)) {
                     stream.start();
-                    System.out.println("Rendering interleaved, raw buffers...");
-                    readLine();
+                    Thread.sleep(2000);
                     stream.stop();
                 }
 
+                System.out.println("Render non-interleaved, safe buffers...");
                 try(XtStream stream = device.openStream(format, false, size.current,
-                        RenderAdvanced::renderNonInterleavedManaged, RenderAdvanced::xRun);
-                    XtAdapter adapter = XtAdapter.register(stream, false, null)) {
+                        RenderAdvanced::renderNonInterleavedSafe, RenderAdvanced::xRun, null);
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream, false)) {
                     stream.start();
-                    System.out.println("Rendering non-interleaved...");
-                    readLine();
+                    Thread.sleep(2000);
                     stream.stop();
                 }
 
+                System.out.println("Render non-interleaved, native buffers...");
                 try(XtStream stream = device.openStream(format, false, size.current,
-                        RenderAdvanced::renderNonInterleavedNative, RenderAdvanced::xRun);
-                    XtAdapter adapter = XtAdapter.register(stream, false, null)) {
+                        RenderAdvanced::renderNonInterleavedNative, RenderAdvanced::xRun, null)) {
                     stream.start();
-                    System.out.println("Rendering non-interleaved, raw buffers...");
-                    readLine();
+                    Thread.sleep(2000);
                     stream.stop();
                 }
 
-                XtFormat sendTo0 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(0, 0, 1, 1L << 0));
+                System.out.println("Render interleaved, safe buffers (channel 0)...");
+                XtFormat sendTo0 = new XtFormat(MIX, new XtChannels(0, 0, 1, 1L << 0));
                 try(XtStream stream = device.openStream(sendTo0, true, size.current,
-                        RenderAdvanced::renderInterleavedManaged, RenderAdvanced::xRun);
-                    XtAdapter adapter = XtAdapter.register(stream, true, null)) {
+                        RenderAdvanced::renderInterleavedSafe, RenderAdvanced::xRun, null);
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
-                    System.out.println("Rendering channel mask, channel 0...");
-                    readLine();
+                    Thread.sleep(2000);
                     stream.stop();
                 }
 
-                XtFormat sendTo1 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(0, 0, 1, 1L << 1));
+                System.out.println("Render interleaved, native buffers (channel 1)...");
+                XtFormat sendTo1 = new XtFormat(MIX, new XtChannels(0, 0, 1, 1L << 1));
                 try(XtStream stream = device.openStream(sendTo1, true, size.current,
-                        RenderAdvanced::renderInterleavedManaged, RenderAdvanced::xRun);
-                    XtAdapter adapter = XtAdapter.register(stream, true, null)) {
+                        RenderAdvanced::renderInterleavedNative, RenderAdvanced::xRun, null)) {
                     stream.start();
-                    System.out.println("Rendering channel mask, channel 1...");
-                    readLine();
+                    Thread.sleep(2000);
                     stream.stop();
                 }
             }
