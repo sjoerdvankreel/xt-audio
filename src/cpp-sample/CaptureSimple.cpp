@@ -1,8 +1,7 @@
 #include <XtCpp.hpp>
-#include <cmath>
 #include <thread>
+#include <chrono>
 #include <fstream>
-#include <iostream>
 
 static const Xt::Channels Channels(1, 0, 0, 0);
 static const Xt::Mix Mix(44100, Xt::Sample::Int24);

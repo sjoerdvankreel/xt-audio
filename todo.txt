@@ -39,3 +39,4 @@
 * check cli samples
 * cleanup cpp samples
 * cpp api use pointers instead of references ?
+* AggregateStreamParams

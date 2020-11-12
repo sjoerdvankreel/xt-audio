@@ -3,8 +3,6 @@
 #include <cmath>
 #include <chrono>
 #include <thread>
-#include <climits>
-#include <iostream>
 
 static float _phase = 0.0f;
 static const float Frequency = 440.0f;
