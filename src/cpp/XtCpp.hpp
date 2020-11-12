@@ -61,6 +61,10 @@ enum Capabilities {
   CapabilitiesXRunDetection = 0x10
 };
 
+typedef void (*XRunCallback)(int32_t index, void* user);
+typedef void (*ErrorCallback)(const std::string& location, const std::string& message);
+typedef void (*StreamCallback)(const Stream& stream, const struct Buffer& buffer, void* user);
+
 struct BufferSize final {
   double min;
   double max;
@@ -125,6 +129,26 @@ struct Format final {
   Format(const Mix& mix, const Channels& channels): mix(mix), channels(channels) {}
 };
 
+struct StreamParams {
+  Format format;
+  double bufferSize;
+  XRunCallback xRunCallback;
+  StreamCallback streamCallback;
+  bool interleaved;
+};
+
+struct AggregateParams {
+  Mix mix;
+  Device* const* devices;
+  const double* bufferSizes;
+  const Channels* channels;
+  int32_t count;
+  bool interleaved;
+  const Device* master;
+  XRunCallback xRunCallback;
+  StreamCallback streamCallback;
+};
+
 std::ostream& operator<<(std::ostream& os, Cause cause);
 std::ostream& operator<<(std::ostream& os, Setup setup);
 std::ostream& operator<<(std::ostream& os, System system);
@@ -132,10 +156,6 @@ std::ostream& operator<<(std::ostream& os, Sample sample);
 std::ostream& operator<<(std::ostream& os, const Device& device);
 std::ostream& operator<<(std::ostream& os, const ErrorInfo& info);
 std::ostream& operator<<(std::ostream& os, Capabilities capabilities);
-
-typedef void (*XRunCallback)(int32_t index, void* user);
-typedef void (*ErrorCallback)(const std::string& location, const std::string& message);
-typedef void (*StreamCallback)(const Stream& stream, const Buffer& buffer, void* user);
 
 class Exception final: public std::exception {
   const uint64_t _error;
@@ -176,10 +196,7 @@ public:
   Capabilities GetCapabilities() const;
   std::unique_ptr<Device> OpenDevice(int32_t index) const;
   std::unique_ptr<Device> OpenDefaultDevice(bool output) const;
-  std::unique_ptr<Stream> AggregateStream(Device** devices, const Channels* channels, 
-                                          const double* bufferSizes, int32_t count, 
-                                          const Mix& mix, bool interleaved, Device& master, 
-                                          StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
+  std::unique_ptr<Stream> AggregateStream(const AggregateParams& params, void* user);
 };
 
 class Audio final {
@@ -211,8 +228,7 @@ public:
   bool SupportsFormat(const Format& format) const;
   BufferSize GetBufferSize(const Format& format) const;
   std::string GetChannelName(bool output, int32_t index) const;
-  std::unique_ptr<Stream> OpenStream(const Format& format, bool interleaved, double bufferSize, 
-                                     StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
+  std::unique_ptr<Stream> OpenStream(const StreamParams& params, void* user);
 };
 
 } // namespace Xt

@@ -256,12 +256,12 @@ struct XtStreamParams {
 
 struct XtAggregateParams {
   struct XtMix mix;
-  XtDevice** devices;
-  double* bufferSizes;
-  struct XtChannels* channels;
+  XtDevice* const* devices;
+  const double* bufferSizes;
+  const struct XtChannels* channels;
   int32_t count;
   XtBool interleaved;
-  XtDevice* master;
+  const XtDevice* master;
   XtXRunCallback xRunCallback;
   XtStreamCallback streamCallback;
 };
