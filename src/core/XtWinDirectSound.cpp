@@ -318,8 +318,7 @@ XtFault DirectSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return S_OK;
 }
 
-XtFault DirectSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                                 bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault DirectSoundDevice::OpenStream(const XtStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   HRESULT hr;
   int32_t frameSize;
@@ -332,13 +331,14 @@ XtFault DirectSoundDevice::OpenStream(const XtFormat* format, XtBool interleaved
   CComPtr<IDirectSoundCapture> newInput;
   CComPtr<IDirectSoundCaptureBuffer> capture;
 
-  XT_ASSERT(XtwFormatToWfx(*format, wfx));
+  double bufferSize = params->bufferSize;
+  XT_ASSERT(XtwFormatToWfx(params->format, wfx));
   if(bufferSize < XtDsMinBufferMs)
     bufferSize = XtDsMinBufferMs;
   if(bufferSize > XtDsMaxBufferMs)
     bufferSize = XtDsMaxBufferMs;
-  bufferFrames = static_cast<int32_t>(bufferSize / 1000.0 * format->mix.rate);
-  frameSize = (format->channels.inputs + format->channels.outputs) * XtiGetSampleSize(format->mix.sample);
+  bufferFrames = static_cast<int32_t>(bufferSize / 1000.0 * params->format.mix.rate);
+  frameSize = (params->format.channels.inputs + params->format.channels.outputs) * XtiGetSampleSize(params->format.mix.sample);
 
   if(input) {
     captureDesc.dwSize = sizeof(DSCBUFFERDESC);

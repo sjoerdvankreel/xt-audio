@@ -247,21 +247,21 @@ struct XtAttributes {
 };
 
 struct XtStreamParams {
-  double bufferSize;
-  XtBool interleaved;
   struct XtFormat format;
+  double bufferSize;
   XtXRunCallback xRunCallback;
   XtStreamCallback streamCallback;
+  XtBool interleaved;
 };
 
 struct XtAggregateParams {
-  int32_t count;
   struct XtMix mix;
-  XtDevice* master;
-  XtBool interleaved;
   XtDevice** devices;
   double* bufferSizes;
   struct XtChannels* channels;
+  int32_t count;
+  XtBool interleaved;
+  XtDevice* master;
   XtXRunCallback xRunCallback;
   XtStreamCallback streamCallback;
 };

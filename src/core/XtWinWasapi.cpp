@@ -348,8 +348,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   return S_OK;
 }
 
-XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
-                                 bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault WasapiDevice::OpenStream(const XtStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   HRESULT hr;
   DWORD flags;
@@ -374,8 +373,8 @@ XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
   auto pWfx = reinterpret_cast<WAVEFORMATEX*>(&wfx);
   auto pStreamClient = reinterpret_cast<void**>(&streamClient);
 
-  XT_ASSERT(XtwFormatToWfx(*format, wfx));
-  wantedSize = bufferSize * XtWsHnsPerMs;
+  XT_ASSERT(XtwFormatToWfx(params->format, wfx));
+  wantedSize = params->bufferSize * XtWsHnsPerMs;
   XT_VERIFY_COM(client->GetDevicePeriod(&engine, &hardware));
   if(this->options.exclusive) {
     minBuffer = hardware;
@@ -430,7 +429,7 @@ XtFault WasapiDevice::OpenStream(const XtFormat* format, XtBool interleaved, dou
     } else {
       XT_VERIFY_COM(streamClient.QueryInterface(&streamClient3));
       XT_VERIFY_COM(streamClient3->GetSharedModeEnginePeriod(pWfx, &default_, &fundamental, &min, &max));
-      bufferFrames = static_cast<UINT32>(bufferSize / 1000.0 * format->mix.rate);
+      bufferFrames = static_cast<UINT32>(params->bufferSize / 1000.0 * params->format.mix.rate);
       if(bufferFrames < min)
         bufferFrames = min;
       if(bufferFrames > max)

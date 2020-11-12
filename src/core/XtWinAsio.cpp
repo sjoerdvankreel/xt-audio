@@ -469,8 +469,7 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return ASE_OK;
 }
 
-XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
+XtFault AsioDevice::OpenStream(const XtStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   double wantedSize;
   long asioBufferSize;
@@ -483,7 +482,7 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XT_VERIFY_ASIO(asio->getSampleRate(&rate));
   XT_VERIFY_ASIO(asio->getBufferSize(&min, &max, &preferred, &granularity));
 
-  wantedSize = bufferSize / 1000.0 * rate;
+  wantedSize = params->bufferSize / 1000.0 * rate;
   if(wantedSize < min)
     asioBufferSize = min;
   else if(wantedSize > max)
@@ -496,9 +495,9 @@ XtFault AsioDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
       asioBufferSize = max;
   }
 
-  CreateBufferInfos(buffers, ASIOTrue, format->channels.inputs, format->channels.inMask);
-  CreateBufferInfos(buffers, ASIOFalse, format->channels.outputs, format->channels.outMask);
-  auto result = std::make_unique<AsioStream>(this, *format, asioBufferSize, buffers);
+  CreateBufferInfos(buffers, ASIOTrue, params->format.channels.inputs, params->format.channels.inMask);
+  CreateBufferInfos(buffers, ASIOFalse, params->format.channels.outputs, params->format.channels.outMask);
+  auto result = std::make_unique<AsioStream>(this, params->format, asioBufferSize, buffers);
   result->callbacks.asioMessage = &AsioMessage;
   result->callbacks.sampleRateDidChange = &SampleRateDidChange;
   result->callbacks.bufferSwitch = JitBufferSwitch(result->runtime.get(), &BufferSwitch, result.get());
