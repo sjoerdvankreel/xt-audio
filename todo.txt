@@ -37,3 +37,5 @@
 * cleanup cpp/cli/java sample driver
 * fix javadoc warnings
 * check cli samples
+* cleanup cpp samples
+* cpp api use pointers instead of references ?

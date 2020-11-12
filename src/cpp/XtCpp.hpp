@@ -135,6 +135,10 @@ struct StreamParams {
   XRunCallback xRunCallback;
   StreamCallback streamCallback;
   bool interleaved;
+
+  StreamParams() = default;
+  StreamParams(const Format& format, bool interleaved, double bufferSize, StreamCallback streamCallback, XRunCallback xRunCallback):
+  format(format), interleaved(interleaved), bufferSize(bufferSize), streamCallback(streamCallback), xRunCallback(xRunCallback) {}
 };
 
 struct AggregateParams {
