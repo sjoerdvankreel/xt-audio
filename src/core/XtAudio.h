@@ -247,23 +247,29 @@ struct XtAttributes {
 };
 
 struct XtStreamParams {
-  struct XtFormat format;
-  double bufferSize;
+  XtBool interleaved;
   XtXRunCallback xRunCallback;
   XtStreamCallback streamCallback;
-  XtBool interleaved;
+};
+
+struct XtDeviceStreamParams {
+  double bufferSize;
+  struct XtFormat format;
+  struct XtStreamParams stream;
+};
+
+struct XtAggregateStreamParams {
+  XtDevice* device;
+  double bufferSize;
+  struct XtChannels channels;
 };
 
 struct XtAggregateParams {
-  struct XtMix mix;
-  XtDevice* const* devices;
-  const double* bufferSizes;
-  const struct XtChannels* channels;
   int32_t count;
-  XtBool interleaved;
+  struct XtMix mix;
   const XtDevice* master;
-  XtXRunCallback xRunCallback;
-  XtStreamCallback streamCallback;
+  struct XtStreamParams stream;
+  struct XtAggregateStreamParams *streams;
 };
 
 /** @cond */
@@ -329,7 +335,7 @@ XT_API XtError XT_CALL XtDeviceGetChannelCount(const XtDevice* d, XtBool output,
 XT_API XtError XT_CALL XtDeviceSupportsAccess(const XtDevice* d, XtBool interleaved, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceSupportsFormat(const XtDevice* d, const XtFormat* format, XtBool* supports);
 XT_API XtError XT_CALL XtDeviceGetBufferSize(const XtDevice* d, const XtFormat* format, XtBufferSize* size);
-XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtStreamParams* params, void* user, XtStream** stream);
+XT_API XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream);
 XT_API XtError XT_CALL XtDeviceGetChannelName(const XtDevice* d, XtBool output, int32_t index, char* buffer, int32_t* size);
 /** @} */
 
