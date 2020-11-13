@@ -40,3 +40,7 @@
 * cleanup cpp samples
 * cpp api use pointers instead of references ?
 * AggregateStreamParams
+* XtCore.dll & folder structure
+* XtAudioAggregateStream
+* Allow different mix on aggregation
+* SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
