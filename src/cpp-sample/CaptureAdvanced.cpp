@@ -1,80 +1,70 @@
 #include <XtCpp.hpp>
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
+#include <chrono>
+#include <thread>
 #include <fstream>
 #include <iostream>
 
-static void ReadLine() {
-  std::string s;
-  std::cout << "Press any key to continue...\n";
-  std::getline(std::cin, s);
+static const Xt::Channels Channels(2, 0, 0, 0);
+static const Xt::Mix Mix(44100, Xt::Sample::Int24);
+static const Xt::Format Format(Mix, Channels);
+
+static void XRun(int32_t index, void* user) 
+{ std::cout << "XRun on stream " << index << ".\n"; }
+
+static void RunStream(Xt::Stream* stream)
+{
+  stream->Start();
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+  stream->Stop();
 }
 
-static int GetBufferSize(const Xt::Stream& stream, int frames) {
-  const Xt::Format& format = stream.GetFormat();
-  int sampleSize = Xt::Audio::GetSampleAttributes(format.mix.sample).size;
-  return frames * format.channels.inputs * sampleSize;
+static int32_t GetBufferSize(int32_t channels, int32_t frames)
+{
+  int32_t size = Xt::Audio::GetSampleAttributes(Mix.sample).size;
+  return channels * frames * size;
 }
 
-static void XRun(int index, void* user) {
-  // Don't do this.
-  std::cout << "XRun on stream " << index << ".\n";
+static void CaptureInterleaved(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+{
+  auto output = static_cast<std::ofstream*>(user);
+  auto input = static_cast<const char*>(buffer.input);
+  int32_t bytes = GetBufferSize(Channels.inputs, buffer.frames);
+  output->write(input, bytes);
 }
 
-static void CaptureInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
-
-  if(buffer.frames > 0)
-    // Don't do this.
-    static_cast<std::ofstream*>(user)->write(static_cast<const char*>(buffer.input), GetBufferSize(stream, buffer.frames));
+static void CaptureNonInterleaved(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+{
+  auto output = static_cast<std::ofstream*>(user);  
+  auto input = static_cast<const char* const*>(buffer.input);
+  int32_t size = Xt::Audio::GetSampleAttributes(Mix.sample).size;
+  for(int32_t f = 0; f < buffer.frames; f++)
+    for(int32_t c = 0; c < Channels.inputs; c++)
+      output->write(&input[c][f * size], size);
 }
 
-static void CaptureNonInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
-
-  if(buffer.frames > 0) {
-    const Xt::Format& format = stream.GetFormat();
-    int channels = format.channels.inputs;
-    int sampleSize = Xt::Audio::GetSampleAttributes(format.mix.sample).size;
-    for(int f = 0; f < buffer.frames; f++)
-      for(int c = 0; c < channels; c++)
-        // Don't do this.
-        static_cast<std::ofstream*>(user)->write(&static_cast<char* const*>(buffer.input)[c][f * sampleSize], sampleSize);
-  }
-}
-
-int CaptureAdvancedMain(int argc, char** argv) {
-
+int CaptureAdvancedMain() 
+{
   Xt::Audio audio("", nullptr, nullptr);
-  Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), Xt::Channels(2, 0, 0, 0));
-
-  auto system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
+  Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
-  if(!service)
-    return 0;  
+  if(!service)return 0; 
 
+  Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), Xt::Channels(2, 0, 0, 0));
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
-  if(!device || !device->SupportsFormat(format)) 
-    return 0;
-
-  std::unique_ptr<Xt::Stream> stream;
+  if(!device || !device->SupportsFormat(format)) return 0;  
   Xt::BufferSize size = device->GetBufferSize(format);
-  std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
-  stream = device->OpenStream(format, true, size.current, CaptureInterleaved, XRun, &interleaved);
-  stream->Start();
-  std::cout << "Capturing interleaved...\n";
-  ReadLine();
-  stream->Stop();
 
+  Xt::StreamParams streamParams(true, CaptureInterleaved, XRun);
+  Xt::DeviceStreamParams deviceParams(Format, size.current, streamParams);
+  std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &interleaved);
+  RunStream(stream.get());
+
+  streamParams = Xt::StreamParams(false, CaptureNonInterleaved, XRun);
+  deviceParams = Xt::DeviceStreamParams(Format, size.current, streamParams);
   std::ofstream nonInterleaved("xt-audio-non-interleaved.raw", std::ios::out | std::ios::binary);
-  stream = device->OpenStream(format, false, size.current, CaptureNonInterleaved, XRun, &nonInterleaved);
-  stream->Start();
-  std::cout << "Capturing non-interleaved...\n";
-  ReadLine();
-  stream->Stop();
+  stream = device->OpenStream(deviceParams, &nonInterleaved);
+  RunStream(stream.get());
 
   return 0;
 }

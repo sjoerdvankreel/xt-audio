@@ -29,8 +29,10 @@ int RenderSimpleMain()
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if (!service) return 0;
+
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
   if (!device || !device->SupportsFormat(Format)) return 0;
+
   double bufferSize = device->GetBufferSize(Format).current;
   Xt::StreamParams streamParams(true, Render, nullptr);
   Xt::DeviceStreamParams deviceParams(Format, bufferSize, streamParams);
@@ -38,5 +40,6 @@ int RenderSimpleMain()
   stream->Start();
   std::this_thread::sleep_for(std::chrono::seconds(2));
   stream->Stop();
+
   return 0;
 }

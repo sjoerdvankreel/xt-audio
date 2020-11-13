@@ -3,12 +3,14 @@
 #include <cstdint>
 #include <iostream>
 
-int PrintSimpleMain(int argc, char** argv) {
+int PrintSimpleMain(int argc, char** argv) 
+{
   Xt::Audio audio("", nullptr, nullptr);
-  for(auto s: Xt::Audio::GetSystems()) {
-    auto service = Xt::Audio::GetService(s);
+  for(Xt::System system: Xt::Audio::GetSystems()) 
+  {
+    std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
     for(int32_t d = 0; d < service->GetDeviceCount(); d++)
-      std::cout << s << ": " << *service->OpenDevice(d) << "\n";
+      std::cout << system << ": " << *service->OpenDevice(d) << "\n";
   }
   return 0;
 }
