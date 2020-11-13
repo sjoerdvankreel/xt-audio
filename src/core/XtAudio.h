@@ -247,26 +247,23 @@ struct XtAttributes {
 };
 
 struct XtStreamParams {
-  double bufferSize;
-  XtBool interleaved;
   struct XtFormat format;
+  double bufferSize;
   XtXRunCallback xRunCallback;
   XtStreamCallback streamCallback;
-};
-
-struct XtDeviceParams
-{
-  XtDevice* device;
-  double bufferSize;
-  struct XtChannels channels;
+  XtBool interleaved;
 };
 
 struct XtAggregateParams {
-  int32_t count;
   struct XtMix mix;
+  XtDevice* const* devices;
+  const double* bufferSizes;
+  const struct XtChannels* channels;
+  int32_t count;
+  XtBool interleaved;
   const XtDevice* master;
-  struct XtStreamParams stream;
-  struct XtDeviceParams *devices;
+  XtXRunCallback xRunCallback;
+  XtStreamCallback streamCallback;
 };
 
 /** @cond */
@@ -280,7 +277,6 @@ typedef struct XtErrorInfo XtErrorInfo;
 typedef struct XtAttributes XtAttributes;
 typedef struct XtBufferSize XtBufferSize;
 typedef struct XtStreamParams XtStreamParams;
-typedef struct XtDeviceParams XtDeviceParams;
 typedef struct XtAggregateParams XtAggregateParams;
 /** @endcond */
 

@@ -261,7 +261,9 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregatePa
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(params->master != nullptr);
   XT_ASSERT(params->devices != nullptr);
-  XT_ASSERT(params->stream.streamCallback != nullptr);
+  XT_ASSERT(params->channels != nullptr);
+  XT_ASSERT(params->bufferSizes != nullptr);
+  XT_ASSERT(params->streamCallback != nullptr);
 
   XtSystem system = s->GetSystem();
   auto attrs = XtAudioGetSampleAttributes(params->mix.sample);
@@ -274,11 +276,11 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregatePa
   result->aggregationIndex = -1;
   result->insideCallbackCount = 0;
   result->sampleSize = attrs.size;
-  result->interleaved = params->stream.interleaved;
-  result->xRunCallback = params->stream.xRunCallback;
-  result->canInterleaved = params->stream.interleaved;
-  result->streamCallback = params->stream.streamCallback;
-  result->canNonInterleaved = !params->stream.interleaved;
+  result->interleaved = params->interleaved;
+  result->xRunCallback = params->xRunCallback;
+  result->canInterleaved = params->interleaved;
+  result->streamCallback = params->streamCallback;
+  result->canNonInterleaved = !params->interleaved;
   result->inputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->outputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->contexts = std::vector<XtAggregateContext>(params->count, XtAggregateContext());
@@ -295,28 +297,28 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregatePa
   format.mix = params->mix;
   for(int32_t i = 0; i < params->count; i++) {
     thisFormat.mix = params->mix;
-    thisFormat.channels.inputs = params->devices[i].channels.inputs;
-    thisFormat.channels.inMask = params->devices[i].channels.inMask;
-    thisFormat.channels.outputs = params->devices[i].channels.outputs;
-    thisFormat.channels.outMask = params->devices[i].channels.outMask;
+    thisFormat.channels.inputs = params->channels[i].inputs;
+    thisFormat.channels.inMask = params->channels[i].inMask;
+    thisFormat.channels.outputs = params->channels[i].outputs;
+    thisFormat.channels.outMask = params->channels[i].outMask;
 
     result->contexts[i].index = i;
     result->contexts[i].stream = result.get();
-    result->channels.push_back(params->devices[i].channels);
-    format.channels.inputs += params->devices[i].channels.inputs;
-    format.channels.outputs += params->devices[i].channels.outputs;
+    result->channels.push_back(params->channels[i]);
+    format.channels.inputs += params->channels[i].inputs;
+    format.channels.outputs += params->channels[i].outputs;
 
-    masterFound |= params->master == params->devices[i].device;
-    if(params->master == params->devices[i].device)
+    masterFound |= params->master == params->devices[i];
+    if(params->master == params->devices[i])
       result->masterIndex = i;
-    thisCallback = params->master == params->devices[i].device? XtiMasterCallback: XtiSlaveCallback;
+    thisCallback = params->master == params->devices[i]? XtiMasterCallback: XtiSlaveCallback;
     XtStreamParams thisParams = { 0 };
-    thisParams.bufferSize = params->devices[i].bufferSize;
+    thisParams.bufferSize = params->bufferSizes[i];
     thisParams.format = thisFormat;
-    thisParams.interleaved = params->stream.interleaved;
+    thisParams.interleaved = params->interleaved;
     thisParams.streamCallback = thisCallback;
-    thisParams.xRunCallback = params->stream.xRunCallback;
-    if((error = OpenStreamInternal(params->devices[i].device, &thisParams, params->master != params->devices[i].device, &result->contexts[i], &thisStream) != 0))
+    thisParams.xRunCallback = params->xRunCallback;
+    if((error = OpenStreamInternal(params->devices[i], &thisParams, params->master != params->devices[i], &result->contexts[i], &thisStream) != 0))
       return error;
     result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
     thisStream->aggregated = true;
@@ -329,11 +331,11 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregatePa
 
   result->format = format;
   result->frames = frames * 2;
-  InitStreamBuffers(result->weave, params->stream.interleaved, !params->stream.interleaved, &format, frames, attrs.size);
-  InitStreamBuffers(result->intermediate, params->stream.interleaved, !params->stream.interleaved, &format, frames, attrs.size);
+  InitStreamBuffers(result->weave, params->interleaved, !params->interleaved, &format, frames, attrs.size);
+  InitStreamBuffers(result->intermediate, params-> interleaved, !params->interleaved, &format, frames, attrs.size);
   for(int32_t i = 0; i < params->count; i++) {
-    result->inputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.inputs, attrs.size);
-    result->outputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.outputs, attrs.size);
+    result->inputRings[i] = XtRingBuffer(params->interleaved != XtFalse, result->frames, params->channels[i].inputs, attrs.size);
+    result->outputRings[i] = XtRingBuffer(params->interleaved != XtFalse, result->frames, params->channels[i].outputs, attrs.size);
   }
 
   *stream = result.release();
