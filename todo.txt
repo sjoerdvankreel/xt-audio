@@ -44,3 +44,4 @@
 * XtAudioAggregateStream
 * Allow different mix on aggregation
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
+* remove static linking support ?
