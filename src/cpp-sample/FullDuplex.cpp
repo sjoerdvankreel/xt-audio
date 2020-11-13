@@ -27,8 +27,9 @@ int FullDuplexMain()
   else if(device->SupportsFormat(float48000)) format = float48000;
   else return 0;
   double bufferSize = device->GetBufferSize(format).current;
-  Xt::StreamParams params(format, true, bufferSize, Callback, nullptr);
-  std::unique_ptr<Xt::Stream> stream = device->OpenStream(params, nullptr);
+  Xt::StreamParams streamParams(true, Callback, nullptr);
+  Xt::DeviceStreamParams deviceParams(format, bufferSize, streamParams);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   stream->Start();
   std::this_thread::sleep_for(std::chrono::seconds(2));
   stream->Stop();

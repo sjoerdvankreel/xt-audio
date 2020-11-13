@@ -129,28 +129,42 @@ struct Format final {
   Format(const Mix& mix, const Channels& channels): mix(mix), channels(channels) {}
 };
 
-struct StreamParams {
-  Format format;
-  double bufferSize;
+struct StreamParams final {
+  bool interleaved;
   XRunCallback xRunCallback;
   StreamCallback streamCallback;
-  bool interleaved;
-
   StreamParams() = default;
-  StreamParams(const Format& format, bool interleaved, double bufferSize, StreamCallback streamCallback, XRunCallback xRunCallback):
-  format(format), interleaved(interleaved), bufferSize(bufferSize), streamCallback(streamCallback), xRunCallback(xRunCallback) {}
+  StreamParams(bool interleaved, StreamCallback streamCallback, XRunCallback xRunCallback):
+  interleaved(interleaved), xRunCallback(xRunCallback), streamCallback(streamCallback) {}
 };
 
-struct AggregateParams {
-  Mix mix;
-  Device* const* devices;
-  const double* bufferSizes;
-  const Channels* channels;
+struct DeviceStreamParams final {
+  double bufferSize;
+  Format format;
+  StreamParams stream;
+  DeviceStreamParams() = default;
+  DeviceStreamParams(const Format& format, double bufferSize, const StreamParams& stream):
+  bufferSize(bufferSize), format(format), stream(stream) {}
+};
+
+struct AggregateDeviceParams final {
+  Device* device;
+  double bufferSize;
+  Channels channels;
+  AggregateDeviceParams() = default;
+  AggregateDeviceParams(Device* device, const Channels& channels, double bufferSize):
+  device(device), bufferSize(bufferSize), channels(channels) {}
+};
+
+struct AggregateStreamParams final {
   int32_t count;
-  bool interleaved;
+  Mix mix;
   const Device* master;
-  XRunCallback xRunCallback;
-  StreamCallback streamCallback;
+  StreamParams stream;
+  AggregateDeviceParams *devices;
+  AggregateStreamParams() = default;
+  AggregateStreamParams(const Device* master, const Mix& mix, AggregateDeviceParams* devices, int32_t count, const StreamParams& stream):
+  count(count), mix(mix), master(master), stream(stream), devices(devices) {}
 };
 
 std::ostream& operator<<(std::ostream& os, Cause cause);
@@ -200,7 +214,7 @@ public:
   Capabilities GetCapabilities() const;
   std::unique_ptr<Device> OpenDevice(int32_t index) const;
   std::unique_ptr<Device> OpenDefaultDevice(bool output) const;
-  std::unique_ptr<Stream> AggregateStream(const AggregateParams& params, void* user);
+  std::unique_ptr<Stream> AggregateStream(const AggregateStreamParams& params, void* user);
 };
 
 class Audio final {
@@ -232,7 +246,7 @@ public:
   bool SupportsFormat(const Format& format) const;
   BufferSize GetBufferSize(const Format& format) const;
   std::string GetChannelName(bool output, int32_t index) const;
-  std::unique_ptr<Stream> OpenStream(const StreamParams& params, void* user);
+  std::unique_ptr<Stream> OpenStream(const DeviceStreamParams& params, void* user);
 };
 
 } // namespace Xt

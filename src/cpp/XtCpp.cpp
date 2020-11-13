@@ -158,22 +158,24 @@ std::unique_ptr<Device> Service::OpenDefaultDevice(bool output) const{
   return std::unique_ptr<Device>(new Device(device));
 }
 
-std::unique_ptr<Stream> Service::AggregateStream(const AggregateParams& params, void* user) {
+std::unique_ptr<Stream> Service::AggregateStream(const AggregateStreamParams& params, void* user) {
   XtStream* stream; 
-  std::vector<XtDevice*> ds(params.count, nullptr);
+  std::vector<XtAggregateDeviceParams> ds(params.count);
   for(int32_t i = 0; i < params.count; i++)
-    ds[i] = params.devices[i]->d;
-  XtAggregateParams coreParams = { 0 };
-  coreParams.devices = &ds[0];
+  {
+    ds[i].device = params.devices[i].device->d;
+    ds[i].bufferSize = params.devices[i].bufferSize;
+    ds[i].channels = *reinterpret_cast<const XtChannels*>(&params.devices[i].channels);
+  }
+  XtAggregateStreamParams coreParams;
+  std::memset(&coreParams, 0, sizeof(coreParams));
   coreParams.count = params.count;
   coreParams.master = params.master->d;
-  coreParams.interleaved = params.interleaved;
-  coreParams.bufferSizes = params.bufferSizes;
+  coreParams.stream.interleaved = params.stream.interleaved;
   coreParams.mix = *reinterpret_cast<const XtMix*>(&params.mix);
-  coreParams.streamCallback = &StreamCallbackForwarder::ForwardStream;
-  coreParams.channels = reinterpret_cast<const XtChannels*>(&params.channels);
-  coreParams.xRunCallback = params.xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
-  std::unique_ptr<Stream> result(new Stream(params.streamCallback, params.xRunCallback, user));
+  coreParams.stream.streamCallback = &StreamCallbackForwarder::ForwardStream;
+  coreParams.stream.xRunCallback = params.stream.xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
+  std::unique_ptr<Stream> result(new Stream(params.stream.streamCallback, params.stream.xRunCallback, user));
   HandleError(XtServiceAggregateStream(s, &coreParams, result.get(), &stream));
   result->s = stream;
   return result;
@@ -239,15 +241,15 @@ BufferSize Device::GetBufferSize(const Format& format) const {
   return result;
 }
 
-std::unique_ptr<Stream> Device::OpenStream(const StreamParams& params, void* user) {
+std::unique_ptr<Stream> Device::OpenStream(const DeviceStreamParams& params, void* user) {
   XtStream* stream; 
-  XtStreamParams coreParams = { 0 };
+  XtDeviceStreamParams coreParams = { 0 };
   coreParams.bufferSize = params.bufferSize;
-  coreParams.interleaved = params.interleaved != XtFalse;
-  coreParams.streamCallback = &StreamCallbackForwarder::ForwardStream;
+  coreParams.stream.interleaved = params.stream.interleaved;
+  coreParams.stream.streamCallback = &StreamCallbackForwarder::ForwardStream;
   coreParams.format = *reinterpret_cast<const XtFormat*>(&params.format);
-  coreParams.xRunCallback = params.xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
-  std::unique_ptr<Stream> result(new Stream(params.streamCallback, params.xRunCallback, user));
+  coreParams.stream.xRunCallback = params.stream.xRunCallback == nullptr? nullptr: &StreamCallbackForwarder::ForwardXRun;
+  std::unique_ptr<Stream> result(new Stream(params.stream.streamCallback, params.stream.xRunCallback, user));
   HandleError(XtDeviceOpenStream(d, &coreParams, result.get(), &stream));
   result->s = stream;
   return result;

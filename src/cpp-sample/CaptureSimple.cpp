@@ -24,9 +24,10 @@ int CaptureSimpleMain()
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
   if(!device || !device->SupportsFormat(Format)) return 0;
   double bufferSize = device->GetBufferSize(Format).current;
-  Xt::StreamParams params(Format, true, bufferSize, Capture, nullptr);
+  Xt::StreamParams streamParams(true, Capture, nullptr);
+  Xt::DeviceStreamParams deviceParams(Format, bufferSize, streamParams);
   std::ofstream recording("xt-audio.raw", std::ios::out | std::ios::binary);
-  std::unique_ptr<Xt::Stream> stream = device->OpenStream(params, &recording);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &recording);
   stream->Start();
   std::this_thread::sleep_for(std::chrono::seconds(2));
   stream->Stop();

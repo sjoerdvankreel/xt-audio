@@ -252,7 +252,7 @@ XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, Xt
   return XtiCreateError(s->GetSystem(), s->OpenDefaultDevice(output, device));
 }
 
-XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateParams* params, void* user, XtStream** stream) {
+XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateStreamParams* params, void* user, XtStream** stream) {
 
   XT_ASSERT(s != nullptr);
   XT_ASSERT(params != nullptr);

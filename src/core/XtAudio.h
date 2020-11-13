@@ -264,7 +264,7 @@ struct XtAggregateDeviceParams {
   struct XtChannels channels;
 };
 
-struct XtAggregateParams {
+struct XtAggregateStreamParams {
   int32_t count;
   struct XtMix mix;
   const XtDevice* master;
@@ -283,8 +283,8 @@ typedef struct XtErrorInfo XtErrorInfo;
 typedef struct XtAttributes XtAttributes;
 typedef struct XtBufferSize XtBufferSize;
 typedef struct XtStreamParams XtStreamParams;
-typedef struct XtAggregateParams XtAggregateParams;
 typedef struct XtDeviceStreamParams XtDeviceStreamParams;
+typedef struct XtAggregateStreamParams XtAggregateStreamParams;
 typedef struct XtAggregateDeviceParams XtAggregateDeviceParams;
 /** @endcond */
 
@@ -322,7 +322,7 @@ XT_API XtCapabilities XT_CALL XtServiceGetCapabilities(const XtService* s);
 XT_API XtError XT_CALL XtServiceGetDeviceCount(const XtService* s, int32_t* count);
 XT_API XtError XT_CALL XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device);
 XT_API XtError XT_CALL XtServiceOpenDefaultDevice(const XtService* s, XtBool output, XtDevice** device);
-XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateParams* params, void* user, XtStream** stream); 
+XT_API XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateStreamParams* params, void* user, XtStream** stream); 
 /** @} */
 
 /** 
