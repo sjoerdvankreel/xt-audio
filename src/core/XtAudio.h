@@ -258,7 +258,7 @@ struct XtDeviceStreamParams {
   struct XtStreamParams stream;
 };
 
-struct XtAggregateStreamParams {
+struct XtAggregateDeviceParams {
   XtDevice* device;
   double bufferSize;
   struct XtChannels channels;
@@ -269,7 +269,7 @@ struct XtAggregateParams {
   struct XtMix mix;
   const XtDevice* master;
   struct XtStreamParams stream;
-  struct XtAggregateStreamParams *streams;
+  struct XtAggregateDeviceParams *devices;
 };
 
 /** @cond */
@@ -284,6 +284,8 @@ typedef struct XtAttributes XtAttributes;
 typedef struct XtBufferSize XtBufferSize;
 typedef struct XtStreamParams XtStreamParams;
 typedef struct XtAggregateParams XtAggregateParams;
+typedef struct XtDeviceStreamParams XtDeviceStreamParams;
+typedef struct XtAggregateDeviceParams XtAggregateDeviceParams;
 /** @endcond */
 
 /** 
