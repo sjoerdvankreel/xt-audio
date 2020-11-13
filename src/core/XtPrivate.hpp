@@ -76,7 +76,7 @@ const XtService* XtiService ## name = &Service ## name
   XtFault GetBufferSize(const XtFormat* format, XtBufferSize* size) const override;                 \
   XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;                  \
   XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const override; \
-  XtFault OpenStream(const XtStreamParams* params, bool secondary, void* user, XtStream** stream) override
+  XtFault OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) override
 
 // ---- internal ----
 
@@ -212,7 +212,7 @@ struct XtDevice {
   virtual XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const = 0;
   virtual XtFault GetBufferSize(const XtFormat* format, XtBufferSize* size) const = 0;
   virtual XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const = 0;
-  virtual XtFault OpenStream(const XtStreamParams* params, bool secondary, void* user, XtStream** stream) = 0;
+  virtual XtFault OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) = 0;
 };
 
 // ---- internal ----
