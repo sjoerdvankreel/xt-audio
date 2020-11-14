@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Xt.XtNative;
 
@@ -20,7 +19,16 @@ namespace Xt
         public XtCapabilities GetCapabilities() => XtServiceGetCapabilities(_s);
         public int GetDeviceCount() => HandleError(XtServiceGetDeviceCount(_s, out var r), r);
         public XtDevice OpenDevice(int index) => HandleError(XtServiceOpenDevice(_s, index, out var r), new XtDevice(r));
-        public XtDevice OpenDefaultDevice(bool output) => HandleError(XtServiceOpenDefaultDevice(_s, output, out var r), new XtDevice(r));
+        public XtDevice OpenDefaultDevice(bool output) => HandleError(XtServiceOpenDefaultDevice(_s, output, out var r), new XtDevice(r));        
+
+        static AggregateDeviceParams ToNative(XtAggregateDeviceParams managed)
+        {
+            var result = new AggregateDeviceParams();
+            result.channels = managed.channels;
+            result.bufferSize = managed.bufferSize;
+            result.device = managed.device.Handle();
+            return result;
+        }
 
         public unsafe XtStream AggregateStream(in XtAggregateStreamParams @params, object user)
         {
@@ -39,15 +47,6 @@ namespace Xt
                 result.Init(HandleError(XtServiceAggregateStream(_s, in native, IntPtr.Zero, out var r), r));
                 return result;
             }
-        }
-
-        static AggregateDeviceParams ToNative(XtAggregateDeviceParams managed)
-        {
-            var result = new AggregateDeviceParams();
-            result.channels = managed.channels;
-            result.bufferSize = managed.bufferSize;
-            result.device = managed.device.Handle();
-            return result;
         }
     }
 }
