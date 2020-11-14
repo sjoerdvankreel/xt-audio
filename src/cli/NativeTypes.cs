@@ -33,7 +33,7 @@ namespace Xt
     struct AggregateStreamParams
     {
         public StreamParams stream;
-        public AggregateDeviceParams[] devices;
+        public IntPtr devices;
         public int count;
         public XtMix mix;
         public IntPtr master;

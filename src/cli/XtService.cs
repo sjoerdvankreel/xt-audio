@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Xt.XtNative;
 
@@ -21,19 +22,23 @@ namespace Xt
         public XtDevice OpenDevice(int index) => HandleError(XtServiceOpenDevice(_s, index, out var r), new XtDevice(r));
         public XtDevice OpenDefaultDevice(bool output) => HandleError(XtServiceOpenDefaultDevice(_s, output, out var r), new XtDevice(r));
 
-        public XtStream AggregateStream(in XtAggregateStreamParams @params, object user)
+        public unsafe XtStream AggregateStream(in XtAggregateStreamParams @params, object user)
         {
             var result = new XtStream(@params.stream.streamCallback, @params.stream.xRunCallback, user);
             var native = new AggregateStreamParams();
-            native.mix = @params.mix;
-            native.count = @params.count;
-            native.master = @params.master.Handle();
-            native.devices = @params.devices.Select(ToNative).ToArray();
-            native.stream.streamCallback = result.NativeStreamCallback();
-            native.stream.interleaved = @params.stream.interleaved ? 1 : 0;
-            native.stream.xRunCallback = @params.stream.xRunCallback == null ? null : result.NativeXRunCallback();
-            result.Init(HandleError(XtServiceAggregateStream(_s, in native, IntPtr.Zero, out var r), r));
-            return result;
+            var devices = @params.devices.Select(ToNative).ToArray();
+            fixed (AggregateDeviceParams* devs = devices)
+            {
+                native.mix = @params.mix;
+                native.count = @params.count;
+                native.devices = new IntPtr(devs);
+                native.master = @params.master.Handle();
+                native.stream.streamCallback = result.NativeStreamCallback();
+                native.stream.interleaved = @params.stream.interleaved ? 1 : 0;
+                native.stream.xRunCallback = @params.stream.xRunCallback == null ? null : result.NativeXRunCallback();
+                result.Init(HandleError(XtServiceAggregateStream(_s, in native, IntPtr.Zero, out var r), r));
+                return result;
+            }
         }
 
         static AggregateDeviceParams ToNative(XtAggregateDeviceParams managed)

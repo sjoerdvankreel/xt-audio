@@ -49,4 +49,3 @@
 * tydef struct foo {} foo;
 * cleanup cpp wrapper
 * XtSample.exe (not cpp-sample, cli-sample, java-sample)
-* fix c# aggregate
