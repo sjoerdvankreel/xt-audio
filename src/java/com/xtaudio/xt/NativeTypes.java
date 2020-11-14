@@ -22,33 +22,37 @@ public final class NativeTypes {
         private XtCapabilities(int flag) { _flag = flag; }
     }
 
-    static class DeviceStreamParams extends Structure {
+    public static class DeviceStreamParams extends Structure {
         public StreamParams stream;
         public XtFormat format;
         public double bufferSize;
+        public DeviceStreamParams() {}
         @Override protected List getFieldOrder() { return Arrays.asList("stream", "format", "bufferSize"); }
     }
 
-    static class AggregateDeviceParams extends Structure {
+    public static class AggregateDeviceParams extends Structure {
         public Pointer device;
         public XtChannels channels;
         public double bufferSize;
+        public AggregateDeviceParams() {}
         @Override protected List getFieldOrder() { return Arrays.asList("device", "channels", "bufferSize"); }
     }
 
-    static class AggregateStreamParams extends Structure {
+    public static class AggregateStreamParams extends Structure {
         public StreamParams stream;
         public AggregateDeviceParams[] devices;
         public int count;
         public XtMix mix;
         public Pointer master;
+        public AggregateStreamParams() {}
         @Override protected List getFieldOrder() { return Arrays.asList("stream", "devices", "count", "mix", "master"); }
     }
 
-    static class StreamParams extends Structure {
+    public static class StreamParams extends Structure {
         public boolean interleaved;
         public XRunCallback xRunCallback;
         public StreamCallback streamCallback;
+        public StreamParams() {}
         @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "xRunCallback", "streamCallback"); }
     }
 
