@@ -127,7 +127,7 @@ namespace Xt
 
             Console.WriteLine("Render interleaved, native buffers (channel 1)...");
             XtFormat sendTo1 = new XtFormat(Mix, new XtChannels(0, 0, 1, 1L << 1));
-            streamParams = new XtStreamParams(true, RenderInterleavedSafe, XRun);
+            streamParams = new XtStreamParams(true, RenderInterleavedNative, XRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in sendTo1, size.current);
             using (XtStream stream = device.OpenStream(in deviceParams, null))
                 RunStream(stream);

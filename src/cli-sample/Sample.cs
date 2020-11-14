@@ -26,7 +26,6 @@ namespace Xt
         public static void Main(string[] args)
         {
             int index = args.Length == 1 ? int.Parse(args[0]) : -1;
-            index=3;
             try
             {
                 if (index >= 0) RunSample(index);
