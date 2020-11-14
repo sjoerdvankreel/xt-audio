@@ -12,7 +12,7 @@ public class FullDuplex {
         safe.unlock(buffer);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main() throws Exception {
         XtFormat format;
         XtStreamParams streamParams;
         XtDeviceStreamParams deviceParams;

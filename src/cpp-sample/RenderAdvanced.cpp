@@ -82,9 +82,9 @@ int RenderAdvancedMain()
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
-  std::cout << "Render interleaved (channel 1)...\n";
+  std::cout << "Render non-interleaved (channel 1)...\n";
   Xt::Format sendTo1(Mix, Xt::Channels(0, 0, 1, 1ULL << 1));
-  streamParams = Xt::StreamParams(true, RenderInterleaved, XRun);
+  streamParams = Xt::StreamParams(false, RenderNonInterleaved, XRun);
   deviceParams = Xt::DeviceStreamParams(streamParams, sendTo1, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());

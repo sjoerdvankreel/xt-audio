@@ -5,7 +5,7 @@ import com.xtaudio.xt.NativeTypes.*;
 
 public class PrintSimple {
 
-    public static void main(String[] args) {
+    public static void main() {
         try(XtAudio audio = new XtAudio(null, null, null)) {
             for(XtSystem system: XtAudio.getSystems()) {
                 XtService service = XtAudio.getService(system);

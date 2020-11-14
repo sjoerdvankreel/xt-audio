@@ -6,12 +6,12 @@ import com.xtaudio.xt.XtException;
 public final class Sample {
 
     interface Runner {
-        void run(String[] args) throws Exception;
+        void run() throws Exception;
     }
 
     static void runSample(int index) throws Exception {
         System.out.println(NAMES[index] + ":");
-        SAMPLES[index].run(null);
+        SAMPLES[index].run();
     }
 
     static final String[] NAMES = new String[]{

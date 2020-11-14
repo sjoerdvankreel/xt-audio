@@ -17,7 +17,7 @@ public class Aggregate {
         safe.unlock(buffer);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main() throws Exception {
 
         XtAggregateStreamParams aggregateParams;
         XtMix mix = new XtMix(48000, XtSample.INT16);

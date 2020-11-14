@@ -25,7 +25,7 @@ public class RenderSimple {
         safe.unlock(buffer);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main() throws Exception {
         XtStreamParams streamParams;
         XtDeviceStreamParams deviceParams;
 
