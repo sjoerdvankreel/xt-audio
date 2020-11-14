@@ -29,6 +29,9 @@ namespace Xt
 
         public static void Main()
         {
+            XtStreamParams streamParams;
+            XtDeviceStreamParams deviceParams;
+
             using XtAudio audio = new XtAudio(null, IntPtr.Zero, null);
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
             XtService service = XtAudio.GetService(system);
@@ -38,7 +41,9 @@ namespace Xt
             if (device?.SupportsFormat(Format) != true) return;
 
             XtBufferSize size = device.GetBufferSize(Format);
-            using XtStream stream = device.OpenStream(Format, true, size.current, Callback, null, null);
+            streamParams = new XtStreamParams(true, Callback, null);
+            deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
+            using XtStream stream = device.OpenStream(in deviceParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
             stream.Start();
             Thread.Sleep(2000);

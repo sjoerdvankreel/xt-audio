@@ -16,6 +16,8 @@ namespace Xt
         public static void Main()
         {
             XtFormat format;
+            XtStreamParams streamParams;
+            XtDeviceStreamParams deviceParams;
             XtFormat int44100 = new XtFormat(new XtMix(44100, XtSample.Int32), new XtChannels(2, 0, 2, 0));
             XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.Int32), new XtChannels(2, 0, 2, 0));
             XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(2, 0, 2, 0));
@@ -35,7 +37,9 @@ namespace Xt
             else return;
 
             XtBufferSize size = device.GetBufferSize(format);
-            using XtStream stream = device.OpenStream(format, true, size.min, Callback, null, null);
+            streamParams = new XtStreamParams(true, Callback, null);
+            deviceParams = new XtDeviceStreamParams(in streamParams, in format, size.current);
+            using XtStream stream = device.OpenStream(in deviceParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
             stream.Start();
             Thread.Sleep(2000);

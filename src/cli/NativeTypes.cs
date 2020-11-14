@@ -6,6 +6,24 @@ using static Xt.XtNative;
 namespace Xt
 {
     [StructLayout(LayoutKind.Sequential)]
+    struct AggregateDeviceParams
+    {
+        public IntPtr device;
+        public XtChannels channels;
+        public double bufferSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct AggregateStreamParams
+    {
+        public XtStreamParams stream;
+        public AggregateDeviceParams[] devices;
+        public int count;
+        public XtMix mix;
+        public IntPtr master;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct XtVersion
     {
         public int major;
@@ -54,7 +72,7 @@ namespace Xt
     {
         public XtMix mix;
         public XtChannels channels;
-        public XtFormat(XtMix mix, XtChannels channels)
+        public XtFormat(in XtMix mix, in XtChannels channels)
         => (this.mix, this.channels) = (mix, channels);
     }
 
@@ -67,6 +85,25 @@ namespace Xt
         int _isSigned;
         public bool isFloat { get => _isFloat != 0; set => _isFloat = value ? 0 : 1; }
         public bool isSigned { get => _isSigned != 0; set => _isSigned = value ? 0 : 1; }
+    }
+
+    public struct XtAggregateDeviceParams
+    {
+        public XtDevice device;
+        public XtChannels channels;
+        public double bufferSize;
+        public XtAggregateDeviceParams(XtDevice device, in XtChannels channels, double bufferSize)
+        => (this.device, this.channels, this.bufferSize) = (device, channels, bufferSize);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XtDeviceStreamParams
+    {
+        public XtStreamParams stream;
+        public XtFormat format;
+        public double bufferSize;
+        public XtDeviceStreamParams(in XtStreamParams stream, in XtFormat format, double bufferSize)
+        => (this.stream, this.format, this.bufferSize) = (stream, format, bufferSize);
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -98,39 +135,8 @@ namespace Xt
         public XtXRunCallback xRunCallback;
         public XtStreamCallback streamCallback;
         public bool interleaved { get => _interleaved != 0; set => _interleaved = value ? 1 : 0; }
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct XtDeviceStreamParams
-    {
-        public XtStreamParams stream;
-        public XtFormat format;
-        public double bufferSize;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct AggregateDeviceParams
-    {
-        public IntPtr device;
-        public XtChannels channels;
-        public double bufferSize;
-    }
-    
-    public struct XtAggregateDeviceParams
-    {
-        public XtDevice device;
-        public XtChannels channels;
-        public double bufferSize;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct AggregateStreamParams
-    {
-        public XtStreamParams stream;
-        public AggregateDeviceParams[] devices;
-        public int count;
-        public XtMix mix;
-        public IntPtr master;
+        public XtStreamParams(bool interleaved, XtStreamCallback streamCallback, XtXRunCallback xRunCallback)
+        => (_interleaved, this.streamCallback, this.xRunCallback) = (interleaved ? 1 : 0, streamCallback, xRunCallback);
     }
 
     public struct XtAggregateStreamParams
@@ -140,6 +146,8 @@ namespace Xt
         public int count;
         public XtMix mix;
         public XtDevice master;
+        public XtAggregateStreamParams(in XtStreamParams stream, XtAggregateDeviceParams[] devices, int count, in XtMix mix, XtDevice master)
+        => (this.stream, this.devices, this.count, this.mix, this.master) = (stream, devices, count, mix, master);
     }
 
     [SuppressUnmanagedCodeSecurity]

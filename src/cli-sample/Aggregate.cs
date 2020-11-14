@@ -21,6 +21,7 @@ namespace Xt
 
         public static void Main()
         {
+            XtAggregateStreamParams aggregateParams;
             XtMix mix = new XtMix(48000, XtSample.Int16);
             XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
             XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
@@ -35,11 +36,12 @@ namespace Xt
             if (input?.SupportsFormat(inputFormat) != true) return;
             if (output?.SupportsFormat(outputFormat) != true) return;
 
-            using XtStream stream = service.AggregateStream(
-                    new XtDevice[] { input, output },
-                    new XtChannels[] { inputFormat.channels, outputFormat.channels },
-                    new double[] { 30.0, 30.0 },
-                    2, mix, true, output, OnAggregate, XRun, null);
+            XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
+            deviceParams[0] = new XtAggregateDeviceParams(input, in inputFormat.channels, 30.0);
+            deviceParams[1] = new XtAggregateDeviceParams(output, in outputFormat.channels, 30.0);
+            XtStreamParams streamParams = new XtStreamParams(true, OnAggregate, XRun);
+            aggregateParams = new XtAggregateStreamParams(in streamParams, deviceParams, 2, mix, output);
+            using XtStream stream = service.AggregateStream(in aggregateParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
             stream.Start();
             Thread.Sleep(2000);
