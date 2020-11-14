@@ -8,31 +8,31 @@ namespace Xt
 
         public static void Main()
         {
-            using var audio = new XtAudio("Sample", IntPtr.Zero, OnError);
+            using XtAudio audio = new XtAudio("Sample", IntPtr.Zero, OnError);
             try
             {
-                var version = XtAudio.GetVersion();
+                XtVersion version = XtAudio.GetVersion();
                 Console.WriteLine("Version: " + version.major + "." + version.minor);
-                var pro = XtAudio.SetupToSystem(XtSetup.ProAudio);
+                XtSystem pro = XtAudio.SetupToSystem(XtSetup.ProAudio);
                 Console.WriteLine("Pro Audio: " + pro + " (" + (XtAudio.GetService(pro) != null) + ")");
-                var system = XtAudio.SetupToSystem(XtSetup.SystemAudio);
+                XtSystem system = XtAudio.SetupToSystem(XtSetup.SystemAudio);
                 Console.WriteLine("System Audio: " + system + " (" + (XtAudio.GetService(system) != null) + ")");
-                var consumer = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
+                XtSystem consumer = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
                 Console.WriteLine("Consumer Audio: " + consumer + " (" + (XtAudio.GetService(consumer) != null) + ")");
-                foreach (var s in XtAudio.GetSystems())
+                foreach (XtSystem s in XtAudio.GetSystems())
                 {
                     XtService service = XtAudio.GetService(s);
                     Console.WriteLine("System: " + s);
                     Console.WriteLine("  Device count: " + service.GetDeviceCount());
                     Console.WriteLine("  Capabilities: " + service.GetCapabilities());
-                    using var defaultInput = service.OpenDefaultDevice(false);
+                    using XtDevice defaultInput = service.OpenDefaultDevice(false);
                     if (defaultInput != null) Console.WriteLine("  Default input: " + defaultInput);
-                    using var defaultOutput = service.OpenDefaultDevice(true);
+                    using XtDevice defaultOutput = service.OpenDefaultDevice(true);
                     if (defaultOutput != null) Console.WriteLine("  Default output: " + defaultOutput);
                     for (int d = 0; d < service.GetDeviceCount(); d++)
                         using (XtDevice device = service.OpenDevice(d))
                         {
-                            var mix = device.GetMix();
+                            XtMix? mix = device.GetMix();
                             Console.WriteLine("  Device " + device + ":");
                             Console.WriteLine("    Input channels: " + device.GetChannelCount(false));
                             Console.WriteLine("    Output channels: " + device.GetChannelCount(true));

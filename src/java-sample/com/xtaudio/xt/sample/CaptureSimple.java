@@ -15,7 +15,7 @@ public class CaptureSimple {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
         var input = (byte[])safe.getInput();
-        var size = XtAudio.getSampleAttributes(MIX.sample).size;
+        int size = XtAudio.getSampleAttributes(MIX.sample).size;
         output.write(input, 0, buffer.frames * size);
         safe.unlock(buffer);
     }

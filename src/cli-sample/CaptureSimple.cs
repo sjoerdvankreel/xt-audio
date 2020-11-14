@@ -16,7 +16,7 @@ namespace Xt
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             safe.Lock(buffer);
             var input = (byte[])safe.GetInput();
-            var size = XtAudio.GetSampleAttributes(Mix.sample).size;
+            int size = XtAudio.GetSampleAttributes(Mix.sample).size;
             if (buffer.frames > 0) output.Write(input, 0, buffer.frames * size);
             safe.Unlock(buffer);
         }

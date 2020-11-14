@@ -20,7 +20,7 @@ namespace Xt
 
         static void Callback(XtStream stream, in XtBuffer buffer, object user)
         {
-            var safe = XtSafeBuffer.Get(stream);
+            XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             safe.Lock(in buffer);
             float[] output = (float[])safe.GetOutput();
             for (int f = 0; f < buffer.frames; f++) output[f] = NextSample();
