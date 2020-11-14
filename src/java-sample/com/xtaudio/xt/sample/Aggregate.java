@@ -18,6 +18,8 @@ public class Aggregate {
     }
 
     public static void main(String[] args) throws Exception {
+
+        XtAggregateStreamParams aggregateParams;
         XtMix mix = new XtMix(48000, XtSample.INT16);
         XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
         XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
@@ -32,11 +34,12 @@ public class Aggregate {
                 if(input == null || !input.supportsFormat(inputFormat)) return;
                 if(output == null || !output.supportsFormat(outputFormat)) return;
 
-                try(XtStream stream = service.aggregateStream(
-                        new XtDevice[]{input, output},
-                        new XtChannels[]{inputFormat.channels, outputFormat.channels},
-                        new double[]{30.0, 30.0},
-                        2, mix, true, output, Aggregate::aggregate, Aggregate::xRun, null);
+                XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
+                deviceParams[0] = new XtAggregateDeviceParams(input, inputFormat.channels, 30.0);
+                deviceParams[1] = new XtAggregateDeviceParams(output, outputFormat.channels, 30.0);
+                XtStreamParams streamParams = new XtStreamParams(true, Aggregate::aggregate, Aggregate::xRun);
+                aggregateParams = new XtAggregateStreamParams(streamParams, deviceParams, 2, mix, output);
+                try(XtStream stream = service.aggregateStream(aggregateParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
                     Thread.sleep(2000);

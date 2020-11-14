@@ -14,6 +14,8 @@ public class FullDuplex {
 
     public static void main(String[] args) throws Exception {
         XtFormat format;
+        XtStreamParams streamParams;
+        XtDeviceStreamParams deviceParams;
         XtFormat int44100 = new XtFormat(new XtMix(44100, XtSample.INT32), new XtChannels(2, 0, 2, 0));
         XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.INT32), new XtChannels(2, 0, 2, 0));
         XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
@@ -33,7 +35,9 @@ public class FullDuplex {
                 else return;
 
                 XtBufferSize size = device.getBufferSize(format);
-                try(XtStream stream = device.openStream(format, true, size.min, FullDuplex::callback, null, null);
+                streamParams = new XtStreamParams(true, FullDuplex::callback, null);
+                deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
+                try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
                     Thread.sleep(2000);

@@ -26,6 +26,9 @@ public class RenderSimple {
     }
 
     public static void main(String[] args) throws Exception {
+        XtStreamParams streamParams;
+        XtDeviceStreamParams deviceParams;
+
         try(XtAudio audio = new XtAudio(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
@@ -35,7 +38,9 @@ public class RenderSimple {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
 
                 XtBufferSize size = device.getBufferSize(FORMAT);
-                try(XtStream stream = device.openStream(FORMAT, true, size.current, RenderSimple::render, null, null);
+                streamParams = new XtStreamParams(true, RenderSimple::render, null);
+                deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
+                try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
                     Thread.sleep(2000);

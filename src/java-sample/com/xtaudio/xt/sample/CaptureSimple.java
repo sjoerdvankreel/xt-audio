@@ -21,6 +21,9 @@ public class CaptureSimple {
     }
 
     public static void main(String[] args) throws Exception {
+        XtStreamParams streamParams;
+        XtDeviceStreamParams deviceParams;
+
         try(XtAudio audio = new XtAudio(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
@@ -30,8 +33,10 @@ public class CaptureSimple {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
 
                 XtBufferSize size = device.getBufferSize(FORMAT);
+                streamParams = new XtStreamParams(true, CaptureSimple::capture, null);
+                deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio.raw");
-                    XtStream stream = device.openStream(FORMAT, true, size.current, CaptureSimple::capture, null, recording);
+                    XtStream stream = device.openStream(deviceParams, recording);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
                     stream.start();
                     Thread.sleep(2000);
