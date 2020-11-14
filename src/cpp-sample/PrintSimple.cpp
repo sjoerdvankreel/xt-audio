@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <iostream>
 
-int PrintSimpleMain(int argc, char** argv) 
+int PrintSimpleMain() 
 {
   Xt::Audio audio("", nullptr, nullptr);
   for(Xt::System system: Xt::Audio::GetSystems()) 

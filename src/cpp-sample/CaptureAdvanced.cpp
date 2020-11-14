@@ -9,7 +9,7 @@ static const Xt::Mix Mix(44100, Xt::Sample::Int24);
 static const Xt::Format Format(Mix, Channels);
 
 static void XRun(int32_t index, void* user) 
-{ std::cout << "XRun on stream " << index << ".\n"; }
+{ std::cout << "XRun on device " << index << ".\n"; }
 
 static void RunStream(Xt::Stream* stream)
 {
@@ -49,10 +49,9 @@ int CaptureAdvancedMain()
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service)return 0; 
 
-  Xt::Format format(Xt::Mix(44100, Xt::Sample::Int24), Xt::Channels(2, 0, 0, 0));
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
-  if(!device || !device->SupportsFormat(format)) return 0;  
-  Xt::BufferSize size = device->GetBufferSize(format);
+  if(!device || !device->SupportsFormat(Format)) return 0;  
+  Xt::BufferSize size = device->GetBufferSize(Format);
 
   Xt::StreamParams streamParams(true, CaptureInterleaved, XRun);
   Xt::DeviceStreamParams deviceParams(Format, size.current, streamParams);

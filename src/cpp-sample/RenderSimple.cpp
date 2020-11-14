@@ -3,6 +3,7 @@
 #include <cmath>
 #include <chrono>
 #include <thread>
+#include <cstdint>
 
 static float _phase = 0.0f;
 static const float Frequency = 440.0f;
@@ -20,7 +21,7 @@ static float NextSample()
 static void Render(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
 {
   float* output = static_cast<float*>(buffer.output);
-  for (int f = 0; f < buffer.frames; f++) output[f] = NextSample();
+  for (int32_t f = 0; f < buffer.frames; f++) output[f] = NextSample();
 }
 
 int RenderSimpleMain()

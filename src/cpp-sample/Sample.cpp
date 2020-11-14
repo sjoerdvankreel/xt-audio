@@ -1,55 +1,49 @@
 #include <XtCpp.hpp>
-#include <iostream>
 #include <string>
+#include <cstdlib>
+#include <iostream>
 
-extern int PrintSimpleMain(int argc, char** argv);
-extern int PrintDetailedMain(int argc, char** argv);
-extern int CaptureSimpleMain(int argc, char** argv);
-extern int RenderSimpleMain(int argc, char** argv);
-extern int CaptureAdvancedMain(int argc, char** argv);
-extern int RenderAdvancedMain(int argc, char** argv);
-extern int FullDuplexMain(int argc, char** argv);
-extern int AggregateMain(int argc, char** argv);
+extern int AggregateMain();
+extern int FullDuplexMain();
+extern int PrintSimpleMain();
+extern int RenderSimpleMain();
+extern int PrintDetailedMain();
+extern int CaptureSimpleMain();
+extern int RenderAdvancedMain();
+extern int CaptureAdvancedMain();
 
-int main(int argc, char** argv) {
-  int index = -1;
-  if(argc == 2)
-    index = std::stoi(std::string(argv[1]));
-  try {
-    if(index == -1 || index == 0) {
-      std::cout << "PrintSimpleMain:\n";
-      PrintSimpleMain(argc, argv);
-    }
-    if(index == -1 || index == 1) {
-      std::cout << "PrintDetailedMain:\n";
-      PrintDetailedMain(argc, argv);
-    }
-    if(index == -1 || index == 2) {
-      std::cout << "CaptureSimpleMain:\n";
-      CaptureSimpleMain(argc, argv);
-    }
-    if(index == -1 || index == 3) {
-      std::cout << "RenderSimpleMain:\n";
-      RenderSimpleMain(argc, argv);
-    }
-    if(index == -1 || index == 4) {
-      std::cout << "CaptureAdvancedMain:\n";
-      CaptureAdvancedMain(argc, argv);
-    }
-    if(index == -1 || index == 5) {
-      std::cout << "RenderAdvancedMain:\n";
-      RenderAdvancedMain(argc, argv);
-    }
-    if(index == -1 || index == 6) {
-      std::cout << "FullDuplexMain:\n";
-      FullDuplexMain(argc, argv);
-    }
-    if(index == -1 || index == 7) {
-      std::cout << "AggregateMain:\n";
-      AggregateMain(argc, argv);
-    }
-    return 0;
-  } catch(Xt::Exception const& e) {
-    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n";
+static int(*Samples[])() = 
+{
+  PrintSimpleMain, PrintDetailedMain, CaptureSimpleMain, RenderSimpleMain,
+  CaptureAdvancedMain, RenderAdvancedMain, FullDuplexMain, AggregateMain, 
+};
+
+static const char* Names[] =
+{
+  "PrintSimple", "PrintDetailed", "CaptureSimple", "RenderSimple",
+  "CaptureAdvanced", "RenderAdvanced", "FullDuplex", "Aggregate"
+};
+
+static void RunSample(int32_t index)
+{
+  std::cout << Names[index] << ":\n";
+  Samples[index]();
+}
+
+int main(int argc, char** argv) 
+{
+  int32_t index = argc == 2? std::stoi(std::string(argv[1])): -1;
+  try
+  {
+    if (index >= 0)
+      RunSample(index);
+    else
+      for (int32_t i = 0; i < sizeof(Samples)/sizeof(Samples[0]); i++)
+        RunSample(i);
+    return EXIT_SUCCESS;
+  } catch (const Xt::Exception& e)
+  { 
+    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; 
+    return EXIT_FAILURE;
   }
 }

@@ -1,99 +1,93 @@
+#define _USE_MATH_DEFINES 1
 #include <XtCpp.hpp>
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-#include <climits>
-#include <iostream>
 #include <cmath>
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include <chrono>
+#include <thread>
+#include <cstdint>
+#include <iostream>
 
-static double phase = 0.0;
-static const double Frequency = 440.0;
+static float _phase = 0.0f;
+static const float Frequency = 440.0f;
+static const Xt::Mix Mix(44100, Xt::Sample::Float32);
 
-static void ReadLine() {
-  std::string s;
-  std::cout << "Press any key to continue...\n";
-  std::getline(std::cin, s);
+static void XRun(int32_t index, void* user) 
+{ std::cout << "XRun on device " << index << ".\n"; }
+
+static void RunStream(Xt::Stream* stream)
+{
+  stream->Start();
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+  stream->Stop();
 }
 
-static float NextSine(double sampleRate) {
-  phase += Frequency / sampleRate;
-  if(phase >= 1.0)
-    phase = -1.0;
-  return (float)sin(2.0 * phase * M_PI);
+static float NextSample()
+{
+  _phase += Frequency / Mix.rate;
+  if (_phase >= 1.0f) _phase = -1.0f;
+  return std::sinf(2.0f * _phase * static_cast<float>(M_PI));
 }
 
-static void XRun(int index, void* user) {
-  // Don't do this.
-  std::cout << "XRun on stream " << index << ", user = " << static_cast<char*>(user) << ".\n";
-}
-
-static void RenderInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
-
-  Xt::Format format = stream.GetFormat();
-  for(int f = 0; f < buffer.frames; f++) {
-    float sine = NextSine(format.mix.rate);
-    for(int c = 0; c < format.channels.outputs; c++)
-      ((float*)buffer.output)[f * format.channels.outputs + c] = sine;
+static void RenderInterleaved(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
+{
+  float* output = static_cast<float*>(buffer.output);
+  int32_t channels = stream.GetFormat().channels.outputs;
+  int32_t size = Xt::Audio::GetSampleAttributes(Mix.sample).size;
+  for(int32_t f = 0; f < buffer.frames; f++) 
+  {
+    float sample = NextSample();
+    for (int32_t c = 0; c < channels; c++) output[f * channels + c] = sample;
   }
 }
 
-static void RenderNonInterleaved(
-  const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) {
-
-  Xt::Format format = stream.GetFormat();
-  for(int f = 0; f < buffer.frames; f++) {
-    float sine = NextSine(format.mix.rate);
-    for(int c = 0; c < format.channels.outputs; c++)
-      ((float**)buffer.output)[c][f] = sine;
+static void RenderNonInterleaved(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+{
+  float** output = static_cast<float**>(buffer.output);
+  int32_t channels = stream.GetFormat().channels.outputs;
+  int32_t size = Xt::Audio::GetSampleAttributes(Mix.sample).size;
+  for(int32_t f = 0; f < buffer.frames; f++) 
+  {
+    float sample = NextSample();
+    for(int32_t c = 0; c < channels; c++) output[c][f] = sample;
   }
 }
 
-int RenderAdvancedMain(int argc, char** argv) {
-
+int RenderAdvancedMain() 
+{
   Xt::Audio audio("", nullptr, nullptr);
-  Xt::Format format(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 2, 0));
-
-  auto system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
+  Xt::Format format(Mix, Xt::Channels(0, 0, 2, 0));
+  Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
-  if(!service)
-    return 0;
+  if(!service) return 0;
 
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
-  if(!device || !device->SupportsFormat(format))
-    return 0;
-
-  std::unique_ptr<Xt::Stream> stream;
+  if(!device || !device->SupportsFormat(format)) return 0;
   Xt::BufferSize size = device->GetBufferSize(format);
-  stream = device->OpenStream(format, true, size.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
-  stream->Start();
-  std::cout << "Rendering interleaved...\n";
-  ReadLine();
-  stream->Stop();
 
-  stream = device->OpenStream(format, false, size.current, RenderNonInterleaved, XRun, const_cast<char*>("user-data"));
-  stream->Start();
-  std::cout << "Rendering non-interleaved...\n";
-  ReadLine();
-  stream->Stop();
+  std::cout << "Render interleaved...\n";
+  Xt::StreamParams streamParams(true, RenderInterleaved, XRun);
+  Xt::DeviceStreamParams deviceParams(format, size.current, streamParams);
+  std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
+  RunStream(stream.get());
 
-  Xt::Format sendTo0(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 1, 1ULL << 0));
-  stream = device->OpenStream(sendTo0, true, size.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
-  stream->Start();
-  std::cout << "Rendering channel mask, channel 0...\n";
-  ReadLine();
-  stream->Stop();
+  std::cout << "Render non-interleaved...\n";
+  streamParams = Xt::StreamParams(false, RenderNonInterleaved, XRun);
+  deviceParams = Xt::DeviceStreamParams(format, size.current, streamParams);
+  stream = device->OpenStream(deviceParams, nullptr);
+  RunStream(stream.get());
 
-  Xt::Format sendTo1(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(0, 0, 1, 1ULL << 1));
-  stream = device->OpenStream(sendTo1, true, size.current, RenderInterleaved, XRun, const_cast<char*>("user-data"));
-  stream->Start();
-  std::cout << "Rendering channel mask, channel 1...\n";
-  ReadLine();
-  stream->Stop();
+  std::cout << "Render interleaved (channel 0)...\n";
+  Xt::Format sendTo0(Mix, Xt::Channels(0, 0, 1, 1ULL << 0));
+  streamParams = Xt::StreamParams(true, RenderInterleaved, XRun);
+  deviceParams = Xt::DeviceStreamParams(format, size.current, streamParams);
+  stream = device->OpenStream(deviceParams, nullptr);
+  RunStream(stream.get());
+
+  std::cout << "Render interleaved (channel 1)...\n";
+  Xt::Format sendTo1(Mix, Xt::Channels(0, 0, 1, 1ULL << 1));
+  streamParams = Xt::StreamParams(true, RenderInterleaved, XRun);
+  deviceParams = Xt::DeviceStreamParams(format, size.current, streamParams);
+  stream = device->OpenStream(deviceParams, nullptr);
+  RunStream(stream.get());
+
   return 0;
 }

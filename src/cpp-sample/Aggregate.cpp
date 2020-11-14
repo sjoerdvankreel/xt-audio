@@ -1,11 +1,12 @@
 #include <XtCpp.hpp>
 #include <chrono>
 #include <thread>
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 
-static void XRun(int index, void* user) 
-{ std::cout << "XRun on stream " << index << ".\n"; }
+static void XRun(int32_t index, void* user) 
+{ std::cout << "XRun on device " << index << ".\n"; }
 
 static void Aggregate(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
 {

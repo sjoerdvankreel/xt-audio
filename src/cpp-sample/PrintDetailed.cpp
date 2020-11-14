@@ -1,40 +1,39 @@
 #include <XtCpp.hpp>
 #include <memory>
-#include <numeric>
+#include <cstdint>
+#include <cstdlib>
 #include <iostream>
 
-static void OnError(const std::string& location, const std::string& message) {
-  std::cout << location << ": " << message << std::endl;
-}
+static void OnError(const std::string& location, const std::string& message)
+{ std::cout << location << ": " << message << std::endl; }
 
-int PrintDetailedMain(int argc, char** argv) {
-
+int PrintDetailedMain()
+{
   Xt::Audio audio("Sample", nullptr, OnError);
-
-  try {
-    auto version = Xt::Audio::GetVersion();
+  try 
+  {
+    Xt::Version version = Xt::Audio::GetVersion();
     std::cout << "Version: " << version.major << "." << version.minor << "\n";    
-    auto pro = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
+    Xt::System pro = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
     std::cout << "Pro Audio: " << pro << " (" << (Xt::Audio::GetService(pro) != nullptr) << ")\n";
-    auto system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
+    Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
     std::cout << "System Audio: " << system << " (" << (Xt::Audio::GetService(system) != nullptr) << ")\n";
-    auto consumer = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
+    Xt::System consumer = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
     std::cout << "Consumer Audio: " << consumer << " (" << (Xt::Audio::GetService(consumer) != nullptr) << ")\n";
 
-    for(auto s: Xt::Audio::GetSystems()) {
-
+    for(Xt::System s: Xt::Audio::GetSystems()) 
+    {
       std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(s);
       std::cout << "System " << s << ":\n";
       std::cout << "  Device count: " << service->GetDeviceCount() << "\n";
       std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";
-
       std::unique_ptr<Xt::Device> defaultInput = service->OpenDefaultDevice(false);
       if(defaultInput) std::cout << "  Default input: " << *defaultInput << "\n";
-
       std::unique_ptr<Xt::Device> defaultOutput = service->OpenDefaultDevice(true);
       if(defaultOutput) std::cout << "  Default output: " << *defaultOutput << "\n";
 
-      for(int d = 0; d < service->GetDeviceCount(); d++) {
+      for(int32_t d = 0; d < service->GetDeviceCount(); d++)
+      {
         std::unique_ptr<Xt::Device> device = service->OpenDevice(d);
         std::optional<Xt::Mix> mix = device->GetMix();
         std::cout << "  Device " << *device << ":" << "\n";
@@ -45,9 +44,11 @@ int PrintDetailedMain(int argc, char** argv) {
         if(mix) std::cout << "    Current mix: " << mix->rate << " " << mix->sample << "\n";
       }
     }
+    return EXIT_SUCCESS;
   }
-  catch(const Xt::Exception& e) {
-    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n";
+  catch(const Xt::Exception& e) 
+  { 
+    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; 
+    return EXIT_FAILURE;
   }
-  return 0;
 }

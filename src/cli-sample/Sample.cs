@@ -34,9 +34,7 @@ namespace Xt
                     for (int i = 0; i < Samples.Length; i++)
                         RunSample(i);
             } catch (XtException e)
-            {
-                Console.WriteLine(XtAudio.GetErrorInfo(e.GetError()));
-            }
+            { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError())); }
         }
     }
 }
