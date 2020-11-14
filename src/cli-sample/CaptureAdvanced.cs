@@ -82,6 +82,7 @@ namespace Xt
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
             XtService service = XtAudio.GetService(system);
             if (service == null) return;
+
             using XtDevice device = service.OpenDefaultDevice(false);
             if (device?.SupportsFormat(Format) != true) return;
             XtBufferSize size = device.GetBufferSize(Format);

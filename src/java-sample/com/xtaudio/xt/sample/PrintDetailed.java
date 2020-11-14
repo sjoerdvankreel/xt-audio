@@ -20,6 +20,7 @@ public class PrintDetailed {
             System.out.println("System Audio: " + system + " (" + (XtAudio.getService(system) != null) + ")");
             XtSystem consumer = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             System.out.println("Consumer Audio: " + consumer + " (" + (XtAudio.getService(consumer) != null) + ")");
+
             for(XtSystem s: XtAudio.getSystems()) {
                 XtService service = XtAudio.getService(s);
                 System.out.println("System " + s + ":");
@@ -31,6 +32,7 @@ public class PrintDetailed {
                 try(XtDevice defaultOutput = service.openDefaultDevice(true)) {
                     System.out.println("  Default output: " + defaultOutput);
                 }
+
                 for(int d = 0; d < service.getDeviceCount(); d++)
                     try(XtDevice device = service.openDevice(d)) {
                         Optional<XtMix> mix = device.getMix();

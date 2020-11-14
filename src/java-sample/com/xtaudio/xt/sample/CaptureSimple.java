@@ -25,8 +25,10 @@ public class CaptureSimple {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
             if(service == null) return;
+
             try(XtDevice device = service.openDefaultDevice(false)) {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
+
                 XtBufferSize size = device.getBufferSize(FORMAT);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio.raw");
                     XtStream stream = device.openStream(FORMAT, true, size.current, CaptureSimple::capture, null, recording);

@@ -76,6 +76,7 @@ public class CaptureAdvanced {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
             if(service == null) return;
+
             try(XtDevice device = service.openDefaultDevice(false)) {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
                 XtBufferSize size = device.getBufferSize(FORMAT);

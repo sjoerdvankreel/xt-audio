@@ -30,8 +30,10 @@ public class RenderSimple {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
             if(service == null) return;
+
             try(XtDevice device = service.openDefaultDevice(true)) {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
+
                 XtBufferSize size = device.getBufferSize(FORMAT);
                 try(XtStream stream = device.openStream(FORMAT, true, size.current, RenderSimple::render, null, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

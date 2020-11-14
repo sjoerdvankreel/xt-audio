@@ -27,8 +27,10 @@ namespace Xt
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
             XtService service = XtAudio.GetService(system);
             if (service == null) return;
+
             using XtDevice device = service.OpenDefaultDevice(false);
             if (device?.SupportsFormat(Format) != true) return;
+
             XtBufferSize size = device.GetBufferSize(Format);
             using var recording = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
             using XtStream stream = device.OpenStream(Format, true, size.current, Capture, null, recording);

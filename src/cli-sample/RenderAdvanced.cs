@@ -82,6 +82,7 @@ namespace Xt
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
             XtService service = XtAudio.GetService(system);
             if (service == null) return;
+
             XtFormat format = new XtFormat(Mix, new XtChannels(0, 0, 2, 0));
             using XtDevice device = service.OpenDefaultDevice(true);
             if (device?.SupportsFormat(format) != true) return;

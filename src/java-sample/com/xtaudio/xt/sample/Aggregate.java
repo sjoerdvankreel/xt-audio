@@ -21,14 +21,17 @@ public class Aggregate {
         XtMix mix = new XtMix(48000, XtSample.INT16);
         XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
         XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
+
         try(XtAudio audio = new XtAudio(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
             XtService service = XtAudio.getService(system);
             if(service == null) return;
+
             try(XtDevice input = service.openDefaultDevice(false);
                 XtDevice output = service.openDefaultDevice(true)) {
                 if(input == null || !input.supportsFormat(inputFormat)) return;
                 if(output == null || !output.supportsFormat(outputFormat)) return;
+
                 try(XtStream stream = service.aggregateStream(
                         new XtDevice[]{input, output},
                         new XtChannels[]{inputFormat.channels, outputFormat.channels},

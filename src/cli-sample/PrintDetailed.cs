@@ -4,7 +4,8 @@ namespace Xt
 {
     public static class PrintDetailed
     {
-        static void OnError(string location, string message) => Console.WriteLine($"{location}: {message}");
+        static void OnError(string location, string message) 
+        => Console.WriteLine($"{location}: {message}");
 
         public static void Main()
         {
@@ -19,6 +20,7 @@ namespace Xt
                 Console.WriteLine("System Audio: " + system + " (" + (XtAudio.GetService(system) != null) + ")");
                 XtSystem consumer = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
                 Console.WriteLine("Consumer Audio: " + consumer + " (" + (XtAudio.GetService(consumer) != null) + ")");
+
                 foreach (XtSystem s in XtAudio.GetSystems())
                 {
                     XtService service = XtAudio.GetService(s);
@@ -29,6 +31,7 @@ namespace Xt
                     if (defaultInput != null) Console.WriteLine("  Default input: " + defaultInput);
                     using XtDevice defaultOutput = service.OpenDefaultDevice(true);
                     if (defaultOutput != null) Console.WriteLine("  Default output: " + defaultOutput);
+
                     for (int d = 0; d < service.GetDeviceCount(); d++)
                         using (XtDevice device = service.OpenDevice(d))
                         {

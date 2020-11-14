@@ -18,10 +18,12 @@ public class FullDuplex {
         XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.INT32), new XtChannels(2, 0, 2, 0));
         XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
         XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
+
         try(XtAudio audio = new XtAudio(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
             XtService service = XtAudio.getService(system);
             if(service == null) return;
+
             try(XtDevice device = service.openDefaultDevice(true)) {
                 if(device == null) return;
                 if(device.supportsFormat(int44100)) format = int44100;
@@ -29,6 +31,7 @@ public class FullDuplex {
                 else if(device.supportsFormat(float44100)) format = float44100;
                 else if(device.supportsFormat(float48000)) format = float48000;
                 else return;
+
                 XtBufferSize size = device.getBufferSize(format);
                 try(XtStream stream = device.openStream(format, true, size.min, FullDuplex::callback, null, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

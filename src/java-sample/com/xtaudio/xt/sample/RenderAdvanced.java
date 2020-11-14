@@ -75,6 +75,7 @@ public class RenderAdvanced {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
             if(service == null) return;
+
             XtFormat format = new XtFormat(MIX, new XtChannels(0, 0, 2, 0));
             try(XtDevice device = service.openDefaultDevice(true)) {
                 if(device == null || !device.supportsFormat(format)) return;

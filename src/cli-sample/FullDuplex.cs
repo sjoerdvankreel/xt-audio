@@ -20,10 +20,12 @@ namespace Xt
             XtFormat int48000 = new XtFormat(new XtMix(48000, XtSample.Int32), new XtChannels(2, 0, 2, 0));
             XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(2, 0, 2, 0));
             XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.Float32), new XtChannels(2, 0, 2, 0));
+
             using XtAudio audio = new XtAudio(null, IntPtr.Zero, null);
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ProAudio);
             XtService service = XtAudio.GetService(system);
             if (service == null) return;
+
             using XtDevice device = service.OpenDefaultDevice(true);
             if (device == null) return;
             if (device.SupportsFormat(int44100)) format = int44100;
@@ -31,6 +33,7 @@ namespace Xt
             else if (device.SupportsFormat(float44100)) format = float44100;
             else if (device.SupportsFormat(float48000)) format = float48000;
             else return;
+
             XtBufferSize size = device.GetBufferSize(format);
             using XtStream stream = device.OpenStream(format, true, size.min, Callback, null, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);

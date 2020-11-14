@@ -33,8 +33,10 @@ namespace Xt
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
             XtService service = XtAudio.GetService(system);
             if (service == null) return;
+
             using XtDevice device = service.OpenDefaultDevice(true);
             if (device?.SupportsFormat(Format) != true) return;
+
             XtBufferSize size = device.GetBufferSize(Format);
             using XtStream stream = device.OpenStream(Format, true, size.current, Callback, null, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
