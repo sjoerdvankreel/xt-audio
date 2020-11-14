@@ -169,6 +169,7 @@ std::unique_ptr<Stream> Service::AggregateStream(const AggregateStreamParams& pa
   }
   XtAggregateStreamParams coreParams;
   std::memset(&coreParams, 0, sizeof(coreParams));
+  coreParams.devices = ds.data();
   coreParams.count = params.count;
   coreParams.master = params.master->d;
   coreParams.stream.interleaved = params.stream.interleaved;
