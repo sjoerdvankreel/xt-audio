@@ -6,6 +6,14 @@ using static Xt.XtNative;
 namespace Xt
 {
     [StructLayout(LayoutKind.Sequential)]
+    struct DeviceStreamParams
+    {
+        public StreamParams stream;
+        public XtFormat format;
+        public double bufferSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     struct AggregateDeviceParams
     {
         public IntPtr device;
@@ -14,9 +22,17 @@ namespace Xt
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    struct StreamParams
+    {
+        public int interleaved;
+        public XRunCallback xRunCallback;
+        public StreamCallback streamCallback;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     struct AggregateStreamParams
     {
-        public XtStreamParams stream;
+        public StreamParams stream;
         public AggregateDeviceParams[] devices;
         public int count;
         public XtMix mix;
@@ -96,7 +112,6 @@ namespace Xt
         => (this.device, this.channels, this.bufferSize) = (device, channels, bufferSize);
     }
 
-    [StructLayout(LayoutKind.Sequential)]
     public struct XtDeviceStreamParams
     {
         public XtStreamParams stream;
@@ -128,15 +143,13 @@ namespace Xt
         public override string ToString() => NativeUtility.PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
     }
 
-    [StructLayout(LayoutKind.Sequential)]
     public struct XtStreamParams
     {
-        int _interleaved;
+        public bool interleaved;
         public XtXRunCallback xRunCallback;
         public XtStreamCallback streamCallback;
-        public bool interleaved { get => _interleaved != 0; set => _interleaved = value ? 1 : 0; }
         public XtStreamParams(bool interleaved, XtStreamCallback streamCallback, XtXRunCallback xRunCallback)
-        => (_interleaved, this.streamCallback, this.xRunCallback) = (interleaved ? 1 : 0, streamCallback, xRunCallback);
+        => (this.interleaved, this.streamCallback, this.xRunCallback) = (interleaved, streamCallback, xRunCallback);
     }
 
     public struct XtAggregateStreamParams

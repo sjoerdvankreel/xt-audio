@@ -16,7 +16,7 @@ namespace Xt
         [DllImport("xt-core")] static extern ulong XtDeviceSupportsFormat(IntPtr d, in XtFormat format, out bool supports);
         [DllImport("xt-core")] static extern ulong XtDeviceGetBufferSize(IntPtr d, in XtFormat format, out XtBufferSize size);
         [DllImport("xt-core")] static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, [Out] byte[] buffer, ref int size);
-        [DllImport("xt-core")] static extern ulong XtDeviceOpenStream(IntPtr d, in XtDeviceStreamParams @params, IntPtr user, out IntPtr stream);
+        [DllImport("xt-core")] static extern ulong XtDeviceOpenStream(IntPtr d, in DeviceStreamParams @params, IntPtr user, out IntPtr stream);
 
         readonly IntPtr _d;
         internal IntPtr Handle() => _d;
@@ -51,9 +51,14 @@ namespace Xt
 
         public XtStream OpenStream(in XtDeviceStreamParams @params, object user)
         {
-            var stream = @params.stream;
-            var result = new XtStream(stream.streamCallback, stream.xRunCallback, user);
-            result.Init(HandleError(XtDeviceOpenStream(_d, @params, IntPtr.Zero, out var r), r));
+            var result = new XtStream(@params.stream.streamCallback, @params.stream.xRunCallback, user);
+            var native = new DeviceStreamParams();
+            native.format = @params.format;
+            native.bufferSize = @params.bufferSize;
+            native.stream.interleaved = @params.stream.interleaved ? 1 : 0;
+            native.stream.streamCallback = result.NativeStreamCallback();
+            native.stream.xRunCallback = @params.stream.xRunCallback == null ? null : result.NativeXRunCallback();
+            result.Init(HandleError(XtDeviceOpenStream(_d, @native, IntPtr.Zero, out var r), r));
             return result;
         }
     }

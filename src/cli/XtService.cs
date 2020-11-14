@@ -23,14 +23,15 @@ namespace Xt
 
         public XtStream AggregateStream(in XtAggregateStreamParams @params, object user)
         {
-            var stream = @params.stream;
+            var result = new XtStream(@params.stream.streamCallback, @params.stream.xRunCallback, user);
             var native = new AggregateStreamParams();
             native.mix = @params.mix;
             native.count = @params.count;
-            native.stream = @params.stream;
             native.master = @params.master.Handle();
             native.devices = @params.devices.Select(ToNative).ToArray();
-            var result = new XtStream(stream.streamCallback, stream.xRunCallback, user);
+            native.stream.streamCallback = result.NativeStreamCallback();
+            native.stream.interleaved = @params.stream.interleaved ? 1 : 0;
+            native.stream.xRunCallback = @params.stream.xRunCallback == null ? null : result.NativeXRunCallback();
             result.Init(HandleError(XtServiceAggregateStream(_s, in native, IntPtr.Zero, out var r), r));
             return result;
         }
