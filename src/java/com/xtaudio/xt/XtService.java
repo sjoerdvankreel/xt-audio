@@ -1,7 +1,6 @@
 package com.xtaudio.xt;
 
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.*;
 
 import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
@@ -16,10 +15,8 @@ public final class XtService {
     private static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
     private static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);
     private static native long XtServiceOpenDefaultDevice(Pointer s, boolean output, PointerByReference device);
-    private static native long XtServiceAggregateStream(Pointer s, Pointer devices,
-                                                        Pointer channels, double[] bufferSizes, int count, XtMix mix,
-                                                        boolean interleaved, Pointer master, StreamCallback streamCallback,
-                                                        XRunCallback xRunCallback, Pointer user, PointerByReference stream);
+    private static native long XtServiceAggregateStream(Pointer s, AggregateStreamParams params, Pointer user, PointerByReference stream);
+
     private final Pointer _s;
     XtService(Pointer s) { _s = s; }
 
@@ -52,18 +49,27 @@ public final class XtService {
         return result;
     }
 
-    public XtStream aggregateStream(XtDevice[] devices, XtChannels[] channels, double[] bufferSizes, int count, XtMix mix,
-                                    boolean interleaved, XtDevice master, XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
+    static AggregateDeviceParams toNative(XtAggregateDeviceParams params) {
+        var result = new AggregateDeviceParams();
+        result.channels = params.channels;
+        result.bufferSize = params.bufferSize;
+        result.device = params.device.handle();
+        return result;
+    }
+
+    public XtStream aggregateStream(XtAggregateStreamParams params, Object user) {
         var stream = new PointerByReference();
-        var result = new XtStream(streamCallback, xRunCallback, user);
-        var ds = new Memory(count * Native.POINTER_SIZE);
-        var cs = new Memory(count * Native.getNativeSize(XtChannels.ByValue.class)); ;
-        for(int i = 0; i < count; i++) {
-            ds.setPointer(i * Native.POINTER_SIZE, devices[i].handle());
-            var bytes = channels[i].getPointer().getByteArray(0, channels[i].size());
-            cs.write(i * channels[i].size(), bytes, 0, bytes.length);
-        }
-        handleError(XtServiceAggregateStream(_s, ds, cs, bufferSizes, count, mix, interleaved, master.handle(), result.nativeStreamCallback(), result.nativeXRunCallback(), Pointer.NULL, stream));
+        var result = new XtStream(params.stream.streamCallback, params.stream.xRunCallback, user);
+        var native_ = new AggregateStreamParams();
+        native_.mix = params.mix;
+        native_.count = params.count;
+        native_.stream = new StreamParams();
+        native_.master = params.master.handle();
+        native_.stream.interleaved = params.stream.interleaved;
+        native_.stream.streamCallback = result.nativeStreamCallback();
+        native_.stream.xRunCallback = params.stream.xRunCallback == null? null: result.nativeXRunCallback();
+        native_.devices = Arrays.stream(params.devices).map(XtService::toNative).toArray(AggregateDeviceParams[]::new);
+        handleError(XtServiceAggregateStream(_s, native_, Pointer.NULL, stream));
         result.init(stream.getValue());
         return result;
     }

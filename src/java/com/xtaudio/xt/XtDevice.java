@@ -21,9 +21,7 @@ public final class XtDevice implements XtCloseable {
     private static native long XtDeviceSupportsFormat(Pointer d, XtFormat format, IntByReference supports);
     private static native long XtDeviceSupportsAccess(Pointer d, boolean interleaved, IntByReference supports);
     private static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, byte[] buffer, IntByReference size);
-    private static native long XtDeviceOpenStream(Pointer d, XtFormat format, boolean interleaved, double bufferSize,
-                                                  StreamCallback streamCallback, XRunCallback xRunCallback,
-                                                  Pointer user, PointerByReference stream);
+    private static native long XtDeviceOpenStream(Pointer d, DeviceStreamParams params, Pointer user, PointerByReference stream);
 
     private final Pointer _d;
     Pointer handle() { return _d; }
@@ -80,12 +78,17 @@ public final class XtDevice implements XtCloseable {
         return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
     }
 
-    public XtStream openStream(XtFormat format, boolean interleaved, double bufferSize,
-                               XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
-
+    public XtStream openStream(XtDeviceStreamParams params, Object user) {
         var stream = new PointerByReference();
-        var result = new XtStream(streamCallback, xRunCallback, user);
-        handleError(XtDeviceOpenStream(_d, format, interleaved, bufferSize, result.nativeStreamCallback(), result.nativeXRunCallback(), Pointer.NULL, stream));
+        var result = new XtStream(params.stream.streamCallback, params.stream.xRunCallback, user);
+        var native_ = new DeviceStreamParams();
+        native_.format = params.format;
+        native_.stream = new StreamParams();
+        native_.bufferSize = params.bufferSize;
+        native_.stream.interleaved = params.stream.interleaved;
+        native_.stream.streamCallback = result.nativeStreamCallback();
+        native_.stream.xRunCallback = params.stream.xRunCallback == null? null: result.nativeXRunCallback();
+        handleError(XtDeviceOpenStream(_d, native_, Pointer.NULL, stream));
         result.init(stream.getValue());
         return result;
     }

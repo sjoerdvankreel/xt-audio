@@ -22,6 +22,45 @@ public final class NativeTypes {
         private XtCapabilities(int flag) { _flag = flag; }
     }
 
+    static class DeviceStreamParams extends Structure {
+        public StreamParams stream;
+        public XtFormat format;
+        public double bufferSize;
+        @Override protected List getFieldOrder() { return Arrays.asList("stream", "format", "bufferSize"); }
+    }
+
+    static class AggregateDeviceParams extends Structure {
+        public Pointer device;
+        public XtChannels channels;
+        public double bufferSize;
+        @Override protected List getFieldOrder() { return Arrays.asList("device", "channels", "bufferSize"); }
+    }
+
+    static class AggregateStreamParams extends Structure {
+        public StreamParams stream;
+        public AggregateDeviceParams[] devices;
+        public int count;
+        public XtMix mix;
+        public Pointer master;
+        @Override protected List getFieldOrder() { return Arrays.asList("stream", "devices", "count", "mix", "master"); }
+    }
+
+    static class StreamParams extends Structure {
+        public boolean interleaved;
+        public XRunCallback xRunCallback;
+        public StreamCallback streamCallback;
+        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "xRunCallback", "streamCallback"); }
+    }
+
+    public static class XtMix extends Structure {
+        public XtMix() { }
+        public int rate;
+        public XtSample sample;
+        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
+        public XtMix(int rate, XtSample sample) { this.rate = rate; this.sample = sample; }
+        @Override protected List getFieldOrder() { return Arrays.asList("rate", "sample"); }
+    }
+
     public static class XtVersion extends Structure {
         public int major;
         public int minor;
@@ -35,6 +74,33 @@ public final class NativeTypes {
         @Override protected List getFieldOrder() { return Arrays.asList("input", "output"); }
     }
 
+    public static class XtDeviceStreamParams {
+        public XtStreamParams stream;
+        public XtFormat format;
+        public double bufferSize;
+        public XtDeviceStreamParams() {}
+        public XtDeviceStreamParams(XtStreamParams stream, XtFormat format, double bufferSize) {
+            this.stream = stream; this.format = format; this.bufferSize = bufferSize;
+        }
+    }
+
+    public static class XtAggregateDeviceParams {
+        public XtDevice device;
+        public XtChannels channels;
+        public double bufferSize;
+        public XtAggregateDeviceParams() {}
+        public XtAggregateDeviceParams(XtDevice device, XtChannels channels, double bufferSize) {
+            this.device = device; this.channels = channels; this.bufferSize = bufferSize;
+        }
+    }
+
+    public static class XtBufferSize extends Structure {
+        public double min;
+        public double max;
+        public double current;
+        @Override protected List getFieldOrder() { return Arrays.asList("min", "max", "current"); }
+    }
+
     public static class XtFormat extends Structure {
         public XtFormat() { }
         public XtMix mix = new XtMix();
@@ -43,20 +109,18 @@ public final class NativeTypes {
         public XtFormat(XtMix mix, XtChannels channels) { this.mix = mix; this.channels = channels; }
     }
 
-    public static class XtMix extends Structure {
-        public XtMix() { }
-        public int rate;
-        public XtSample sample;
-        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
-        public XtMix(int rate, XtSample sample) { this.rate = rate; this.sample = sample; }
-        @Override protected List getFieldOrder() { return Arrays.asList("rate", "sample"); }
-    }
-
-    public static class XtBufferSize extends Structure {
-        public double min;
-        public double max;
-        public double current;
-        @Override protected List getFieldOrder() { return Arrays.asList("min", "max", "current"); }
+    public static class XtBuffer extends Structure {
+        public Pointer input;
+        public Pointer output;
+        public double time;
+        public long position;
+        public long error;
+        public int frames;
+        public boolean timeValid;
+        public static class ByValue extends XtBuffer implements Structure.ByValue {}
+        @Override protected List getFieldOrder() {
+            return Arrays.asList("input", "output", "time", "position", "error", "frames", "timeValid");
+        }
     }
 
     public static class XtErrorInfo extends Structure {
@@ -79,16 +143,14 @@ public final class NativeTypes {
         @Override protected List getFieldOrder() { return Arrays.asList("size", "count", "isFloat", "isSigned"); }
     }
 
-    public static class XtBuffer extends Structure {
-        public Pointer input;
-        public Pointer output;
-        public double time;
-        public long position;
-        public long error;
-        public int frames;
-        public boolean timeValid;
-        public static class ByValue extends XtBuffer implements Structure.ByValue {}
-        @Override protected List getFieldOrder() { return Arrays.asList("input", "output", "time", "position", "error", "frames", "timeValid"); }
+    public static class XtStreamParams {
+        public boolean interleaved;
+        public XtXRunCallback xRunCallback;
+        public XtStreamCallback streamCallback;
+        public XtStreamParams() {}
+        public XtStreamParams(boolean interleaved, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
+            this.interleaved = interleaved; this.streamCallback = streamCallback; this.xRunCallback = xRunCallback;
+        }
     }
 
     public static class XtChannels extends Structure {
@@ -99,7 +161,21 @@ public final class NativeTypes {
         public XtChannels() { }
         public static class ByValue extends XtChannels implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("inputs", "inMask", "outputs", "outMask"); }
-        public XtChannels(int inputs, long inMask, int outputs, long outMask) { this.inputs = inputs; this.inMask = inMask; this.outputs = outputs; this.outMask = outMask; }
+        public XtChannels(int inputs, long inMask, int outputs, long outMask) {
+            this.inputs = inputs; this.inMask = inMask; this.outputs = outputs; this.outMask = outMask;
+        }
+    }
+
+    public static class XtAggregateStreamParams {
+        public XtStreamParams stream;
+        public XtAggregateDeviceParams[] devices;
+        public int count;
+        public XtMix mix;
+        public XtDevice master;
+        public XtAggregateStreamParams() {}
+        public XtAggregateStreamParams(XtStreamParams stream, XtAggregateDeviceParams[] devices, int count, XtMix mix, XtDevice master) {
+            this.stream = stream; this.devices = devices; this.count = count; this.mix = mix; this.master = master;
+        }
     }
 
     interface XRunCallback extends Callback {
