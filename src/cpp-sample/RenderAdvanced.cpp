@@ -65,27 +65,27 @@ int RenderAdvancedMain()
 
   std::cout << "Render interleaved...\n";
   Xt::StreamParams streamParams(true, RenderInterleaved, XRun);
-  Xt::DeviceStreamParams deviceParams(format, size.current, streamParams);
+  Xt::DeviceStreamParams deviceParams(streamParams, format, size.current);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render non-interleaved...\n";
   streamParams = Xt::StreamParams(false, RenderNonInterleaved, XRun);
-  deviceParams = Xt::DeviceStreamParams(format, size.current, streamParams);
+  deviceParams = Xt::DeviceStreamParams(streamParams, format, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render interleaved (channel 0)...\n";
   Xt::Format sendTo0(Mix, Xt::Channels(0, 0, 1, 1ULL << 0));
   streamParams = Xt::StreamParams(true, RenderInterleaved, XRun);
-  deviceParams = Xt::DeviceStreamParams(format, size.current, streamParams);
+  deviceParams = Xt::DeviceStreamParams(streamParams, format, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render interleaved (channel 1)...\n";
   Xt::Format sendTo1(Mix, Xt::Channels(0, 0, 1, 1ULL << 1));
   streamParams = Xt::StreamParams(true, RenderInterleaved, XRun);
-  deviceParams = Xt::DeviceStreamParams(format, size.current, streamParams);
+  deviceParams = Xt::DeviceStreamParams(streamParams, format, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 

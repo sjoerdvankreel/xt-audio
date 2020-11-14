@@ -36,7 +36,7 @@ int AggregateMain()
   deviceParams[0] = Xt::AggregateDeviceParams(input.get(), inputFormat.channels, 30.0);
   deviceParams[1] = Xt::AggregateDeviceParams(output.get(), outputFormat.channels, 30.0);
   Xt::StreamParams streamParams(true, Aggregate, XRun);
-  Xt::AggregateStreamParams aggregateParams(output.get(), mix, deviceParams, 2, streamParams);
+  Xt::AggregateStreamParams aggregateParams(streamParams, deviceParams, 2, mix, output.get());
   std::unique_ptr<Xt::Stream> stream = service->AggregateStream(aggregateParams, nullptr);
   stream->Start();
   std::this_thread::sleep_for(std::chrono::seconds(2));

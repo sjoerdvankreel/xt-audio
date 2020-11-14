@@ -46,3 +46,4 @@
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
 * remove static linking support ?
 * flip streamparams args (structs go first)
+* tydef struct foo {} foo;

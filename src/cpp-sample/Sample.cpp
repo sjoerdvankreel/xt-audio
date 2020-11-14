@@ -12,12 +12,6 @@ extern int CaptureSimpleMain();
 extern int RenderAdvancedMain();
 extern int CaptureAdvancedMain();
 
-static void RunSample(int32_t index)
-{
-  std::cout << Names[index] << ":\n";
-  Samples[index]();
-}
-
 static const char* Names[] =
 {
   "PrintSimple", "PrintDetailed", "CaptureSimple", "RenderSimple",
@@ -29,6 +23,12 @@ static int(*Samples[])() =
   PrintSimpleMain, PrintDetailedMain, CaptureSimpleMain, RenderSimpleMain,
   CaptureAdvancedMain, RenderAdvancedMain, FullDuplexMain, AggregateMain, 
 };
+
+static void RunSample(int32_t index)
+{
+  std::cout << Names[index] << ":\n";
+  Samples[index]();
+}
 
 int main(int argc, char** argv) 
 {

@@ -109,7 +109,8 @@ struct Mix final {
   int32_t rate;
   Sample sample;
   Mix() = default;
-  Mix(int32_t rate, Sample sample): rate(rate), sample(sample) {}
+  Mix(int32_t rate, Sample sample): 
+  rate(rate), sample(sample) {}
 };
 
 struct Channels final {
@@ -126,7 +127,8 @@ struct Format final {
   Mix mix;
   Channels channels;  
   Format() = default;
-  Format(const Mix& mix, const Channels& channels): mix(mix), channels(channels) {}
+  Format(const Mix& mix, const Channels& channels): 
+  mix(mix), channels(channels) {}
 };
 
 struct StreamParams final {
@@ -139,32 +141,32 @@ struct StreamParams final {
 };
 
 struct DeviceStreamParams final {
-  double bufferSize;
-  Format format;
   StreamParams stream;
+  Format format;
+  double bufferSize;
   DeviceStreamParams() = default;
-  DeviceStreamParams(const Format& format, double bufferSize, const StreamParams& stream):
-  bufferSize(bufferSize), format(format), stream(stream) {}
+  DeviceStreamParams(const StreamParams& stream, const Format& format, double bufferSize):
+  stream(stream), format(format), bufferSize(bufferSize) {}
 };
 
 struct AggregateDeviceParams final {
   Device* device;
-  double bufferSize;
   Channels channels;
+  double bufferSize;
   AggregateDeviceParams() = default;
   AggregateDeviceParams(Device* device, const Channels& channels, double bufferSize):
-  device(device), bufferSize(bufferSize), channels(channels) {}
+  device(device), channels(channels), bufferSize(bufferSize) {}
 };
 
 struct AggregateStreamParams final {
+  StreamParams stream;
+  AggregateDeviceParams *devices;
   int32_t count;
   Mix mix;
   const Device* master;
-  StreamParams stream;
-  AggregateDeviceParams *devices;
   AggregateStreamParams() = default;
-  AggregateStreamParams(const Device* master, const Mix& mix, AggregateDeviceParams* devices, int32_t count, const StreamParams& stream):
-  count(count), mix(mix), master(master), stream(stream), devices(devices) {}
+  AggregateStreamParams(const StreamParams& stream, AggregateDeviceParams* devices, int32_t count, const Mix& mix, const Device* master):
+  stream(stream), devices(devices), count(count), mix(mix), master(master) {}
 };
 
 std::ostream& operator<<(std::ostream& os, Cause cause);

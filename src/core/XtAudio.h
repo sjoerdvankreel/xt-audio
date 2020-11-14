@@ -253,23 +253,23 @@ struct XtStreamParams {
 };
 
 struct XtDeviceStreamParams {
-  double bufferSize;
-  struct XtFormat format;
   struct XtStreamParams stream;
+  struct XtFormat format;
+  double bufferSize;
 };
 
 struct XtAggregateDeviceParams {
   XtDevice* device;
-  double bufferSize;
   struct XtChannels channels;
+  double bufferSize;
 };
 
 struct XtAggregateStreamParams {
+  struct XtStreamParams stream;
+  struct XtAggregateDeviceParams *devices;
   int32_t count;
   struct XtMix mix;
   const XtDevice* master;
-  struct XtStreamParams stream;
-  struct XtAggregateDeviceParams *devices;
 };
 
 /** @cond */

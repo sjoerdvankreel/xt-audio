@@ -36,7 +36,7 @@ int RenderSimpleMain()
 
   double bufferSize = device->GetBufferSize(Format).current;
   Xt::StreamParams streamParams(true, Render, nullptr);
-  Xt::DeviceStreamParams deviceParams(Format, bufferSize, streamParams);
+  Xt::DeviceStreamParams deviceParams(streamParams, Format, bufferSize);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   stream->Start();
   std::this_thread::sleep_for(std::chrono::seconds(2));
