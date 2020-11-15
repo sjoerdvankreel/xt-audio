@@ -5,7 +5,7 @@ import com.sun.jna.ptr.IntByReference;
 import static com.xtaudio.xt.XtNative.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
-public final class XtStream implements XtCloseable {
+public final class XtStream implements AutoCloseable {
 
     static { Native.register(XtNative.getLibrary()); }
     private static native long XtStreamStop(Pointer s);

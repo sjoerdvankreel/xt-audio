@@ -9,7 +9,7 @@ import com.sun.jna.ptr.PointerByReference;
 import static com.xtaudio.xt.XtNative.*;
 import static com.xtaudio.xt.NativeTypes.*;
 
-public final class XtDevice implements XtCloseable {
+public final class XtDevice implements AutoCloseable {
 
     static { Native.register(XtNative.getLibrary()); }
     private static native void XtDeviceDestroy(Pointer d);

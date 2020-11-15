@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import static com.xtaudio.xt.XtNative.*;
 
-public final class XtAudio implements XtCloseable {
+public final class XtAudio implements AutoCloseable {
 
     static XtErrorCallback _errorCallback;
     public XtAudio(String id, Pointer window, XtErrorCallback callback) {

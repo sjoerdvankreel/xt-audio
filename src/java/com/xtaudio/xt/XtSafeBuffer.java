@@ -6,7 +6,7 @@ import com.sun.jna.*;
 import java.lang.reflect.*;
 import com.xtaudio.xt.NativeTypes.*;
 
-public final class XtSafeBuffer implements XtCloseable {
+public final class XtSafeBuffer implements AutoCloseable {
 
     static final Map<XtStream, XtSafeBuffer> _map = new HashMap<>();
     static final Map<XtSample, Class<?>> _types = Map.of(
