@@ -1,13 +1,15 @@
 #ifndef XT_UTILITY_HPP
 #define XT_UTILITY_HPP
 
-#include <XtAudio.h>
 #include "XtStream.hpp"
 #include "XtException.hpp"
+
+#include <XtAudio.h>
 
 namespace Xt::Detail {
 
 inline OnError _onError = nullptr;
+
 inline void HandleError(XtError error) 
 { if(error != 0) throw Exception(error); }
 inline void XT_CALLBACK ForwardOnError(char const* location, char const* message) 
@@ -15,7 +17,8 @@ inline void XT_CALLBACK ForwardOnError(char const* location, char const* message
 inline void XT_CALLBACK ForwardOnXRun(int32_t index, void* user) 
 { static_cast<Stream*>(user)->_onXRun(index, static_cast<Stream*>(user)->_user); }
 
-inline void XT_CALLBACK ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user)
+inline void XT_CALLBACK 
+ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user)
 {
   Buffer buffer = { 0 };
   auto stream = static_cast<Stream*>(user);

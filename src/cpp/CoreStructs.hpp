@@ -3,6 +3,7 @@
 
 #include "CoreEnums.hpp"
 #include "CoreCallbacks.hpp"
+
 #include <cstdint>
 
 namespace Xt {

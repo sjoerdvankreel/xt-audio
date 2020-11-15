@@ -5,6 +5,7 @@
 #include "CoreStructs.hpp"
 #include "CoreOStream.hpp"
 #include "CoreCallbacks.hpp"
+
 #include "XtAudio.hpp"
 #include "XtDevice.hpp"
 #include "XtStream.hpp"

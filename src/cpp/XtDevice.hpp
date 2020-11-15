@@ -4,6 +4,7 @@
 #include "Utility.hpp"
 #include "XtStream.hpp"
 #include "CoreStructs.hpp"
+
 #include <XtAudio.h>
 #include <memory>
 #include <vector>
@@ -16,11 +17,9 @@ class Device final
   friend class Service;
   XtDevice* const _d;
   Device(XtDevice* d): _d(d) { }
-
 public:
-  ~Device() { XtDeviceDestroy(_d); }
-  void ShowControlPanel() { Detail::HandleError(XtDeviceShowControlPanel(_d)); }
-
+  ~Device();
+  void ShowControlPanel();
   std::string GetName() const;
   std::optional<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
@@ -31,7 +30,16 @@ public:
   std::unique_ptr<Stream> OpenStream(DeviceStreamParams const& params, void* user);
 };
 
-inline std::string Device::GetName() const 
+inline
+Device::~Device()
+{ XtDeviceDestroy(_d); }
+
+inline void 
+Device::ShowControlPanel() 
+{ Detail::HandleError(XtDeviceShowControlPanel(_d)); }
+
+inline std::string
+Device::GetName() const 
 { 
   int32_t size = 0;
   Detail::HandleError(XtDeviceGetName(_d, nullptr, &size));
@@ -40,14 +48,16 @@ inline std::string Device::GetName() const
   return std::string(buffer.data());
 }
 
-inline int32_t Device::GetChannelCount(bool output) const 
+inline int32_t 
+Device::GetChannelCount(bool output) const 
 { 
   int32_t count; 
   Detail::HandleError(XtDeviceGetChannelCount(_d, output, &count)); 
   return count; 
 }
 
-inline BufferSize Device::GetBufferSize(Format const& format) const 
+inline BufferSize 
+Device::GetBufferSize(Format const& format) const 
 { 
   BufferSize result; 
   auto coreSize = reinterpret_cast<XtBufferSize*>(&result);
@@ -56,7 +66,8 @@ inline BufferSize Device::GetBufferSize(Format const& format) const
   return result;
 }
 
-inline bool Device::SupportsFormat(Format const& format) const 
+inline bool 
+Device::SupportsFormat(Format const& format) const 
 {
   XtBool supports; 
   auto coreFormat = reinterpret_cast<XtFormat const*>(&format);
@@ -64,14 +75,16 @@ inline bool Device::SupportsFormat(Format const& format) const
   return supports != XtFalse; 
 }
 
-inline bool Device::SupportsAccess(bool interleaved) const 
+inline bool 
+Device::SupportsAccess(bool interleaved) const 
 {
   XtBool supports;
   Detail::HandleError(XtDeviceSupportsAccess(_d, interleaved, &supports));
   return supports != XtFalse;    
 }
 
-inline std::optional<Mix> Device::GetMix() const 
+inline std::optional<Mix> 
+Device::GetMix() const 
 {
   Mix mix;
   XtBool valid;
@@ -80,7 +93,8 @@ inline std::optional<Mix> Device::GetMix() const
   return valid? std::optional<Mix>(mix): std::optional<Mix>(std::nullopt);
 }
 
-inline std::string Device::GetChannelName(bool output, int32_t index) const
+inline std::string 
+Device::GetChannelName(bool output, int32_t index) const
 {
   int32_t size = 0;
   Detail::HandleError(XtDeviceGetChannelName(_d, output, index, nullptr, &size));
@@ -89,7 +103,8 @@ inline std::string Device::GetChannelName(bool output, int32_t index) const
   return std::string(buffer.data());
 }
 
-inline std::unique_ptr<Stream> Device::OpenStream(DeviceStreamParams const& params, void* user) 
+inline std::unique_ptr<Stream> 
+Device::OpenStream(DeviceStreamParams const& params, void* user) 
 {
   XtStream* stream; 
   XtDeviceStreamParams coreParams = { 0 };

@@ -2,6 +2,7 @@
 #define XT_CORE_OSTREAM_HPP
 
 #include "XtDevice.hpp"
+
 #include <XtAudio.h>
 #include <ostream>
 
@@ -20,7 +21,8 @@ inline std::ostream& operator<<(std::ostream& os, Sample sample)
 inline std::ostream& operator<<(std::ostream& os, Capabilities capabilities) 
 { return os << XtPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities)); }
 
-inline std::ostream& operator<<(std::ostream& os, ErrorInfo const& info) 
+inline std::ostream& 
+operator<<(std::ostream& os, ErrorInfo const& info) 
 {
   XtErrorInfo i;
   i.fault = info.fault;

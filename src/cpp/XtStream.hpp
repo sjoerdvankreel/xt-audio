@@ -4,7 +4,9 @@
 #include "Forward.hpp"
 #include "CoreStructs.hpp"
 #include "CoreCallbacks.hpp"
+
 #include <XtAudio.h>
+#include <cstdint>
 
 namespace Xt {
 
@@ -18,22 +20,33 @@ class Stream final
   Stream(OnBuffer onBuffer, OnXRun onXRun, void* user):
   _s(nullptr), _user(user), _onXRun(onXRun), _onBuffer(onBuffer) { }
 
-  friend class Device;
-  friend class Service;
-  friend void XT_CALLBACK Detail::
-  ForwardOnXRun(int32_t index, void* user);
-  friend void XT_CALLBACK Detail::
-  ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
-
 public:
+  ~Stream();
+  void Stop();
+  void Start();
   int32_t GetFrames() const;
   Latency GetLatency() const;
   Format const& GetFormat() const;
 
-  ~Stream() { XtStreamDestroy(_s); }
-  void Stop() { Detail::HandleError(XtStreamStop(_s)); }
-  void Start() { Detail::HandleError(XtStreamStart(_s)); }
+  friend class Device;
+  friend class Service;
+  friend void XT_CALLBACK 
+  Detail::ForwardOnXRun(int32_t index, void* user);
+  friend void XT_CALLBACK 
+  Detail::ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
 };
+
+inline
+Stream::~Stream() 
+{ XtStreamDestroy(_s); }
+
+inline void
+Stream::Stop() 
+{ Detail::HandleError(XtStreamStop(_s)); }
+
+inline void
+Stream::Start() 
+{ Detail::HandleError(XtStreamStart(_s)); }
 
 inline int32_t Stream::GetFrames() const 
 {

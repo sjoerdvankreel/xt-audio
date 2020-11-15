@@ -5,6 +5,7 @@
 #include "XtDevice.hpp"
 #include "CoreEnums.hpp"
 #include "CoreStructs.hpp"
+
 #include <XtAudio.h>
 #include <memory>
 
@@ -17,36 +18,48 @@ class Service final
   Service(XtService const* s): _s(s) { }
 public:
   int32_t GetDeviceCount() const;
+  Capabilities GetCapabilities() const;
   std::unique_ptr<Device> OpenDevice(int32_t index) const;
   std::unique_ptr<Device> OpenDefaultDevice(bool output) const;
   std::unique_ptr<Stream> AggregateStream(AggregateStreamParams const& params, void* user);
-  Capabilities GetCapabilities() const { return static_cast<Capabilities>(XtServiceGetCapabilities(_s)); }
 };
 
-inline int32_t Service::GetDeviceCount() const 
+inline Capabilities
+Service::GetCapabilities() const
+{
+  auto coreCapabilities = XtServiceGetCapabilities(_s);
+  return static_cast<Capabilities>(coreCapabilities); 
+}
+
+inline int32_t 
+Service::GetDeviceCount() const 
 { 
   int32_t count; 
   Detail::HandleError(XtServiceGetDeviceCount(_s, &count));
   return count;
 }
 
-inline std::unique_ptr<Device> Service::OpenDevice(int32_t index) const 
+inline std::unique_ptr<Device> 
+Service::OpenDevice(int32_t index) const 
 { 
   XtDevice* device; 
   Detail::HandleError(XtServiceOpenDevice(_s, index, &device));
   return std::unique_ptr<Device>(new Device(device));
 }
 
-inline std::unique_ptr<Device> Service::OpenDefaultDevice(bool output) const
+inline std::unique_ptr<Device> 
+Service::OpenDefaultDevice(bool output) const
 { 
   XtDevice* device; 
   Detail::HandleError(XtServiceOpenDefaultDevice(_s, output != XtFalse, &device));
-  return device == nullptr? std::unique_ptr<Device>(): std::unique_ptr<Device>(new Device(device));
+  if(device == nullptr) return std::unique_ptr<Device>();
+  return std::unique_ptr<Device>(new Device(device));
 }
 
-inline std::unique_ptr<Stream> Service::AggregateStream(AggregateStreamParams const& params, void* user)
+inline std::unique_ptr<Stream> 
+Service::AggregateStream(AggregateStreamParams const& params, void* user)
 {
-  XtStream* stream; 
+  XtStream* stream = nullptr;
   std::vector<XtAggregateDeviceParams> ds(params.count);
   for(int32_t i = 0; i < params.count; i++)
   {
