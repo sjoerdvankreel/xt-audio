@@ -211,11 +211,11 @@ void XT_CALL XtAudioTerminate(void) {
   XtiTerminatePlatform();
   free(XtiId);
   XtiId = nullptr;
-  XtiErrorCallback = nullptr;
+  XtiOnError = nullptr;
 }
 
-void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback callback) {
-  XtiErrorCallback = callback;
+void XT_CALL XtAudioInit(const char* id, void* window, XtOnError onError) {
+  XtiOnError = onError;
   XtiId = id == nullptr || strlen(id) == 0? strdup("XT-Audio"): strdup(id);
   XtiInitPlatform(window);
 }

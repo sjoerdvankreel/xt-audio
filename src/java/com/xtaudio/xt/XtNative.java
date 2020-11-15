@@ -79,5 +79,5 @@ final class XtNative {
     static native XtSystem XtAudioSetupToSystem(XtSetup setup);
     static native void XtAudioGetSystems(int[] buffer, IntByReference size);
     static native XtAttributes.ByValue XtAudioGetSampleAttributes(XtSample sample);
-    static native void XtAudioInit(String id, Pointer window, XtErrorCallback error);
+    static native void XtAudioInit(String id, Pointer window, XtOnError onError);
 }

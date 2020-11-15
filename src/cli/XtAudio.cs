@@ -5,17 +5,17 @@ namespace Xt
 {
 	public sealed class XtAudio : IDisposable
 	{
-		static XtErrorCallback _errorCallback;
+		static XtOnError _onError;
 		public void Dispose() => XtAudioTerminate();
 		public static XtVersion GetVersion() => XtAudioGetVersion();
 		public static XtErrorInfo GetErrorInfo(ulong error) => XtAudioGetErrorInfo(error);
 		public static XtSystem SetupToSystem(XtSetup setup) => XtAudioSetupToSystem(setup);
 		public static XtAttributes GetSampleAttributes(XtSample sample) => XtAudioGetSampleAttributes(sample);
 
-		public XtAudio(string id, IntPtr window, XtErrorCallback callback)
+		public XtAudio(string id, IntPtr window, XtOnError onError)
 		{
-			_errorCallback = callback;
-			XtAudioInit(id, window, callback);
+			_onError = onError;
+			XtAudioInit(id, window, onError);
 		}
 
 		public static XtSystem[] GetSystems()

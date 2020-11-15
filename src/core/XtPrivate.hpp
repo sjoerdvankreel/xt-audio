@@ -83,7 +83,7 @@ const XtService* XtiService ## name = &Service ## name
 extern char* XtiId;
 struct XtAggregate;
 typedef uint32_t XtFault;
-extern XtErrorCallback XtiErrorCallback;
+extern XtOnError XtiOnError;
 
 enum class XtBlockingStreamState {
   Stopped,

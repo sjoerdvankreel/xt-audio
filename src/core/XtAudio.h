@@ -153,8 +153,8 @@ typedef enum XtSample XtSample;
 typedef enum XtCapabilities XtCapabilities;
 /** @endcond */
 
+typedef void (XT_CALLBACK *XtOnError)(const char* location, const char* message);
 typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
-typedef void (XT_CALLBACK *XtErrorCallback)(const char* location, const char* message);
 typedef void (XT_CALLBACK *XtStreamCallback)(const struct XtStream* stream, const struct XtBuffer* buffer, void* user);
 
 struct XtBuffer {
@@ -311,7 +311,7 @@ XT_API XtErrorInfo XT_CALL XtAudioGetErrorInfo(XtError error);
 XT_API const XtService* XT_CALL XtAudioGetService(XtSystem system);
 XT_API void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size);
 XT_API XtAttributes XT_CALL XtAudioGetSampleAttributes(XtSample sample);
-XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtErrorCallback callback);
+XT_API void XT_CALL XtAudioInit(const char* id, void* window, XtOnError onError);
 /** @} */
 
 /** 

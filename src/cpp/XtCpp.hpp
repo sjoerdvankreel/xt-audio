@@ -61,8 +61,8 @@ enum Capabilities {
   CapabilitiesXRunDetection = 0x10
 };
 
+typedef void (*OnError)(const std::string& location, const std::string& message);
 typedef void (*XRunCallback)(int32_t index, void* user);
-typedef void (*ErrorCallback)(const std::string& location, const std::string& message);
 typedef void (*StreamCallback)(const Stream& stream, const struct Buffer& buffer, void* user);
 
 struct BufferSize final {
@@ -222,7 +222,7 @@ public:
 class Audio final {
 public:
   ~Audio();
-  Audio(const std::string& id, void* window, ErrorCallback callback);
+  Audio(const std::string& id, void* window, OnError onError);
 
   static Version GetVersion();
   static std::vector<System> GetSystems();

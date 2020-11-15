@@ -45,6 +45,6 @@ namespace Xt
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
 		internal static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
 		[DllImport("xt-core", CallingConvention = CallingConvention.StdCall)]
-		internal static extern void XtAudioInit([MarshalAs(UnmanagedType.LPUTF8Str)] string id, IntPtr window, XtErrorCallback error);
+		internal static extern void XtAudioInit([MarshalAs(UnmanagedType.LPUTF8Str)] string id, IntPtr window, XtOnError onError);
 	}
 }

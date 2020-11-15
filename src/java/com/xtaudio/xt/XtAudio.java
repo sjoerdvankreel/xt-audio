@@ -10,10 +10,10 @@ import static com.xtaudio.xt.XtNative.*;
 
 public final class XtAudio implements AutoCloseable {
 
-    static XtErrorCallback _errorCallback;
-    public XtAudio(String id, Pointer window, XtErrorCallback callback) {
-        _errorCallback = callback;
-        XtAudioInit(id, window, callback);
+    static XtOnError _onError;
+    public XtAudio(String id, Pointer window, XtOnError onError) {
+        _onError = onError;
+        XtAudioInit(id, window, onError);
     }
 
     @Override public void close() { XtAudioTerminate(); }

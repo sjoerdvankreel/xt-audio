@@ -29,7 +29,7 @@ static void Deinterleave(
 // ---- internal ----
 
 char* XtiId = nullptr;
-XtErrorCallback XtiErrorCallback = nullptr;
+XtOnError XtiOnError = nullptr;
 
 int32_t XtiGetPopCount64(uint64_t x) {
   const uint64_t m1 = 0x5555555555555555;
@@ -94,8 +94,8 @@ void XtiVTrace(const char* file, int32_t line, const char* func, const char* for
   if(size > 0) {
     std::vector<char> message(static_cast<size_t>(size + 1), '\0');
     vsnprintf(&message[0], size + 1, format, argCopy);
-    if(XtiErrorCallback != nullptr)
-      XtiErrorCallback(location.str().c_str(), message.data());
+    if(XtiOnError != nullptr)
+      XtiOnError(location.str().c_str(), message.data());
   }
   va_end(argCopy);
 }

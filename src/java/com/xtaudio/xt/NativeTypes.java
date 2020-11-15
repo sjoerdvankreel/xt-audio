@@ -191,7 +191,7 @@ public final class NativeTypes {
         void callback(int index, Object user) throws Exception;
     }
 
-    public interface XtErrorCallback extends Callback {
+    public interface XtOnError extends Callback {
         void callback(String location, String message) throws Exception;
     }
 

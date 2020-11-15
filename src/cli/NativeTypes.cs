@@ -169,7 +169,7 @@ namespace Xt
     delegate void StreamCallback(IntPtr stream, in XtBuffer buffer, IntPtr user);
 
     [SuppressUnmanagedCodeSecurity]
-    public delegate void XtErrorCallback(string location, string message);
+    public delegate void XtOnError(string location, string message);
     public delegate void XtXRunCallback(int index, object user);
     public delegate void XtStreamCallback(XtStream stream, in XtBuffer buffer, object user);
 
