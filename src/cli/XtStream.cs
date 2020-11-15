@@ -1,9 +1,11 @@
 using System;
 using System.Runtime.InteropServices;
-using static Xt.XtNative;
+using System.Security;
+using static Xt.Utility;
 
 namespace Xt
 {
+    [SuppressUnmanagedCodeSecurity]
     public sealed class XtStream : IDisposable
     {
         [DllImport("xt-core")] static extern ulong XtStreamStop(IntPtr s);

@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using static Xt.XtNative;
+using System.Security;
+using static Xt.Utility;
 
 namespace Xt
 {
+    [SuppressUnmanagedCodeSecurity]
     public sealed class XtService
     {
         [DllImport("xt-core")] static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);

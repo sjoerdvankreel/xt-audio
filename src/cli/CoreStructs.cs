@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using static Xt.XtNative;
+using static Xt.Utility;
 
 namespace Xt
 {
@@ -138,8 +138,8 @@ namespace Xt
         public XtCause cause;
         IntPtr _text;
         public int fault;
-        public string text => NativeUtility.PtrToStringUTF8(_text);
-        public override string ToString() => NativeUtility.PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
+        public string text => PtrToStringUTF8(_text);
+        public override string ToString() => PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
     }
 
     public struct XtStreamParams

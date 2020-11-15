@@ -1,8 +1,10 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace Xt
 {
+    [SuppressUnmanagedCodeSecurity]
     public sealed class XtAudio : IDisposable
     {
         [DllImport("xt-core")] static extern void XtAudioTerminate();

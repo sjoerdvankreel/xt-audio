@@ -1,10 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
-using static Xt.XtNative;
+using static Xt.Utility;
 
 namespace Xt
 {
+    [SuppressUnmanagedCodeSecurity]
     public sealed class XtDevice : IDisposable
     {
         [DllImport("xt-core")] static extern void XtDeviceDestroy(IntPtr d);
