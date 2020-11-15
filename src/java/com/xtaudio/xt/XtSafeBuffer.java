@@ -1,10 +1,14 @@
 package com.xtaudio.xt;
 
-import java.util.*;
-
-import com.sun.jna.*;
-import java.lang.reflect.*;
-import com.xtaudio.xt.NativeTypes.*;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.xtaudio.xt.CoreEnums.XtSample;
+import com.xtaudio.xt.CoreStructs.XtAttributes;
+import com.xtaudio.xt.CoreStructs.XtBuffer;
+import com.xtaudio.xt.CoreStructs.XtFormat;
+import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class XtSafeBuffer implements AutoCloseable {
 

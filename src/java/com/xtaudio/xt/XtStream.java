@@ -1,9 +1,16 @@
 package com.xtaudio.xt;
 
-import com.sun.jna.*;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import static com.xtaudio.xt.XtNative.*;
-import static com.xtaudio.xt.NativeTypes.*;
+import com.xtaudio.xt.CoreCallbacks.OnBuffer;
+import com.xtaudio.xt.CoreCallbacks.OnXRun;
+import com.xtaudio.xt.CoreCallbacks.XtOnBuffer;
+import com.xtaudio.xt.CoreCallbacks.XtOnXRun;
+import com.xtaudio.xt.CoreStructs.XtBuffer;
+import com.xtaudio.xt.CoreStructs.XtFormat;
+import com.xtaudio.xt.CoreStructs.XtLatency;
+import static com.xtaudio.xt.XtNative.handleError;
 
 public final class XtStream implements AutoCloseable {
 

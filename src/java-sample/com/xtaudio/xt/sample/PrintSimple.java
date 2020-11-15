@@ -1,7 +1,9 @@
 package com.xtaudio.xt.sample;
 
-import com.xtaudio.xt.*;
-import com.xtaudio.xt.NativeTypes.*;
+import com.xtaudio.xt.CoreEnums.XtSystem;
+import com.xtaudio.xt.XtAudio;
+import com.xtaudio.xt.XtDevice;
+import com.xtaudio.xt.XtService;
 
 public class PrintSimple {
 

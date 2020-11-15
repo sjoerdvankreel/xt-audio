@@ -1,8 +1,14 @@
 package com.xtaudio.xt.sample;
 
+import com.xtaudio.xt.CoreEnums.XtSetup;
+import com.xtaudio.xt.CoreEnums.XtSystem;
+import com.xtaudio.xt.CoreStructs.XtMix;
+import com.xtaudio.xt.CoreStructs.XtVersion;
+import com.xtaudio.xt.XtAudio;
+import com.xtaudio.xt.XtDevice;
+import com.xtaudio.xt.XtException;
+import com.xtaudio.xt.XtService;
 import java.util.Optional;
-import com.xtaudio.xt.*;
-import static com.xtaudio.xt.NativeTypes.*;
 
 public class PrintDetailed {
 

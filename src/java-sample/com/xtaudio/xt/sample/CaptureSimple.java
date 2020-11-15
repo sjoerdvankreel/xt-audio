@@ -1,8 +1,21 @@
 package com.xtaudio.xt.sample;
 
+import com.xtaudio.xt.CoreEnums.XtSample;
+import com.xtaudio.xt.CoreEnums.XtSetup;
+import com.xtaudio.xt.CoreEnums.XtSystem;
+import com.xtaudio.xt.CoreStructs.XtBuffer;
+import com.xtaudio.xt.CoreStructs.XtBufferSize;
+import com.xtaudio.xt.CoreStructs.XtChannels;
+import com.xtaudio.xt.CoreStructs.XtDeviceStreamParams;
+import com.xtaudio.xt.CoreStructs.XtFormat;
+import com.xtaudio.xt.CoreStructs.XtMix;
+import com.xtaudio.xt.CoreStructs.XtStreamParams;
+import com.xtaudio.xt.XtAudio;
+import com.xtaudio.xt.XtDevice;
+import com.xtaudio.xt.XtSafeBuffer;
+import com.xtaudio.xt.XtService;
+import com.xtaudio.xt.XtStream;
 import java.io.FileOutputStream;
-import com.xtaudio.xt.*;
-import static com.xtaudio.xt.NativeTypes.*;
 
 public class CaptureSimple {
 

@@ -1,21 +1,23 @@
 package com.xtaudio.xt;
 
-import com.sun.jna.*;
-import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.DefaultTypeMapper;
+import com.sun.jna.FromNativeContext;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.ToNativeContext;
+import com.sun.jna.TypeConverter;
 import com.sun.jna.win32.StdCallFunctionMapper;
 import com.sun.jna.win32.StdCallLibrary;
-import com.xtaudio.xt.NativeTypes.*;
-import com.xtaudio.xt.NativeTypes.XtSetup;
-
-import java.util.*;
+import com.xtaudio.xt.CoreEnums.XtCause;
+import com.xtaudio.xt.CoreEnums.XtSample;
+import com.xtaudio.xt.CoreEnums.XtSetup;
+import com.xtaudio.xt.CoreEnums.XtSystem;
+import com.xtaudio.xt.CoreStructs.XtErrorInfo;
+import java.util.HashMap;
+import java.util.Map;
 
 final class XtNative {
-
-    public static final class PointerWrapper extends Structure {
-        public Pointer _value;
-        public PointerWrapper(Pointer value) { _value = value; }
-        @Override protected List<String> getFieldOrder() { return Arrays.asList("_value"); }
-    }
 
     static class XtTypeMapper extends DefaultTypeMapper {
         XtTypeMapper() {
