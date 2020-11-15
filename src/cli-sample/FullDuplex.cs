@@ -5,7 +5,7 @@ namespace Xt
 {
     public class FullDuplex
     {
-        static void Callback(XtStream stream, in XtBuffer buffer, object user)
+        static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             safe.Lock(in buffer);
@@ -37,7 +37,7 @@ namespace Xt
             else return;
 
             XtBufferSize size = device.GetBufferSize(format);
-            streamParams = new XtStreamParams(true, Callback, null);
+            streamParams = new XtStreamParams(true, OnBuffer, null);
             deviceParams = new XtDeviceStreamParams(in streamParams, in format, size.current);
             using XtStream stream = device.OpenStream(in deviceParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);

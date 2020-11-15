@@ -8,7 +8,7 @@ namespace Xt
         static void OnXRun(int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
-        static void OnAggregate(XtStream stream, in XtBuffer buffer, object user)
+        static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             safe.Lock(buffer);
@@ -39,7 +39,7 @@ namespace Xt
             XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
             deviceParams[0] = new XtAggregateDeviceParams(input, in inputFormat.channels, 30.0);
             deviceParams[1] = new XtAggregateDeviceParams(output, in outputFormat.channels, 30.0);
-            XtStreamParams streamParams = new XtStreamParams(true, OnAggregate, OnXRun);
+            XtStreamParams streamParams = new XtStreamParams(true, OnBuffer, OnXRun);
             aggregateParams = new XtAggregateStreamParams(in streamParams, deviceParams, 2, mix, output);
             using XtStream stream = service.AggregateStream(in aggregateParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);

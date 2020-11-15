@@ -18,7 +18,7 @@ namespace Xt
             return (float)Math.Sin(2.0 * _phase * Math.PI);
         }
 
-        static void Callback(XtStream stream, in XtBuffer buffer, object user)
+        static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             safe.Lock(in buffer);
@@ -41,7 +41,7 @@ namespace Xt
             if (device?.SupportsFormat(Format) != true) return;
 
             XtBufferSize size = device.GetBufferSize(Format);
-            streamParams = new XtStreamParams(true, Callback, null);
+            streamParams = new XtStreamParams(true, OnBuffer, null);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using XtStream stream = device.OpenStream(in deviceParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);

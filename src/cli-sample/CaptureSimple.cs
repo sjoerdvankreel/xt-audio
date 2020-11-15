@@ -10,7 +10,7 @@ namespace Xt
         static readonly XtChannels Channels = new XtChannels(1, 0, 0, 0);
         static readonly XtFormat Format = new XtFormat(Mix, Channels);
 
-        static void Capture(XtStream stream, in XtBuffer buffer, object user)
+        static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var output = (FileStream)user;
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
@@ -35,7 +35,7 @@ namespace Xt
             if (device?.SupportsFormat(Format) != true) return;
 
             XtBufferSize size = device.GetBufferSize(Format);
-            streamParams = new XtStreamParams(true, Capture, null);
+            streamParams = new XtStreamParams(true, OnBuffer, null);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using var recording = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
             using XtStream stream = device.OpenStream(in deviceParams, recording);

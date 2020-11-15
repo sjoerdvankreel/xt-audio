@@ -26,7 +26,7 @@ namespace Xt
             stream.Stop();
         }
 
-        static void RenderInterleavedSafe(XtStream stream, in XtBuffer buffer, object user)
+        static void OnInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             int channels = stream.GetFormat().channels.outputs;
@@ -40,7 +40,7 @@ namespace Xt
             safe.Unlock(buffer);
         }
 
-        static unsafe void RenderInterleavedNative(XtStream stream, in XtBuffer buffer, object user)
+        static unsafe void OnInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             int channels = stream.GetFormat().channels.outputs;
             int size = XtAudio.GetSampleAttributes(Mix.sample).size;
@@ -51,7 +51,7 @@ namespace Xt
             }
         }
 
-        static void RenderNonInterleavedSafe(XtStream stream, in XtBuffer buffer, object user)
+        static void OnNonInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             int channels = stream.GetFormat().channels.outputs;
@@ -65,7 +65,7 @@ namespace Xt
             safe.Unlock(buffer);
         }
 
-        static unsafe void RenderNonInterleavedNative(XtStream stream, in XtBuffer buffer, object user)
+        static unsafe void OnNonInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             int channels = stream.GetFormat().channels.outputs;
             int size = XtAudio.GetSampleAttributes(Mix.sample).size;
@@ -92,34 +92,34 @@ namespace Xt
             XtBufferSize size = device.GetBufferSize(format);
 
             Console.WriteLine("Render interleaved, safe buffers...");
-            streamParams = new XtStreamParams(true, RenderInterleavedSafe, OnXRun);
+            streamParams = new XtStreamParams(true, OnInterleavedSafeBuffer, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in format, size.current);
             using (XtStream stream = device.OpenStream(in deviceParams, null))
             using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, true))
                 RunStream(stream);
 
             Console.WriteLine("Render interleaved, native buffers...");
-            streamParams = new XtStreamParams(true, RenderInterleavedNative, OnXRun);
+            streamParams = new XtStreamParams(true, OnInterleavedNativeBuffer, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in format, size.current);
             using (XtStream stream = device.OpenStream(in deviceParams, null))
                 RunStream(stream);
 
             Console.WriteLine("Render non-interleaved, safe buffers...");
-            streamParams = new XtStreamParams(false, RenderNonInterleavedSafe, OnXRun);
+            streamParams = new XtStreamParams(false, OnNonInterleavedSafeBuffer, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in format, size.current);
             using (XtStream stream = device.OpenStream(in deviceParams, null))
             using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, false))
                 RunStream(stream);
 
             Console.WriteLine("Render non-interleaved, native buffers...");
-            streamParams = new XtStreamParams(false, RenderNonInterleavedNative, OnXRun);
+            streamParams = new XtStreamParams(false, OnNonInterleavedNativeBuffer, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in format, size.current);
             using (XtStream stream = device.OpenStream(in deviceParams, null))
                 RunStream(stream);
 
             Console.WriteLine("Render interleaved, safe buffers (channel 0)...");
             XtFormat sendTo0 = new XtFormat(Mix, new XtChannels(0, 0, 1, 1L << 0));
-            streamParams = new XtStreamParams(true, RenderInterleavedSafe, OnXRun);
+            streamParams = new XtStreamParams(true, OnInterleavedSafeBuffer, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in sendTo0, size.current);
             using (XtStream stream = device.OpenStream(in deviceParams, null))
             using (XtSafeBuffer safe = XtSafeBuffer.Register(stream, true))
@@ -127,7 +127,7 @@ namespace Xt
 
             Console.WriteLine("Render non-interleaved, native buffers (channel 1)...");
             XtFormat sendTo1 = new XtFormat(Mix, new XtChannels(0, 0, 1, 1L << 1));
-            streamParams = new XtStreamParams(false, RenderNonInterleavedNative, OnXRun);
+            streamParams = new XtStreamParams(false, OnNonInterleavedNativeBuffer, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in sendTo1, size.current);
             using (XtStream stream = device.OpenStream(in deviceParams, null))
                 RunStream(stream);

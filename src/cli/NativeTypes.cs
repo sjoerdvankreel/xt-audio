@@ -25,7 +25,7 @@ namespace Xt
     struct StreamParams
     {
         public int interleaved;
-        public StreamCallback streamCallback;
+        public OnBuffer onBuffer;
         public OnXRun onXRun;
     }
 
@@ -146,10 +146,10 @@ namespace Xt
     public struct XtStreamParams
     {
         public bool interleaved;
-        public XtStreamCallback streamCallback;
+        public XtOnBuffer onBuffer;
         public XtOnXRun onXRun;
-        public XtStreamParams(bool interleaved, XtStreamCallback streamCallback, XtOnXRun onXRun)
-        => (this.interleaved, this.streamCallback, this.onXRun) = (interleaved, streamCallback, onXRun);
+        public XtStreamParams(bool interleaved, XtOnBuffer onBuffer, XtOnXRun onXRun)
+        => (this.interleaved, this.onBuffer, this.onXRun) = (interleaved, onBuffer, onXRun);
     }
 
     public struct XtAggregateStreamParams
@@ -166,12 +166,12 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     delegate void OnXRun(int index, IntPtr user);
     [SuppressUnmanagedCodeSecurity]
-    delegate void StreamCallback(IntPtr stream, in XtBuffer buffer, IntPtr user);
+    delegate void OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user);
 
     [SuppressUnmanagedCodeSecurity]
     public delegate void XtOnError(string location, string message);
     public delegate void XtOnXRun(int index, object user);
-    public delegate void XtStreamCallback(XtStream stream, in XtBuffer buffer, object user);
+    public delegate void XtOnBuffer(XtStream stream, in XtBuffer buffer, object user);
 
     public enum XtSetup : int { ProAudio, SystemAudio, ConsumerAudio }
     public enum XtSample : int { UInt8, Int16, Int24, Int32, Float32 }
