@@ -5,7 +5,7 @@ import static com.xtaudio.xt.NativeTypes.*;
 
 public class FullDuplex {
 
-    static void callback(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+    static void onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
         System.arraycopy(safe.getInput(), 0, safe.getOutput(), 0, buffer.frames * 2);
@@ -35,7 +35,7 @@ public class FullDuplex {
                 else return;
 
                 XtBufferSize size = device.getBufferSize(format);
-                streamParams = new XtStreamParams(true, FullDuplex::callback, null);
+                streamParams = new XtStreamParams(true, FullDuplex::onBuffer, null);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

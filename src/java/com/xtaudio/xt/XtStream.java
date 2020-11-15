@@ -20,9 +20,9 @@ public final class XtStream implements AutoCloseable {
 
     private final Object _user;
     private final XtOnXRun _onXRun;
-    private final XtStreamCallback _streamCallback;
+    private final XtOnBuffer _onBuffer;
     private final OnXRun _onNativeXRun;
-    private final StreamCallback _nativeStreamCallback;
+    private final OnBuffer _onNativeBuffer;
     private final XtBuffer _buffer = new XtBuffer();
     private final XtLatency _latency = new XtLatency();
     private final IntByReference _frames = new IntByReference();
@@ -33,14 +33,14 @@ public final class XtStream implements AutoCloseable {
     public void start() { handleError(XtStreamStart(_s)); }
 
     OnXRun onNativeXRun() { return _onNativeXRun; }
-    StreamCallback nativeStreamCallback() { return _nativeStreamCallback; }
+    OnBuffer onNativeBuffer() { return _onNativeBuffer; }
 
-    XtStream(XtStreamCallback streamCallback, XtOnXRun onXRun, Object user) {
+    XtStream(XtOnBuffer onBuffer, XtOnXRun onXRun, Object user) {
         _user = user;
         _onXRun = onXRun;
-        _streamCallback = streamCallback;
+        _onBuffer = onBuffer;
         _onNativeXRun = this::onXRun;
-        _nativeStreamCallback = this::streamCallback;
+        _onNativeBuffer = this::onBuffer;
     }
 
     void init(Pointer s) {
@@ -62,10 +62,10 @@ public final class XtStream implements AutoCloseable {
         _onXRun.callback(index, _user);
     }
 
-    private void streamCallback(Pointer stream, Pointer buffer, Pointer user) throws Exception {
+    private void onBuffer(Pointer stream, Pointer buffer, Pointer user) throws Exception {
         for(int i = 0; i < Native.getNativeSize(XtBuffer.ByValue.class); i++)
             _buffer.getPointer().setByte(i, buffer.getByte(i));
         _buffer.read();
-        _streamCallback.callback(this, _buffer, _user);
+        _onBuffer.callback(this, _buffer, _user);
     }
 }

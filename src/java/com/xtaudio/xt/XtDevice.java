@@ -80,13 +80,13 @@ public final class XtDevice implements AutoCloseable {
 
     public XtStream openStream(XtDeviceStreamParams params, Object user) {
         var stream = new PointerByReference();
-        var result = new XtStream(params.stream.streamCallback, params.stream.onXRun, user);
+        var result = new XtStream(params.stream.onBuffer, params.stream.onXRun, user);
         var native_ = new DeviceStreamParams();
         native_.format = params.format;
         native_.stream = new StreamParams();
         native_.bufferSize = params.bufferSize;
+        native_.stream.onBuffer = result.onNativeBuffer();
         native_.stream.interleaved = params.stream.interleaved;
-        native_.stream.streamCallback = result.nativeStreamCallback();
         native_.stream.onXRun = params.stream.onXRun == null? null: result.onNativeXRun();
         handleError(XtDeviceOpenStream(_d, native_, Pointer.NULL, stream));
         result.init(stream.getValue());

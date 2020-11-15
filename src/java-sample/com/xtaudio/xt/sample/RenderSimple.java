@@ -17,7 +17,7 @@ public class RenderSimple {
         return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 
-    static void render(XtStream stream, XtBuffer buffer, Object user) {
+    static void onBuffer(XtStream stream, XtBuffer buffer, Object user) {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
         float[] output = (float[])safe.getOutput();
@@ -38,7 +38,7 @@ public class RenderSimple {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
 
                 XtBufferSize size = device.getBufferSize(FORMAT);
-                streamParams = new XtStreamParams(true, RenderSimple::render, null);
+                streamParams = new XtStreamParams(true, RenderSimple::onBuffer, null);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

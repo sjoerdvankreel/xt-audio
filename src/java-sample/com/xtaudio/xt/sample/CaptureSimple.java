@@ -10,7 +10,7 @@ public class CaptureSimple {
     static final XtChannels CHANNELS = new XtChannels(1, 0, 0, 0);
     static final XtFormat FORMAT = new XtFormat(MIX, CHANNELS);
 
-    static void capture(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+    static void onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var output = (FileOutputStream)user;
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
@@ -33,7 +33,7 @@ public class CaptureSimple {
                 if(device == null || !device.supportsFormat(FORMAT)) return;
 
                 XtBufferSize size = device.getBufferSize(FORMAT);
-                streamParams = new XtStreamParams(true, CaptureSimple::capture, null);
+                streamParams = new XtStreamParams(true, CaptureSimple::onBuffer, null);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio.raw");
                     XtStream stream = device.openStream(deviceParams, recording);

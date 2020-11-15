@@ -9,7 +9,7 @@ public class Aggregate {
         System.out.println("XRun on device " + index + ".");
     }
 
-    static void aggregate(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+    static void onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
         int count = buffer.frames * stream.getFormat().channels.inputs;
@@ -37,7 +37,7 @@ public class Aggregate {
                 XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
                 deviceParams[0] = new XtAggregateDeviceParams(input, inputFormat.channels, 30.0);
                 deviceParams[1] = new XtAggregateDeviceParams(output, outputFormat.channels, 30.0);
-                XtStreamParams streamParams = new XtStreamParams(true, Aggregate::aggregate, Aggregate::onXRun);
+                XtStreamParams streamParams = new XtStreamParams(true, Aggregate::onBuffer, Aggregate::onXRun);
                 aggregateParams = new XtAggregateStreamParams(streamParams, deviceParams, 2, mix, output);
                 try(XtStream stream = service.aggregateStream(aggregateParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

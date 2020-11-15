@@ -51,10 +51,10 @@ public final class NativeTypes {
 
     public static class StreamParams extends Structure {
         public boolean interleaved;
-        public StreamCallback streamCallback;
+        public OnBuffer onBuffer;
         public OnXRun onXRun;
         public StreamParams() {}
-        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "streamCallback", "onXRun"); }
+        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "onBuffer", "onXRun"); }
     }
 
     public static class XtMix extends Structure {
@@ -150,11 +150,11 @@ public final class NativeTypes {
 
     public static class XtStreamParams {
         public boolean interleaved;
-        public XtStreamCallback streamCallback;
+        public XtOnBuffer onBuffer;
         public XtOnXRun onXRun;
         public XtStreamParams() {}
-        public XtStreamParams(boolean interleaved, XtStreamCallback streamCallback, XtOnXRun onXRun) {
-            this.interleaved = interleaved; this.streamCallback = streamCallback; this.onXRun = onXRun;
+        public XtStreamParams(boolean interleaved, XtOnBuffer onBuffer, XtOnXRun onXRun) {
+            this.interleaved = interleaved; this.onBuffer = onBuffer; this.onXRun = onXRun;
         }
     }
 
@@ -195,11 +195,11 @@ public final class NativeTypes {
         void callback(String location, String message) throws Exception;
     }
 
-    interface StreamCallback extends Callback {
+    interface OnBuffer extends Callback {
         void callback(Pointer stream, Pointer buffer, Pointer user) throws Exception;
     }
 
-    public interface XtStreamCallback {
+    public interface XtOnBuffer {
         void callback(XtStream stream, XtBuffer buffer, Object user) throws Exception;
     }
 }
