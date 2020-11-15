@@ -80,6 +80,28 @@ for /L %%C in (0, 1, 1) do (
     if not exist !FD! (mkdir !FD!)
     copy !FT! !FD!
   )
+  set FT=..\..\temp\cpp-sample-win32-!confs[%%C]!
+  if not exist !FT! (mkdir !FT!)
+  copy !confs[%%C]!\xt-core.dll !FT!\xt-core.dll
+  if %%C == 0 (
+    copy !confs[%%C]!\xt-core.pdb !FT!\xt-core.pdb
+  )
+  if %%C == 1 (
+    set FD=..\..\dist\cpp-sample-win32
+    if not exist !FD! (mkdir !FD!)
+    copy !FT! !FD!
+  )
+  set FT=..\..\temp\cpp-sample-win32-!confs[%%C]!
+  if not exist !FT! (mkdir !FT!)
+  copy !confs[%%C]!\xt-cpp-sample.exe !FT!\xt-cpp-sample.exe
+  if %%C == 0 (
+    copy !confs[%%C]!\xt-cpp-sample.pdb !FT!\xt-cpp-sample.pdb
+  )
+  if %%C == 1 (
+    set FD=..\..\dist\cpp-sample-win32
+    if not exist !FD! (mkdir !FD!)
+    copy !FT! !FD!
+  )
 )
 cd ..
 

@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 2.8)
 # Core library (C API).
 set (CORE_DIR "../src/core")
 file (GLOB CORE_SRC "${CORE_DIR}/*.*")
-add_library (xt-core ${CORE_SRC})
+add_library (xt-core SHARED ${CORE_SRC})
 target_compile_options (xt-core PRIVATE -DXT_EXPORT=1)
 
 # Compile time backend selection support.
