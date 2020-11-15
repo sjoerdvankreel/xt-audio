@@ -72,7 +72,7 @@ struct XtwWin32BlockingStream: public XtBlockingStream {
 
   XtwWin32BlockingStream(bool secondary);
   ~XtwWin32BlockingStream();
-  bool VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr);
+  bool VerifyOnBuffer(HRESULT hr, const char* file, int line, const char* func, const char* expr);
 };
 
 #endif // _WIN32

@@ -195,7 +195,7 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   buffer.time = time;
   buffer.position = position;
   buffer.timeValid = timeValid;
-  s->ProcessCallback(&buffer);
+  s->ProcessBuffer(&buffer);
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
 

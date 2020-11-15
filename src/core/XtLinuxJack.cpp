@@ -192,7 +192,7 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   xtBuffer.time = time;
   xtBuffer.position = position;
   xtBuffer.timeValid = timeValid;
-  s->ProcessCallback(&xtBuffer);
+  s->ProcessBuffer(&xtBuffer);
   return 0;
 }
 
@@ -314,7 +314,7 @@ XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
 }
 
 XtFault JackDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
+                               bool secondary, XtOnBuffer onBuffer, void* user, XtStream** stream) {
   
   XtFault fault;
   jack_client_t* c;

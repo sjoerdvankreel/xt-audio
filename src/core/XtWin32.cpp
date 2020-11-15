@@ -48,7 +48,7 @@ static void SendWin32BlockingStreamControl(
     XT_ASSERT(WaitForSingleObject(stream->respondEvent.event, XT_WAIT_TIMEOUT_MS) == WAIT_OBJECT_0);
 }
 
-static DWORD WINAPI Win32BlockingStreamCallback(void* user) {
+static DWORD WINAPI OnWin32BlockingBuffer(void* user) {
   XtBlockingStreamState state;
   auto stream = static_cast<XtwWin32BlockingStream*>(user);
 
@@ -182,7 +182,7 @@ lock(),
 respondEvent(),
 controlEvent() {
   if(!secondary) {
-    HANDLE thread = CreateThread(nullptr, 0, &Win32BlockingStreamCallback, this, 0, nullptr);
+    HANDLE thread = CreateThread(nullptr, 0, &OnWin32BlockingBuffer, this, 0, nullptr);
     XT_ASSERT(thread != nullptr);
     CloseHandle(thread);
   }
@@ -221,14 +221,14 @@ void XtwWin32BlockingStream::RequestStop() {
   }
 }
 
-bool XtwWin32BlockingStream::VerifyStreamCallback(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
+bool XtwWin32BlockingStream::VerifyOnBuffer(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
   if(SUCCEEDED(hr))
     return true;
   RequestStop();
   XtiTrace(file, line, func, expr);
   XtBuffer buffer = { 0 };
   buffer.error = XtiCreateError(GetSystem(), hr);
-  ProcessCallback(&buffer);
+  ProcessBuffer(&buffer);
   return false;
 }
 

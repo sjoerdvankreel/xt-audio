@@ -45,7 +45,7 @@ static void SendLinuxBlockingStreamControl(
   XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
 }
 
-static void* LinuxBlockingStreamCallback(void* user) {
+static void* LinuxOnBlockingBuffer(void* user) {
 
   int policy;
   int maxPriority;
@@ -185,7 +185,7 @@ respondCv(),
 controlCv() {
   if(!secondary) {
     pthread_t thread;
-    XT_ASSERT(pthread_create(&thread, nullptr, &LinuxBlockingStreamCallback, this) == 0);
+    XT_ASSERT(pthread_create(&thread, nullptr, &LinuxOnBlockingBuffer, this) == 0);
   }
 }
 
@@ -222,14 +222,14 @@ void XtlLinuxBlockingStream::RequestStop() {
   }
 }
 
-bool XtlLinuxBlockingStream::VerifyStreamCallback(int error, const char* file, int line, const char* func, const char* expr) {
+bool XtlLinuxBlockingStream::VerifyOnBuffer(int error, const char* file, int line, const char* func, const char* expr) {
   if(error == 0)
     return true;
   RequestStop();
   XtiTrace(file, line, func, expr);
   XtBuffer buffer = { 0 };
   buffer.error = XtiCreateError(GetSystem(), error);
-  ProcessCallback(&buffer);
+  ProcessBuffer(&buffer);
   return false;
 }
 

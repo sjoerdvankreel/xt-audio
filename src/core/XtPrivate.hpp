@@ -16,8 +16,8 @@
 
 // ---- internal ----
 
-#define XT_VERIFY_STREAM_CALLBACK(expr) \
-  VerifyStreamCallback((expr), __FILE__, __LINE__, __func__, #expr)
+#define XT_VERIFY_ON_BUFFER(expr) \
+  VerifyOnBuffer((expr), __FILE__, __LINE__, __func__, #expr)
 
 #define XT_WAIT_TIMEOUT_MS 10000
 #define XT_FAIL(m) XtiFail(__FILE__, __LINE__, __func__, m)
@@ -155,7 +155,7 @@ struct XtStream {
   XtBool canNonInterleaved;
   int32_t aggregationIndex;
   XtOnXRun onXRun;
-  XtStreamCallback streamCallback;
+  XtOnBuffer onBuffer;
   XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
@@ -167,7 +167,7 @@ struct XtStream {
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
   void ProcessXRun();
-  void ProcessCallback(const XtBuffer* buffer);
+  void ProcessBuffer(const XtBuffer* buffer);
 };
 
 struct XtBlockingStream: public XtStream {
@@ -233,7 +233,7 @@ void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(const char* file, int32_t line, const char* func, const char* format, ...);
 void XtiVTrace(const char* file, int32_t line, const char* func, const char* format, va_list arg);
 
-void XT_CALLBACK XtiSlaveCallback(const XtStream* stream, const XtBuffer* buffer, void* user);
-void XT_CALLBACK XtiMasterCallback(const XtStream* stream, const XtBuffer* buffer, void* user);
+void XT_CALLBACK XtiOnSlaveBuffer(const XtStream* stream, const XtBuffer* buffer, void* user);
+void XT_CALLBACK XtiOnMasterBuffer(const XtStream* stream, const XtBuffer* buffer, void* user);
 
 #endif // XT_PRIVATE_HPP

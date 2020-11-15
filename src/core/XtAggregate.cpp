@@ -266,7 +266,7 @@ XtFault XtAggregate::GetLatency(XtLatency* latency) const {
 
 // ---- sync callbacks ---
 
-void XT_CALLBACK XtiSlaveCallback(
+void XT_CALLBACK XtiOnSlaveBuffer(
   const XtStream* stream, const XtBuffer* buffer, void* user) {
 
   size_t i;
@@ -285,7 +285,7 @@ void XT_CALLBACK XtiSlaveCallback(
     for(i = 0; i < aggregate->streams.size(); i++)
       if(i != static_cast<size_t>(index))
         aggregate->streams[i]->RequestStop();
-    aggregate->streamCallback(aggregate, buffer, aggregate->user);
+    aggregate->onBuffer(aggregate, buffer, aggregate->user);
   } else {
 
     if(XtiCas(&aggregate->running, 1, 1) != 1) {
@@ -316,7 +316,7 @@ void XT_CALLBACK XtiSlaveCallback(
   XtiLockDecr(&aggregate->insideCallbackCount);
 }
 
-void XT_CALLBACK XtiMasterCallback(
+void XT_CALLBACK XtiOnMasterBuffer(
   const XtStream* stream, const XtBuffer* buffer, void* user) {
 
   size_t i;
@@ -346,7 +346,7 @@ void XT_CALLBACK XtiMasterCallback(
       if(i != static_cast<size_t>(aggregate->masterIndex))
         static_cast<XtBlockingStream*>(aggregate->streams[i].get())->ProcessBuffer(false);
 
-  XtiSlaveCallback(stream, buffer, user);
+  XtiOnSlaveBuffer(stream, buffer, user);
   if(buffer->error != 0) {
     return;
   }
@@ -396,7 +396,7 @@ void XT_CALLBACK XtiMasterCallback(
   XtBuffer appBuffer = *buffer;
   appBuffer.input = appInput;
   appBuffer.output = appOutput;
-  aggregate->streamCallback(aggregate, &appBuffer, aggregate->user);
+  aggregate->onBuffer(aggregate, &appBuffer, aggregate->user);
 
   totalChannels = 0;
   for(i = 0; i < aggregate->streams.size(); i++) {

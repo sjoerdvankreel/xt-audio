@@ -53,7 +53,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   XT_ASSERT(stream != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(params->bufferSize > 0.0);
-  XT_ASSERT(params->stream.streamCallback != nullptr);
+  XT_ASSERT(params->stream.onBuffer != nullptr);
   XT_ASSERT(XtiValidateFormat(d->GetSystem(), params->format));
 
   double rate = params->format.mix.rate;
@@ -89,7 +89,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   (*stream)->interleaved = params->stream.interleaved;
   (*stream)->onXRun = params->stream.onXRun;
   (*stream)->sampleSize = attributes.size;
-  (*stream)->streamCallback = params->stream.streamCallback;
+  (*stream)->onBuffer = params->stream.onBuffer;
   (*stream)->canInterleaved = canInterleaved;
   (*stream)->canNonInterleaved = canNonInterleaved;
   initInterleaved = params->stream.interleaved && !canInterleaved;
@@ -261,7 +261,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(params->master != nullptr);
   XT_ASSERT(params->devices != nullptr);
-  XT_ASSERT(params->stream.streamCallback != nullptr);
+  XT_ASSERT(params->stream.onBuffer != nullptr);
 
   XtSystem system = s->GetSystem();
   auto attrs = XtAudioGetSampleAttributes(params->mix.sample);
@@ -277,7 +277,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->interleaved = params->stream.interleaved;
   result->onXRun = params->stream.onXRun;
   result->canInterleaved = params->stream.interleaved;
-  result->streamCallback = params->stream.streamCallback;
+  result->onBuffer = params->stream.onBuffer;
   result->canNonInterleaved = !params->stream.interleaved;
   result->inputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->outputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
@@ -290,7 +290,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   XtFormat format = { 0 };
   bool masterFound = false;
   XtFormat thisFormat = { 0 };
-  XtStreamCallback thisCallback;
+  XtOnBuffer onThisBuffer;
 
   format.mix = params->mix;
   for(int32_t i = 0; i < params->count; i++) {
@@ -309,12 +309,12 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
     masterFound |= params->master == params->devices[i].device;
     if(params->master == params->devices[i].device)
       result->masterIndex = i;
-    thisCallback = params->master == params->devices[i].device? XtiMasterCallback: XtiSlaveCallback;
+    onThisBuffer = params->master == params->devices[i].device? XtiOnMasterBuffer: XtiOnSlaveBuffer;
     XtDeviceStreamParams thisParams = { 0 };
     thisParams.bufferSize = params->devices[i].bufferSize;
     thisParams.format = thisFormat;
     thisParams.stream.interleaved = params->stream.interleaved;
-    thisParams.stream.streamCallback = thisCallback;
+    thisParams.stream.onBuffer = onThisBuffer;
     thisParams.stream.onXRun = params->stream.onXRun;
     if((error = OpenStreamInternal(params->devices[i].device, &thisParams, params->master != params->devices[i].device, &result->contexts[i], &thisStream) != 0))
       return error;

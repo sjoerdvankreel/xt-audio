@@ -155,7 +155,7 @@ typedef enum XtCapabilities XtCapabilities;
 
 typedef void (XT_CALLBACK *XtOnXRun)(int32_t index, void* user);
 typedef void (XT_CALLBACK *XtOnError)(const char* location, const char* message);
-typedef void (XT_CALLBACK *XtStreamCallback)(const struct XtStream* stream, const struct XtBuffer* buffer, void* user);
+typedef void (XT_CALLBACK *XtOnBuffer)(const struct XtStream* stream, const struct XtBuffer* buffer, void* user);
 
 struct XtBuffer {
   const void* input;
@@ -248,7 +248,7 @@ struct XtAttributes {
 
 struct XtStreamParams {
   XtBool interleaved;
-  XtStreamCallback streamCallback;
+  XtOnBuffer onBuffer;
   XtOnXRun onXRun;
 };
 

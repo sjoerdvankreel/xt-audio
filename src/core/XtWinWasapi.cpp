@@ -535,10 +535,10 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   if(capture && !prefill) {
     hr = capture->GetBuffer(&data, &frames, &flags, &wasapiPosition, &wasapiTime);
     if(hr == AUDCLNT_S_BUFFER_EMPTY) {
-      XT_VERIFY_STREAM_CALLBACK(capture->ReleaseBuffer(0));
+      XT_VERIFY_ON_BUFFER(capture->ReleaseBuffer(0));
       return;
     }
-    if(!XT_VERIFY_STREAM_CALLBACK(hr))
+    if(!XT_VERIFY_ON_BUFFER(hr))
       return;
     if((flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) != 0)
       ProcessXRun();
@@ -551,34 +551,34 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     buffer.time = time;
     buffer.position = position;
     buffer.timeValid = timeValid;
-    ProcessCallback(&buffer);
-    XT_VERIFY_STREAM_CALLBACK(capture->ReleaseBuffer(frames));
+    ProcessBuffer(&buffer);
+    XT_VERIFY_ON_BUFFER(capture->ReleaseBuffer(frames));
   }
   
   if(render && !options.loopback) {
     if(options.exclusive) {
       frames = bufferFrames;
     } else {
-      if(!XT_VERIFY_STREAM_CALLBACK(client->GetCurrentPadding(&padding)))
+      if(!XT_VERIFY_ON_BUFFER(client->GetCurrentPadding(&padding)))
         return;
       frames = bufferFrames - padding;
     }
     if(!prefill) {
       if(options.exclusive) {
-        if(!XT_VERIFY_STREAM_CALLBACK(clock->GetFrequency(&frequency)))
+        if(!XT_VERIFY_ON_BUFFER(clock->GetFrequency(&frequency)))
           return;
-        if(!XT_VERIFY_STREAM_CALLBACK(clock->GetPosition(&wasapiPosition, &wasapiTime)))
+        if(!XT_VERIFY_ON_BUFFER(clock->GetPosition(&wasapiPosition, &wasapiTime)))
           return;
         position = wasapiPosition * format.mix.rate / frequency;
       } else {
-        if(!XT_VERIFY_STREAM_CALLBACK(clock2->GetDevicePosition(&wasapiPosition, &wasapiTime)))
+        if(!XT_VERIFY_ON_BUFFER(clock2->GetDevicePosition(&wasapiPosition, &wasapiTime)))
           return;
         position = wasapiPosition;
       }
       timeValid = XtTrue;
       time = wasapiTime / XtWsHnsPerMs; 
     }
-    if(!XT_VERIFY_STREAM_CALLBACK(render->GetBuffer(frames, &data)))
+    if(!XT_VERIFY_ON_BUFFER(render->GetBuffer(frames, &data)))
       return;
     buffer.input = nullptr;
     buffer.output = data;
@@ -586,8 +586,8 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     buffer.time = time;
     buffer.position = position;
     buffer.timeValid = timeValid;
-    ProcessCallback(&buffer);
-    XT_VERIFY_STREAM_CALLBACK(render->ReleaseBuffer(frames, 0));
+    ProcessBuffer(&buffer);
+    XT_VERIFY_ON_BUFFER(render->ReleaseBuffer(frames, 0));
   }
 }
 

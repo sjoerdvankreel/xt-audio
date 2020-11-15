@@ -132,11 +132,11 @@ void XtStream::ProcessXRun() {
     onXRun(0, user);
 }
 
-void XtStream::ProcessCallback(const XtBuffer* buffer) {
+void XtStream::ProcessBuffer(const XtBuffer* buffer) {
 
   if(buffer->error != 0)
   {
-    streamCallback(this, buffer, user);
+    onBuffer(this, buffer, user);
     return;
   }
 
@@ -147,13 +147,13 @@ void XtStream::ProcessCallback(const XtBuffer* buffer) {
   if(interleaved && canInterleaved || !interleaved && canNonInterleaved) {
     converted.input = haveInput? buffer->input: nullptr;
     converted.output = haveOutput? buffer->output: nullptr;
-    streamCallback(this, &converted, user);
+    onBuffer(this, &converted, user);
   } else if(interleaved) {
     converted.input = haveInput? &intermediate.inputInterleaved[0]: nullptr;
     converted.output = haveOutput? &intermediate.outputInterleaved[0]: nullptr;
     if(haveInput)
       Interleave(&intermediate.inputInterleaved[0], static_cast<const void* const*>(buffer->input), buffer->frames, format.channels.inputs, sampleSize);
-    streamCallback(this, &converted, user);
+    onBuffer(this, &converted, user);
     if(haveOutput)
       Deinterleave(static_cast<void**>(buffer->output), &intermediate.outputInterleaved[0], buffer->frames, format.channels.outputs, sampleSize);
   } else {
@@ -161,7 +161,7 @@ void XtStream::ProcessCallback(const XtBuffer* buffer) {
     converted.output = haveOutput? &intermediate.outputNonInterleaved[0]: nullptr;
     if(haveInput)
       Deinterleave(&intermediate.inputNonInterleaved[0], buffer->input, buffer->frames, format.channels.inputs, sampleSize);
-    streamCallback(this, &converted, user);
+    onBuffer(this, &converted, user);
     if(haveOutput)
       Interleave(buffer->output, &intermediate.outputNonInterleaved[0], buffer->frames, format.channels.outputs, sampleSize);
   }

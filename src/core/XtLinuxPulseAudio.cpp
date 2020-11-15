@@ -206,7 +206,7 @@ XtFault PulseAudioDevice::SupportsFormat(const XtFormat* format, XtBool* support
 }
 
 XtFault PulseAudioDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
-                                bool secondary, XtStreamCallback callback, void* user, XtStream** stream) {
+                                bool secondary, XtOnBuffer onBuffer, void* user, XtStream** stream) {
 
   uint64_t mask;
   pa_simple* client;
@@ -265,15 +265,15 @@ void PulseAudioStream::ProcessBuffer(bool prefill) {
   void* outData = !output? nullptr: &audio[0];
 
   if(!output && pa_simple_read(client.simple, &audio[0], audio.size(), &fault) < 0) {
-    XT_VERIFY_STREAM_CALLBACK(fault);
+    XT_VERIFY_ON_BUFFER(fault);
     return;
   }
   xtBuffer.input = inData;
   xtBuffer.output = outData;
   xtBuffer.frames = bufferFrames;
-  ProcessCallback(&xtBuffer);
+  ProcessBuffer(&xtBuffer);
   if(output && pa_simple_write(client.simple, &audio[0], audio.size(), &fault) < 0)
-    XT_VERIFY_STREAM_CALLBACK(fault);
+    XT_VERIFY_ON_BUFFER(fault);
 }
 
 #endif // XT_DISABLE_PULSE_AUDIO
