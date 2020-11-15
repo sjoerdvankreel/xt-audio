@@ -541,7 +541,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     if(!XT_VERIFY_ON_BUFFER(hr))
       return;
     if((flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) != 0)
-      ProcessXRun();
+      OnXRun();
     timeValid = (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) == 0;
     position = !timeValid? 0: wasapiPosition;
     time = !timeValid? 0: wasapiTime / XtWsHnsPerMs;
@@ -551,7 +551,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     buffer.time = time;
     buffer.position = position;
     buffer.timeValid = timeValid;
-    ProcessBuffer(&buffer);
+    OnBuffer(&buffer);
     XT_VERIFY_ON_BUFFER(capture->ReleaseBuffer(frames));
   }
   
@@ -586,7 +586,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
     buffer.time = time;
     buffer.position = position;
     buffer.timeValid = timeValid;
-    ProcessBuffer(&buffer);
+    OnBuffer(&buffer);
     XT_VERIFY_ON_BUFFER(render->ReleaseBuffer(frames, 0));
   }
 }

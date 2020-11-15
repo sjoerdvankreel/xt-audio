@@ -166,8 +166,8 @@ struct XtStream {
   virtual bool IsBlocking() const { return false; }
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
-  void ProcessXRun();
-  void ProcessBuffer(const XtBuffer* buffer);
+  void OnXRun();
+  void OnBuffer(const XtBuffer* buffer);
 };
 
 struct XtBlockingStream: public XtStream {

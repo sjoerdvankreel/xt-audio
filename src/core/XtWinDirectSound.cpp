@@ -427,12 +427,12 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = nullptr;
       xtBuffer.output = audio1;
       xtBuffer.frames = bufferFrames;
-      ProcessBuffer(&xtBuffer);
+      OnBuffer(&xtBuffer);
     } else {
       xtBuffer.input = nullptr;
       xtBuffer.output = &buffer[0];
       xtBuffer.frames = bufferFrames;
-      ProcessBuffer(&xtBuffer);
+      OnBuffer(&xtBuffer);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_ON_BUFFER(render->Unlock(audio1, size1, audio2, size2)))
@@ -462,7 +462,7 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = audio1;
       xtBuffer.output = nullptr;
       xtBuffer.frames = available / frameSize;
-      ProcessBuffer(&xtBuffer);
+      OnBuffer(&xtBuffer);
       if(!XT_VERIFY_ON_BUFFER(capture->Unlock(audio1, size1, audio2, size2)))
         return;
     } else {
@@ -472,7 +472,7 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = &buffer[0];
       xtBuffer.output = nullptr;
       xtBuffer.frames = available / frameSize;
-      ProcessBuffer(&xtBuffer);
+      OnBuffer(&xtBuffer);
     }
     xtBytesProcessed += available;
   }
@@ -498,12 +498,12 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
       xtBuffer.input = nullptr;
       xtBuffer.output = audio1;
       xtBuffer.frames = available / frameSize;
-      ProcessBuffer(&xtBuffer);
+      OnBuffer(&xtBuffer);
     } else {
       xtBuffer.input = nullptr;
       xtBuffer.output = &buffer[0];
       xtBuffer.frames = available / frameSize;
-      ProcessBuffer(&xtBuffer);
+      OnBuffer(&xtBuffer);
       SplitBufferParts(buffer, audio1, size1, audio2, size2);
     }
     if(!XT_VERIFY_ON_BUFFER(render->Unlock(audio1, size1, audio2, size2)))

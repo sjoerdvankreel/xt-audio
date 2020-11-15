@@ -156,7 +156,7 @@ static XtFault CreatePorts(jack_client_t* client, uint32_t channels, uint64_t ma
 }
 
 static int XRunCallback(void* arg) {
-  static_cast<JackStream*>(arg)->ProcessXRun();
+  static_cast<JackStream*>(arg)->OnXRun();
   return 0;
 }
 
@@ -192,7 +192,7 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   xtBuffer.time = time;
   xtBuffer.position = position;
   xtBuffer.timeValid = timeValid;
-  s->ProcessBuffer(&xtBuffer);
+  s->OnBuffer(&xtBuffer);
   return 0;
 }
 

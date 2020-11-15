@@ -229,7 +229,7 @@ bool XtlLinuxBlockingStream::VerifyOnBuffer(int error, const char* file, int lin
   XtiTrace(file, line, func, expr);
   XtBuffer buffer = { 0 };
   buffer.error = XtiCreateError(GetSystem(), error);
-  ProcessBuffer(&buffer);
+  OnBuffer(&buffer);
   return false;
 }
 

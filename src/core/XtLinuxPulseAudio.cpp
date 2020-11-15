@@ -271,7 +271,7 @@ void PulseAudioStream::ProcessBuffer(bool prefill) {
   xtBuffer.input = inData;
   xtBuffer.output = outData;
   xtBuffer.frames = bufferFrames;
-  ProcessBuffer(&xtBuffer);
+  OnBuffer(&xtBuffer);
   if(output && pa_simple_write(client.simple, &audio[0], audio.size(), &fault) < 0)
     XT_VERIFY_ON_BUFFER(fault);
 }

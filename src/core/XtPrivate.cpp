@@ -123,7 +123,7 @@ void XtStream::RequestStop() {
   XT_FAIL("Async stop request not supported on the current stream.");
 }
 
-void XtStream::ProcessXRun() {
+void XtStream::OnXRun() {
   if(onXRun == nullptr)
     return;
   if(aggregated)
@@ -132,7 +132,7 @@ void XtStream::ProcessXRun() {
     onXRun(0, user);
 }
 
-void XtStream::ProcessBuffer(const XtBuffer* buffer) {
+void XtStream::OnBuffer(const XtBuffer* buffer) {
 
   if(buffer->error != 0)
   {

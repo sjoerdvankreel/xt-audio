@@ -228,7 +228,7 @@ bool XtwWin32BlockingStream::VerifyOnBuffer(HRESULT hr, const char* file, int li
   XtiTrace(file, line, func, expr);
   XtBuffer buffer = { 0 };
   buffer.error = XtiCreateError(GetSystem(), hr);
-  ProcessBuffer(&buffer);
+  OnBuffer(&buffer);
   return false;
 }
 
