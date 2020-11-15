@@ -11,31 +11,21 @@
 * major testing
 * change disable_service to enable_service
 * fix doxygen typedef errors
-* c++ const noexcept
 * move doxygen to own file
 * drop cli/java callconv?
 * caller allocated array of device infos
 * move all docs to own file
 * remove formatfault
-* std::make_unique
-* const x -> x const
-* CoreStructs/CoreEnums/CoreCallbacks
-* Split files to device/stream/service
-* drop cpp ctors in favor of uniform initializer
 * XtService::init/cleanup
 * explain no io in callback
 * XtCore.dll + project structure
 * fix javadoc warnings
-* cpp api use pointers instead of references ?
 * XtCore.dll & folder structure
 * Allow different mix and interleaved on aggregation
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
-* remove static linking support ?
 * tydef struct foo {} foo;
-* cleanup cpp wrapper
 * XtSample.exe (not cpp-sample, cli-sample, java-sample)
-* update linux build scripts: remove x86
-* make cpp header-only then drop static linking support
+* update linux build scripts: remove x86, remove static link
 * copy headers to native dist directories
 * use xt/ folder structure in native + <xt/whatever>
 * cleanup build scripts
