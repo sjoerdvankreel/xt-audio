@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Security;
 using static Xt.XtNative;
 
 namespace Xt
@@ -162,20 +161,4 @@ namespace Xt
         public XtAggregateStreamParams(in XtStreamParams stream, XtAggregateDeviceParams[] devices, int count, in XtMix mix, XtDevice master)
         => (this.stream, this.devices, this.count, this.mix, this.master) = (stream, devices, count, mix, master);
     }
-
-    [SuppressUnmanagedCodeSecurity]
-    delegate void OnXRun(int index, IntPtr user);
-    [SuppressUnmanagedCodeSecurity]
-    delegate void OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user);
-
-    [SuppressUnmanagedCodeSecurity]
-    public delegate void XtOnError(string location, string message);
-    public delegate void XtOnXRun(int index, object user);
-    public delegate void XtOnBuffer(XtStream stream, in XtBuffer buffer, object user);
-
-    public enum XtSetup : int { ProAudio, SystemAudio, ConsumerAudio }
-    public enum XtSample : int { UInt8, Int16, Int24, Int32, Float32 }
-    public enum XtCause : int { Format, Service, Generic, Unknown, Endpoint }
-    public enum XtSystem : int { ALSA = 1, ASIO, JACK, WASAPI, PulseAudio, DirectSound }
-    [Flags] public enum XtCapabilities : int { None = 0x0, Time = 0x1, Latency = 0x2, FullDuplex = 0x4, ChannelMask = 0x8, XRunDetection = 0x10 }
 }
