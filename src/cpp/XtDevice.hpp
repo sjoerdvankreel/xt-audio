@@ -13,6 +13,7 @@ namespace Xt {
 
 class Device final
 {
+  friend class Service;
   XtDevice* const _d;
   Device(XtDevice* d): _d(d) { }
 

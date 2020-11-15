@@ -19,6 +19,7 @@ class Stream final
   _s(nullptr), _user(user), _onXRun(onXRun), _onBuffer(onBuffer) { }
 
   friend class Device;
+  friend class Service;
   friend void XT_CALLBACK Detail::
   ForwardOnXRun(int32_t index, void* user);
   friend void XT_CALLBACK Detail::
