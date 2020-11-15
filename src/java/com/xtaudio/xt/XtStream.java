@@ -10,11 +10,11 @@ import com.xtaudio.xt.CoreCallbacks.XtOnXRun;
 import com.xtaudio.xt.CoreStructs.XtBuffer;
 import com.xtaudio.xt.CoreStructs.XtFormat;
 import com.xtaudio.xt.CoreStructs.XtLatency;
-import static com.xtaudio.xt.XtNative.handleError;
+import static com.xtaudio.xt.Utility.handleError;
 
 public final class XtStream implements AutoCloseable {
 
-    static { Native.register(XtNative.getLibrary()); }
+    static { Native.register(Utility.LIBRARY); }
     private static native long XtStreamStop(Pointer s);
     private static native long XtStreamStart(Pointer s);
     private static native void XtStreamDestroy(Pointer s);

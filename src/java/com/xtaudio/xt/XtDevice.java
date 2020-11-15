@@ -13,11 +13,11 @@ import java.util.Optional;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import static com.xtaudio.xt.XtNative.handleError;
+import static com.xtaudio.xt.Utility.handleError;
 
 public final class XtDevice implements AutoCloseable {
 
-    static { Native.register(XtNative.getLibrary()); }
+    static { Native.register(Utility.LIBRARY); }
     private static native void XtDeviceDestroy(Pointer d);
     private static native long XtDeviceShowControlPanel(Pointer d);
     private static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);

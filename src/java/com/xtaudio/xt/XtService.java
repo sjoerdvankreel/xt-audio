@@ -11,12 +11,12 @@ import com.sun.jna.ptr.PointerByReference;
 import com.xtaudio.xt.CoreStructs.StreamParams;
 import com.xtaudio.xt.CoreStructs.XtAggregateDeviceParams;
 import com.xtaudio.xt.CoreStructs.XtAggregateStreamParams;
-import static com.xtaudio.xt.XtNative.handleError;
+import static com.xtaudio.xt.Utility.handleError;
 import java.util.EnumSet;
 
 public final class XtService {
 
-    static { Native.register(XtNative.getLibrary()); }
+    static { Native.register(Utility.LIBRARY); }
     private static native int XtServiceGetCapabilities(Pointer s);
     private static native long XtServiceGetDeviceCount(Pointer s, IntByReference count);
     private static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);

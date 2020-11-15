@@ -10,7 +10,7 @@ import com.xtaudio.xt.CoreCallbacks.XtOnXRun;
 import com.xtaudio.xt.CoreEnums.XtCause;
 import com.xtaudio.xt.CoreEnums.XtSample;
 import com.xtaudio.xt.CoreEnums.XtSystem;
-import com.xtaudio.xt.XtNative.XtTypeMapper;
+import static com.xtaudio.xt.Utility.XtPrintErrorInfoToString;
 import java.util.Arrays;
 import java.util.List;
 
@@ -139,7 +139,7 @@ public interface CoreStructs {
         public int fault;
         public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
         public static class ByValue extends XtErrorInfo implements Structure.ByValue {}
-        @Override public String toString() { return XtNative.XtPrintErrorInfoToString(this); }
+        @Override public String toString() { return XtPrintErrorInfoToString(this); }
         @Override protected List getFieldOrder() { return Arrays.asList("system", "cause", "text", "fault"); }
     }
 

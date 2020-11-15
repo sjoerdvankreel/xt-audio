@@ -121,8 +121,9 @@ std::unique_ptr<Service> Audio::GetService(System system) {
 
 std::unique_ptr<void, void(*)(void*)> Audio::Init(const std::string& id, void* window, OnError onError) {
   _onError = onError;
+  static int32_t token = 0;
   XtAudioInit(id.c_str(), window, &ForwardOnError);
-  return std::unique_ptr<void, void(*)(void*)>(nullptr, [](void*) { XtAudioTerminate(); });
+  return std::unique_ptr<void, void(*)(void*)>(static_cast<void*>(&token), [](void*) { XtAudioTerminate(); });
 }
 
 

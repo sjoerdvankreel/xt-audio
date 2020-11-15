@@ -11,12 +11,11 @@ import com.xtaudio.xt.CoreEnums.XtSystem;
 import com.xtaudio.xt.CoreStructs.XtAttributes;
 import com.xtaudio.xt.CoreStructs.XtErrorInfo;
 import com.xtaudio.xt.CoreStructs.XtVersion;
-import com.xtaudio.xt.XtNative.XtTypeMapper;
 import java.util.Arrays;
 
 public final class XtAudio implements AutoCloseable {
 
-    static { Native.register(XtNative.getLibrary()); }
+    static { Native.register(Utility.LIBRARY); }
     private static native void XtAudioTerminate();
     private static native XtVersion.ByValue XtAudioGetVersion();
     private static native Pointer XtAudioGetService(XtSystem system);
