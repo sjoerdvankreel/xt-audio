@@ -61,8 +61,6 @@ set confs[1]=release
 set generator="Visual Studio 16 2019"
 
 REM Build native projects.
-REM For core library, all combinations of debug/release, shared/static.
-REM For all others, shared versions are not supported.
 cd ..\scratch
 if not exist win32 (mkdir win32)
 cd win32
@@ -93,17 +91,17 @@ for %%C in (debug release) do (
   msbuild cli.sln /p:Configuration=%%C
   if !errorlevel! neq 0 exit /b !errorlevel!
   if not exist ..\scratch\cli\%%C\net48 mkdir ..\scratch\cli\%%C\net48
-  copy ..\temp\core-xt-win32-%%C-shared\*.* ..\scratch\cli\%%C\net48
+  copy ..\temp\core-xt-win32-%%C\*.* ..\scratch\cli\%%C\net48
   if not exist ..\scratch\cli\%%C\netcoreapp3.1 mkdir ..\scratch\cli\%%C\netcoreapp3.1
-  copy ..\temp\core-xt-win32-%%C-shared\*.* ..\scratch\cli\%%C\netcoreapp3.1
+  copy ..\temp\core-xt-win32-%%C\*.* ..\scratch\cli\%%C\netcoreapp3.1
   if not exist ..\scratch\cli-gui\%%C\net48\ mkdir ..\scratch\cli-gui\%%C\net48
-  copy ..\temp\core-xt-win32-%%C-shared\*.* ..\scratch\cli-gui\%%C\net48
+  copy ..\temp\core-xt-win32-%%C\*.* ..\scratch\cli-gui\%%C\net48
   if not exist ..\scratch\cli-gui\%%C\netcoreapp3.1 mkdir ..\scratch\cli-gui\%%C\netcoreapp3.1
-  copy ..\temp\core-xt-win32-%%C-shared\*.* ..\scratch\cli-gui\%%C\netcoreapp3.1
+  copy ..\temp\core-xt-win32-%%C\*.* ..\scratch\cli-gui\%%C\netcoreapp3.1
   if not exist ..\scratch\cli-sample\%%C\net48 mkdir ..\scratch\cli-sample\%%C\net48
-  copy ..\temp\core-xt-win32-%%C-shared\*.* ..\scratch\cli-sample\%%C\net48
+  copy ..\temp\core-xt-win32-%%C\*.* ..\scratch\cli-sample\%%C\net48
   if not exist ..\scratch\cli-sample\%%C\netcoreapp3.1 mkdir ..\scratch\cli-sample\%%C\netcoreapp3.1
-  copy ..\temp\core-xt-win32-%%C-shared\*.* ..\scratch\cli-sample\%%C\netcoreapp3.1
+  copy ..\temp\core-xt-win32-%%C\*.* ..\scratch\cli-sample\%%C\netcoreapp3.1
   if not exist ..\temp\cli-xt-%%C\net48 (mkdir ..\temp\cli-xt-%%C\net48)
   xcopy /y /s ..\scratch\cli\%%C\net48 ..\temp\cli-xt-%%C\net48
   if not exist ..\temp\cli-xt-%%C\netcoreapp3.1 (mkdir ..\temp\cli-xt-%%C\netcoreapp3.1)
@@ -147,8 +145,8 @@ cd ..
 if not exist ..\temp\java-xt (mkdir ..\temp\java-xt)
 if not exist ..\scratch\java\target (mkdir ..\scratch\java\target)
 copy ..\scratch\java\target\*.jar ..\temp\java-xt
-copy ..\temp\core-xt-win32-release-shared\xt-core.dll ..\temp\java-xt
-copy ..\temp\core-xt-win32-release-shared\xt-core.dll ..\scratch\java\target
+copy ..\temp\core-xt-win32-release\xt-core.dll ..\temp\java-xt
+copy ..\temp\core-xt-win32-release\xt-core.dll ..\scratch\java\target
 if not exist ..\dist\java-xt (mkdir ..\dist\java-xt)
 xcopy /y /s ..\temp\java-xt\*.* ..\dist\java-xt\*.*
 
@@ -159,8 +157,8 @@ cd ..
 if not exist ..\temp\java-sample (mkdir ..\temp\java-sample)
 if not exist ..\scratch\java-sample\target (mkdir ..\scratch\java-sample\target)
 copy ..\scratch\java-sample\target\*.jar ..\temp\java-sample
-copy ..\temp\core-xt-win32-release-shared\xt-core.dll ..\temp\java-sample
-copy ..\temp\core-xt-win32-release-shared\xt-core.dll ..\scratch\java-sample\target
+copy ..\temp\core-xt-win32-release\xt-core.dll ..\temp\java-sample
+copy ..\temp\core-xt-win32-release\xt-core.dll ..\scratch\java-sample\target
 if not exist ..\dist\java-sample (mkdir ..\dist\java-sample)
 xcopy /y /s ..\temp\java-sample\*.* ..\dist\java-sample\*.*
 
