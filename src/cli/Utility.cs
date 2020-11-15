@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 
 namespace Xt
 {
+	[SuppressUnmanagedCodeSecurity]
     static class Utility
 	{
 		[DllImport("xt-core")]
