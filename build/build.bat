@@ -56,74 +56,69 @@ if not exist "..\dist" (mkdir "..\dist")
 if not exist "..\scratch" (mkdir "..\scratch")
 
 REM Native project params.
-set archs[0]=x86
-set archs[1]=x64
 set types[0]=OFF
 set types[1]=ON
 set libs[0]=static
 set libs[1]=shared
 set confs[0]=debug
 set confs[1]=release
-set vsarchs[0]=Win32
-set vsarchs[1]=x64
 set generator="Visual Studio 16 2019"
 
 REM Build native projects.
-REM For core library, all combinations of x86/64, debug/release, shared/static.
+REM For core library, all combinations of debug/release, shared/static.
 REM For all others, shared versions are not supported.
 cd ..\scratch
-for /L %%A in (0, 1, 1) do (
-  for /L %%L in (0, 1, 1) do (
-    set FS=win32-!archs[%%A]!-!libs[%%L]!
-    if not exist !FS! (mkdir !FS!)
-    cd !FS!
-    cmake ..\..\build -G %generator% -A!vsarchs[%%A]! -DDISABLE_DSOUND=%disable_dsound% -DDISABLE_WASAPI=%disable_wasapi% -DDISABLE_ASIO=%disable_asio% -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 -DBUILD_SHARED_LIBS=!types[%%L]!
+for /L %%L in (0, 1, 1) do (
+  set FS=win32-!libs[%%L]!
+  if not exist !FS! (mkdir !FS!)
+  cd !FS!
+  cmake ..\..\build -G %generator% -DDISABLE_DSOUND=%disable_dsound% -DDISABLE_WASAPI=%disable_wasapi% -DDISABLE_ASIO=%disable_asio% -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 -DBUILD_SHARED_LIBS=!types[%%L]!
+  if !errorlevel! neq 0 exit /b !errorlevel!
+  for /L %%C in (0, 1, 1) do (
+    msbuild xt-audio.sln /p:Configuration=!confs[%%C]!
     if !errorlevel! neq 0 exit /b !errorlevel!
-    for /L %%C in (0, 1, 1) do (
-      msbuild xt-audio.sln /p:Configuration=!confs[%%C]!
-      if !errorlevel! neq 0 exit /b !errorlevel!
-      set FT=..\..\temp\core-xt-win32-!archs[%%A]!-!confs[%%C]!-!libs[%%L]!
+    set FT=..\..\temp\core-xt-win32-!confs[%%C]!-!libs[%%L]!
+    if not exist !FT! (mkdir !FT!)
+    copy !confs[%%C]!\xt-core.dll !FT!\xt-core.dll
+    if %%C == 0 (
+      copy !confs[%%C]!\xt-core.pdb !FT!\xt-core.pdb
+    )
+    if %%C == 1 (
+      set FD=..\..\dist\core-xt-win32-!libs[%%L]!
+      if not exist !FD! (mkdir !FD!)
+      copy !FT! !FD!
+    )
+    if %%L == 0 (
+      copy !confs[%%C]!\xt-core.lib !FT!\xt-core.lib
+      set FT=..\..\temp\cpp-xt-win32-!confs[%%C]!-!libs[%%L]!
       if not exist !FT! (mkdir !FT!)
-      copy !confs[%%C]!\xt-core.dll !FT!\xt-core.dll
+      copy !confs[%%C]!\xt-cpp.lib !FT!\xt-cpp.lib
+      copy !confs[%%C]!\xt-core.lib !FT!\xt-core.lib
       if %%C == 0 (
+        copy !confs[%%C]!\xt-cpp.pdb !FT!\xt-cpp.pdb
         copy !confs[%%C]!\xt-core.pdb !FT!\xt-core.pdb
       )
       if %%C == 1 (
-        set FD=..\..\dist\core-xt-win32-!archs[%%A]!-!libs[%%L]!
+        set FD=..\..\dist\cpp-xt-win32-!libs[%%L]!
         if not exist !FD! (mkdir !FD!)
         copy !FT! !FD!
       )
-      if %%L == 0 (
-        copy !confs[%%C]!\xt-core.lib !FT!\xt-core.lib
-        set FT=..\..\temp\cpp-xt-win32-!archs[%%A]!-!confs[%%C]!-!libs[%%L]!
-        if not exist !FT! (mkdir !FT!)
-        copy !confs[%%C]!\xt-cpp.lib !FT!\xt-cpp.lib
-        copy !confs[%%C]!\xt-core.lib !FT!\xt-core.lib
-        if %%C == 0 (
-          copy !confs[%%C]!\xt-cpp.pdb !FT!\xt-cpp.pdb
-          copy !confs[%%C]!\xt-core.pdb !FT!\xt-core.pdb
-        )
-        if %%C == 1 (
-          set FD=..\..\dist\cpp-xt-win32-!archs[%%A]!-!libs[%%L]!
-          if not exist !FD! (mkdir !FD!)
-          copy !FT! !FD!
-        )
-        set FT=..\..\temp\cpp-sample-win32-!archs[%%A]!-!confs[%%C]!-!libs[%%L]!
-        if not exist !FT! (mkdir !FT!)
-        copy !confs[%%C]!\xt-cpp-sample.exe !FT!\xt-cpp-sample.exe
-        if %%C == 0 (
-          copy !confs[%%C]!\xt-cpp-sample.pdb !FT!\xt-cpp-sample.pdb
-        )
-        if %%C == 1 (
-          set FD=..\..\dist\cpp-sample-win32-!archs[%%A]!-!libs[%%L]!
-          if not exist !FD! (mkdir !FD!)
-          copy !FT! !FD!
-        )
+      set FT=..\..\temp\cpp-sample-win32-!confs[%%C]!-!libs[%%L]!
+      if not exist !FT! (mkdir !FT!)
+      copy !confs[%%C]!\xt-cpp-sample.exe !FT!\xt-cpp-sample.exe
+      if %%C == 0 (
+        copy !confs[%%C]!\xt-cpp-sample.pdb !FT!\xt-cpp-sample.pdb
+      )
+      if %%C == 1 (
+        set FD=..\..\dist\cpp-sample-win32-!libs[%%L]!
+        if not exist !FD! (mkdir !FD!)
+        copy !FT! !FD!
       )
     )
-    cd ..
   )
+  cd ..
 )
+
 cd ..\build
 
 REM build cli projects.
@@ -131,28 +126,16 @@ dotnet restore
 for %%C in (debug release) do (
   msbuild cli.sln /p:Configuration=%%C
   if !errorlevel! neq 0 exit /b !errorlevel!
-  if not exist ..\scratch\cli\%%C\net48\win32-x86 mkdir ..\scratch\cli\%%C\net48\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli\%%C\net48\win32-x86
-  if not exist ..\scratch\cli\%%C\netcoreapp3.1\win32-x86 mkdir ..\scratch\cli\%%C\netcoreapp3.1\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli\%%C\netcoreapp3.1\win32-x86
   if not exist ..\scratch\cli\%%C\net48\win32-x64 mkdir ..\scratch\cli\%%C\net48\win32-x64
   copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli\%%C\net48\win32-x64
   if not exist ..\scratch\cli\%%C\netcoreapp3.1\win32-x64 mkdir ..\scratch\cli\%%C\netcoreapp3.1\win32-x64
   copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli\%%C\netcoreapp3.1\win32-x64
-  if not exist ..\scratch\cli-gui\%%C\net48\win32-x86 mkdir ..\scratch\cli-gui\%%C\net48\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-gui\%%C\net48\win32-x86
   if not exist ..\scratch\cli-gui\%%C\net48\win32-x64 mkdir ..\scratch\cli-gui\%%C\net48\win32-x64
   copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-gui\%%C\net48\win32-x64
-  if not exist ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x86 mkdir ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x86
   if not exist ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x64 mkdir ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x64
   copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-gui\%%C\netcoreapp3.1\win32-x64
-  if not exist ..\scratch\cli-sample\%%C\net48\win32-x86 mkdir ..\scratch\cli-sample\%%C\net48\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-sample\%%C\net48\win32-x86
   if not exist ..\scratch\cli-sample\%%C\net48\win32-x64 mkdir ..\scratch\cli-sample\%%C\net48\win32-x64
   copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-sample\%%C\net48\win32-x64
-  if not exist ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x86 mkdir ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x86
-  copy ..\temp\core-xt-win32-x86-%%C-shared\*.* ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x86
   if not exist ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x64 mkdir ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x64
   copy ..\temp\core-xt-win32-x64-%%C-shared\*.* ..\scratch\cli-sample\%%C\netcoreapp3.1\win32-x64
   if not exist ..\temp\cli-xt-%%C\net48 (mkdir ..\temp\cli-xt-%%C\net48)
@@ -163,29 +146,19 @@ for %%C in (debug release) do (
   xcopy /y /s ..\scratch\cli-gui\%%C\net48 ..\temp\cli-gui-%%C\net48
   if not exist ..\temp\cli-gui-%%C\netcoreapp3.1 (mkdir ..\temp\cli-gui-%%C\netcoreapp3.1)
   xcopy /y /s ..\scratch\cli-gui\%%C\netcoreapp3.1 ..\temp\cli-gui-%%C\netcoreapp3.1
-  if not exist ..\temp\cli-gui32-%%C\net48 (mkdir ..\temp\cli-gui32-%%C\net48)
-  xcopy /y /s ..\scratch\cli-gui\%%C\net48 ..\temp\cli-gui32-%%C\net48
-  corflags ..\temp\cli-gui32-%%C\net48\xt-cli-gui.exe /32bitpref+
   copy ..\scratch\cli\%%C\net48\xt-cli.dll.config ..\scratch\cli-gui\%%C\net48\xt-cli.dll.config
   copy ..\scratch\cli\%%C\netcoreapp3.1\xt-cli.dll.config ..\scratch\cli-gui\%%C\netcoreapp3.1\xt-cli.dll.config
   copy ..\scratch\cli\%%C\net48\xt-cli.dll.config ..\temp\cli-gui-%%C\net48\xt-cli.dll.config
   copy ..\scratch\cli\%%C\netcoreapp3.1\xt-cli.dll.config ..\temp\cli-gui-%%C\netcoreapp3.1\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\net48\xt-cli.dll.config ..\temp\cli-gui32-%%C\net48\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\netcoreapp3.1\xt-cli.dll.config ..\temp\cli-gui32-%%C\netcoreapp3.1\xt-cli.dll.config
   if not exist ..\temp\cli-sample-%%C\net48 (mkdir ..\temp\cli-sample-%%C\net48)
   xcopy /y /s ..\scratch\cli-sample\%%C\net48 ..\temp\cli-sample-%%C\net48
   if not exist ..\temp\cli-sample-%%C\netcoreapp3.1 (mkdir ..\temp\cli-sample-%%C\netcoreapp3.1)
   xcopy /y /s ..\scratch\cli-sample\%%C\netcoreapp3.1 ..\temp\cli-sample-%%C\netcoreapp3.1
-  if not exist ..\temp\cli-sample32-%%C\net48 (mkdir ..\temp\cli-sample32-%%C\net48)
-  xcopy /y /s ..\scratch\cli-sample\%%C\net48 ..\temp\cli-sample32-%%C\net48
-  corflags ..\temp\cli-sample32-%%C\net48\xt-cli-sample.exe /32bitpref+
   if !errorlevel! neq 0 exit /b !errorlevel!
   copy ..\scratch\cli\%%C\net48\xt-cli.dll.config ..\scratch\cli-sample\%%C\net48\xt-cli.dll.config
   copy ..\scratch\cli\%%C\netcoreapp3.1\xt-cli.dll.config ..\scratch\cli-sample\%%C\netcoreapp3.1\xt-cli.dll.config
   copy ..\scratch\cli\%%C\net48\xt-cli.dll.config ..\temp\cli-sample-%%C\net48\xt-cli.dll.config
   copy ..\scratch\cli\%%C\netcoreapp3.1\xt-cli.dll.config ..\temp\cli-sample-%%C\netcoreapp3.1\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\net48\xt-cli.dll.config ..\temp\cli-sample32-%%C\net48\xt-cli.dll.config
-  copy ..\scratch\cli\%%C\netcoreapp3.1\xt-cli.dll.config ..\temp\cli-sample32-%%C\netcoreapp3.1\xt-cli.dll.config
 )
 if not exist ..\dist\cli-xt\net48 (mkdir ..\dist\cli-xt\net48)
 if not exist ..\dist\cli-xt\netcoreapp3.1 (mkdir ..\dist\cli-xt\netcoreapp3.1)
@@ -206,14 +179,10 @@ call mvn install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 if not exist ..\temp\java-xt (mkdir ..\temp\java-xt)
-if not exist ..\temp\java-xt\win32-x86 (mkdir ..\temp\java-xt\win32-x86)
 if not exist ..\temp\java-xt\win32-x64 (mkdir ..\temp\java-xt\win32-x64)
-if not exist ..\scratch\java\target\win32-x86 (mkdir ..\scratch\java\target\win32-x86)
 if not exist ..\scratch\java\target\win32-x64 (mkdir ..\scratch\java\target\win32-x64)
 copy ..\scratch\java\target\*.jar ..\temp\java-xt
-copy ..\temp\core-xt-win32-x86-release-shared\xt-core.dll ..\temp\java-xt\win32-x86
 copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\temp\java-xt\win32-x64
-copy ..\temp\core-xt-win32-x86-release-shared\xt-core.dll ..\scratch\java\target\win32-x86
 copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\scratch\java\target\win32-x64
 if not exist ..\dist\java-xt (mkdir ..\dist\java-xt)
 xcopy /y /s ..\temp\java-xt\*.* ..\dist\java-xt\*.*
@@ -223,14 +192,10 @@ call mvn install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 if not exist ..\temp\java-sample (mkdir ..\temp\java-sample)
-if not exist ..\temp\java-sample\win32-x86 (mkdir ..\temp\java-sample\win32-x86)
 if not exist ..\temp\java-sample\win32-x64 (mkdir ..\temp\java-sample\win32-x64)
-if not exist ..\scratch\java-sample\target\win32-x86 (mkdir ..\scratch\java-sample\target\win32-x86)
 if not exist ..\scratch\java-sample\target\win32-x64 (mkdir ..\scratch\java-sample\target\win32-x64)
 copy ..\scratch\java-sample\target\*.jar ..\temp\java-sample
-copy ..\temp\core-xt-win32-x86-release-shared\xt-core.dll ..\temp\java-sample\win32-x86
 copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\temp\java-sample\win32-x64
-copy ..\temp\core-xt-win32-x86-release-shared\xt-core.dll ..\scratch\java-sample\target\win32-x86
 copy ..\temp\core-xt-win32-x64-release-shared\xt-core.dll ..\scratch\java-sample\target\win32-x64
 if not exist ..\dist\java-sample (mkdir ..\dist\java-sample)
 xcopy /y /s ..\temp\java-sample\*.* ..\dist\java-sample\*.*
