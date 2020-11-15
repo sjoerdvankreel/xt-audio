@@ -29,14 +29,14 @@ if (DISABLE_PULSE_AUDIO)
   target_compile_options (xt-core PRIVATE -DXT_DISABLE_PULSE_AUDIO=1)
 endif (DISABLE_PULSE_AUDIO)
 
-if (NOT BUILD_SHARED_LIBS)
-# C++ library (C++ API), only static linking supported.
-  set (CPP_DIR "../src/cpp")
-  file (GLOB CPP_SRC "${CPP_DIR}/*.*")
-  add_library(xt-cpp ${CPP_SRC})
-  target_include_directories (xt-cpp PRIVATE ${CORE_DIR})
-  target_link_libraries (xt-cpp xt-core)
+# C++ library (C++ API), header-only.
+set (CPP_DIR "../src/cpp")
+file (GLOB CPP_SRC "${CPP_DIR}/*.*")
+add_library(xt-cpp INTERFACE)
+target_sources(xt-cpp INTERFACE ${CPP_SRC})
+target_include_directories (xt-cpp INTERFACE ${CORE_DIR})
 
+if (NOT BUILD_SHARED_LIBS)
 # C++ sample program.
   set (CPP_SAMPLE_DIR "../src/cpp-sample")
   file (GLOB CPP_SAMPLE_SRC "${CPP_SAMPLE_DIR}/*.*")
