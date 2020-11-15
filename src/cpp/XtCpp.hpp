@@ -133,11 +133,11 @@ struct Format final {
 
 struct StreamParams final {
   bool interleaved;
-  XRunCallback xRunCallback;
   StreamCallback streamCallback;
+  XRunCallback xRunCallback;
   StreamParams() = default;
   StreamParams(bool interleaved, StreamCallback streamCallback, XRunCallback xRunCallback):
-  interleaved(interleaved), xRunCallback(xRunCallback), streamCallback(streamCallback) {}
+  interleaved(interleaved), streamCallback(streamCallback), xRunCallback(xRunCallback) {}
 };
 
 struct DeviceStreamParams final {

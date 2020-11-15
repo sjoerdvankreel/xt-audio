@@ -248,8 +248,8 @@ struct XtAttributes {
 
 struct XtStreamParams {
   XtBool interleaved;
-  XtXRunCallback xRunCallback;
   XtStreamCallback streamCallback;
+  XtXRunCallback xRunCallback;
 };
 
 struct XtDeviceStreamParams {
@@ -266,7 +266,7 @@ struct XtAggregateDeviceParams {
 
 struct XtAggregateStreamParams {
   struct XtStreamParams stream;
-  struct XtAggregateDeviceParams *devices;
+  struct XtAggregateDeviceParams* devices;
   int32_t count;
   struct XtMix mix;
   const XtDevice* master;

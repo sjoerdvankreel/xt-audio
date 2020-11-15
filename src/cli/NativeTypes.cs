@@ -25,8 +25,8 @@ namespace Xt
     struct StreamParams
     {
         public int interleaved;
-        public XRunCallback xRunCallback;
         public StreamCallback streamCallback;
+        public XRunCallback xRunCallback;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -146,8 +146,8 @@ namespace Xt
     public struct XtStreamParams
     {
         public bool interleaved;
-        public XtXRunCallback xRunCallback;
         public XtStreamCallback streamCallback;
+        public XtXRunCallback xRunCallback;
         public XtStreamParams(bool interleaved, XtStreamCallback streamCallback, XtXRunCallback xRunCallback)
         => (this.interleaved, this.streamCallback, this.xRunCallback) = (interleaved, streamCallback, xRunCallback);
     }

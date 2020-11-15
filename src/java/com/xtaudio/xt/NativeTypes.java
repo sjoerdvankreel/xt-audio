@@ -50,10 +50,10 @@ public final class NativeTypes {
 
     public static class StreamParams extends Structure {
         public boolean interleaved;
-        public XRunCallback xRunCallback;
         public StreamCallback streamCallback;
+        public XRunCallback xRunCallback;
         public StreamParams() {}
-        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "xRunCallback", "streamCallback"); }
+        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "streamCallback", "xRunCallback"); }
     }
 
     public static class XtMix extends Structure {
@@ -149,8 +149,8 @@ public final class NativeTypes {
 
     public static class XtStreamParams {
         public boolean interleaved;
-        public XtXRunCallback xRunCallback;
         public XtStreamCallback streamCallback;
+        public XtXRunCallback xRunCallback;
         public XtStreamParams() {}
         public XtStreamParams(boolean interleaved, XtStreamCallback streamCallback, XtXRunCallback xRunCallback) {
             this.interleaved = interleaved; this.streamCallback = streamCallback; this.xRunCallback = xRunCallback;
