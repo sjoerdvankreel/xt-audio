@@ -49,26 +49,31 @@ public final class XtService {
         return result;
     }
 
-    static AggregateDeviceParams toNative(XtAggregateDeviceParams params) {
+    static byte[] toNative(XtAggregateDeviceParams params) {
         var result = new AggregateDeviceParams();
         result.channels = params.channels;
         result.bufferSize = params.bufferSize;
         result.device = params.device.handle();
-        return result;
+        result.write();
+        return result.getPointer().getByteArray(0, result.size());
     }
 
     public XtStream aggregateStream(XtAggregateStreamParams params, Object user) {
         var stream = new PointerByReference();
-        var result = new XtStream(params.stream.streamCallback, params.stream.xRunCallback, user);
         var native_ = new AggregateStreamParams();
+        var size = Native.getNativeSize(AggregateDeviceParams.ByValue.class);
+        var result = new XtStream(params.stream.streamCallback, params.stream.xRunCallback, user);
+        var devices = new Memory(params.count * size);
+        for(int i = 0; i < params.count; i++)
+            devices.write(i * size, toNative(params.devices[i]), 0, size);
         native_.mix = params.mix;
+        native_.devices = devices;
         native_.count = params.count;
         native_.stream = new StreamParams();
         native_.master = params.master.handle();
         native_.stream.interleaved = params.stream.interleaved;
         native_.stream.streamCallback = result.nativeStreamCallback();
         native_.stream.xRunCallback = params.stream.xRunCallback == null? null: result.nativeXRunCallback();
-        native_.devices = Arrays.stream(params.devices).map(XtService::toNative).toArray(AggregateDeviceParams[]::new);
         handleError(XtServiceAggregateStream(_s, native_, Pointer.NULL, stream));
         result.init(stream.getValue());
         return result;

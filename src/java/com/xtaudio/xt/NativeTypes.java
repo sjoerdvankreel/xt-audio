@@ -35,12 +35,13 @@ public final class NativeTypes {
         public XtChannels channels;
         public double bufferSize;
         public AggregateDeviceParams() {}
+        public static class ByValue extends AggregateDeviceParams implements Structure.ByValue {}
         @Override protected List getFieldOrder() { return Arrays.asList("device", "channels", "bufferSize"); }
     }
 
     public static class AggregateStreamParams extends Structure {
         public StreamParams stream;
-        public AggregateDeviceParams[] devices;
+        public Pointer devices;
         public int count;
         public XtMix mix;
         public Pointer master;
