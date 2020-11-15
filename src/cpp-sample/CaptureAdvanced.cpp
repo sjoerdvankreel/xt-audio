@@ -44,7 +44,7 @@ static void OnNonInterleavedBuffer(const Xt::Stream& stream, const Xt::Buffer& b
 
 int CaptureAdvancedMain() 
 {
-  Xt::Audio audio("", nullptr, nullptr);
+  auto audio = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service)return 0; 

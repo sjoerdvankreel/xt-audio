@@ -9,7 +9,7 @@ static void OnError(const std::string& location, const std::string& message)
 
 int PrintDetailedMain()
 {
-  Xt::Audio audio("Sample", nullptr, OnError);
+  auto audio = Xt::Audio::Init("Sample", nullptr, OnError);
   try 
   {
     Xt::Version version = Xt::Audio::GetVersion();

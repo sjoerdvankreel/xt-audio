@@ -5,7 +5,7 @@
 
 int PrintSimpleMain() 
 {
-  Xt::Audio audio("", nullptr, nullptr);
+  auto audio = Xt::Audio::Init("", nullptr, nullptr);
   for(Xt::System system: Xt::Audio::GetSystems()) 
   {
     std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);

@@ -220,16 +220,15 @@ public:
 };
 
 class Audio final {
+  Audio() = default;
 public:
-  ~Audio();
-  Audio(const std::string& id, void* window, OnError onError);
-
   static Version GetVersion();
   static std::vector<System> GetSystems();
   static System SetupToSystem(Setup setup); 
   static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
   static std::unique_ptr<Service> GetService(System system);
+  static std::unique_ptr<void, void(*)(void*)> Init(const std::string& id, void* window, OnError onError);
 };
 
 class Device final {

@@ -77,16 +77,6 @@ std::ostream& operator<<(std::ostream& os, Capabilities capabilities) {
 
 // ---- audio ----
 
-Audio::~Audio() { 
-  XtAudioTerminate(); 
-  _onError = nullptr; 
-}
-
-Audio::Audio(const std::string& id, void* window, OnError onError) {
-  _onError = onError;
-  XtAudioInit(id.c_str(), window, &ForwardOnError);
-}
-
 Version Audio::GetVersion() {
   auto result = XtAudioGetVersion();
   return *reinterpret_cast<Version*>(&result);
@@ -128,6 +118,13 @@ std::unique_ptr<Service> Audio::GetService(System system) {
   const XtService* service = XtAudioGetService(static_cast<XtSystem>(system));
   return service? std::unique_ptr<Service>(new Service(service)): std::unique_ptr<Service>();
 }
+
+std::unique_ptr<void, void(*)(void*)> Audio::Init(const std::string& id, void* window, OnError onError) {
+  _onError = onError;
+  XtAudioInit(id.c_str(), window, &ForwardOnError);
+  return std::unique_ptr<void, void(*)(void*)>(nullptr, [](void*) { XtAudioTerminate(); });
+}
+
 
 // ---- service ----
 

@@ -22,7 +22,7 @@ int AggregateMain()
   Xt::Format inputFormat(mix, Xt::Channels(2, 0, 0, 0));
   Xt::Format outputFormat(mix, Xt::Channels(0, 0, 2, 0));
   
-  Xt::Audio audio("", nullptr, nullptr);
+  auto audio = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
   std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
   if(!service) return 0;
