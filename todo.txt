@@ -46,3 +46,4 @@
 * cleanup cpp wrapper
 * XtSample.exe (not cpp-sample, cli-sample, java-sample)
 * get rid of xtnative
+* update linux build scripts: remove x86
