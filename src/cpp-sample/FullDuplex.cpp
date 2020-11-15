@@ -3,7 +3,7 @@
 #include <chrono>
 #include <cstring>
 
-static void Callback(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+static void OnBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
 {
   int32_t bytes = buffer.frames * 2 * 4;
   std::memcpy(buffer.output, buffer.input, bytes);
@@ -31,7 +31,7 @@ int FullDuplexMain()
   else return 0;
 
   double bufferSize = device->GetBufferSize(format).current;
-  Xt::StreamParams streamParams(true, Callback, nullptr);
+  Xt::StreamParams streamParams(true, OnBuffer, nullptr);
   Xt::DeviceStreamParams deviceParams(streamParams, format, bufferSize);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   stream->Start();

@@ -18,7 +18,7 @@ static float NextSample()
   return std::sinf(2.0f * _phase * static_cast<float>(M_PI));
 }
 
-static void Render(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
+static void OnBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
 {
   float* output = static_cast<float*>(buffer.output);
   for (int32_t f = 0; f < buffer.frames; f++) output[f] = NextSample();
@@ -35,7 +35,7 @@ int RenderSimpleMain()
   if (!device || !device->SupportsFormat(Format)) return 0;
 
   double bufferSize = device->GetBufferSize(Format).current;
-  Xt::StreamParams streamParams(true, Render, nullptr);
+  Xt::StreamParams streamParams(true, OnBuffer, nullptr);
   Xt::DeviceStreamParams deviceParams(streamParams, Format, bufferSize);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   stream->Start();

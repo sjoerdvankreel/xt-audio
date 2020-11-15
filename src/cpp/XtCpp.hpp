@@ -63,7 +63,7 @@ enum Capabilities {
 
 typedef void (*OnXRun)(int32_t index, void* user);
 typedef void (*OnError)(const std::string& location, const std::string& message);
-typedef void (*StreamCallback)(const Stream& stream, const struct Buffer& buffer, void* user);
+typedef void (*OnBuffer)(const Stream& stream, const struct Buffer& buffer, void* user);
 
 struct BufferSize final {
   double min;
@@ -133,11 +133,11 @@ struct Format final {
 
 struct StreamParams final {
   bool interleaved;
-  StreamCallback streamCallback;
+  OnBuffer onBuffer;
   OnXRun onXRun;
   StreamParams() = default;
-  StreamParams(bool interleaved, StreamCallback streamCallback, OnXRun onXRun):
-  interleaved(interleaved), streamCallback(streamCallback), onXRun(onXRun) {}
+  StreamParams(bool interleaved, OnBuffer onBuffer, OnXRun onXRun):
+  interleaved(interleaved), onBuffer(onBuffer), onXRun(onXRun) {}
 };
 
 struct DeviceStreamParams final {
@@ -193,8 +193,8 @@ private:
 
   void* const user;
   const OnXRun onXRun;
-  const StreamCallback streamCallback;
-  Stream(StreamCallback streamCallback, OnXRun onXRun, void* user);
+  const OnBuffer onBuffer;
+  Stream(OnBuffer onBuffer, OnXRun onXRun, void* user);
 
 public:
   ~Stream();

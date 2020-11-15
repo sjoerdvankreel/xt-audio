@@ -24,7 +24,7 @@ struct StreamCallbackForwarder {
     s->onXRun(index, s->user);
   }
 
-  static void XT_CALLBACK ForwardStream(
+  static void XT_CALLBACK ForwardOnBuffer(
     const XtStream* stream, const XtBuffer* buffer, void* user) {
 
     Buffer b;
@@ -36,7 +36,7 @@ struct StreamCallbackForwarder {
     b.input = buffer->input; 
     b.output = buffer->output; 
     b.error = buffer->error;
-    s->streamCallback(*s, b, s->user);
+    s->onBuffer(*s, b, s->user);
   }
 };
 
@@ -174,9 +174,9 @@ std::unique_ptr<Stream> Service::AggregateStream(const AggregateStreamParams& pa
   coreParams.master = params.master->d;
   coreParams.stream.interleaved = params.stream.interleaved;
   coreParams.mix = *reinterpret_cast<const XtMix*>(&params.mix);
-  coreParams.stream.streamCallback = &StreamCallbackForwarder::ForwardStream;
+  coreParams.stream.onBuffer = &StreamCallbackForwarder::ForwardOnBuffer;
   coreParams.stream.onXRun = params.stream.onXRun == nullptr? nullptr: &StreamCallbackForwarder::ForwardOnXRun;
-  std::unique_ptr<Stream> result(new Stream(params.stream.streamCallback, params.stream.onXRun, user));
+  std::unique_ptr<Stream> result(new Stream(params.stream.onBuffer, params.stream.onXRun, user));
   HandleError(XtServiceAggregateStream(s, &coreParams, result.get(), &stream));
   result->s = stream;
   return result;
@@ -247,10 +247,10 @@ std::unique_ptr<Stream> Device::OpenStream(const DeviceStreamParams& params, voi
   XtDeviceStreamParams coreParams = { 0 };
   coreParams.bufferSize = params.bufferSize;
   coreParams.stream.interleaved = params.stream.interleaved;
-  coreParams.stream.streamCallback = &StreamCallbackForwarder::ForwardStream;
+  coreParams.stream.onBuffer = &StreamCallbackForwarder::ForwardOnBuffer;
   coreParams.format = *reinterpret_cast<const XtFormat*>(&params.format);
   coreParams.stream.onXRun = params.stream.onXRun == nullptr? nullptr: &StreamCallbackForwarder::ForwardOnXRun;
-  std::unique_ptr<Stream> result(new Stream(params.stream.streamCallback, params.stream.onXRun, user));
+  std::unique_ptr<Stream> result(new Stream(params.stream.onBuffer, params.stream.onXRun, user));
   HandleError(XtDeviceOpenStream(d, &coreParams, result.get(), &stream));
   result->s = stream;
   return result;
@@ -258,10 +258,10 @@ std::unique_ptr<Stream> Device::OpenStream(const DeviceStreamParams& params, voi
 
 // ---- stream ----
 
-Stream::Stream(StreamCallback streamCallback, OnXRun onXRun, void* user):
+Stream::Stream(OnBuffer onBuffer, OnXRun onXRun, void* user):
 s(nullptr),
 onXRun(onXRun),
-streamCallback(streamCallback), 
+onBuffer(onBuffer), 
 user(user) {}
 
 Stream::~Stream() { 

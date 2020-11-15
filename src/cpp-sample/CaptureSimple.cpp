@@ -7,7 +7,7 @@ static const Xt::Channels Channels(1, 0, 0, 0);
 static const Xt::Mix Mix(44100, Xt::Sample::Int24);
 static const Xt::Format Format(Mix, Channels);
 
-static void Capture(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+static void OnBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
 {
   auto os = static_cast<std::ofstream*>(user);
   const char* input = static_cast<const char*>(buffer.input);
@@ -26,7 +26,7 @@ int CaptureSimpleMain()
   if(!device || !device->SupportsFormat(Format)) return 0;
 
   double bufferSize = device->GetBufferSize(Format).current;
-  Xt::StreamParams streamParams(true, Capture, nullptr);
+  Xt::StreamParams streamParams(true, OnBuffer, nullptr);
   Xt::DeviceStreamParams deviceParams(streamParams, Format, bufferSize);
   std::ofstream recording("xt-audio.raw", std::ios::out | std::ios::binary);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &recording);

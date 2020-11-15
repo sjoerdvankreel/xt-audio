@@ -27,7 +27,7 @@ static float NextSample()
   return std::sinf(2.0f * _phase * static_cast<float>(M_PI));
 }
 
-static void RenderInterleaved(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
+static void OnInterleavedBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
 {
   float* output = static_cast<float*>(buffer.output);
   int32_t channels = stream.GetFormat().channels.outputs;
@@ -39,7 +39,7 @@ static void RenderInterleaved(const Xt::Stream& stream, const Xt::Buffer& buffer
   }
 }
 
-static void RenderNonInterleaved(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+static void OnNonInterleavedBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
 {
   float** output = static_cast<float**>(buffer.output);
   int32_t channels = stream.GetFormat().channels.outputs;
@@ -64,27 +64,27 @@ int RenderAdvancedMain()
   Xt::BufferSize size = device->GetBufferSize(format);
 
   std::cout << "Render interleaved...\n";
-  Xt::StreamParams streamParams(true, RenderInterleaved, OnXRun);
+  Xt::StreamParams streamParams(true, OnInterleavedBuffer, OnXRun);
   Xt::DeviceStreamParams deviceParams(streamParams, format, size.current);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render non-interleaved...\n";
-  streamParams = Xt::StreamParams(false, RenderNonInterleaved, OnXRun);
+  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun);
   deviceParams = Xt::DeviceStreamParams(streamParams, format, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render interleaved (channel 0)...\n";
   Xt::Format sendTo0(Mix, Xt::Channels(0, 0, 1, 1ULL << 0));
-  streamParams = Xt::StreamParams(true, RenderInterleaved, OnXRun);
+  streamParams = Xt::StreamParams(true, OnInterleavedBuffer, OnXRun);
   deviceParams = Xt::DeviceStreamParams(streamParams, sendTo0, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render non-interleaved (channel 1)...\n";
   Xt::Format sendTo1(Mix, Xt::Channels(0, 0, 1, 1ULL << 1));
-  streamParams = Xt::StreamParams(false, RenderNonInterleaved, OnXRun);
+  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun);
   deviceParams = Xt::DeviceStreamParams(streamParams, sendTo1, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
