@@ -74,7 +74,7 @@ public class RenderAdvanced {
         XtStreamParams streamParams;
         XtDeviceStreamParams deviceParams;
 
-        try(XtAudio audio = new XtAudio(null, null, null)) {
+        try(AutoCloseable audio = XtAudio.init(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = XtAudio.getService(system);
             if(service == null) return;

@@ -5,8 +5,8 @@ import com.xtaudio.xt.NativeTypes.*;
 
 public class PrintSimple {
 
-    public static void main() {
-        try(XtAudio audio = new XtAudio(null, null, null)) {
+    public static void main() throws Exception {
+        try(AutoCloseable audio = XtAudio.init(null, null, null)) {
             for(XtSystem system: XtAudio.getSystems()) {
                 XtService service = XtAudio.getService(system);
                 for(int d = 0; d < service.getDeviceCount(); d++)

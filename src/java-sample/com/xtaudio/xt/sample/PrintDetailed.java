@@ -10,8 +10,8 @@ public class PrintDetailed {
         System.out.println(location + ": " + message);
     }
 
-    public static void main() {
-        try(XtAudio audio = new XtAudio("Sample", null, PrintDetailed::onError)) {
+    public static void main() throws Exception {
+        try(AutoCloseable audio = XtAudio.init("Sample", null, PrintDetailed::onError)) {
             XtVersion version = XtAudio.getVersion();
             System.out.println("Version: " + version.major + "." + version.minor);
             XtSystem pro = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);

@@ -71,13 +71,4 @@ final class XtNative {
     }
 
     static native String XtPrintErrorInfoToString(XtErrorInfo info);
-    static native XtErrorInfo.ByValue XtAudioGetErrorInfo(long error);
-
-    static native void XtAudioTerminate();
-    static native XtVersion.ByValue XtAudioGetVersion();
-    static native Pointer XtAudioGetService(XtSystem system);
-    static native XtSystem XtAudioSetupToSystem(XtSetup setup);
-    static native void XtAudioGetSystems(int[] buffer, IntByReference size);
-    static native XtAttributes.ByValue XtAudioGetSampleAttributes(XtSample sample);
-    static native void XtAudioInit(String id, Pointer window, XtOnError onError);
 }
