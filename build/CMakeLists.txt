@@ -5,9 +5,7 @@ cmake_minimum_required (VERSION 2.8)
 set (CORE_DIR "../src/core")
 file (GLOB CORE_SRC "${CORE_DIR}/*.*")
 add_library (xt-core ${CORE_SRC})
-if (BUILD_SHARED_LIBS)
-  target_compile_options (xt-core PRIVATE -DXT_SHARED=1)
-endif (BUILD_SHARED_LIBS)
+target_compile_options (xt-core PRIVATE -DXT_EXPORT=1)
 
 # Compile time backend selection support.
 if (DISABLE_ASIO)

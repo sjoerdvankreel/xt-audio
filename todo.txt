@@ -37,5 +37,5 @@
 * update linux build scripts: remove x86
 * make cpp header-only then drop static linking support
 * copy headers to native dist directories
-* use disposer in samples
 * use xt/ folder structure in native + <xt/whatever>
+* cleanup build scripts

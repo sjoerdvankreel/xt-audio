@@ -56,10 +56,6 @@ if not exist "..\dist" (mkdir "..\dist")
 if not exist "..\scratch" (mkdir "..\scratch")
 
 REM Native project params.
-set types[0]=OFF
-set types[1]=ON
-set libs[0]=static
-set libs[1]=shared
 set confs[0]=debug
 set confs[1]=release
 set generator="Visual Studio 16 2019"
@@ -68,56 +64,26 @@ REM Build native projects.
 REM For core library, all combinations of debug/release, shared/static.
 REM For all others, shared versions are not supported.
 cd ..\scratch
-for /L %%L in (0, 1, 1) do (
-  set FS=win32-!libs[%%L]!
-  if not exist !FS! (mkdir !FS!)
-  cd !FS!
-  cmake ..\..\build -G %generator% -DDISABLE_DSOUND=%disable_dsound% -DDISABLE_WASAPI=%disable_wasapi% -DDISABLE_ASIO=%disable_asio% -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 -DBUILD_SHARED_LIBS=!types[%%L]!
+if not exist win32 (mkdir win32)
+cd win32
+cmake ..\..\build -G %generator% -DDISABLE_DSOUND=%disable_dsound% -DDISABLE_WASAPI=%disable_wasapi% -DDISABLE_ASIO=%disable_asio% -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5
+if !errorlevel! neq 0 exit /b !errorlevel!
+for /L %%C in (0, 1, 1) do (
+  msbuild xt-audio.sln /p:Configuration=!confs[%%C]!
   if !errorlevel! neq 0 exit /b !errorlevel!
-  for /L %%C in (0, 1, 1) do (
-    msbuild xt-audio.sln /p:Configuration=!confs[%%C]!
-    if !errorlevel! neq 0 exit /b !errorlevel!
-    set FT=..\..\temp\core-xt-win32-!confs[%%C]!-!libs[%%L]!
-    if not exist !FT! (mkdir !FT!)
-    copy !confs[%%C]!\xt-core.dll !FT!\xt-core.dll
-    if %%C == 0 (
-      copy !confs[%%C]!\xt-core.pdb !FT!\xt-core.pdb
-    )
-    if %%C == 1 (
-      set FD=..\..\dist\core-xt-win32-!libs[%%L]!
-      if not exist !FD! (mkdir !FD!)
-      copy !FT! !FD!
-    )
-    if %%L == 0 (
-      copy !confs[%%C]!\xt-core.lib !FT!\xt-core.lib
-      set FT=..\..\temp\cpp-xt-win32-!confs[%%C]!-!libs[%%L]!
-      if not exist !FT! (mkdir !FT!)
-      copy !confs[%%C]!\xt-cpp.lib !FT!\xt-cpp.lib
-      copy !confs[%%C]!\xt-core.lib !FT!\xt-core.lib
-      if %%C == 0 (
-        copy !confs[%%C]!\xt-cpp.pdb !FT!\xt-cpp.pdb
-        copy !confs[%%C]!\xt-core.pdb !FT!\xt-core.pdb
-      )
-      if %%C == 1 (
-        set FD=..\..\dist\cpp-xt-win32-!libs[%%L]!
-        if not exist !FD! (mkdir !FD!)
-        copy !FT! !FD!
-      )
-      set FT=..\..\temp\cpp-sample-win32-!confs[%%C]!-!libs[%%L]!
-      if not exist !FT! (mkdir !FT!)
-      copy !confs[%%C]!\xt-cpp-sample.exe !FT!\xt-cpp-sample.exe
-      if %%C == 0 (
-        copy !confs[%%C]!\xt-cpp-sample.pdb !FT!\xt-cpp-sample.pdb
-      )
-      if %%C == 1 (
-        set FD=..\..\dist\cpp-sample-win32-!libs[%%L]!
-        if not exist !FD! (mkdir !FD!)
-        copy !FT! !FD!
-      )
-    )
+  set FT=..\..\temp\core-xt-win32-!confs[%%C]!
+  if not exist !FT! (mkdir !FT!)
+  copy !confs[%%C]!\xt-core.dll !FT!\xt-core.dll
+  if %%C == 0 (
+    copy !confs[%%C]!\xt-core.pdb !FT!\xt-core.pdb
   )
-  cd ..
+  if %%C == 1 (
+    set FD=..\..\dist\core-xt-win32
+    if not exist !FD! (mkdir !FD!)
+    copy !FT! !FD!
+  )
 )
+cd ..
 
 cd ..\build
 

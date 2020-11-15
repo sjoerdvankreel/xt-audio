@@ -15,13 +15,13 @@
 #define XT_CALLBACK XT_CALL
 
 /** @cond */
-#ifndef XT_SHARED
+#ifndef XT_EXPORT
 #define XT_API
 #elif (defined _WIN32)
 #define XT_API __declspec(dllexport)
 #else
 #define XT_API __attribute__((visibility("default")))
-#endif /* XT_SHARED */
+#endif /* XT_EXPORT */
 /** @endcond */
 
 #ifdef __cplusplus
