@@ -81,7 +81,7 @@ namespace Xt
             XtStreamParams streamParams;
             XtDeviceStreamParams deviceParams;
 
-            using XtAudio audio = new XtAudio(null, IntPtr.Zero, null);
+            using IDisposable audio = XtAudio.Init(null, IntPtr.Zero, null);
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
             XtService service = XtAudio.GetService(system);
             if (service == null) return;

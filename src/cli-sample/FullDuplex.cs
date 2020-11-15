@@ -23,7 +23,7 @@ namespace Xt
             XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.Float32), new XtChannels(2, 0, 2, 0));
             XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.Float32), new XtChannels(2, 0, 2, 0));
 
-            using XtAudio audio = new XtAudio(null, IntPtr.Zero, null);
+            using IDisposable audio = XtAudio.Init(null, IntPtr.Zero, null);
             XtSystem system = XtAudio.SetupToSystem(XtSetup.ProAudio);
             XtService service = XtAudio.GetService(system);
             if (service == null) return;

@@ -9,7 +9,7 @@ namespace Xt
 
         public static void Main()
         {
-            using XtAudio audio = new XtAudio("Sample", IntPtr.Zero, OnError);
+            using IDisposable audio = XtAudio.Init("Sample", IntPtr.Zero, OnError);
             try
             {
                 XtVersion version = XtAudio.GetVersion();

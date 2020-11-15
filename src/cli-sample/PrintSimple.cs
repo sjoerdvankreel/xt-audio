@@ -6,7 +6,7 @@ namespace Xt
 	{
 		public static void Main()
 		{
-			using XtAudio audio = new XtAudio(null, IntPtr.Zero,  null);
+			using IDisposable audio = XtAudio.Init(null, IntPtr.Zero,  null);
 			foreach(XtSystem system in XtAudio.GetSystems())
 			{
 				XtService service = XtAudio.GetService(system);

@@ -30,7 +30,7 @@ namespace Xt
 			Application.Run(new XtGui());
 		}
 
-		private XtAudio audio;
+		private IDisposable audio;
 		private TextWriter log;
 		private XtStream inputStream;
 		private XtStream outputStream;
@@ -147,7 +147,7 @@ namespace Xt
 			log = new StreamWriter("xt-audio.log");
 
 			Text = $"XT-Audio {libraryVersion.major}.{libraryVersion.minor}";
-			audio = new XtAudio("XT-Gui", Handle, OnError);
+			audio = XtAudio.Init("XT-Gui", Handle, OnError);
 			rate.DataSource = Rates;
 			rate.SelectedItem = 44100;
 			sample.DataSource = Samples;
