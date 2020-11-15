@@ -1,7 +1,7 @@
 project (xt-audio)
 cmake_minimum_required (VERSION 2.8)
 
-# Core library (C API), both static and dynamic linking supported.
+# Core library (C API).
 set (CORE_DIR "../src/core")
 file (GLOB CORE_SRC "${CORE_DIR}/*.*")
 add_library (xt-core ${CORE_SRC})
@@ -29,7 +29,7 @@ if (DISABLE_PULSE_AUDIO)
   target_compile_options (xt-core PRIVATE -DXT_DISABLE_PULSE_AUDIO=1)
 endif (DISABLE_PULSE_AUDIO)
 
-# C++ library (C++ API), header-only.
+# C++ library (C++ API).
 set (CPP_DIR "../src/cpp")
 file (GLOB CPP_SRC "${CPP_DIR}/*.*")
 add_library(xt-cpp INTERFACE)
@@ -40,14 +40,13 @@ target_include_directories (xt-cpp_ PRIVATE ${CORE_DIR})
 target_link_libraries (xt-cpp_ xt-core)
 set_target_properties(xt-cpp_ PROPERTIES LINKER_LANGUAGE CXX)
 
-if (NOT BUILD_SHARED_LIBS)
 # C++ sample program.
-  set (CPP_SAMPLE_DIR "../src/cpp-sample")
-  file (GLOB CPP_SAMPLE_SRC "${CPP_SAMPLE_DIR}/*.*")
-  add_executable (xt-cpp-sample ${CPP_SAMPLE_SRC})
-  target_include_directories (xt-cpp-sample PRIVATE ${CPP_DIR})
-  target_link_libraries (xt-cpp-sample xt-cpp)
-endif (NOT BUILD_SHARED_LIBS)
+set (CPP_SAMPLE_DIR "../src/cpp-sample")
+file (GLOB CPP_SAMPLE_SRC "${CPP_SAMPLE_DIR}/*.*")
+add_executable (xt-cpp-sample ${CPP_SAMPLE_SRC})
+target_link_libraries (xt-cpp-sample xt-core)
+target_include_directories (xt-cpp-sample PRIVATE ${CPP_DIR})
+target_include_directories (xt-cpp-sample PRIVATE ${CORE_DIR})
 
 if (WIN32 AND (NOT DISABLE_ASIO))
 # Need asmjit for ASIO backend on windows.
