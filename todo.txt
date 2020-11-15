@@ -36,3 +36,4 @@
 * XtSample.exe (not cpp-sample, cli-sample, java-sample)
 * update linux build scripts: remove x86
 * make cpp header-only then drop static linking support
+* copy headers to native dist directories
