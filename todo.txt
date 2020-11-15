@@ -9,7 +9,6 @@
 * simplify xtl/xti/xtw prefixes
 * check docs
 * major testing
-* naming convention cpp -> prefix with Xt?
 * change disable_service to enable_service
 * fix doxygen typedef errors
 * c++ const noexcept
@@ -18,9 +17,6 @@
 * caller allocated array of device infos
 * move all docs to own file
 * remove formatfault
-* cpp constexpr
-* remove friends
-* Xt::Xt
 * std::make_unique
 * const x -> x const
 * CoreStructs/CoreEnums/CoreCallbacks

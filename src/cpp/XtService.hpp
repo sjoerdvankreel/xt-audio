@@ -41,8 +41,7 @@ inline std::unique_ptr<Device> Service::OpenDefaultDevice(bool output) const
 { 
   XtDevice* device; 
   Detail::HandleError(XtServiceOpenDefaultDevice(_s, output != XtFalse, &device));
-  if(device == nullptr) return std::unique_ptr<Device>();
-  return std::unique_ptr<Device>(new Device(device));
+  return device == nullptr? std::unique_ptr<Device>(): std::unique_ptr<Device>(new Device(device));
 }
 
 inline std::unique_ptr<Stream> Service::AggregateStream(AggregateStreamParams const& params, void* user)
