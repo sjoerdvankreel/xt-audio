@@ -140,7 +140,7 @@ enum XtCapabilities {
    * Streams support xrun detection and will invoke the 
    * application's xrun callback when an under/overflow occurs.
    *
-   * @see XtXRunCallback
+   * @see XtOnXRun
    */
   XtCapabilitiesXRunDetection = 0x10
 };
@@ -153,8 +153,8 @@ typedef enum XtSample XtSample;
 typedef enum XtCapabilities XtCapabilities;
 /** @endcond */
 
+typedef void (XT_CALLBACK *XtOnXRun)(int32_t index, void* user);
 typedef void (XT_CALLBACK *XtOnError)(const char* location, const char* message);
-typedef void (XT_CALLBACK *XtXRunCallback)(int32_t index, void* user);
 typedef void (XT_CALLBACK *XtStreamCallback)(const struct XtStream* stream, const struct XtBuffer* buffer, void* user);
 
 struct XtBuffer {
@@ -249,7 +249,7 @@ struct XtAttributes {
 struct XtStreamParams {
   XtBool interleaved;
   XtStreamCallback streamCallback;
-  XtXRunCallback xRunCallback;
+  XtOnXRun onXRun;
 };
 
 struct XtDeviceStreamParams {

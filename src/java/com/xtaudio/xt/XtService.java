@@ -62,7 +62,7 @@ public final class XtService {
         var stream = new PointerByReference();
         var native_ = new AggregateStreamParams();
         var size = Native.getNativeSize(AggregateDeviceParams.ByValue.class);
-        var result = new XtStream(params.stream.streamCallback, params.stream.xRunCallback, user);
+        var result = new XtStream(params.stream.streamCallback, params.stream.onXRun, user);
         var devices = new Memory(params.count * size);
         for(int i = 0; i < params.count; i++)
             devices.write(i * size, toNative(params.devices[i]), 0, size);
@@ -73,7 +73,7 @@ public final class XtService {
         native_.master = params.master.handle();
         native_.stream.interleaved = params.stream.interleaved;
         native_.stream.streamCallback = result.nativeStreamCallback();
-        native_.stream.xRunCallback = params.stream.xRunCallback == null? null: result.nativeXRunCallback();
+        native_.stream.onXRun = params.stream.onXRun == null? null: result.onNativeXRun();
         handleError(XtServiceAggregateStream(_s, native_, Pointer.NULL, stream));
         result.init(stream.getValue());
         return result;

@@ -61,8 +61,8 @@ enum Capabilities {
   CapabilitiesXRunDetection = 0x10
 };
 
+typedef void (*OnXRun)(int32_t index, void* user);
 typedef void (*OnError)(const std::string& location, const std::string& message);
-typedef void (*XRunCallback)(int32_t index, void* user);
 typedef void (*StreamCallback)(const Stream& stream, const struct Buffer& buffer, void* user);
 
 struct BufferSize final {
@@ -134,10 +134,10 @@ struct Format final {
 struct StreamParams final {
   bool interleaved;
   StreamCallback streamCallback;
-  XRunCallback xRunCallback;
+  OnXRun onXRun;
   StreamParams() = default;
-  StreamParams(bool interleaved, StreamCallback streamCallback, XRunCallback xRunCallback):
-  interleaved(interleaved), streamCallback(streamCallback), xRunCallback(xRunCallback) {}
+  StreamParams(bool interleaved, StreamCallback streamCallback, OnXRun onXRun):
+  interleaved(interleaved), streamCallback(streamCallback), onXRun(onXRun) {}
 };
 
 struct DeviceStreamParams final {
@@ -192,9 +192,9 @@ private:
   friend struct StreamCallbackForwarder;
 
   void* const user;
-  const XRunCallback xRunCallback;
+  const OnXRun onXRun;
   const StreamCallback streamCallback;
-  Stream(StreamCallback streamCallback, XRunCallback xRunCallback, void* user);
+  Stream(StreamCallback streamCallback, OnXRun onXRun, void* user);
 
 public:
   ~Stream();

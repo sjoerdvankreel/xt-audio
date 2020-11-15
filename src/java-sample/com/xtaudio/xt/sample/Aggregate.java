@@ -5,7 +5,7 @@ import static com.xtaudio.xt.NativeTypes.*;
 
 public class Aggregate {
 
-    static void xRun(int index, Object user) {
+    static void onXRun(int index, Object user) {
         System.out.println("XRun on device " + index + ".");
     }
 
@@ -37,7 +37,7 @@ public class Aggregate {
                 XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
                 deviceParams[0] = new XtAggregateDeviceParams(input, inputFormat.channels, 30.0);
                 deviceParams[1] = new XtAggregateDeviceParams(output, outputFormat.channels, 30.0);
-                XtStreamParams streamParams = new XtStreamParams(true, Aggregate::aggregate, Aggregate::xRun);
+                XtStreamParams streamParams = new XtStreamParams(true, Aggregate::aggregate, Aggregate::onXRun);
                 aggregateParams = new XtAggregateStreamParams(streamParams, deviceParams, 2, mix, output);
                 try(XtStream stream = service.aggregateStream(aggregateParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

@@ -87,7 +87,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   (*stream)->aggregated = false;
   (*stream)->aggregationIndex = 0;
   (*stream)->interleaved = params->stream.interleaved;
-  (*stream)->xRunCallback = params->stream.xRunCallback;
+  (*stream)->onXRun = params->stream.onXRun;
   (*stream)->sampleSize = attributes.size;
   (*stream)->streamCallback = params->stream.streamCallback;
   (*stream)->canInterleaved = canInterleaved;
@@ -275,7 +275,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->insideCallbackCount = 0;
   result->sampleSize = attrs.size;
   result->interleaved = params->stream.interleaved;
-  result->xRunCallback = params->stream.xRunCallback;
+  result->onXRun = params->stream.onXRun;
   result->canInterleaved = params->stream.interleaved;
   result->streamCallback = params->stream.streamCallback;
   result->canNonInterleaved = !params->stream.interleaved;
@@ -315,7 +315,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
     thisParams.format = thisFormat;
     thisParams.stream.interleaved = params->stream.interleaved;
     thisParams.stream.streamCallback = thisCallback;
-    thisParams.stream.xRunCallback = params->stream.xRunCallback;
+    thisParams.stream.onXRun = params->stream.onXRun;
     if((error = OpenStreamInternal(params->devices[i].device, &thisParams, params->master != params->devices[i].device, &result->contexts[i], &thisStream) != 0))
       return error;
     result->streams.push_back(std::unique_ptr<XtStream>(thisStream));

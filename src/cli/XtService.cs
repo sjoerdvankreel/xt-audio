@@ -32,7 +32,7 @@ namespace Xt
 
         public unsafe XtStream AggregateStream(in XtAggregateStreamParams @params, object user)
         {
-            var result = new XtStream(@params.stream.streamCallback, @params.stream.xRunCallback, user);
+            var result = new XtStream(@params.stream.streamCallback, @params.stream.onXRun, user);
             var native = new AggregateStreamParams();
             var devices = @params.devices.Select(ToNative).ToArray();
             fixed (AggregateDeviceParams* devs = devices)
@@ -43,7 +43,7 @@ namespace Xt
                 native.master = @params.master.Handle();
                 native.stream.streamCallback = result.NativeStreamCallback();
                 native.stream.interleaved = @params.stream.interleaved ? 1 : 0;
-                native.stream.xRunCallback = @params.stream.xRunCallback == null ? null : result.NativeXRunCallback();
+                native.stream.onXRun = @params.stream.onXRun == null ? null : result.OnNativeXRun();
                 result.Init(HandleError(XtServiceAggregateStream(_s, in native, IntPtr.Zero, out var r), r));
                 return result;
             }

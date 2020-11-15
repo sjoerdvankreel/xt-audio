@@ -2,10 +2,10 @@ using System;
 
 namespace Xt
 {
-    class XRunCallback
+    class OnXRun
     {
         private readonly Action<Func<string>> onMessage;
-        internal XRunCallback(Action<Func<string>> onMessage)
+        internal OnXRun(Action<Func<string>> onMessage)
         {
             this.onMessage = onMessage;
         }

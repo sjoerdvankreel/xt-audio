@@ -16,7 +16,7 @@ public class RenderAdvanced {
         return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 
-    static void xRun(int index, Object user) {
+    static void onXRun(int index, Object user) {
         System.out.println("XRun on device " + index + ".");
     }
 
@@ -85,7 +85,7 @@ public class RenderAdvanced {
                 XtBufferSize size = device.getBufferSize(format);
 
                 System.out.println("Render interleaved, safe buffers...");
-                streamParams = new XtStreamParams(true, RenderAdvanced::renderInterleavedSafe, RenderAdvanced::xRun);
+                streamParams = new XtStreamParams(true, RenderAdvanced::renderInterleavedSafe, RenderAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
@@ -93,14 +93,14 @@ public class RenderAdvanced {
                 }
 
                 System.out.println("Render interleaved, native buffers...");
-                streamParams = new XtStreamParams(true, RenderAdvanced::renderInterleavedNative, RenderAdvanced::xRun);
+                streamParams = new XtStreamParams(true, RenderAdvanced::renderInterleavedNative, RenderAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null)) {
                     runStream(stream);
                 }
 
                 System.out.println("Render non-interleaved, safe buffers...");
-                streamParams = new XtStreamParams(false, RenderAdvanced::renderNonInterleavedSafe, RenderAdvanced::xRun);
+                streamParams = new XtStreamParams(false, RenderAdvanced::renderNonInterleavedSafe, RenderAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, false)) {
@@ -108,7 +108,7 @@ public class RenderAdvanced {
                 }
 
                 System.out.println("Render non-interleaved, native buffers...");
-                streamParams = new XtStreamParams(false, RenderAdvanced::renderNonInterleavedNative, RenderAdvanced::xRun);
+                streamParams = new XtStreamParams(false, RenderAdvanced::renderNonInterleavedNative, RenderAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null)) {
                     runStream(stream);
@@ -116,7 +116,7 @@ public class RenderAdvanced {
 
                 System.out.println("Render interleaved, safe buffers (channel 0)...");
                 XtFormat sendTo0 = new XtFormat(MIX, new XtChannels(0, 0, 1, 1L << 0));
-                streamParams = new XtStreamParams(true, RenderAdvanced::renderInterleavedSafe, RenderAdvanced::xRun);
+                streamParams = new XtStreamParams(true, RenderAdvanced::renderInterleavedSafe, RenderAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, sendTo0, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
@@ -125,7 +125,7 @@ public class RenderAdvanced {
 
                 System.out.println("Render non-interleaved, native buffers (channel 1)...");
                 XtFormat sendTo1 = new XtFormat(MIX, new XtChannels(0, 0, 1, 1L << 1));
-                streamParams = new XtStreamParams(false, RenderAdvanced::renderNonInterleavedNative, RenderAdvanced::xRun);
+                streamParams = new XtStreamParams(false, RenderAdvanced::renderNonInterleavedNative, RenderAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, sendTo1, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null)) {
                     runStream(stream);

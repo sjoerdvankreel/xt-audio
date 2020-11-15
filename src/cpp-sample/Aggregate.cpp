@@ -5,7 +5,7 @@
 #include <cstring>
 #include <iostream>
 
-static void XRun(int32_t index, void* user) 
+static void OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
 static void Aggregate(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
@@ -35,7 +35,7 @@ int AggregateMain()
   Xt::AggregateDeviceParams deviceParams[2];
   deviceParams[0] = Xt::AggregateDeviceParams(input.get(), inputFormat.channels, 30.0);
   deviceParams[1] = Xt::AggregateDeviceParams(output.get(), outputFormat.channels, 30.0);
-  Xt::StreamParams streamParams(true, Aggregate, XRun);
+  Xt::StreamParams streamParams(true, Aggregate, OnXRun);
   Xt::AggregateStreamParams aggregateParams(streamParams, deviceParams, 2, mix, output.get());
   std::unique_ptr<Xt::Stream> stream = service->AggregateStream(aggregateParams, nullptr);
   stream->Start();

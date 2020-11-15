@@ -8,7 +8,7 @@ static const Xt::Channels Channels(2, 0, 0, 0);
 static const Xt::Mix Mix(44100, Xt::Sample::Int24);
 static const Xt::Format Format(Mix, Channels);
 
-static void XRun(int32_t index, void* user) 
+static void OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
 static void RunStream(Xt::Stream* stream)
@@ -54,14 +54,14 @@ int CaptureAdvancedMain()
   Xt::BufferSize size = device->GetBufferSize(Format);
 
   std::cout << "Capture interleaved...\n";
-  Xt::StreamParams streamParams(true, CaptureInterleaved, XRun);
+  Xt::StreamParams streamParams(true, CaptureInterleaved, OnXRun);
   Xt::DeviceStreamParams deviceParams(streamParams, Format, size.current);
   std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &interleaved);
   RunStream(stream.get());
 
   std::cout << "Capture non-interleaved...\n";
-  streamParams = Xt::StreamParams(false, CaptureNonInterleaved, XRun);
+  streamParams = Xt::StreamParams(false, CaptureNonInterleaved, OnXRun);
   deviceParams = Xt::DeviceStreamParams(streamParams, Format, size.current);
   std::ofstream nonInterleaved("xt-audio-non-interleaved.raw", std::ios::out | std::ios::binary);
   stream = device->OpenStream(deviceParams, &nonInterleaved);

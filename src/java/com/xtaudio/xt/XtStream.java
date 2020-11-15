@@ -19,9 +19,9 @@ public final class XtStream implements AutoCloseable {
     private XtFormat _format;
 
     private final Object _user;
-    private final XtXRunCallback _xRunCallback;
+    private final XtOnXRun _onXRun;
     private final XtStreamCallback _streamCallback;
-    private final XRunCallback _nativeXRunCallback;
+    private final OnXRun _onNativeXRun;
     private final StreamCallback _nativeStreamCallback;
     private final XtBuffer _buffer = new XtBuffer();
     private final XtLatency _latency = new XtLatency();
@@ -32,14 +32,14 @@ public final class XtStream implements AutoCloseable {
     @Override public void close() { XtStreamDestroy(_s); }
     public void start() { handleError(XtStreamStart(_s)); }
 
-    XRunCallback nativeXRunCallback() { return _nativeXRunCallback; }
+    OnXRun onNativeXRun() { return _onNativeXRun; }
     StreamCallback nativeStreamCallback() { return _nativeStreamCallback; }
 
-    XtStream(XtStreamCallback streamCallback, XtXRunCallback xRunCallback, Object user) {
+    XtStream(XtStreamCallback streamCallback, XtOnXRun onXRun, Object user) {
         _user = user;
-        _xRunCallback = xRunCallback;
+        _onXRun = onXRun;
         _streamCallback = streamCallback;
-        _nativeXRunCallback = this::xRunCallback;
+        _onNativeXRun = this::onXRun;
         _nativeStreamCallback = this::streamCallback;
     }
 
@@ -58,8 +58,8 @@ public final class XtStream implements AutoCloseable {
         return _latency;
     }
 
-    private void xRunCallback(int index, Pointer user) throws Exception {
-        _xRunCallback.callback(index, _user);
+    private void onXRun(int index, Pointer user) throws Exception {
+        _onXRun.callback(index, _user);
     }
 
     private void streamCallback(Pointer stream, Pointer buffer, Pointer user) throws Exception {

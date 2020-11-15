@@ -15,17 +15,17 @@ namespace Xt
 
         IntPtr _s;
         readonly object _user;
-        readonly XtXRunCallback _xRunCallback;
+        readonly XtOnXRun _onXRun;
         readonly XtStreamCallback _streamCallback;
-        readonly XRunCallback _nativeXRunCallback;
+        readonly OnXRun _onNativeXRun;
         readonly StreamCallback _nativeStreamCallback;
 
-        internal XtStream(XtStreamCallback streamCallback, XtXRunCallback xRunCallback, object user)
+        internal XtStream(XtStreamCallback streamCallback, XtOnXRun onXRun, object user)
         {
             _user = user;
-            _xRunCallback = xRunCallback;
+            _onXRun = onXRun;
             _streamCallback = streamCallback;
-            _nativeXRunCallback = XRunCallback;
+            _onNativeXRun = OnXRun;
             _nativeStreamCallback = StreamCallback;
         }
 
@@ -37,9 +37,9 @@ namespace Xt
         public XtLatency GetLatency() => HandleError(XtStreamGetLatency(_s, out var r), r);
 
         internal void Init(IntPtr s) => _s = s;
-        internal XRunCallback NativeXRunCallback() => _nativeXRunCallback;
+        internal OnXRun OnNativeXRun() => _onNativeXRun;
         internal StreamCallback NativeStreamCallback() => _nativeStreamCallback;
-        void XRunCallback(int index, IntPtr user) => _xRunCallback(index, _user);
+        void OnXRun(int index, IntPtr user) => _onXRun(index, _user);
         void StreamCallback(IntPtr stream, in XtBuffer buffer, IntPtr user) => _streamCallback(this, in buffer, _user);
     }
 }

@@ -124,12 +124,12 @@ void XtStream::RequestStop() {
 }
 
 void XtStream::ProcessXRun() {
-  if(xRunCallback == nullptr)
+  if(onXRun == nullptr)
     return;
   if(aggregated)
-    xRunCallback(aggregationIndex, static_cast<XtAggregateContext*>(user)->stream->user);
+    onXRun(aggregationIndex, static_cast<XtAggregateContext*>(user)->stream->user);
   else
-    xRunCallback(0, user);
+    onXRun(0, user);
 }
 
 void XtStream::ProcessCallback(const XtBuffer* buffer) {

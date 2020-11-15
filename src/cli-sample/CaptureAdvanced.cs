@@ -17,7 +17,7 @@ namespace Xt
         static readonly XtChannels Channels = new XtChannels(2, 0, 0, 0);
         static readonly XtFormat Format = new XtFormat(Mix, Channels);
 
-        static void XRun(int index, object user)
+        static void OnXRun(int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
         static void RunStream(XtStream stream)
@@ -91,7 +91,7 @@ namespace Xt
             XtBufferSize size = device.GetBufferSize(Format);
 
             Console.WriteLine("Capture interleaved, safe buffers...");
-            streamParams = new XtStreamParams(true, CaptureInterleavedSafe, XRun);
+            streamParams = new XtStreamParams(true, CaptureInterleavedSafe, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using (FileStream recording = new FileStream("xt-audio-interleaved-safe.raw", FileMode.Create, FileAccess.Write))
             using (XtStream stream = device.OpenStream(in deviceParams, recording))
@@ -100,7 +100,7 @@ namespace Xt
 
             Console.WriteLine("Capture interleaved, native buffers...");
             var context = new Context();
-            streamParams = new XtStreamParams(true, CaptureInterleavedNative, XRun);
+            streamParams = new XtStreamParams(true, CaptureInterleavedNative, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using (FileStream recording = new FileStream("xt-audio-interleaved-native.raw", FileMode.Create, FileAccess.Write))
             using (XtStream stream = device.OpenStream(in deviceParams, context))
@@ -111,7 +111,7 @@ namespace Xt
             }
 
             Console.WriteLine("Capture non-interleaved, safe buffers...");
-            streamParams = new XtStreamParams(false, CaptureNonInterleavedSafe, XRun);
+            streamParams = new XtStreamParams(false, CaptureNonInterleavedSafe, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using (FileStream recording = new FileStream("xt-audio-non-interleaved-safe.raw", FileMode.Create, FileAccess.Write))
             using (XtStream stream = device.OpenStream(in deviceParams, recording))
@@ -120,7 +120,7 @@ namespace Xt
 
             Console.WriteLine("Capture non-interleaved, native buffers...");
             context = new Context();
-            streamParams = new XtStreamParams(false, CaptureNonInterleavedNative, XRun);
+            streamParams = new XtStreamParams(false, CaptureNonInterleavedNative, OnXRun);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using (FileStream recording = new FileStream("xt-audio-non-interleaved-native.raw", FileMode.Create, FileAccess.Write))
             using (XtStream stream = device.OpenStream(in deviceParams, context))

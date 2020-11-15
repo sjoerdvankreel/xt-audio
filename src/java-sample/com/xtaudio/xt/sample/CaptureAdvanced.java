@@ -18,7 +18,7 @@ public class CaptureAdvanced {
     static final XtChannels CHANNELS = new XtChannels(2, 0, 0, 0);
     static final XtFormat FORMAT = new XtFormat(MIX, CHANNELS);
 
-    static void xRun(int index, Object user) {
+    static void onXRun(int index, Object user) {
         System.out.println("XRun on device " + index + ".");
     }
 
@@ -85,7 +85,7 @@ public class CaptureAdvanced {
                 XtBufferSize size = device.getBufferSize(FORMAT);
 
                 System.out.println("Capture interleaved, safe buffers...");
-                streamParams = new XtStreamParams(true, CaptureAdvanced::captureInterleavedSafe, CaptureAdvanced::xRun);
+                streamParams = new XtStreamParams(true, CaptureAdvanced::captureInterleavedSafe, CaptureAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio-interleaved-safe.raw");
                     XtStream stream = device.openStream(deviceParams, recording);
@@ -94,7 +94,7 @@ public class CaptureAdvanced {
                 }
 
                 System.out.println("Capture interleaved, native buffers...");
-                streamParams = new XtStreamParams(true, CaptureAdvanced::captureInterleavedNative, CaptureAdvanced::xRun);
+                streamParams = new XtStreamParams(true, CaptureAdvanced::captureInterleavedNative, CaptureAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 Context context = new Context();
                 try(FileOutputStream recording = new FileOutputStream("xt-audio-interleaved-native.raw");
@@ -105,7 +105,7 @@ public class CaptureAdvanced {
                 }
 
                 System.out.println("Capture non-interleaved, safe buffers...");
-                streamParams = new XtStreamParams(false, CaptureAdvanced::captureNonInterleavedSafe, CaptureAdvanced::xRun);
+                streamParams = new XtStreamParams(false, CaptureAdvanced::captureNonInterleavedSafe, CaptureAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved-safe.raw");
                     XtStream stream = device.openStream(deviceParams, recording);
@@ -115,7 +115,7 @@ public class CaptureAdvanced {
 
                 System.out.println("Capture non-interleaved, native buffers...");
                 context = new Context();
-                streamParams = new XtStreamParams(false, CaptureAdvanced::captureNonInterleavedNative, CaptureAdvanced::xRun);
+                streamParams = new XtStreamParams(false, CaptureAdvanced::captureNonInterleavedNative, CaptureAdvanced::onXRun);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved-native.raw");
                     XtStream stream = device.openStream(deviceParams, context)) {
