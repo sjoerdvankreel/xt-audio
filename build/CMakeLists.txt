@@ -29,7 +29,7 @@ if (DISABLE_PULSE_AUDIO)
 endif (DISABLE_PULSE_AUDIO)
 
 # C++ library (C++ API).
-set (CPP_DIR "../src/cpp")
+set (CPP_DIR "../src/cpp/xt")
 file (GLOB_RECURSE CPP_SRC "${CPP_DIR}/*.*")
 add_library(xt-cpp INTERFACE)
 target_sources(xt-cpp INTERFACE ${CPP_SRC})
@@ -41,7 +41,7 @@ target_include_directories (xt-cpp_ PRIVATE ${CORE_DIR})
 set_target_properties(xt-cpp_ PROPERTIES LINKER_LANGUAGE CXX)
 
 # C++ sample program.
-set (CPP_SAMPLE_DIR "../src/cpp-sample")
+set (CPP_SAMPLE_DIR "../src/cpp/sample")
 file (GLOB CPP_SAMPLE_SRC "${CPP_SAMPLE_DIR}/*.*")
 add_executable (xt-cpp-sample ${CPP_SAMPLE_SRC})
 target_link_libraries (xt-cpp-sample xt-core)
