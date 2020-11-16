@@ -1,6 +1,7 @@
 lib/**
 dist/**
 temp/**
+build/native/**
 scratch/**
 build/*.sdf
 build/.vs/**
