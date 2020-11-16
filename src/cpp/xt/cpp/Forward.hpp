@@ -1,7 +1,7 @@
 #ifndef XT_FORWARD_HPP
 #define XT_FORWARD_HPP
 
-#include <xt/XtAudio.h>
+#include <xt/cpp/XtCore.hpp>
 
 namespace Xt::Detail {
 
@@ -14,5 +14,5 @@ ForwardOnError(char const* location, char const* message);
 inline void XT_CALLBACK 
 ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
 
-} // namespace Xt
+} // namespace Xt::Detail
 #endif // XT_FORWARD_HPP

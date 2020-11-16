@@ -1,11 +1,14 @@
 #ifndef XT_CORE_OSTREAM_HPP
 #define XT_CORE_OSTREAM_HPP
 
+#include <xt/cpp/XtCore.hpp>
 #include <xt/cpp/XtDevice.hpp>
-#include <xt/XtAudio.h>
+
 #include <ostream>
 
 namespace Xt {
+
+using namespace Detail;
 
 inline std::ostream& operator<<(std::ostream& os, Device const& device) 
 { return os << device.GetName(); }

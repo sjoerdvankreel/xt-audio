@@ -1,15 +1,18 @@
 #ifndef XT_DEVICE_HPP
 #define XT_DEVICE_HPP
 
+#include <xt/cpp/XtCore.hpp>
 #include <xt/cpp/Utility.hpp>
 #include <xt/cpp/XtStream.hpp>
 #include <xt/cpp/CoreStructs.hpp>
-#include <xt/XtAudio.h>
+
 #include <memory>
 #include <vector>
 #include <optional>
 
 namespace Xt {
+
+using namespace Detail;
 
 class Device final
 {

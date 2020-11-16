@@ -1,9 +1,9 @@
 #ifndef XT_UTILITY_HPP
 #define XT_UTILITY_HPP
 
+#include <xt/cpp/XtCore.hpp>
 #include <xt/cpp/XtStream.hpp>
 #include <xt/cpp/XtException.hpp>
-#include <xt/XtAudio.h>
 
 namespace Xt::Detail {
 
@@ -31,5 +31,5 @@ ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* us
   stream->_onBuffer(*stream, buffer, stream->_user);
 }
 
-} // namespace Xt
+} // namespace Xt::Detail
 #endif // XT_UTILITY_HPP

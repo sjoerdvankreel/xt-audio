@@ -1,13 +1,16 @@
 #ifndef XT_STREAM_HPP
 #define XT_STREAM_HPP
 
+#include <xt/cpp/XtCore.hpp>
 #include <xt/cpp/Forward.hpp>
 #include <xt/cpp/CoreStructs.hpp>
 #include <xt/cpp/CoreCallbacks.hpp>
-#include <xt/XtAudio.h>
+
 #include <cstdint>
 
 namespace Xt {
+
+using namespace Detail;
 
 class Stream final 
 {

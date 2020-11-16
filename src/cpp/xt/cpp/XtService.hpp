@@ -1,14 +1,17 @@
 #ifndef XT_SERVICE_HPP
 #define XT_SERVICE_HPP
 
+#include <xt/cpp/XtCore.hpp>
 #include <xt/cpp/Forward.hpp>
 #include <xt/cpp/XtDevice.hpp>
 #include <xt/cpp/CoreEnums.hpp>
 #include <xt/cpp/CoreStructs.hpp>
-#include <xt/XtAudio.h>
+
 #include <memory>
 
 namespace Xt {
+
+using namespace Detail;
 
 class Service final 
 {

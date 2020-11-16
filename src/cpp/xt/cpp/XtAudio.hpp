@@ -1,14 +1,17 @@
 #ifndef XT_AUDIO_HPP
 #define XT_AUDIO_HPP
 
+#include <xt/cpp/XtCore.hpp>
 #include <xt/cpp/XtService.hpp>
 #include <xt/cpp/CoreStructs.hpp>
-#include <xt/XtAudio.h>
+
 #include <memory>
 #include <vector>
 #include <string>
 
 namespace Xt {
+
+using namespace Detail;
 
 class Audio final 
 {
