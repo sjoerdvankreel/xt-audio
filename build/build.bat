@@ -13,9 +13,14 @@ if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 
 REM java
-cd java && cd xt
-call mvn install
+cd java\xt
+call mvn -q install
 if !errorlevel! neq 0 exit /b !errorlevel!
+cd ..\..
+cd java\sample
+call mvn -q install
+if !errorlevel! neq 0 exit /b !errorlevel!
+cd ..\..
 
 exit /B
 
