@@ -7,6 +7,7 @@ file (GLOB_RECURSE CORE_SRC "${CORE_DIR}/*.*")
 add_library (xt-core SHARED ${CORE_SRC})
 target_compile_options (xt-core PRIVATE -DXT_EXPORT=1)
 target_include_directories (xt-core PRIVATE ${CORE_DIR})
+set_target_properties(xt-core PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../bin/core")
 
 # Compile time backend selection support.
 if (DISABLE_ASIO)
@@ -47,6 +48,7 @@ add_executable (xt-cpp-sample ${CPP_SAMPLE_SRC})
 target_link_libraries (xt-cpp-sample xt-core)
 target_include_directories (xt-cpp-sample PRIVATE ${CPP_DIR})
 target_include_directories (xt-cpp-sample PRIVATE ${CORE_DIR})
+set_target_properties(xt-cpp-sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../bin/cpp/sample")
 
 if (WIN32 AND (NOT DISABLE_ASIO))
 # Need asmjit for ASIO backend on windows.

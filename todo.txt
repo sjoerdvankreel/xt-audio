@@ -29,3 +29,4 @@
 * use xt/ folder structure in native + <xt/whatever>
 * cleanup build scripts
 * reenable backend selection
+* cleanup gitignore

@@ -1,5 +1,6 @@
 lib/**
 dist/**
+bin/**
 temp/**
 build/native/**
 scratch/**

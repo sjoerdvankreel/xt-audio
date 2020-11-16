@@ -10,6 +10,7 @@ msbuild xt-audio.sln /p:Configuration=Debug
 if !errorlevel! neq 0 exit /b !errorlevel!
 msbuild xt-audio.sln /p:Configuration=Release
 if !errorlevel! neq 0 exit /b !errorlevel!
+
 exit /B
 
 
