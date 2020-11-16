@@ -5,16 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <url>http://www.xt-audio.com</url>
     <groupId>com.xt-audio.xt</groupId>
-    <artifactId>com.xt-audio.xt.sample</artifactId>
+    <artifactId>com.xt-audio.xt</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-        <dependency>
-            <version>1.7</version>
-            <groupId>com.xt-audio.xt</groupId>
-            <artifactId>com.xt-audio.xt</artifactId>
-        </dependency>
         <dependency>
             <version>5.6.0</version>
             <artifactId>jna</artifactId>
@@ -22,9 +17,9 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>${basedir}/../../src/java-sample</sourceDirectory>
-        <directory>${basedir}/../../scratch/java-sample/target</directory>
-        <outputDirectory>${basedir}/../../scratch/java-sample/classes</outputDirectory>
+        <directory>${basedir}/../../../bin/java/target</directory>
+        <sourceDirectory>${basedir}/../../../src/java</sourceDirectory>
+        <outputDirectory>${basedir}/../../../bin/java/classes</outputDirectory>
         <plugins>
             <plugin>
                 <version>3.8.1</version>
@@ -52,16 +47,15 @@
                 </executions>
             </plugin>
             <plugin>
-                <version>2.5</version>
+                <version>3.2.0</version>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>com.xtaudio.xt.sample.Sample</mainClass>
-                        </manifest>
-                    </archive>
+                    <source>8</source>
+                    <sourceFileExcludes>
+                        <sourceFileExclude>**/module-info.java</sourceFileExclude>
+                    </sourceFileExcludes>
+                    <reportOutputDirectory>${basedir}/../../../dist/java/doc</reportOutputDirectory>
                 </configuration>
             </plugin>
         </plugins>

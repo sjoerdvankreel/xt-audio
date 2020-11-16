@@ -30,3 +30,4 @@
 * cleanup build scripts
 * reenable backend selection
 * cleanup gitignore
+* shorten java folder structure
