@@ -6,9 +6,9 @@ if not exist native (mkdir native)
 cd native
 cmake ..\..\build -G"Visual Studio 16 2019" -DDISABLE_DSOUND=%1 -DDISABLE_WASAPI=%2 -DDISABLE_ASIO=%3 -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5
 if !errorlevel! neq 0 exit /b !errorlevel!
-msbuild xt-audio.sln /p:Configuration=Debug
+msbuild xt-audio.sln /p:Configuration=Debug /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
-msbuild xt-audio.sln /p:Configuration=Release
+msbuild xt-audio.sln /p:Configuration=Release /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 exit /B
