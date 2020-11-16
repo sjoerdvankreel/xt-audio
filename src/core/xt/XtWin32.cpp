@@ -1,8 +1,8 @@
 #ifdef _WIN32
+#include <xt/XtWin32.hpp>
 #include <vector>
 #include <cstring>
 #include <algorithm>
-#include "XtWin32.hpp"
 
 // ---- local ----
 

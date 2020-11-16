@@ -3,7 +3,7 @@
 
 #include <xt/cpp/XtService.hpp>
 #include <xt/cpp/CoreStructs.hpp>
-#include <XtAudio.h>
+#include <xt/XtAudio.h>
 #include <memory>
 #include <vector>
 #include <string>

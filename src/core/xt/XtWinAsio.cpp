@@ -4,7 +4,7 @@
 #ifndef NOMINMAX
 #define NOMINMAX 1 
 #endif // NOMINMAX
-#include "XtWin32.hpp"
+#include <xt/XtWin32.hpp>
 
 #ifdef XT_DISABLE_ASIO
 const XtService* XtiServiceAsio = nullptr;

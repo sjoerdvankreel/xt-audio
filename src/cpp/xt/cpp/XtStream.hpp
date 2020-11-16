@@ -4,7 +4,7 @@
 #include <xt/cpp/Forward.hpp>
 #include <xt/cpp/CoreStructs.hpp>
 #include <xt/cpp/CoreCallbacks.hpp>
-#include <XtAudio.h>
+#include <xt/XtAudio.h>
 #include <cstdint>
 
 namespace Xt {

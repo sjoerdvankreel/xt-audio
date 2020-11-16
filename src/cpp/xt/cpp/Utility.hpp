@@ -3,7 +3,7 @@
 
 #include <xt/cpp/XtStream.hpp>
 #include <xt/cpp/XtException.hpp>
-#include <XtAudio.h>
+#include <xt/XtAudio.h>
 
 namespace Xt::Detail {
 

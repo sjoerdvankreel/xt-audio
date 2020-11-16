@@ -2,7 +2,7 @@
 #define XT_CORE_OSTREAM_HPP
 
 #include <xt/cpp/XtDevice.hpp>
-#include <XtAudio.h>
+#include <xt/XtAudio.h>
 #include <ostream>
 
 namespace Xt {

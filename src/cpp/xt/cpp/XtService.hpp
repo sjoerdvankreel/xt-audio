@@ -5,7 +5,7 @@
 #include <xt/cpp/XtDevice.hpp>
 #include <xt/cpp/CoreEnums.hpp>
 #include <xt/cpp/CoreStructs.hpp>
-#include <XtAudio.h>
+#include <xt/XtAudio.h>
 #include <memory>
 
 namespace Xt {

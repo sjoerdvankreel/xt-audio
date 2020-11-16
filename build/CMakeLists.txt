@@ -3,9 +3,10 @@ cmake_minimum_required (VERSION 2.8)
 
 # Core library (C API).
 set (CORE_DIR "../src/core")
-file (GLOB CORE_SRC "${CORE_DIR}/*.*")
+file (GLOB_RECURSE CORE_SRC "${CORE_DIR}/*.*")
 add_library (xt-core SHARED ${CORE_SRC})
 target_compile_options (xt-core PRIVATE -DXT_EXPORT=1)
+target_include_directories (xt-core PRIVATE ${CORE_DIR})
 
 # Compile time backend selection support.
 if (DISABLE_ASIO)

@@ -5,7 +5,7 @@
 #ifndef NOMINMAX
 #define NOMINMAX 1
 #endif // NOMINMAX
-#include "XtPrivate.hpp"
+#include <xt/XtPrivate.hpp>
 #include <windows.h>
 #include <atlbase.h>
 #include <mmsystem.h>

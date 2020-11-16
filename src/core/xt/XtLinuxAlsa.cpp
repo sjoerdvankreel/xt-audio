@@ -1,5 +1,5 @@
 #ifdef __linux__
-#include "XtLinux.hpp"
+#include <xt/XtLinux.hpp>
 
 #ifdef XT_DISABLE_ALSA
 void XtlInitAlsa() { }

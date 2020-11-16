@@ -4,7 +4,7 @@
 #include <xt/cpp/Utility.hpp>
 #include <xt/cpp/XtStream.hpp>
 #include <xt/cpp/CoreStructs.hpp>
-#include <XtAudio.h>
+#include <xt/XtAudio.h>
 #include <memory>
 #include <vector>
 #include <optional>

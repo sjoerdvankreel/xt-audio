@@ -1,5 +1,5 @@
 #ifdef __linux__
-#include "XtLinux.hpp"
+#include <xt/XtLinux.hpp>
 #include <pthread.h>
 
 // ---- local ----

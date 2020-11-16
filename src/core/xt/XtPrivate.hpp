@@ -1,7 +1,7 @@
 #ifndef XT_PRIVATE_HPP
 #define XT_PRIVATE_HPP
 
-#include "XtAudio.h"
+#include <xt/XtAudio.h>
 #include <string>
 #include <vector>
 #include <memory>

@@ -1,7 +1,7 @@
 #ifndef XT_FORWARD_HPP
 #define XT_FORWARD_HPP
 
-#include <XtAudio.h>
+#include <xt/XtAudio.h>
 
 namespace Xt::Detail {
 
