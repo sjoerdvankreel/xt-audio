@@ -1,9 +1,8 @@
 #ifndef XT_CORE_STRUCTS_HPP
 #define XT_CORE_STRUCTS_HPP
 
-#include "CoreEnums.hpp"
-#include "CoreCallbacks.hpp"
-
+#include <xt/cpp/CoreEnums.hpp>
+#include <xt/cpp/CoreCallbacks.hpp>
 #include <cstdint>
 
 namespace Xt {

@@ -1,8 +1,7 @@
 #ifndef XT_CORE_OSTREAM_HPP
 #define XT_CORE_OSTREAM_HPP
 
-#include "XtDevice.hpp"
-
+#include <xt/cpp/XtDevice.hpp>
 #include <XtAudio.h>
 #include <ostream>
 

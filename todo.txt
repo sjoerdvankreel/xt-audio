@@ -1,7 +1,6 @@
 * Figure out JACK support on Ubuntu 20.
 * Query device info without opening the device.
 * Better document service/list/device/stream lifetime (what needs to be alive when).
-* Distribute debug binaries
 * Overall code cleanup
 * Check TODOS
 * fix compiler warnings

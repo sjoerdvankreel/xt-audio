@@ -1,10 +1,9 @@
 #ifndef XT_STREAM_HPP
 #define XT_STREAM_HPP
 
-#include "Forward.hpp"
-#include "CoreStructs.hpp"
-#include "CoreCallbacks.hpp"
-
+#include <xt/cpp/Forward.hpp>
+#include <xt/cpp/CoreStructs.hpp>
+#include <xt/cpp/CoreCallbacks.hpp>
 #include <XtAudio.h>
 #include <cstdint>
 

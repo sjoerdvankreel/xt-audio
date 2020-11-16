@@ -1,10 +1,9 @@
 #ifndef XT_DEVICE_HPP
 #define XT_DEVICE_HPP
 
-#include "Utility.hpp"
-#include "XtStream.hpp"
-#include "CoreStructs.hpp"
-
+#include <xt/cpp/Utility.hpp>
+#include <xt/cpp/XtStream.hpp>
+#include <xt/cpp/CoreStructs.hpp>
 #include <XtAudio.h>
 #include <memory>
 #include <vector>

@@ -29,13 +29,14 @@ endif (DISABLE_PULSE_AUDIO)
 
 # C++ library (C++ API).
 set (CPP_DIR "../src/cpp")
-file (GLOB CPP_SRC "${CPP_DIR}/*.*")
+file (GLOB_RECURSE CPP_SRC "${CPP_DIR}/*.*")
 add_library(xt-cpp INTERFACE)
 target_sources(xt-cpp INTERFACE ${CPP_SRC})
 target_include_directories (xt-cpp INTERFACE ${CORE_DIR})
 add_library(xt-cpp_ ${CPP_SRC})
-target_include_directories (xt-cpp_ PRIVATE ${CORE_DIR})
 target_link_libraries (xt-cpp_ xt-core)
+target_include_directories (xt-cpp_ PRIVATE ${CPP_DIR})
+target_include_directories (xt-cpp_ PRIVATE ${CORE_DIR})
 set_target_properties(xt-cpp_ PROPERTIES LINKER_LANGUAGE CXX)
 
 # C++ sample program.

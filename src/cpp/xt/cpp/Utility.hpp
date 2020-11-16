@@ -1,9 +1,8 @@
 #ifndef XT_UTILITY_HPP
 #define XT_UTILITY_HPP
 
-#include "XtStream.hpp"
-#include "XtException.hpp"
-
+#include <xt/cpp/XtStream.hpp>
+#include <xt/cpp/XtException.hpp>
 #include <XtAudio.h>
 
 namespace Xt::Detail {

@@ -1,11 +1,10 @@
 #ifndef XT_SERVICE_HPP
 #define XT_SERVICE_HPP
 
-#include "Forward.hpp"
-#include "XtDevice.hpp"
-#include "CoreEnums.hpp"
-#include "CoreStructs.hpp"
-
+#include <xt/cpp/Forward.hpp>
+#include <xt/cpp/XtDevice.hpp>
+#include <xt/cpp/CoreEnums.hpp>
+#include <xt/cpp/CoreStructs.hpp>
 #include <XtAudio.h>
 #include <memory>
 

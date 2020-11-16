@@ -1,9 +1,8 @@
 #ifndef XT_AUDIO_HPP
 #define XT_AUDIO_HPP
 
-#include "XtService.hpp"
-#include "CoreStructs.hpp"
-
+#include <xt/cpp/XtService.hpp>
+#include <xt/cpp/CoreStructs.hpp>
 #include <XtAudio.h>
 #include <memory>
 #include <vector>
