@@ -1,9 +1,13 @@
-lib/**
 dist/**
 bin/**
-temp/**
 build/native/**
-scratch/**
+build/java/.idea/**
+build/java/xt/*.iml
+build/java/xt/.idea/**
+build/java/sample/xt/*.iml
+build/java/sample/xt/.idea/**
+
+
 build/*.sdf
 build/.vs/**
 build/*.user
@@ -14,7 +18,3 @@ build/cli-gui/obj/**
 build/cli-gui/*.user
 build/cli-sample/obj/**
 build/cli-sample/*.user
-build/java/xt/*.iml
-build/java/xt/.idea/**
-build/java/sample/xt/.idea/**
-build/java/sample/xt/*.iml
