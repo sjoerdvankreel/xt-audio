@@ -33,3 +33,6 @@
 * cmake quiete
 * XtCli.dll/Gui/Sample
 * drop test scripts
+* doc output dirs
+* cleanup gitignore
+* xt-cpp-sample to xt-sample

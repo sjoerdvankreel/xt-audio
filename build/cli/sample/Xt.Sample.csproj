@@ -1,23 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Version>1.7</Version>
+        <OutputType>Exe</OutputType>
         <LangVersion>8.0</LangVersion>
         <FileVersion>1.7</FileVersion>
         <RootNamespace>Xt</RootNamespace>
-        <AssemblyName>xt-cli</AssemblyName>
         <AssemblyVersion>1.7</AssemblyVersion>
+        <StartupObject>Xt.Sample</StartupObject>
+        <AssemblyName>Xt.Sample</AssemblyName>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
-        <OutputPath>..\..\scratch\cli\$(Configuration)</OutputPath>
+        <OutputPath>..\..\..\bin\cli\sample\$(Configuration)</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <DebugType>None</DebugType>
         <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="..\..\src\cli\*.cs" />
-        <None Include="..\..\src\cli\App.config">
-            <CopyToOutputDirectory>CopyIfNewer</CopyToOutputDirectory>
-        </None>
+        <Compile Include="..\..\..\src\cli\sample\*.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\xt\Xt.Cli.csproj" />
     </ItemGroup>
 </Project>

@@ -14,7 +14,7 @@
     <Name>Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.6.1</FrameworkVersion>
-    <OutputPath>..\..\dist\doc\cli\</OutputPath>
+    <OutputPath>..\..\..\bin\cli\doc</OutputPath>
     <HtmlHelpName>XT-Audio</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>

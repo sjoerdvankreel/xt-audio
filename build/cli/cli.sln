@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cli", "cli\cli.csproj", "{D7BA7D06-7334-46A1-8688-EDC6F1D7E412}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xt.Cli", "xt\Xt.Cli.csproj", "{D7BA7D06-7334-46A1-8688-EDC6F1D7E412}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cli-sample", "cli-sample\cli-sample.csproj", "{4C611D94-9D6C-4600-80AB-8A67B938DDF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xt.Sample", "sample\Xt.Sample.csproj", "{4C611D94-9D6C-4600-80AB-8A67B938DDF0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cli-gui", "cli-gui\cli-gui.csproj", "{23789C8D-D1CD-4C89-A008-9A454607A8A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xt.Gui", "gui\Xt.Gui.csproj", "{23789C8D-D1CD-4C89-A008-9A454607A8A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
