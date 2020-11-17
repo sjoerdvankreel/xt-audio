@@ -11,8 +11,8 @@
     <dependencies>
         <dependency>
             <version>1.7</version>
-            <groupId>com.xt-audio.xt</groupId>
-            <artifactId>com.xt-audio.xt</artifactId>
+            <groupId>xt.audio</groupId>
+            <artifactId>xt.audio</artifactId>
         </dependency>
         <dependency>
             <version>5.6.0</version>
