@@ -1,4 +1,4 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 public final class XtException extends RuntimeException {
     private final long _error;

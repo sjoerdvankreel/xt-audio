@@ -7,11 +7,11 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.ToNativeContext;
 import com.sun.jna.TypeConverter;
-import com.xtaudio.xt.CoreEnums.XtCause;
-import com.xtaudio.xt.CoreEnums.XtSample;
-import com.xtaudio.xt.CoreEnums.XtSetup;
-import com.xtaudio.xt.CoreEnums.XtSystem;
-import com.xtaudio.xt.CoreStructs.XtErrorInfo;
+import xt.audio.CoreEnums.XtCause;
+import xt.audio.CoreEnums.XtSample;
+import xt.audio.CoreEnums.XtSetup;
+import xt.audio.CoreEnums.XtSystem;
+import xt.audio.CoreStructs.XtErrorInfo;
 import java.util.HashMap;
 import java.util.Map;
 

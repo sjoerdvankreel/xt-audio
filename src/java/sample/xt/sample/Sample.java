@@ -1,7 +1,7 @@
-package com.xtaudio.xt.sample;
+package xt.sample;
 
-import com.xtaudio.xt.XtAudio;
-import com.xtaudio.xt.XtException;
+import xt.audio.XtAudio;
+import xt.audio.XtException;
 
 public final class Sample {
 

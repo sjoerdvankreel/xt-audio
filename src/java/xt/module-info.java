@@ -1,4 +1,4 @@
-module com.xtaudio.xt {
+module xt.audio {
   requires transitive com.sun.jna;
-  exports com.xtaudio.xt;
+  exports xt.audio;
 }

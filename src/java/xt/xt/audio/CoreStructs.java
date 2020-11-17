@@ -1,16 +1,16 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.TypeMapper;
-import com.xtaudio.xt.CoreCallbacks.OnBuffer;
-import com.xtaudio.xt.CoreCallbacks.OnXRun;
-import com.xtaudio.xt.CoreCallbacks.XtOnBuffer;
-import com.xtaudio.xt.CoreCallbacks.XtOnXRun;
-import com.xtaudio.xt.CoreEnums.XtCause;
-import com.xtaudio.xt.CoreEnums.XtSample;
-import com.xtaudio.xt.CoreEnums.XtSystem;
-import static com.xtaudio.xt.Utility.XtPrintErrorInfoToString;
+import xt.audio.CoreCallbacks.OnBuffer;
+import xt.audio.CoreCallbacks.OnXRun;
+import xt.audio.CoreCallbacks.XtOnBuffer;
+import xt.audio.CoreCallbacks.XtOnXRun;
+import xt.audio.CoreEnums.XtCause;
+import xt.audio.CoreEnums.XtSample;
+import xt.audio.CoreEnums.XtSystem;
+import static xt.audio.Utility.XtPrintErrorInfoToString;
 import java.util.Arrays;
 import java.util.List;
 

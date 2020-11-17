@@ -1,3 +1,3 @@
-module com.xtaudio.xt.sample {
-    requires com.xtaudio.xt;
+module xt.sample {
+    requires xt.audio;
 }

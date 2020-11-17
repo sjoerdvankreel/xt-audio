@@ -1,8 +1,8 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
-import com.xtaudio.xt.CoreStructs.XtBuffer;
+import xt.audio.CoreStructs.XtBuffer;
 
 public interface CoreCallbacks {
 

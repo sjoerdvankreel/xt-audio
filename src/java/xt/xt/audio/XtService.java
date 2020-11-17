@@ -1,17 +1,17 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.xtaudio.xt.CoreEnums.XtCapabilities;
-import com.xtaudio.xt.CoreStructs.AggregateDeviceParams;
-import com.xtaudio.xt.CoreStructs.AggregateStreamParams;
+import xt.audio.CoreEnums.XtCapabilities;
+import xt.audio.CoreStructs.AggregateDeviceParams;
+import xt.audio.CoreStructs.AggregateStreamParams;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import com.xtaudio.xt.CoreStructs.StreamParams;
-import com.xtaudio.xt.CoreStructs.XtAggregateDeviceParams;
-import com.xtaudio.xt.CoreStructs.XtAggregateStreamParams;
-import static com.xtaudio.xt.Utility.handleError;
+import xt.audio.CoreStructs.StreamParams;
+import xt.audio.CoreStructs.XtAggregateDeviceParams;
+import xt.audio.CoreStructs.XtAggregateStreamParams;
+import static xt.audio.Utility.handleError;
 import java.util.EnumSet;
 
 public final class XtService {

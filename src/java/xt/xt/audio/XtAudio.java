@@ -1,16 +1,16 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-import com.xtaudio.xt.CoreCallbacks.XtOnError;
-import com.xtaudio.xt.CoreEnums.XtSample;
-import com.xtaudio.xt.CoreEnums.XtSetup;
-import com.xtaudio.xt.CoreEnums.XtSystem;
-import com.xtaudio.xt.CoreStructs.XtAttributes;
-import com.xtaudio.xt.CoreStructs.XtErrorInfo;
-import com.xtaudio.xt.CoreStructs.XtVersion;
+import xt.audio.CoreCallbacks.XtOnError;
+import xt.audio.CoreEnums.XtSample;
+import xt.audio.CoreEnums.XtSetup;
+import xt.audio.CoreEnums.XtSystem;
+import xt.audio.CoreStructs.XtAttributes;
+import xt.audio.CoreStructs.XtErrorInfo;
+import xt.audio.CoreStructs.XtVersion;
 import java.util.Arrays;
 
 public final class XtAudio implements AutoCloseable {

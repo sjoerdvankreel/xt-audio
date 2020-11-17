@@ -1,20 +1,20 @@
-package com.xtaudio.xt.sample;
+package xt.sample;
 
-import com.xtaudio.xt.CoreEnums.XtSample;
-import com.xtaudio.xt.CoreEnums.XtSetup;
-import com.xtaudio.xt.CoreEnums.XtSystem;
-import com.xtaudio.xt.CoreStructs.XtBuffer;
-import com.xtaudio.xt.CoreStructs.XtBufferSize;
-import com.xtaudio.xt.CoreStructs.XtChannels;
-import com.xtaudio.xt.CoreStructs.XtDeviceStreamParams;
-import com.xtaudio.xt.CoreStructs.XtFormat;
-import com.xtaudio.xt.CoreStructs.XtMix;
-import com.xtaudio.xt.CoreStructs.XtStreamParams;
-import com.xtaudio.xt.XtAudio;
-import com.xtaudio.xt.XtDevice;
-import com.xtaudio.xt.XtSafeBuffer;
-import com.xtaudio.xt.XtService;
-import com.xtaudio.xt.XtStream;
+import xt.audio.CoreEnums.XtSample;
+import xt.audio.CoreEnums.XtSetup;
+import xt.audio.CoreEnums.XtSystem;
+import xt.audio.CoreStructs.XtBuffer;
+import xt.audio.CoreStructs.XtBufferSize;
+import xt.audio.CoreStructs.XtChannels;
+import xt.audio.CoreStructs.XtDeviceStreamParams;
+import xt.audio.CoreStructs.XtFormat;
+import xt.audio.CoreStructs.XtMix;
+import xt.audio.CoreStructs.XtStreamParams;
+import xt.audio.XtAudio;
+import xt.audio.XtDevice;
+import xt.audio.XtSafeBuffer;
+import xt.audio.XtService;
+import xt.audio.XtStream;
 import java.io.FileOutputStream;
 
 public class CaptureSimple {

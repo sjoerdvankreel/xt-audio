@@ -1,4 +1,4 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 public interface CoreEnums {
 

@@ -1,11 +1,11 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.xtaudio.xt.CoreEnums.XtSample;
-import com.xtaudio.xt.CoreStructs.XtAttributes;
-import com.xtaudio.xt.CoreStructs.XtBuffer;
-import com.xtaudio.xt.CoreStructs.XtFormat;
+import xt.audio.CoreEnums.XtSample;
+import xt.audio.CoreStructs.XtAttributes;
+import xt.audio.CoreStructs.XtBuffer;
+import xt.audio.CoreStructs.XtFormat;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;

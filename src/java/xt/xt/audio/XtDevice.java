@@ -1,19 +1,19 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.xtaudio.xt.CoreStructs.DeviceStreamParams;
-import com.xtaudio.xt.CoreStructs.StreamParams;
-import com.xtaudio.xt.CoreStructs.XtBufferSize;
-import com.xtaudio.xt.CoreStructs.XtDeviceStreamParams;
-import com.xtaudio.xt.CoreStructs.XtFormat;
-import com.xtaudio.xt.CoreStructs.XtMix;
+import xt.audio.CoreStructs.DeviceStreamParams;
+import xt.audio.CoreStructs.StreamParams;
+import xt.audio.CoreStructs.XtBufferSize;
+import xt.audio.CoreStructs.XtDeviceStreamParams;
+import xt.audio.CoreStructs.XtFormat;
+import xt.audio.CoreStructs.XtMix;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import static com.xtaudio.xt.Utility.handleError;
+import static xt.audio.Utility.handleError;
 
 public final class XtDevice implements AutoCloseable {
 
