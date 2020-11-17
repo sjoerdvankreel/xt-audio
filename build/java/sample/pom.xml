@@ -3,9 +3,8 @@
     <packaging>jar</packaging>
     <version>1.7</version>
     <modelVersion>4.0.0</modelVersion>
-    <url>http://www.xt-audio.com</url>
-    <groupId>com.xt-audio.xt</groupId>
-    <artifactId>com.xt-audio.xt.sample</artifactId>
+    <groupId>xt.audio</groupId>
+    <artifactId>xt.audio.sample</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
