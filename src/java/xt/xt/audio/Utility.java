@@ -1,4 +1,4 @@
-package com.xtaudio.xt;
+package xt.audio;
 
 import com.sun.jna.DefaultTypeMapper;
 import com.sun.jna.FromNativeContext;
