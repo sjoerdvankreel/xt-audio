@@ -14,7 +14,7 @@ build/cli-gui/obj/**
 build/cli-gui/*.user
 build/cli-sample/obj/**
 build/cli-sample/*.user
-build/java/*.iml
-build/java/.idea/**
-build/java-sample/.idea**
-build/java-sample/*.iml
+build/java/xt/*.iml
+build/java/xt/.idea/**
+build/java/sample/xt/.idea/**
+build/java/sample/xt/*.iml

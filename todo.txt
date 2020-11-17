@@ -32,3 +32,4 @@
 * shorten java folder structure
 * cmake quiete
 * XtCli.dll/Gui/Sample
+* drop test scripts
