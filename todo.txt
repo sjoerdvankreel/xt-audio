@@ -23,7 +23,6 @@
 * Allow different mix and interleaved on aggregation
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
 * tydef struct foo {} foo;
-* XtSample.exe (not cpp-sample, cli-sample, java-sample)
 * update linux build scripts: remove x86, remove static link
 * copy headers to native dist directories
 * use xt/ folder structure in native + <xt/whatever>
@@ -32,3 +31,4 @@
 * cleanup gitignore
 * shorten java folder structure
 * cmake quiete
+* XtCli.dll/Gui/Sample
