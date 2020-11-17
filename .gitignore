@@ -4,8 +4,8 @@ build/native/**
 build/java/.idea/**
 build/java/xt/*.iml
 build/java/xt/.idea/**
-build/java/sample/xt/*.iml
-build/java/sample/xt/.idea/**
+build/java/sample/*.iml
+build/java/sample/.idea/**
 
 
 build/*.sdf
