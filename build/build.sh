@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+exit
+
 # Check necessary environment variables.
 : ${XT_ARCH:?"Please set XT_ARCH to x86 or x64."}
 
