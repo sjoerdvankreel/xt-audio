@@ -2,12 +2,12 @@ project (xt-audio)
 cmake_minimum_required (VERSION 2.8)
 
 # Core library (C API).
-set (CORE_DIR "../src/core")
+set (CORE_DIR "../src/core/xt")
 file (GLOB_RECURSE CORE_SRC "${CORE_DIR}/*.*")
 add_library (xt-core SHARED ${CORE_SRC})
 target_compile_options (xt-core PRIVATE -DXT_EXPORT=1)
 target_include_directories (xt-core PRIVATE ${CORE_DIR})
-set_target_properties(xt-core PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../bin/core")
+set_target_properties(xt-core PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../bin/core/xt")
 
 # Compile time backend selection support.
 if (DISABLE_ASIO)
