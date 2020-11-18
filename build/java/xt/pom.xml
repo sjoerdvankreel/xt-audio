@@ -61,7 +61,9 @@
                             <resources>
                                 <resource>
                                     <directory>${basedir}/../../../bin/core/xt/Release</directory>
-                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>xt-core.dll</include>
+                                    </includes>
                                 </resource>
                             </resources>
                         </configuration>
