@@ -20,8 +20,8 @@
 
 typedef int32_t XtBool;
 typedef uint64_t XtError;
-static const XtBool XtTrue = 1;
-static const XtBool XtFalse = 0;
+static XtBool const XtTrue = 1;
+static XtBool const XtFalse = 0;
 
 typedef struct XtDevice XtDevice;
 typedef struct XtStream XtStream;
