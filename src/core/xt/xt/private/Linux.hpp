@@ -2,7 +2,7 @@
 #define XT_LINUX_HPP
 #ifdef __linux__
 
-#include <xt/Private.hpp>
+#include <xt/private/Private.hpp>
 #include <pthread.h>
 
 // ---- linux ----
