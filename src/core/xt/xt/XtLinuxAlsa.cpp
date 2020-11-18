@@ -1,11 +1,11 @@
 #ifdef __linux__
 #include <xt/XtLinux.hpp>
 
-#if XT_DISABLE_ALSA
+#if !XT_ENABLE_ALSA
 void XtlInitAlsa() { }
 void XtlTerminateAlsa() { }
 const XtService* XtiServiceAlsa = nullptr;
-#else // XT_DISABLE_ALSA
+#else // !XT_ENABLE_ALSA
 
 #include <vector>
 #include <cstring>
@@ -636,5 +636,5 @@ void AlsaStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // XT_DISABLE_ALSA
+#endif // !XT_ENABLE_ALSA
 #endif // __linux__

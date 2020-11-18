@@ -1,9 +1,9 @@
 #ifdef _WIN32
 #include <xt/XtWin32.hpp>
 
-#if XT_DISABLE_DIRECT_SOUND
+#if !XT_ENABLE_DIRECT_SOUND
 const XtService* XtiServiceDirectSound = nullptr;
-#else // XT_DISABLE_DIRECT_SOUND
+#else // !XT_ENABLE_DIRECT_SOUND
 
 #define INITGUID 1
 #include <dsound.h>
@@ -192,11 +192,11 @@ XtCause DirectSoundService::GetFaultCause(XtFault fault) const {
   case DSERR_BUFFERLOST: 
   case DSERR_ACCESSDENIED: 
   case DSERR_OTHERAPPHASPRIO: return XtCauseEndpoint;
-#if XT_DISABLE_WASAPI
+#if !XT_ENABLE_WASAPI
   default: return XtwWasapiGetFaultCause(fault);
-#else // XT_DISABLE_WASAPI
+#else // !XT_ENABLE_WASAPI
   default: return XtCauseUnknown;
-#endif // XT_DISABLE_WASAPI
+#endif // !XT_ENABLE_WASAPI
   }
 }
 
@@ -226,11 +226,11 @@ const char* DirectSoundService::GetFaultText(XtFault fault) const {
   case DSERR_OTHERAPPHASPRIO: return "DSERR_OTHERAPPHASPRIO";
   case DSERR_BADSENDBUFFERGUID: return "DSERR_BADSENDBUFFERGUID";
   case DSERR_ALREADYINITIALIZED: return "DSERR_ALREADYINITIALIZED";
-#if XT_DISABLE_WASAPI
+#if !XT_ENABLE_WASAPI
   default: return XtwWasapiGetFaultText(fault);
-#else // XT_DISABLE_WASAPI
+#else // !XT_ENABLE_WASAPI
   default: return "Unknown fault.";
-#endif // XT_DISABLE_WASAPI
+#endif // !XT_ENABLE_WASAPI
   }
 }
 
@@ -512,5 +512,5 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // XT_DISABLE_DIRECT_SOUND
+#endif // !XT_ENABLE_DIRECT_SOUND
 #endif // _WIN32

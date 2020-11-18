@@ -6,9 +6,9 @@
 #endif // NOMINMAX
 #include <xt/XtWin32.hpp>
 
-#if (XT_DISABLE_ASIO)
+#if (!XT_ENABLE_ASIO)
 const XtService* XtiServiceAsio = nullptr;
-#else // XT_DISABLE_ASIO
+#else // !XT_ENABLE_ASIO
 
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
@@ -541,5 +541,5 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   return ASE_OK;
 }
 
-#endif // XT_DISABLE_ASIO
+#endif // !XT_ENABLE_ASIO
 #endif // _WIN32

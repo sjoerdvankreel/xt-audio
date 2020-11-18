@@ -8,7 +8,6 @@
 * simplify xtl/xti/xtw prefixes
 * check docs
 * major testing
-* change disable_service to enable_service
 * fix doxygen typedef errors
 * move doxygen to own file
 * caller allocated array of device infos
@@ -21,7 +20,6 @@
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
 * tydef struct foo {} foo;
 * update linux build scripts: remove x86, remove static link
-* reenable backend selection
 * package zip in build script
 * cleanup cli gui
 * drop dsound wasapi dependency

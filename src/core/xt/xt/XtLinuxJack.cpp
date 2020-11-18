@@ -1,11 +1,11 @@
 #ifdef __linux__
 #include <xt/XtLinux.hpp>
 
-#if XT_DISABLE_JACK
+#if !XT_ENABLE_JACK
 void XtlInitJack() { }
 void XtlTerminateJack() { }
 const XtService* XtiServiceJack = nullptr;
-#else // XT_DISABLE_JACK
+#else // !XT_ENABLE_JACK
 
 #include <jack/jack.h>
 #include <vector>
@@ -389,5 +389,5 @@ XtFault JackStream::Start() {
   return 0;
 }
 
-#endif // XT_DISABLE_JACK
+#endif // XT_ENABLE_JACK
 #endif // __linux__

@@ -1,9 +1,9 @@
 #ifdef __linux__
 #include <xt/XtLinux.hpp>
 
-#if XT_DISABLE_PULSE_AUDIO
+#if !XT_ENABLE_PULSE_AUDIO
 const XtService* XtiServicePulseAudio = nullptr;
-#else // XT_DISABLE_PULSE_AUDIO
+#else // !XT_ENABLE_PULSE_AUDIO
 
 #include <memory>
 #include <vector>
@@ -276,5 +276,5 @@ void PulseAudioStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_ON_BUFFER(fault);
 }
 
-#endif // XT_DISABLE_PULSE_AUDIO
+#endif // !XT_ENABLE_PULSE_AUDIO
 #endif // __linux__
