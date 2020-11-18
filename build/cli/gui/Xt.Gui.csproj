@@ -10,7 +10,7 @@
         <UseWindowsForms>true</UseWindowsForms>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
-        <OutputPath>..\..\..\bin\cli\gui\$(Configuration)</OutputPath>
+        <OutputPath>..\..\..\dist\cli\gui\$(Configuration)</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <DebugType>None</DebugType>

@@ -16,9 +16,9 @@
         </dependency>
     </dependencies>
     <build>
-        <directory>${basedir}/../../../bin/java/xt/target</directory>
+        <directory>${basedir}/../../../dist/java/xt/target</directory>
         <sourceDirectory>${basedir}/../../../src/java/xt</sourceDirectory>
-        <outputDirectory>${basedir}/../../../bin/java/xt/classes</outputDirectory>
+        <outputDirectory>${basedir}/../../../dist/java/xt/classes</outputDirectory>
         <plugins>
             <plugin>
                 <version>3.8.1</version>
@@ -60,10 +60,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../bin/java/xt/target</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/target</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../bin/core/xt/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/Release</directory>
                                     <includes>
                                         <include>xt-core.dll</include>
                                     </includes>

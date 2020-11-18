@@ -8,7 +8,7 @@
     <AssemblyVersion>1.7</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <OutputPath>..\..\..\bin\cli\xt\$(Configuration)</OutputPath>
+    <OutputPath>..\..\..\dist\cli\xt\$(Configuration)</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>None</DebugType>
@@ -18,6 +18,6 @@
     <Compile Include="..\..\..\src\cli\xt\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../bin/core/xt/$(Configuration)/xt-core.dll" Link="xt-core.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/$(Configuration)/xt-core.dll" Link="xt-core.dll" Pack="true" />
   </ItemGroup>
 </Project>
