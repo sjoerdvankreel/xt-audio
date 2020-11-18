@@ -18,7 +18,7 @@
     <HtmlHelpName>XT-Audio</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\..\..\dist\cli\xt\Release\net48\Xt.Cli.dll" xmlns="" />
+      <DocumentationSource sourceFile="..\..\..\dist\cli\xt\Release\netstandard2.0\Xt.Cli.dll" xmlns="" />
     </DocumentationSources>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
@@ -37,7 +37,7 @@
     <KeepLogFile>True</KeepLogFile>
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
     <CleanIntermediates>True</CleanIntermediates>
-    <WorkingPath>..\..\..\dist\cli\xt</WorkingPath>
+    <WorkingPath>..\..\..\dist\cli\doc\working</WorkingPath>
     <MissingTags>AutoDocumentCtors, AutoDocumentDispose</MissingTags>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
