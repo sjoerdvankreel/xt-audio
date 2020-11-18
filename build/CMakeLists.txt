@@ -42,13 +42,13 @@ target_include_directories (xt-cpp_ PRIVATE ${CORE_DIR})
 set_target_properties(xt-cpp_ PROPERTIES LINKER_LANGUAGE CXX)
 
 # C++ sample program.
-set (CPP_SAMPLE_DIR "../src/cpp/sample")
-file (GLOB CPP_SAMPLE_SRC "${CPP_SAMPLE_DIR}/*.*")
-add_executable (xt-cpp-sample ${CPP_SAMPLE_SRC})
-target_link_libraries (xt-cpp-sample xt-core)
-target_include_directories (xt-cpp-sample PRIVATE ${CPP_DIR})
-target_include_directories (xt-cpp-sample PRIVATE ${CORE_DIR})
-set_target_properties(xt-cpp-sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../bin/cpp/sample")
+set (SAMPLE_DIR "../src/cpp/sample")
+file (GLOB SAMPLE_SRC "${SAMPLE_DIR}/*.*")
+add_executable (xt-sample ${SAMPLE_SRC})
+target_link_libraries (xt-sample xt-core)
+target_include_directories (xt-sample PRIVATE ${CPP_DIR})
+target_include_directories (xt-sample PRIVATE ${CORE_DIR})
+set_target_properties(xt-sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../bin/cpp/sample")
 
 if (WIN32 AND (NOT DISABLE_ASIO))
 # Need asmjit for ASIO backend on windows.
