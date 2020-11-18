@@ -3,7 +3,7 @@
 #define _CRT_NONSTDC_NO_DEPRECATE 1
 #endif
 
-#include <xt/XtPrivate.hpp>
+#include <xt/Private.hpp>
 #include <cassert>
 #include <sstream>
 #include <cstring>

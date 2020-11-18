@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#include <xt/XtWin32.hpp>
+#include <xt/Win32.hpp>
 #include <vector>
 #include <cstring>
 #include <algorithm>

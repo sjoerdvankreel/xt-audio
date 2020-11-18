@@ -1,4 +1,4 @@
-#include <xt/XtPrivate.hpp>
+#include <xt/Private.hpp>
 #include <vector>
 #include <cstdarg>
 #include <sstream>

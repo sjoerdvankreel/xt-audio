@@ -1,5 +1,5 @@
 #ifdef __linux__
-#include <xt/XtLinux.hpp>
+#include <xt/Linux.hpp>
 
 #if !XT_ENABLE_JACK
 void XtlInitJack() { }
