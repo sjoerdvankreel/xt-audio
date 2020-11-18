@@ -39,6 +39,10 @@ msbuild Xt.Cli.sln /p:Configuration=Release /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 
+REM doc
+if not exist ..\dist\core\doc (mkdir ..\dist\core\doc)
+doxygen core.doxyfile
+
 exit /B
 
 

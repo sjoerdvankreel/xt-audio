@@ -96,7 +96,7 @@
  */
 
  /**
- * @file xt-audio.h
+ * @file XtAudio.h
  * @brief The core XT-Audio interface.
  */
 

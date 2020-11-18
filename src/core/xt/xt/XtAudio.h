@@ -1,6 +1,8 @@
 #ifndef XT_AUDIO_H
 #define XT_AUDIO_H
 
+/** @file */
+
 #include <stdint.h>
 
 #ifdef _WIN32
