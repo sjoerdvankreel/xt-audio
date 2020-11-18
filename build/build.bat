@@ -11,6 +11,8 @@ if !errorlevel! neq 0 exit /b !errorlevel!
 msbuild xt-audio.sln /p:Configuration=Release /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
+copy ..\bin\core\xt\Debug\xt-core.dll ..\bin\cpp\sample\Debug\xt-core.dll
+copy ..\bin\core\xt\Release\xt-core.dll ..\bin\cpp\sample\Release\xt-core.dll
 
 REM java
 cd java\xt
