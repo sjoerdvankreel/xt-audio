@@ -11,28 +11,15 @@
 * change disable_service to enable_service
 * fix doxygen typedef errors
 * move doxygen to own file
-* drop cli/java callconv?
 * caller allocated array of device infos
 * move all docs to own file
 * remove formatfault
 * XtService::init/cleanup
 * explain no io in callback
-* XtCore.dll + project structure
 * fix javadoc warnings
-* XtCore.dll & folder structure
 * Allow different mix and interleaved on aggregation
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
 * tydef struct foo {} foo;
 * update linux build scripts: remove x86, remove static link
 * copy headers to native dist directories
-* use xt/ folder structure in native + <xt/whatever>
-* cleanup build scripts
 * reenable backend selection
-* cleanup gitignore
-* shorten java folder structure
-* cmake quiete
-* XtCli.dll/Gui/Sample
-* drop test scripts
-* doc output dirs
-* cleanup gitignore
-* xt-cpp-sample to xt-sample

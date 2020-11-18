@@ -1,4 +1,3 @@
-bin/**
 dist/**
 build/native/**
 build/cli/.vs/**
