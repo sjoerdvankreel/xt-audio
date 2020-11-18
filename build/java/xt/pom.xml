@@ -82,7 +82,7 @@
                     <sourceFileExcludes>
                         <sourceFileExclude>**/module-info.java</sourceFileExclude>
                     </sourceFileExcludes>
-                    <reportOutputDirectory>${basedir}/../../../dist/java/xt/doc</reportOutputDirectory>
+                    <reportOutputDirectory>${basedir}/../../../dist/java/doc</reportOutputDirectory>
                 </configuration>
             </plugin>
         </plugins>

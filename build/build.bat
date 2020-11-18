@@ -44,6 +44,9 @@ if not exist ..\dist\cpp\doc (mkdir ..\dist\cpp\doc)
 doxygen doc\cpp.doxyfile
 if not exist ..\dist\core\doc (mkdir ..\dist\core\doc)
 doxygen doc\core.doxyfile
+cd java\xt
+call mvn -q javadoc:javadoc
+cd ..\..
 
 exit /B
 
