@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 
 namespace Xt
 {
@@ -14,7 +15,7 @@ namespace Xt
         [DllImport("xt-core")] static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
         [DllImport("xt-core")] static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
         [DllImport("xt-core")] static extern void XtAudioGetSystems([Out] XtSystem[] buffer, ref int size);
-        [DllImport("xt-core")] static extern void XtAudioInit([MarshalAs(UnmanagedType.LPUTF8Str)] string id, IntPtr window, XtOnError onError);
+        [DllImport("xt-core")] static extern void XtAudioInit(byte[] id, IntPtr window, XtOnError onError);
 
         private XtAudio() { }
         static XtOnError _onError;
@@ -43,7 +44,7 @@ namespace Xt
         public static IDisposable Init(string id, IntPtr window, XtOnError onError)
         {
             _onError = onError;
-            XtAudioInit(id, window, onError);
+            XtAudioInit(Encoding.UTF8.GetBytes(id), window, onError);
             return new XtAudio();
         }
     }

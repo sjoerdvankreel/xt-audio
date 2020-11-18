@@ -7,7 +7,7 @@
         <AssemblyName>Xt.Cli</AssemblyName>
         <AssemblyVersion>1.7</AssemblyVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <OutputPath>..\..\..\bin\cli\xt\$(Configuration)</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
