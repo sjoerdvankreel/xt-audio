@@ -44,7 +44,7 @@ namespace Xt
         public static IDisposable Init(string id, IntPtr window, XtOnError onError)
         {
             _onError = onError;
-            XtAudioInit(Encoding.UTF8.GetBytes(id), window, onError);
+            XtAudioInit(Encoding.UTF8.GetBytes(id + char.MinValue), window, onError);
             return new XtAudio();
         }
     }
