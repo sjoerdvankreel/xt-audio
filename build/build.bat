@@ -16,7 +16,7 @@ copy ..\dist\core\xt\Release\xt-core.dll ..\dist\cpp\sample\Release\xt-core.dll
 if not exist ..\dist\cpp\xt (mkdir ..\dist\cpp\xt)
 xcopy ..\src\cpp\xt ..\dist\cpp\xt /s /q /y
 if !errorlevel! neq 0 exit /b !errorlevel!
-if not exist ..\dist\core\xt\xt\Release\xt (mkdir ..\dist\core\xt\xt\Release\xt)
+if not exist ..\dist\core\xt\Release\xt (mkdir ..\dist\core\xt\Release\xt)
 echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\Release\xt\XtAudio.h /s /q /y /f
 if !errorlevel! neq 0 exit /b !errorlevel!
 
