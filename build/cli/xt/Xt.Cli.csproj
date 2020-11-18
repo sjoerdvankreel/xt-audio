@@ -19,5 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/$(Configuration)/xt-core.dll" Link="xt-core.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/$(Configuration)/libxt-core.so" Link="libxt-core.so" Pack="true" />
   </ItemGroup>
 </Project>

@@ -66,6 +66,7 @@
                                     <directory>${basedir}/../../../dist/core/xt/Release</directory>
                                     <includes>
                                         <include>xt-core.dll</include>
+                                        <include>libxt-core.so</include>
                                     </includes>
                                 </resource>
                             </resources>

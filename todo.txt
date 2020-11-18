@@ -19,7 +19,7 @@
 * Allow different mix and interleaved on aggregation
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
 * tydef struct foo {} foo;
-* update linux build scripts: remove x86, remove static link
 * package zip in build script
 * cleanup cli gui
 * drop dsound wasapi dependency
+* test selective compilation
