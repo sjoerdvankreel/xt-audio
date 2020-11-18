@@ -4,7 +4,7 @@
     <version>1.7</version>
     <modelVersion>4.0.0</modelVersion>
     <groupId>xt.audio</groupId>
-    <artifactId>xt.audio.sample</artifactId>
+    <artifactId>xt.sample</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
