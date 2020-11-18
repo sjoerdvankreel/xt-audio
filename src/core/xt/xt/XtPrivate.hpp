@@ -22,7 +22,7 @@
 #define XT_WAIT_TIMEOUT_MS 10000
 #define XT_FAIL(m) XtiFail(__FILE__, __LINE__, __func__, m)
 #define XT_ASSERT(c) ((c) || (XT_FAIL("Assertion failed: " #c), 0))
-#define XT_TRACE(fmt, ...) XtiTrace(__FILE__, __LINE__, __func__, fmt, __VA_ARGS__)
+#define XT_TRACE(msg) XtiTrace(__FILE__, __LINE__, __func__, msg)
 
 static_assert(sizeof(XtCause) == 4);
 static_assert(sizeof(XtSetup) == 4);
@@ -230,8 +230,7 @@ bool XtiValidateFormat(XtSystem system, const XtFormat& format);
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp);
 void XtiOutputString(const char* source, char* buffer, int32_t* size);
 void XtiFail(const char* file, int line, const char* func, const char* message);
-void XtiTrace(const char* file, int32_t line, const char* func, const char* format, ...);
-void XtiVTrace(const char* file, int32_t line, const char* func, const char* format, va_list arg);
+void XtiTrace(const char* file, int32_t line, const char* func, const char* message);
 
 void XT_CALLBACK XtiOnSlaveBuffer(const XtStream* stream, const XtBuffer* buffer, void* user);
 void XT_CALLBACK XtiOnMasterBuffer(const XtStream* stream, const XtBuffer* buffer, void* user);

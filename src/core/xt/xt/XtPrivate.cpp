@@ -77,27 +77,11 @@ void XtiFail(const char* file, int line, const char* func, const char* message) 
   std::abort();
 }
 
-void XtiTrace(const char* file, int32_t line, const char* func, const char* format, ...) {
-  va_list arg;
-  va_start(arg, format);
-  XtiVTrace(file, line, func, format, arg);
-  va_end(arg);
-}
-
-void XtiVTrace(const char* file, int32_t line, const char* func, const char* format, va_list arg) {
-  
-  va_list argCopy;
-  va_copy(argCopy, arg);
+void XtiTrace(const char* file, int32_t line, const char* func, const char* message) {
+  if(XtiOnError == nullptr) return;
   std::ostringstream location;
   location << file << ":" << line << ": in function " << func;
-  int size = vsnprintf(nullptr, 0, format, arg);
-  if(size > 0) {
-    std::vector<char> message(static_cast<size_t>(size + 1), '\0');
-    vsnprintf(&message[0], size + 1, format, argCopy);
-    if(XtiOnError != nullptr)
-      XtiOnError(location.str().c_str(), message.data());
-  }
-  va_end(argCopy);
+  XtiOnError(location.str().c_str(), message);
 }
 
 uint32_t XtiGetErrorFault(XtError error) {

@@ -118,7 +118,7 @@ void JackSilentCallback(const char*) {
 }
 
 void JackErrorCallback(const char* msg) {
-  XT_TRACE("JACK: %s", msg);
+  XT_TRACE(msg);
 }
 
 static int32_t CountPorts(jack_client_t* client, XtBool output) {
@@ -255,8 +255,8 @@ XtFault JackDevice::ShowControlPanel() {
   return 0;
 }
 
-XtFault JackDevice::GetName(char** name) const {
-  *name = strdup("JACK");
+XtFault JackDevice::GetName(char* buffer, int32_t* size) const {
+  XtiOutputString("JACK", buffer, size);
   return 0;
 }
 
@@ -265,10 +265,10 @@ XtFault JackDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
   return 0;
 }
 
-XtFault JackDevice::GetMix(XtMix** mix) const {
-  *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
-  (*mix)->sample = XtSampleFloat32;
-  (*mix)->rate = jack_get_sample_rate(client.client);
+XtFault JackDevice::GetMix(XtBool* valid, XtMix* mix) const {
+  *valid = XtTrue;
+  mix->sample = XtSampleFloat32;
+  mix->rate = jack_get_sample_rate(client.client);
   return 0;
 }
 
@@ -285,12 +285,12 @@ XtFault JackDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) co
   return 0;
 }
 
-XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char** name) const {
+XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
   unsigned long flag = output? JackPortIsInput: JackPortIsOutput;
   JackPtr<const char*> ports(jack_get_ports(client.client, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
   if(index >= CountPorts(client.client, output))
     return ENODEV;
-  *name = strdup(ports.p[index]);
+  XtiOutputString(ports.p[index], buffer, size);
   return 0;
 }
 
@@ -313,8 +313,7 @@ XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return 0;
 }
 
-XtFault JackDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               bool secondary, XtOnBuffer onBuffer, void* user, XtStream** stream) {
+XtFault JackDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   XtFault fault;
   jack_client_t* c;
@@ -327,17 +326,17 @@ XtFault JackDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XtJackClient streamClient(c);
   
   std::vector<XtJackPort> inputs, outputs;
-  if((fault = CreatePorts(c, format->channels.inputs, format->channels.inMask, 
+  if((fault = CreatePorts(c, params->format.channels.inputs, params->format.channels.inMask, 
     JackPortIsInput, JackPortIsOutput, "inputs", inputs)) != 0)
     return fault;
-  if((fault = CreatePorts(c, format->channels.outputs, format->channels.outMask, 
+  if((fault = CreatePorts(c, params->format.channels.outputs, params->format.channels.outMask, 
     JackPortIsOutput, JackPortIsInput, "outputs", outputs)) != 0)
     return fault;
 
-  sampleSize = XtiGetSampleSize(format->mix.sample);
+  sampleSize = XtiGetSampleSize(params->format.mix.sample);
   bufferFrames = jack_get_buffer_size(streamClient.client);
   result.reset(new JackStream(std::move(streamClient), std::move(inputs), std::move(outputs), 
-    format->channels.inputs, format->channels.outputs, bufferFrames, sampleSize));
+    params->format.channels.inputs, params->format.channels.outputs, bufferFrames, sampleSize));
   if((fault = jack_set_xrun_callback(c, &XRunCallback, result.get())) != 0)
     return fault;
   if((fault = jack_set_process_callback(c, &ProcessCallback, result.get())) != 0)

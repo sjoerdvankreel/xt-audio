@@ -51,7 +51,7 @@ XT_DECLARE_SERVICE(PulseAudio, PulseAudio);
 struct PulseAudioDevice: public XtDevice {
   const bool output;
   XT_IMPLEMENT_DEVICE(PulseAudio);
-  PulseAudio(bool output):
+  PulseAudioDevice(bool output):
   output(output) {}
 };
 
@@ -150,8 +150,8 @@ XtFault PulseAudioDevice::ShowControlPanel() {
   return 0;
 }
 
-XtFault PulseAudioDevice::GetName(char** name) const {
-  *name = strdup(output? "Output": "Input");
+XtFault PulseAudioDevice::GetName(char* buffer, int32_t* size) const {
+  XtiOutputString(output? "Output": "Input", buffer, size);
   return PA_OK;
 }
 
@@ -160,10 +160,10 @@ XtFault PulseAudioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) c
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::GetMix(XtMix** mix) const {
-  *mix = static_cast<XtMix*>(malloc(sizeof(XtMix)));
-  (*mix)->rate = XtPaDefaultRate;
-  (*mix)->sample = XtPaDefaultSample;
+XtFault PulseAudioDevice::GetMix(XtBool* valid, XtMix* mix) const {
+  *valid = XtTrue;
+  mix->rate = XtPaDefaultRate;
+  mix->sample = XtPaDefaultSample;
   return PA_OK;
 }
 
@@ -179,8 +179,8 @@ XtFault PulseAudioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* si
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::GetChannelName(XtBool output, int32_t index, char** name) const {
-  *name = strdup(pa_channel_position_to_pretty_string(static_cast<pa_channel_position_t>(index)));
+XtFault PulseAudioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+  XtiOutputString(pa_channel_position_to_pretty_string(static_cast<pa_channel_position_t>(index)), buffer, size);
   return PA_OK;
 }
 
@@ -205,8 +205,7 @@ XtFault PulseAudioDevice::SupportsFormat(const XtFormat* format, XtBool* support
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize,
-                                bool secondary, XtOnBuffer onBuffer, void* user, XtStream** stream) {
+XtFault PulseAudioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   uint64_t mask;
   pa_simple* client;
@@ -217,11 +216,11 @@ XtFault PulseAudioDevice::OpenStream(const XtFormat* format, XtBool interleaved,
   int32_t bufferFrames;
   std::unique_ptr<PulseAudioStream> result;
 
-  bufferFrames = static_cast<int32_t>(bufferSize / 1000.0 * format->mix.rate);
-  spec.rate = format->mix.rate;
-  spec.format = ToPulseAudioSample(format->mix.sample);
-  spec.channels = format->channels.inputs + format->channels.outputs;
-  mask = format->channels.inMask? format->channels.inMask: format->channels.outMask;
+  bufferFrames = static_cast<int32_t>(params->bufferSize / 1000.0 * params->format.mix.rate);
+  spec.rate = params->format.mix.rate;
+  spec.format = ToPulseAudioSample(params->format.mix.sample);
+  spec.channels = params->format.channels.inputs + params->format.channels.outputs;
+  mask = params->format.channels.inMask? params->format.channels.inMask: params->format.channels.outMask;
   if(mask == 0)
     pa_channel_map_init_extend(&map, spec.channels, PA_CHANNEL_MAP_DEFAULT);
   else {
@@ -232,7 +231,7 @@ XtFault PulseAudioDevice::OpenStream(const XtFormat* format, XtBool interleaved,
         map.map[j++] = static_cast<pa_channel_position_t>(i);
   }
   
-  frameSize = (format->channels.inputs + format->channels.outputs) * XtiGetSampleSize(format->mix.sample);
+  frameSize = (params->format.channels.inputs + params->format.channels.outputs) * XtiGetSampleSize(params->format.mix.sample);
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   if((client = pa_simple_new(nullptr, XtiId, dir, nullptr, 
     XtiId, &spec, &map, nullptr, &fault)) == nullptr)

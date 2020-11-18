@@ -13,7 +13,7 @@ const XtService* XtiServiceAlsa = nullptr;
 #include <alsa/asoundlib.h>
 
 #define XT_VERIFY_ALSA(c) do { int e = (c); if(e < 0) \
-  return XT_TRACE("%s", #c), e; } while(0)
+  return XT_TRACE(#c), e; } while(0)
 
 // ---- local ----
 
@@ -122,10 +122,16 @@ struct AlsaStream: public XtlLinuxBlockingStream {
 static void LogError(const char *file, int line, 
   const char *fun, int err, const char *fmt, ...) {
 
+  if(err == 0) return;
   va_list arg;
+  va_list argCopy;
   va_start(arg, fmt);
-  if(err != 0)
-    XtiVTrace(file, line, fun, fmt, arg);
+  va_copy(argCopy, arg);
+  int size = vsnprintf(nullptr, 0, fmt, arg);
+  std::vector<char> message(static_cast<size_t>(size + 1), '\0');
+  vsnprintf(&message[0], size + 1, fmt, argCopy);
+  XtiTrace(file, line, fun, message.data());
+  va_end(argCopy);
   va_end(arg);
 }
 
@@ -323,12 +329,12 @@ XtFault AlsaDevice::ShowControlPanel() {
   return 0;
 }
 
-XtFault AlsaDevice::GetMix(XtMix** mix) const {
+XtFault AlsaDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return 0;
 }
 
-XtFault AlsaDevice::GetName(char** name) const {
-  *name = strdup(info.description.c_str());
+XtFault AlsaDevice::GetName(char* buffer, int32_t* size) const {
+  XtiOutputString(info.description.c_str(), buffer, size);
   return 0;
 }
 
@@ -337,8 +343,8 @@ XtFault AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const {
   return 0;
 }
 
-XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char** name) const {
-  *name = strdup(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)));
+XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+  XtiOutputString(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)), buffer, size);
   return 0;
 }
 
@@ -359,7 +365,7 @@ XtFault AlsaDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) co
   size->current = (XtAlsaDefaultBufferBytes / frameSize) / format->mix.rate * 1000.0;
   if(size->current < size->min)
     size->current = size->min;
-  if(buffer->current > size->max)
+  if(size->current > size->max)
     size->current = size->max;
   return 0;
 }
@@ -403,8 +409,7 @@ XtFault AlsaDevice::SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams
   return 0;
 }
 
-XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, double bufferSize, 
-                               bool secondary, XtOnBuffer onBuffer, void* user, XtStream** stream) {
+XtFault AlsaDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   XtFault fault;
   snd_pcm_t* pcm;
@@ -416,7 +421,7 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   snd_pcm_uframes_t realBuffer;
   snd_pcm_hw_params_t* hwParams;
   snd_pcm_sw_params_t* swParams;
-  snd_pcm_stream_t direction = format->channels.inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
+  snd_pcm_stream_t direction = params->format.channels.inputs > 0? SND_PCM_STREAM_CAPTURE: SND_PCM_STREAM_PLAYBACK;
 
   snd_pcm_hw_params_alloca(&hwParams);
   XT_VERIFY_ALSA(snd_pcm_open(&pcm, info.name.c_str(), direction, 0));
@@ -424,11 +429,11 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm, hwParams));
   {
     AlsaLogDisabler disabler;
-    XT_VERIFY_ALSA(IsAlsaInterleaved(pcm, hwParams, interleaved, &alsaInterleaved));
-    XT_VERIFY_ALSA(SetHwParams(*this, pcm, hwParams, info.mmap, alsaInterleaved, format, &minBuffer, &maxBuffer));
+    XT_VERIFY_ALSA(IsAlsaInterleaved(pcm, hwParams, params->stream.interleaved, &alsaInterleaved));
+    XT_VERIFY_ALSA(SetHwParams(*this, pcm, hwParams, info.mmap, alsaInterleaved, &params->format, &minBuffer, &maxBuffer));
   }
 
-  realBuffer = bufferSize / 1000.0 * format->mix.rate;
+  realBuffer = params->bufferSize / 1000.0 * params->format.mix.rate;
   if(realBuffer < minBuffer)
     realBuffer = minBuffer;
   if(realBuffer > maxBuffer)
@@ -441,8 +446,8 @@ XtFault AlsaDevice::OpenStream(const XtFormat* format, XtBool interleaved, doubl
   XT_VERIFY_ALSA(snd_pcm_sw_params_set_tstamp_mode(pcm, swParams, SND_PCM_TSTAMP_ENABLE));
   XT_VERIFY_ALSA(snd_pcm_sw_params(pcm, swParams));
 
-  sampleSize = XtiGetSampleSize(format->mix.sample);
-  channels = format->channels.inputs + format->channels.outputs;
+  sampleSize = XtiGetSampleSize(params->format.mix.sample);
+  channels = params->format.channels.inputs + params->format.channels.outputs;
   *stream = new AlsaStream(secondary, std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
   return 0;
 }

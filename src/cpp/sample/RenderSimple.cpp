@@ -16,7 +16,7 @@ static float NextSample()
 {
   _phase += Frequency / Mix.rate;
   if (_phase >= 1.0f) _phase = -1.0f;
-  return std::sinf(2.0f * _phase * static_cast<float>(M_PI));
+  return sinf(2.0f * _phase * static_cast<float>(M_PI));
 }
 
 static void OnBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
