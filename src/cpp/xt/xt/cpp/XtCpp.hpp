@@ -1,6 +1,8 @@
 #ifndef XT_CPP_HPP
 #define XT_CPP_HPP
 
+/** @file */
+
 #include <xt/cpp/CoreEnums.hpp>
 #include <xt/cpp/CoreStructs.hpp>
 #include <xt/cpp/CoreOStream.hpp>

@@ -1,7 +1,9 @@
 #ifndef XT_CORE_OSTREAM_HPP
 #define XT_CORE_OSTREAM_HPP
 
-#include <xt/cpp/XtCore.hpp>
+/** @file */
+
+#include <xt/cpp/Core.hpp>
 #include <xt/cpp/XtDevice.hpp>
 
 #include <ostream>

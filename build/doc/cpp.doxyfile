@@ -1,7 +1,7 @@
-INPUT = ../src/cpp/xt
+INPUT = ../src/cpp/xt/xt/cpp
 PROJECT_NAME = "XT-Audio"
-FILE_PATTERNS = xt-cpp.hpp
-OUTPUT_DIRECTORY = ../dist/doc/cpp
+FILE_PATTERNS = *.hpp
+OUTPUT_DIRECTORY = ../dist/cpp/doc
 
 QUIET = YES
 EXTRACT_ALL = YES

@@ -1,7 +1,9 @@
 #ifndef XT_STREAM_HPP
 #define XT_STREAM_HPP
 
-#include <xt/cpp/XtCore.hpp>
+/** @file */
+
+#include <xt/cpp/Core.hpp>
 #include <xt/cpp/Forward.hpp>
 #include <xt/cpp/CoreStructs.hpp>
 #include <xt/cpp/CoreCallbacks.hpp>

@@ -1,7 +1,9 @@
 #ifndef XT_DEVICE_HPP
 #define XT_DEVICE_HPP
 
-#include <xt/cpp/XtCore.hpp>
+/** @file */
+
+#include <xt/cpp/Core.hpp>
 #include <xt/cpp/Utility.hpp>
 #include <xt/cpp/XtStream.hpp>
 #include <xt/cpp/CoreStructs.hpp>

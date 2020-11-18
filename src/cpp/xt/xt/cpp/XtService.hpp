@@ -1,7 +1,9 @@
 #ifndef XT_SERVICE_HPP
 #define XT_SERVICE_HPP
 
-#include <xt/cpp/XtCore.hpp>
+/** @file */
+
+#include <xt/cpp/Core.hpp>
 #include <xt/cpp/Forward.hpp>
 #include <xt/cpp/XtDevice.hpp>
 #include <xt/cpp/CoreEnums.hpp>

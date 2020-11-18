@@ -1,6 +1,8 @@
 #ifndef XT_CORE_CALLBACKS_HPP
 #define XT_CORE_CALLBACKS_HPP
 
+/** @file */
+
 #include <string>
 #include <cstdint>
 

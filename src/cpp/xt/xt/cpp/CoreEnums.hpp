@@ -1,6 +1,8 @@
 #ifndef XT_CORE_ENUMS_HPP
 #define XT_CORE_ENUMS_HPP
 
+/** @file */
+
 namespace Xt {
 
 enum class Setup { ProAudio, SystemAudio, ConsumerAudio };

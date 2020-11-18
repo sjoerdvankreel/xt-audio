@@ -40,8 +40,10 @@ if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 
 REM doc
+if not exist ..\dist\cpp\doc (mkdir ..\dist\cpp\doc)
+doxygen doc\cpp.doxyfile
 if not exist ..\dist\core\doc (mkdir ..\dist\core\doc)
-doxygen core.doxyfile
+doxygen doc\core.doxyfile
 
 exit /B
 

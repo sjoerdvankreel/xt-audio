@@ -1,7 +1,7 @@
 #ifndef XT_FORWARD_HPP
 #define XT_FORWARD_HPP
 
-#include <xt/cpp/XtCore.hpp>
+#include <xt/cpp/Core.hpp>
 
 namespace Xt::Detail {
 

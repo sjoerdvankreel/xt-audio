@@ -1,6 +1,8 @@
 #ifndef XT_CORE_STRUCTS_HPP
 #define XT_CORE_STRUCTS_HPP
 
+/** @file */
+
 #include <xt/cpp/CoreEnums.hpp>
 #include <xt/cpp/CoreCallbacks.hpp>
 

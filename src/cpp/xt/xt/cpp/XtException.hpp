@@ -1,6 +1,8 @@
 #ifndef XT_EXCEPTION_HPP
 #define XT_EXCEPTION_HPP
 
+/** @file */
+
 #include <stdexcept>
 
 namespace Xt {
