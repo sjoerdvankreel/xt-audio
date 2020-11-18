@@ -1,9 +1,9 @@
 #ifdef _WIN32
 #include <xt/XtWin32.hpp>
 
-#if XT_DISABLE_WASAPI
+#if !XT_ENABLE_WASAPI
 const XtService* XtiServiceWasapi = nullptr;
-#else // XT_DISABLE_WASAPI
+#else // !XT_ENABLE_WASAPI
 
 #define INITGUID 1
 #include <mmdeviceapi.h>
@@ -591,5 +591,5 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // XT_DISABLE_WASAPI
+#endif // !XT_ENABLE_WASAPI
 #endif // _WIN32
