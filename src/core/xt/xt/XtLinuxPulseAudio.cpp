@@ -1,7 +1,7 @@
 #ifdef __linux__
 #include <xt/XtLinux.hpp>
 
-#ifdef XT_DISABLE_PULSE_AUDIO
+#if XT_DISABLE_PULSE_AUDIO
 const XtService* XtiServicePulseAudio = nullptr;
 #else // XT_DISABLE_PULSE_AUDIO
 

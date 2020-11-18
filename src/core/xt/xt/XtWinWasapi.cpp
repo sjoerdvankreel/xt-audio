@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #include <xt/XtWin32.hpp>
 
-#ifdef XT_DISABLE_WASAPI
+#if XT_DISABLE_WASAPI
 const XtService* XtiServiceWasapi = nullptr;
 #else // XT_DISABLE_WASAPI
 

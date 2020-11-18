@@ -6,7 +6,7 @@
 #endif // NOMINMAX
 #include <xt/XtWin32.hpp>
 
-#ifdef XT_DISABLE_ASIO
+#if (XT_DISABLE_ASIO)
 const XtService* XtiServiceAsio = nullptr;
 #else // XT_DISABLE_ASIO
 

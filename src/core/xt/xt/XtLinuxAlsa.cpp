@@ -1,7 +1,7 @@
 #ifdef __linux__
 #include <xt/XtLinux.hpp>
 
-#ifdef XT_DISABLE_ALSA
+#if XT_DISABLE_ALSA
 void XtlInitAlsa() { }
 void XtlTerminateAlsa() { }
 const XtService* XtiServiceAlsa = nullptr;

@@ -1,7 +1,7 @@
 #ifdef __linux__
 #include <xt/XtLinux.hpp>
 
-#ifdef XT_DISABLE_JACK
+#if XT_DISABLE_JACK
 void XtlInitJack() { }
 void XtlTerminateJack() { }
 const XtService* XtiServiceJack = nullptr;

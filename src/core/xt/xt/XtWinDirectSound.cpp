@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #include <xt/XtWin32.hpp>
 
-#ifdef XT_DISABLE_DIRECT_SOUND
+#if XT_DISABLE_DIRECT_SOUND
 const XtService* XtiServiceDirectSound = nullptr;
 #else // XT_DISABLE_DIRECT_SOUND
 
@@ -192,7 +192,7 @@ XtCause DirectSoundService::GetFaultCause(XtFault fault) const {
   case DSERR_BUFFERLOST: 
   case DSERR_ACCESSDENIED: 
   case DSERR_OTHERAPPHASPRIO: return XtCauseEndpoint;
-#ifndef XT_DISABLE_WASAPI
+#if XT_DISABLE_WASAPI
   default: return XtwWasapiGetFaultCause(fault);
 #else // XT_DISABLE_WASAPI
   default: return XtCauseUnknown;
@@ -226,7 +226,7 @@ const char* DirectSoundService::GetFaultText(XtFault fault) const {
   case DSERR_OTHERAPPHASPRIO: return "DSERR_OTHERAPPHASPRIO";
   case DSERR_BADSENDBUFFERGUID: return "DSERR_BADSENDBUFFERGUID";
   case DSERR_ALREADYINITIALIZED: return "DSERR_ALREADYINITIALIZED";
-#ifndef XT_DISABLE_WASAPI
+#if XT_DISABLE_WASAPI
   default: return XtwWasapiGetFaultText(fault);
 #else // XT_DISABLE_WASAPI
   default: return "Unknown fault.";

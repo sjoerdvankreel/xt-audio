@@ -24,3 +24,4 @@
 * reenable backend selection
 * package zip in build script
 * cleanup cli gui
+* drop dsound wasapi dependency
