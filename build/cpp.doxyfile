@@ -1,4 +1,4 @@
-INPUT = ../src/cpp
+INPUT = ../src/cpp/xt
 PROJECT_NAME = "XT-Audio"
 FILE_PATTERNS = xt-cpp.hpp
 OUTPUT_DIRECTORY = ../dist/doc/cpp
