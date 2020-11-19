@@ -1,5 +1,5 @@
 #include <xt/audio/XtService.h>
-#include <xt/private/Private.hpp>
+#include <xt/Private.hpp>
 
 XtCapabilities XT_CALL
 XtServiceGetCapabilities(XtService const* s)

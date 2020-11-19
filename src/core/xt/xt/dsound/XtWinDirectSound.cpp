@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#include <xt/private/Win32.hpp>
+#include <xt/Win32.hpp>
 
 #if !XT_ENABLE_DIRECT_SOUND
 const XtService* XtiServiceDirectSound = nullptr;

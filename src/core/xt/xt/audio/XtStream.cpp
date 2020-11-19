@@ -1,5 +1,5 @@
 #include <xt/audio/XtStream.h>
-#include <xt/private/Private.hpp>
+#include <xt/Private.hpp>
 
 XtFormat const* XT_CALL 
 XtStreamGetFormat(XtStream const* s) 

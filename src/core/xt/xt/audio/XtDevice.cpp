@@ -1,5 +1,5 @@
 #include <xt/audio/XtDevice.h>
-#include <xt/private/Private.hpp>
+#include <xt/Private.hpp>
 #include <cstring>
 
 void XT_CALL

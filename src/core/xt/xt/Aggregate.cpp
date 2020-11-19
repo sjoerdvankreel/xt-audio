@@ -1,4 +1,4 @@
-#include <xt/private/Private.hpp>
+#include <xt/Private.hpp>
 #include <cassert>
 
 // ---- local ----
