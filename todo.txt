@@ -24,3 +24,4 @@
 * drop dsound wasapi dependency
 * test selective compilation
 * test compile headers as c
+* arm
