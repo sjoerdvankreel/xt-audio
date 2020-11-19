@@ -13,24 +13,24 @@
   XtSystem GetSystem() const override { return XtSystem ## system; }                                \
   XtFault GetChannelCount(XtBool output, int32_t* count) const override;                            \
   XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;                      \
-  XtFault GetBufferSize(const XtFormat* format, XtBufferSize* size) const override;                 \
-  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;                  \
+  XtFault SupportsFormat(XtFormat const* format, XtBool* supports) const override;                  \
+  XtFault GetBufferSize(XtFormat const* format, XtBufferSize* size) const override;                 \
   XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const override; \
-  XtFault OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) override
+  XtFault OpenStream(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream) override
 
 struct XtDevice
 {
-  virtual ~XtDevice() noexcept {};
+  virtual ~XtDevice() {};
   virtual XtFault ShowControlPanel() = 0;
   virtual XtSystem GetSystem() const = 0;
   virtual XtFault GetMix(XtBool* valid, XtMix* mix) const = 0;
   virtual XtFault GetName(char* buffer, int32_t* size) const = 0;
   virtual XtFault GetChannelCount(XtBool output, int32_t* count) const = 0;
   virtual XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const = 0;
-  virtual XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const = 0;
-  virtual XtFault GetBufferSize(const XtFormat* format, XtBufferSize* size) const = 0;
+  virtual XtFault SupportsFormat(XtFormat const* format, XtBool* supports) const = 0;
+  virtual XtFault GetBufferSize(XtFormat const* format, XtBufferSize* size) const = 0;
   virtual XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const = 0;
-  virtual XtFault OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) = 0;
+  virtual XtFault OpenStream(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream) = 0;
 };
 
 #endif // XT_PRIVATE_DEVICE_HPP
