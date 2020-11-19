@@ -2,6 +2,7 @@
 #define XT_PRIVATE_HPP
 
 #include <xt/XtAudio.h>
+#include <xt/private/Shared.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -82,7 +83,6 @@ const XtService* XtiService ## name = &Service ## name
 
 extern char* XtiId;
 struct XtAggregate;
-typedef uint32_t XtFault;
 extern XtOnError XtiOnError;
 
 enum class XtBlockingStreamState {
