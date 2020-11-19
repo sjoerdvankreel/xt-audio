@@ -3,6 +3,7 @@
 
 #include <xt/XtAudio.h>
 #include <xt/private/Shared.hpp>
+#include <xt/private/Device.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -66,18 +67,6 @@ struct name ## Service: public XtService {                                    \
 };                                                                            \
 static const name ## Service Service ## name;                                 \
 const XtService* XtiService ## name = &Service ## name
-
-#define XT_IMPLEMENT_DEVICE(system)                                                                 \
-  XtFault ShowControlPanel() override;                                                              \
-  XtFault GetMix(XtBool* valid, XtMix* mix) const override;                                         \
-  XtFault GetName(char* buffer, int32_t* size) const override;                                      \
-  XtSystem GetSystem() const override { return XtSystem ## system; }                                \
-  XtFault GetChannelCount(XtBool output, int32_t* count) const override;                            \
-  XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;                      \
-  XtFault GetBufferSize(const XtFormat* format, XtBufferSize* size) const override;                 \
-  XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const override;                  \
-  XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const override; \
-  XtFault OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) override
 
 // ---- internal ----
 
@@ -199,20 +188,6 @@ struct XtAggregate: public XtStream {
   virtual XtSystem GetSystem() const;
   virtual XtFault GetFrames(int32_t* frames) const;
   virtual XtFault GetLatency(XtLatency* latency) const;
-};
-
-struct XtDevice {
-  virtual ~XtDevice() {};
-  virtual XtFault ShowControlPanel() = 0;
-  virtual XtSystem GetSystem() const = 0;
-  virtual XtFault GetMix(XtBool* valid, XtMix* mix) const = 0;
-  virtual XtFault GetName(char* buffer, int32_t* size) const = 0;
-  virtual XtFault GetChannelCount(XtBool output, int32_t* count) const = 0;
-  virtual XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const = 0;
-  virtual XtFault SupportsFormat(const XtFormat* format, XtBool* supports) const = 0;
-  virtual XtFault GetBufferSize(const XtFormat* format, XtBufferSize* size) const = 0;
-  virtual XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const = 0;
-  virtual XtFault OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) = 0;
 };
 
 // ---- internal ----
