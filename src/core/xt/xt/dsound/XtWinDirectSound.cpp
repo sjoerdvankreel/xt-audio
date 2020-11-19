@@ -28,7 +28,7 @@ struct DirectSoundDevice: public XtDevice {
   const std::string name;
   const CComPtr<IDirectSound> output;
   const CComPtr<IDirectSoundCapture> input;
-  XT_IMPLEMENT_DEVICE(DirectSound);
+  XT_IMPLEMENT_DEVICE();
 
   DirectSoundDevice(
     const GUID& g, const std::string& n, 
@@ -235,6 +235,10 @@ const char* DirectSoundService::GetFaultText(XtFault fault) const {
 }
 
 // ---- device ----
+
+XtSystem DirectSoundDevice::GetSystem() const noexcept {
+  return XtSystemDirectSound;
+}
 
 XtFault DirectSoundDevice::ShowControlPanel() noexcept {
   return S_OK;

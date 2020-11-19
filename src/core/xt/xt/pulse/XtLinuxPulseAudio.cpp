@@ -50,7 +50,7 @@ XT_DECLARE_SERVICE(PulseAudio, PulseAudio);
 
 struct PulseAudioDevice: public XtDevice {
   const bool output;
-  XT_IMPLEMENT_DEVICE(PulseAudio);
+  XT_IMPLEMENT_DEVICE();
   PulseAudioDevice(bool output):
   output(output) {}
 };
@@ -145,6 +145,10 @@ XtCause PulseAudioService::GetFaultCause(XtFault fault) const {
 }
 
 // ---- device ----
+
+XtSystem PulseAudioDevice::GetSystem() const noexcept {
+  return XtSystemPulseAudio;
+}
 
 XtFault PulseAudioDevice::ShowControlPanel() noexcept {
   return 0;

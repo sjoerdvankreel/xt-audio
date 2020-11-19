@@ -6,11 +6,11 @@
 #include <xt/audio/Structs.h>
 #include <xt/private/Shared.hpp>
 
-#define XT_IMPLEMENT_DEVICE(system)                                                                          \
+#define XT_IMPLEMENT_DEVICE()                                                                                \
   XtFault ShowControlPanel() noexcept override;                                                              \
+  XtSystem GetSystem() const noexcept override;                                                              \
   XtFault GetMix(XtBool* valid, XtMix* mix) const noexcept override;                                         \
   XtFault GetName(char* buffer, int32_t* size) const noexcept override;                                      \
-  XtSystem GetSystem() const noexcept override { return XtSystem ## system; }                                \
   XtFault GetChannelCount(XtBool output, int32_t* count) const noexcept override;                            \
   XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept override;                      \
   XtFault SupportsFormat(XtFormat const* format, XtBool* supports) const noexcept override;                  \

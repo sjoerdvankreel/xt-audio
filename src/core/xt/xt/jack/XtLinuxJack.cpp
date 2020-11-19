@@ -90,7 +90,7 @@ XT_DECLARE_SERVICE(JACK, Jack);
 
 struct JackDevice: public XtDevice {
   const XtJackClient client;
-  XT_IMPLEMENT_DEVICE(JACK);
+  XT_IMPLEMENT_DEVICE();
   JackDevice(XtJackClient&& c):
   client(std::move(c)) { XT_ASSERT(client.client != nullptr); }
 };
@@ -250,6 +250,10 @@ XtFault JackService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
 }
 
 // ---- device ----
+
+XtSystem JackDevice::GetSystem() const noexcept {
+  return XtSystemJACK;
+}
 
 XtFault JackDevice::ShowControlPanel() noexcept {
   return 0;

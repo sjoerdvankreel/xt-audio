@@ -40,7 +40,7 @@ struct AsioDevice: public XtDevice {
   bool streamOpen;
   const std::string name;
   const CComPtr<IASIO> asio;
-  XT_IMPLEMENT_DEVICE(ASIO);
+  XT_IMPLEMENT_DEVICE();
   
   ~AsioDevice() { XT_ASSERT(!streamOpen); }
   AsioDevice(const std::string& name, CComPtr<IASIO> asio): 
@@ -353,6 +353,10 @@ XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {
 }
 
 // ---- device ----
+
+XtSystem AsioDevice::GetSystem() const noexcept {
+  return XtSystemASIO;
+}
 
 XtFault AsioDevice::ShowControlPanel() noexcept {
   return asio->controlPanel();

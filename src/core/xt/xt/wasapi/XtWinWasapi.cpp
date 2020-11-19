@@ -34,7 +34,7 @@ struct WasapiDevice: public XtDevice {
   const CComPtr<IMMDevice> device;
   const CComPtr<IAudioClient> client;
   const CComPtr<IAudioClient3> client3;
-  XT_IMPLEMENT_DEVICE(WASAPI);
+  XT_IMPLEMENT_DEVICE();
   
   WasapiDevice(CComPtr<IMMDevice> d, CComPtr<IAudioClient> c, CComPtr<IAudioClient3> c3, const Options& o):
   XtDevice(), options(o), device(d), client(c), client3(c3) {}
@@ -243,6 +243,10 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
 }
 
 // ---- device ----
+
+XtSystem WasapiDevice::GetSystem() const noexcept {
+  return XtSystemWASAPI;
+}
 
 XtFault WasapiDevice::ShowControlPanel() noexcept {
   return S_OK;

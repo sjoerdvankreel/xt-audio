@@ -78,7 +78,7 @@ XT_DECLARE_SERVICE(ALSA, Alsa);
 
 struct AlsaDevice: public XtDevice {
   const AlsaDeviceInfo info;
-  XT_IMPLEMENT_DEVICE(ALSA);
+  XT_IMPLEMENT_DEVICE();
 
   AlsaDevice(const AlsaDeviceInfo& info): info(info) {}
   XtFault SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
@@ -324,6 +324,10 @@ XtFault AlsaService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
 }
 
 // ---- device ----
+
+XtSystem AlsaDevice::GetSystem() const noexcept {
+  return XtSystemALSA;
+}
 
 XtFault AlsaDevice::ShowControlPanel() noexcept {
   return 0;
