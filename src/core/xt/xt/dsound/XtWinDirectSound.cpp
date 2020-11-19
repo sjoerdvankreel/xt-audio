@@ -236,28 +236,28 @@ const char* DirectSoundService::GetFaultText(XtFault fault) const {
 
 // ---- device ----
 
-XtFault DirectSoundDevice::ShowControlPanel() {
+XtFault DirectSoundDevice::ShowControlPanel() noexcept {
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetName(char* buffer, int32_t* size) const {
+XtFault DirectSoundDevice::GetName(char* buffer, int32_t* size) const noexcept {
   XtiOutputString(this->name.c_str(), buffer, size);
   return S_OK;
 }
 
-XtFault DirectSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+XtFault DirectSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept {
   *supports = interleaved;
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {
+XtFault DirectSoundDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const noexcept {
   size->min = XtDsMinBufferMs;
   size->max = XtDsMaxBufferMs;
   size->current = XtDsDefaultBufferMs;
   return S_OK;
 }
 
-XtFault DirectSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
+XtFault DirectSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const noexcept {
   *supports = format->channels.inputs > 0 != !input 
            && format->channels.outputs > 0 != !output 
            && format->mix.rate >= 8000 
@@ -265,17 +265,17 @@ XtFault DirectSoundDevice::SupportsFormat(const XtFormat* format, XtBool* suppor
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+XtFault DirectSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const noexcept {
   XtiOutputString(XtwWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetChannelCount(XtBool output, int32_t* count) const {
+XtFault DirectSoundDevice::GetChannelCount(XtBool output, int32_t* count) const noexcept {
   *count = (output != XtFalse) == !this->output? 0:  sizeof(XtwWfxChannelNames) / sizeof(const char*);
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
+XtFault DirectSoundDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {
 
   UINT count;
   HRESULT hr;
@@ -318,7 +318,7 @@ XtFault DirectSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return S_OK;
 }
 
-XtFault DirectSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault DirectSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
 
   HRESULT hr;
   int32_t frameSize;

@@ -244,26 +244,26 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
 
 // ---- device ----
 
-XtFault WasapiDevice::ShowControlPanel() {
+XtFault WasapiDevice::ShowControlPanel() noexcept {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+XtFault WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const noexcept {
   XtiOutputString(XtwWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 
-XtFault WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const {
+XtFault WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const noexcept {
   *count =  (output != XtFalse) != options.output? 0: sizeof(XtwWfxChannelNames) / sizeof(const char*);
   return S_OK;
 }
 
-XtFault WasapiDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+XtFault WasapiDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept {
   *supports = interleaved;
   return S_OK;
 }
 
-XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const {  
+XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const noexcept {  
   HRESULT hr;
   XtwPropVariant n;
   std::string result;
@@ -277,7 +277,7 @@ XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const {  
+XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {  
   HRESULT hr;
   XtFormat match;
   UINT32 currentFrames;
@@ -298,7 +298,7 @@ XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
+XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const noexcept {  
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;
   REFERENCE_TIME engine, hardware;
@@ -326,7 +326,7 @@ XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) 
   }
 }
 
-XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {  
+XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const noexcept {  
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;
   CComHeapPtr<WAVEFORMATEX> mix;
@@ -348,7 +348,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   return S_OK;
 }
 
-XtFault WasapiDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault WasapiDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
 
   HRESULT hr;
   DWORD flags;

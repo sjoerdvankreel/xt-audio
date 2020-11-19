@@ -354,21 +354,21 @@ XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {
 
 // ---- device ----
 
-XtFault AsioDevice::ShowControlPanel() {
+XtFault AsioDevice::ShowControlPanel() noexcept {
   return asio->controlPanel();
 }
 
-XtFault AsioDevice::GetName(char* buffer, int32_t* size) const {
+XtFault AsioDevice::GetName(char* buffer, int32_t* size) const noexcept {
   XtiOutputString(this->name.c_str(), buffer, size);
   return ASE_OK;
 }
 
-XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept {
   *supports = !interleaved;
   return ASE_OK;
 }
 
-XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
+XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {
 
   XtSample sample;
   ASIOSampleRate rate;
@@ -401,14 +401,14 @@ XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return ASE_OK;
 }
 
-XtFault AsioDevice::GetChannelCount(XtBool output, int32_t* count) const {
+XtFault AsioDevice::GetChannelCount(XtBool output, int32_t* count) const noexcept {
   long inputs, outputs;
   XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
   *count = output? outputs: inputs;
   return ASE_OK;
 }
 
-XtFault AsioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
+XtFault AsioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const noexcept {  
   ASIOSampleRate rate;
   long min, max, preferred, granularity;
   XT_VERIFY_ASIO(asio->getSampleRate(&rate));
@@ -419,7 +419,7 @@ XtFault AsioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) co
   return ASE_OK;
 }
 
-XtFault AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+XtFault AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const noexcept {
   long inputs, outputs;
   ASIOChannelInfo info = { 0 };
   XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
@@ -430,7 +430,7 @@ XtFault AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, i
   return ASE_OK;
 }
 
-XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
+XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const noexcept {
   
   ASIOSampleType type;
   ASIOSampleRate rate;
@@ -469,7 +469,7 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return ASE_OK;
 }
 
-XtFault AsioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault AsioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
   
   double wantedSize;
   long asioBufferSize;

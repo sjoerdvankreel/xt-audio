@@ -25,3 +25,4 @@
 * test selective compilation
 * test compile headers as c
 * arm
+* cpp noexcept

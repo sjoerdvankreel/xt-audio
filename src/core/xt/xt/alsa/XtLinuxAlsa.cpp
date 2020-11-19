@@ -325,30 +325,30 @@ XtFault AlsaService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
 
 // ---- device ----
 
-XtFault AlsaDevice::ShowControlPanel() {
+XtFault AlsaDevice::ShowControlPanel() noexcept {
   return 0;
 }
 
-XtFault AlsaDevice::GetMix(XtBool* valid, XtMix* mix) const {
+XtFault AlsaDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {
   return 0;
 }
 
-XtFault AlsaDevice::GetName(char* buffer, int32_t* size) const {
+XtFault AlsaDevice::GetName(char* buffer, int32_t* size) const noexcept {
   XtiOutputString(info.description.c_str(), buffer, size);
   return 0;
 }
 
-XtFault AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const {  
+XtFault AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const noexcept {  
   *count = info.output != (output != XtFalse)? 0: SND_CHMAP_LAST;
   return 0;
 }
 
-XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const noexcept {
   XtiOutputString(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)), buffer, size);
   return 0;
 }
 
-XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
+XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const noexcept {
   int fault;
   double min, max;
   if(format->channels.inputs > 0 && info.output || format->channels.outputs > 0 && !info.output)
@@ -356,7 +356,7 @@ XtFault AlsaDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return QueryDevice(*this, format, true, supports, &min, &max);
 }
 
-XtFault AlsaDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {
+XtFault AlsaDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const noexcept {
 
   XtBool supports;
   double frameSize = (format->channels.inputs + format->channels.outputs) * XtiGetSampleSize(format->mix.sample);
@@ -370,7 +370,7 @@ XtFault AlsaDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) co
   return 0;
 }
 
-XtFault AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+XtFault AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept {
   
   snd_pcm_t* pcm;
   AlsaLogDisabler disabler;
@@ -409,7 +409,7 @@ XtFault AlsaDevice::SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams
   return 0;
 }
 
-XtFault AlsaDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault AlsaDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
   
   XtFault fault;
   snd_pcm_t* pcm;

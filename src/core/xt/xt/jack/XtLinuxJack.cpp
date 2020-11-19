@@ -251,33 +251,33 @@ XtFault JackService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
 
 // ---- device ----
 
-XtFault JackDevice::ShowControlPanel() {
+XtFault JackDevice::ShowControlPanel() noexcept {
   return 0;
 }
 
-XtFault JackDevice::GetName(char* buffer, int32_t* size) const {
+XtFault JackDevice::GetName(char* buffer, int32_t* size) const noexcept {
   XtiOutputString("JACK", buffer, size);
   return 0;
 }
 
-XtFault JackDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+XtFault JackDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept {
   *supports = !interleaved;
   return 0;
 }
 
-XtFault JackDevice::GetMix(XtBool* valid, XtMix* mix) const {
+XtFault JackDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {
   *valid = XtTrue;
   mix->sample = XtSampleFloat32;
   mix->rate = jack_get_sample_rate(client.client);
   return 0;
 }
 
-XtFault JackDevice::GetChannelCount(XtBool output, int32_t* count) const {
+XtFault JackDevice::GetChannelCount(XtBool output, int32_t* count) const noexcept {
   *count = CountPorts(client.client, output);
   return 0;
 }
 
-XtFault JackDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
+XtFault JackDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const noexcept {  
   jack_nframes_t rate = jack_get_sample_rate(client.client);
   size->current = jack_get_buffer_size(client.client) * 1000.0 / rate;
   size->min = size->current;
@@ -285,7 +285,7 @@ XtFault JackDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) co
   return 0;
 }
 
-XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const noexcept {
   unsigned long flag = output? JackPortIsInput: JackPortIsOutput;
   JackPtr<const char*> ports(jack_get_ports(client.client, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
   if(index >= CountPorts(client.client, output))
@@ -294,7 +294,7 @@ XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, i
   return 0;
 }
 
-XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
+XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const noexcept {
   if(format->mix.sample != XtSampleFloat32)
     return 0;
   if(format->channels.inputs > CountPorts(client.client, XtFalse))
@@ -313,7 +313,7 @@ XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return 0;
 }
 
-XtFault JackDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault JackDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
   
   XtFault fault;
   jack_client_t* c;
