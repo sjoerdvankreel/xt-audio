@@ -244,30 +244,30 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
 
 // ---- device ----
 
-XtSystem WasapiDevice::GetSystem() const noexcept {
+XtSystem WasapiDevice::GetSystem() const {
   return XtSystemWASAPI;
 }
 
-XtFault WasapiDevice::ShowControlPanel() noexcept {
+XtFault WasapiDevice::ShowControlPanel() {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const noexcept {
+XtFault WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
   XtiOutputString(XtwWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 
-XtFault WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const noexcept {
+XtFault WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const {
   *count =  (output != XtFalse) != options.output? 0: sizeof(XtwWfxChannelNames) / sizeof(const char*);
   return S_OK;
 }
 
-XtFault WasapiDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept {
+XtFault WasapiDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
   *supports = interleaved;
   return S_OK;
 }
 
-XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const noexcept {  
+XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const {  
   HRESULT hr;
   XtwPropVariant n;
   std::string result;
@@ -281,7 +281,7 @@ XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const noexcept {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {  
+XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const {  
   HRESULT hr;
   XtFormat match;
   UINT32 currentFrames;
@@ -302,7 +302,7 @@ XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {
   return S_OK;
 }
 
-XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const noexcept {  
+XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;
   REFERENCE_TIME engine, hardware;
@@ -330,7 +330,7 @@ XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) 
   }
 }
 
-XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const noexcept {  
+XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {  
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;
   CComHeapPtr<WAVEFORMATEX> mix;
@@ -352,7 +352,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   return S_OK;
 }
 
-XtFault WasapiDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
+XtFault WasapiDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   HRESULT hr;
   DWORD flags;

@@ -146,49 +146,49 @@ XtCause PulseAudioService::GetFaultCause(XtFault fault) const {
 
 // ---- device ----
 
-XtSystem PulseAudioDevice::GetSystem() const noexcept {
+XtSystem PulseAudioDevice::GetSystem() const {
   return XtSystemPulseAudio;
 }
 
-XtFault PulseAudioDevice::ShowControlPanel() noexcept {
+XtFault PulseAudioDevice::ShowControlPanel() {
   return 0;
 }
 
-XtFault PulseAudioDevice::GetName(char* buffer, int32_t* size) const noexcept {
+XtFault PulseAudioDevice::GetName(char* buffer, int32_t* size) const {
   XtiOutputString(output? "Output": "Input", buffer, size);
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const noexcept {
+XtFault PulseAudioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
   *supports = interleaved;
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::GetMix(XtBool* valid, XtMix* mix) const noexcept {
+XtFault PulseAudioDevice::GetMix(XtBool* valid, XtMix* mix) const {
   *valid = XtTrue;
   mix->rate = XtPaDefaultRate;
   mix->sample = XtPaDefaultSample;
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::GetChannelCount(XtBool output, int32_t* count) const noexcept {
+XtFault PulseAudioDevice::GetChannelCount(XtBool output, int32_t* count) const {
   *count = this->output != output? 0: PA_CHANNEL_POSITION_MAX;
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const noexcept {  
+XtFault PulseAudioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
   size->min = XtPaMinBufferSize;
   size->max = XtPaMaxBufferSize;
   size->current = XtPaDefaultBufferSize;
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const noexcept {
+XtFault PulseAudioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
   XtiOutputString(pa_channel_position_to_pretty_string(static_cast<pa_channel_position_t>(index)), buffer, size);
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const noexcept {
+XtFault PulseAudioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
   pa_sample_format pulse;
   if(format->channels.inputs > 0 && output)
     return PA_OK;
@@ -209,7 +209,7 @@ XtFault PulseAudioDevice::SupportsFormat(const XtFormat* format, XtBool* support
   return PA_OK;
 }
 
-XtFault PulseAudioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
+XtFault PulseAudioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   uint64_t mask;
   pa_simple* client;
