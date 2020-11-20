@@ -1,14 +1,5 @@
-#ifdef _WIN32
-
-// Windows.h's min/max collide with asmjit.
-#ifndef NOMINMAX
-#define NOMINMAX 1 
-#endif // NOMINMAX
+#include <xt/asio/Service.hpp>
 #include <xt/Win32.hpp>
-
-#if (!XT_ENABLE_ASIO)
-const XtService* XtiServiceAsio = nullptr;
-#else // !XT_ENABLE_ASIO
 
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
@@ -16,7 +7,10 @@ const XtService* XtiServiceAsio = nullptr;
 #include <memory>
 #include <vector>
 
-// ---- local ----
+#if !defined(_WIN32) || !XT_ENABLE_ASIO
+XtService const* XtiGetAsioService() 
+{ return nullptr; }
+#else // !defined(_WIN32) || !XT_ENABLE_ASIO
 
 static bool IsAsioSuccess(ASIOError e);
 static const double XtAsioNsPerMs = 1000000.0;
@@ -34,7 +28,16 @@ typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, 
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(ASIO, Asio);
+struct AsioService: public XtService {
+  XT_IMPLEMENT_SERVICE();
+};
+
+XtService const*
+XtiGetAsioService() 
+{ 
+  static AsioService service;
+  return &service;
+}
 
 struct AsioDevice: public XtDevice {
   bool streamOpen;
@@ -281,6 +284,10 @@ static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
 }
 
 // ---- service ----
+
+XtSystem AsioService::GetSystem() const {
+  return XtSystemASIO;
+}
 
 XtFault AsioService::GetFormatFault() const {
   return ASE_Format;
@@ -545,5 +552,4 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   return ASE_OK;
 }
 
-#endif // !XT_ENABLE_ASIO
-#endif // _WIN32
+#endif // !defined(_WIN32) || !XT_ENABLE_ASIO

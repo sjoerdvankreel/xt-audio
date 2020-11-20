@@ -1,9 +1,5 @@
-#ifdef _WIN32
+#include <xt/dsound/Service.hpp>
 #include <xt/Win32.hpp>
-
-#if !XT_ENABLE_DIRECT_SOUND
-const XtService* XtiServiceDirectSound = nullptr;
-#else // !XT_ENABLE_DIRECT_SOUND
 
 #define INITGUID 1
 #include <dsound.h>
@@ -11,6 +7,11 @@ const XtService* XtiServiceDirectSound = nullptr;
 #include <audioclient.h>
 #include <vector>
 #include <memory>
+
+#if !defined(_WIN32) || !XT_ENABLE_DIRECT_SOUND
+XtService const* XtiGetDirectSoundService() 
+{ return nullptr; }
+#else // !defined(_WIN32) || !XT_ENABLE_DIRECT_SOUND
 
 // ---- local ----
 
@@ -21,7 +22,16 @@ static const double XtDsDefaultBufferMs = 500.0;
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(DirectSound, DirectSound);
+struct DirectSoundService: public XtService {
+  XT_IMPLEMENT_SERVICE();
+};
+
+XtService const*
+XtiGetDirectSoundService() 
+{ 
+  static DirectSoundService service;
+  return &service;
+}
 
 struct DirectSoundDevice: public XtDevice {
   const GUID guid;
@@ -147,6 +157,10 @@ static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {
 }
 
 // ---- service ----
+
+XtSystem DirectSoundService::GetSystem() const {
+  return XtSystemDirectSound;
+}
 
 XtFault DirectSoundService::GetFormatFault() const {
   return DSERR_BADFORMAT;
@@ -516,5 +530,4 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !XT_ENABLE_DIRECT_SOUND
-#endif // _WIN32
+#endif // !defined(_WIN32) || !XT_ENABLE_DIRECT_SOUND

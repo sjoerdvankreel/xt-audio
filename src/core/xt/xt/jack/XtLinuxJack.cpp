@@ -1,16 +1,15 @@
-#ifdef __linux__
 #include <xt/Linux.hpp>
-
-#if !XT_ENABLE_JACK
-void XtlInitJack() { }
-void XtlTerminateJack() { }
-const XtService* XtiServiceJack = nullptr;
-#else // !XT_ENABLE_JACK
-
 #include <jack/jack.h>
 #include <vector>
 #include <memory>
 #include <sstream>
+
+#if !defined(__linux__) || !XT_ENABLE_JACK
+void XtlInitJack() { }
+void XtlTerminateJack() { }
+XtService const* XtiGetJackService() 
+{ return nullptr; }
+#else // !defined(__linux__) || !XT_ENABLE_JACK
 
 // ---- local ----
 
@@ -86,7 +85,16 @@ struct XtJackConnection {
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(JACK, Jack);
+struct JackService: public XtService {
+  XT_IMPLEMENT_SERVICE();
+};
+
+XtService const*
+XtiGetJackService() 
+{ 
+  static JackService service;
+  return &service;
+}
 
 struct JackDevice: public XtDevice {
   const XtJackClient client;
@@ -207,6 +215,10 @@ void XtlTerminateJack() {
 }
 
 // ---- service ----
+
+XtSystem JackService::GetSystem() const {
+  return XtSystemJACK;
+}
 
 XtFault JackService::GetFormatFault() const {
   return EINVAL;
@@ -392,5 +404,4 @@ XtFault JackStream::Start() {
   return 0;
 }
 
-#endif // XT_ENABLE_JACK
-#endif // __linux__
+#endif !defined(__linux__) || !XT_ENABLE_JACK

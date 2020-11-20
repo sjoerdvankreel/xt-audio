@@ -1,16 +1,15 @@
-#ifdef __linux__
 #include <xt/Linux.hpp>
+#include <alsa/asoundlib.h>
+#include <vector>
+#include <climits>
+#include <cstring>
 
-#if !XT_ENABLE_ALSA
+#if !defined(__linux__) || !XT_ENABLE_ALSA
 void XtlInitAlsa() { }
 void XtlTerminateAlsa() { }
-const XtService* XtiServiceAlsa = nullptr;
-#else // !XT_ENABLE_ALSA
-
-#include <vector>
-#include <cstring>
-#include <climits>
-#include <alsa/asoundlib.h>
+XtService const* XtiGetAlsaService() 
+{ return nullptr; }
+#else !defined(__linux__) || !XT_ENABLE_ALSA
 
 #define XT_VERIFY_ALSA(c) do { int e = (c); if(e < 0) \
   return XT_TRACE(#c), e; } while(0)
@@ -74,7 +73,16 @@ struct AlsaHints {
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(ALSA, Alsa);
+struct AlsaService: public XtService {
+  XT_IMPLEMENT_SERVICE();
+};
+
+XtService const*
+XtiGetAlsaService() 
+{ 
+  static AlsaService service;
+  return &service;
+}
 
 struct AlsaDevice: public XtDevice {
   const AlsaDeviceInfo info;
@@ -265,6 +273,10 @@ void XtlTerminateAlsa() {
 }
 
 // ---- service ----
+
+XtSystem AlsaService::GetSystem() const {
+  return XtSystemALSA;
+}
 
 XtFault AlsaService::GetFormatFault() const {
   return EINVAL;
@@ -645,5 +657,4 @@ void AlsaStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !XT_ENABLE_ALSA
-#endif // __linux__
+#endif !defined(__linux__) || !XT_ENABLE_ALSA

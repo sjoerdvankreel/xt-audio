@@ -1,9 +1,5 @@
-#ifdef _WIN32
+#include <xt/wasapi/Service.hpp>
 #include <xt/Win32.hpp>
-
-#if !XT_ENABLE_WASAPI
-const XtService* XtiServiceWasapi = nullptr;
-#else // !XT_ENABLE_WASAPI
 
 #define INITGUID 1
 #include <mmdeviceapi.h>
@@ -12,6 +8,11 @@ const XtService* XtiServiceWasapi = nullptr;
 #include <avrt.h>
 #include <memory>
 #include <cmath>
+
+#if !defined(_WIN32) || !XT_ENABLE_WASAPI
+XtService const* XtiGetWasapiService() 
+{ return nullptr; }
+#else // !defined(_WIN32) || !XT_ENABLE_WASAPI
 
 // ---- local ----
 
@@ -27,7 +28,16 @@ static const double XtWsMaxExclusiveBufferMs = 500.0;
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(WASAPI, Wasapi);
+struct WasapiService: public XtService {
+  XT_IMPLEMENT_SERVICE();
+};
+
+XtService const*
+XtiGetWasapiService() 
+{ 
+  static WasapiService service;
+  return &service;
+}
 
 struct WasapiDevice: public XtDevice {
   const Options options;
@@ -137,6 +147,10 @@ static HRESULT GetDevices(
 }
 
 // ---- service -----
+
+XtSystem WasapiService::GetSystem() const {
+  return XtSystemWASAPI;
+}
 
 XtFault WasapiService::GetFormatFault() const {
   return AUDCLNT_E_UNSUPPORTED_FORMAT;
@@ -595,5 +609,4 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !XT_ENABLE_WASAPI
-#endif // _WIN32
+#endif // !defined(_WIN32) || !XT_ENABLE_WASAPI

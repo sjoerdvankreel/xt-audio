@@ -2,9 +2,7 @@
 #define XT_WIN32_HPP
 #ifdef _WIN32
 
-#ifndef NOMINMAX
 #define NOMINMAX 1
-#endif // NOMINMAX
 #include <xt/Private.hpp>
 #include <windows.h>
 #include <atlbase.h>

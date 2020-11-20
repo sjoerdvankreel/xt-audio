@@ -1,14 +1,13 @@
-#ifdef __linux__
 #include <xt/Linux.hpp>
-
-#if !XT_ENABLE_PULSE_AUDIO
-const XtService* XtiServicePulseAudio = nullptr;
-#else // !XT_ENABLE_PULSE_AUDIO
-
-#include <memory>
-#include <vector>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
+#include <memory>
+#include <vector>
+
+#if !defined(__linux__) || !XT_ENABLE_PULSE_AUDIO
+XtService const* XtiGetPulseAudioService() 
+{ return nullptr; }
+#else // !defined(__linux__) || !XT_ENABLE_PULSE_AUDIO
 
 // ---- local ----
 
@@ -46,7 +45,16 @@ struct XtPaSimple {
 
 // ---- forward ----
 
-XT_DECLARE_SERVICE(PulseAudio, PulseAudio);
+struct PulseAudioService: public XtService {
+  XT_IMPLEMENT_SERVICE();
+};
+
+XtService const*
+XtiGetPulseAudioService() 
+{ 
+  static PulseAudioService service;
+  return &service;
+}
 
 struct PulseAudioDevice: public XtDevice {
   const bool output;
@@ -94,6 +102,10 @@ static XtPaSimple CreateDefaultClient(XtBool output) {
 }
 
 // ---- service ----
+
+XtSystem PulseAudioService::GetSystem() const {
+  return XtSystemPulseAudio;
+}
 
 XtFault PulseAudioService::GetFormatFault() const {
   return XtPaErrFormat;
@@ -279,5 +291,4 @@ void PulseAudioStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_ON_BUFFER(fault);
 }
 
-#endif // !XT_ENABLE_PULSE_AUDIO
-#endif // __linux__
+#endif !defined(__linux__) || !XT_ENABLE_PULSE_AUDIO

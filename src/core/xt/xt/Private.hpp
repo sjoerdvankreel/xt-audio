@@ -4,6 +4,7 @@
 #include <xt/XtAudio.h>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Device.hpp>
+#include <xt/private/Service.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -53,20 +54,6 @@ static_assert(sizeof(XtCapabilities) == 4);
   XtFault GetFrames(int32_t* frames) const override;     \
   XtFault GetLatency(XtLatency* latency) const override; \
   XtSystem GetSystem() const override { return XtSystem ## system; }
-
-#define XT_DECLARE_SERVICE(system, name)                                      \
-struct name ## Service: public XtService {                                    \
-  XtFault GetFormatFault() const override;                                    \
-  XtCapabilities GetCapabilities() const override;                            \
-  XtCause GetFaultCause(XtFault fault) const override;                        \
-  XtFault GetDeviceCount(int32_t* count) const override;                      \
-  const char* GetFaultText(XtFault fault) const override;                     \
-  XtSystem GetSystem() const override { return XtSystem ## system; }          \
-  XtFault OpenDevice(int32_t index, XtDevice** device) const override;        \
-  XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const override; \
-};                                                                            \
-static const name ## Service Service ## name;                                 \
-const XtService* XtiService ## name = &Service ## name
 
 // ---- internal ----
 
@@ -121,18 +108,6 @@ struct XtIntermediateBuffers {
 };
 
 // ---- forward ----
-
-struct XtService {
-  virtual ~XtService() {};
-  virtual XtSystem GetSystem() const = 0;
-  virtual XtFault GetFormatFault() const = 0;
-  virtual XtCapabilities GetCapabilities() const = 0;
-  virtual XtCause GetFaultCause(XtFault fault) const = 0;
-  virtual XtFault GetDeviceCount(int32_t* count) const = 0;
-  virtual const char* GetFaultText(XtFault fault) const = 0;
-  virtual XtFault OpenDevice(int32_t index, XtDevice** device) const = 0;
-  virtual XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const = 0;
-};
 
 struct XtStream {
   void* user;

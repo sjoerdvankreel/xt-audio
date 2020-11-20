@@ -1,5 +1,8 @@
 #ifdef _WIN32
 #include <xt/Win32.hpp>
+#include <xt/asio/Service.hpp>
+#include <xt/dsound/Service.hpp>
+#include <xt/wasapi/Service.hpp>
 #include <vector>
 #include <cstring>
 #include <algorithm>
@@ -9,10 +12,6 @@
 static HWND XtwWindow = nullptr;
 static DWORD XtwMainThreadId = 0;
 static bool XtwOwnWindow = false;
-
-extern const XtService* XtiServiceAsio;
-extern const XtService* XtiServiceWasapi;
-extern const XtService* XtiServiceDirectSound;
 
 static XtBlockingStreamState ReadWin32BlockingStreamState(
   XtwWin32BlockingStream* stream) {
@@ -102,9 +101,9 @@ const char* XtwWfxChannelNames[18] = {
 
 void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
   std::vector<XtSystem> systems;
-  if(XtiServiceAsio != nullptr) systems.push_back(XtSystemASIO);
-  if(XtiServiceWasapi != nullptr) systems.push_back(XtSystemWASAPI);
-  if(XtiServiceDirectSound != nullptr) systems.push_back(XtSystemDirectSound);
+  if(XtiGetAsioService() != nullptr) systems.push_back(XtSystemASIO);
+  if(XtiGetWasapiService() != nullptr) systems.push_back(XtSystemWASAPI);
+  if(XtiGetDirectSoundService() != nullptr) systems.push_back(XtSystemDirectSound);
   auto count = static_cast<int32_t>(systems.size());
   if(buffer == nullptr) 
     *size = count;
@@ -115,9 +114,9 @@ void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
 const XtService* XT_CALL XtAudioGetService(XtSystem system) {
   XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDirectSound);
   switch(system) {
-  case XtSystemASIO: return XtiServiceAsio;
-  case XtSystemWASAPI: return XtiServiceWasapi;
-  case XtSystemDirectSound: return XtiServiceDirectSound;
+  case XtSystemASIO: return XtiGetAsioService();
+  case XtSystemWASAPI: return XtiGetWasapiService();
+  case XtSystemDirectSound: return XtiGetDirectSoundService();
   case XtSystemALSA:
   case XtSystemJACK:
   case XtSystemPulseAudio: return nullptr;
