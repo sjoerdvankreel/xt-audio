@@ -1,3 +1,5 @@
+#include <xt/audio/Shared.h>
+
 #if !XT_ENABLE_DIRECT_SOUND
 XtService const* XtiGetDirectSoundService() 
 { return nullptr; }

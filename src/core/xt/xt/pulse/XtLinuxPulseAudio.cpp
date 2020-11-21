@@ -1,3 +1,5 @@
+#include <xt/audio/Shared.h>
+
 #if !XT_ENABLE_PULSE_AUDIO
 XtService const* XtiGetPulseAudioService() 
 { return nullptr; }
