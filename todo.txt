@@ -26,3 +26,6 @@
 * test compile headers as c
 * arm
 * cpp noexcept
+* drop dummy window handle
+* rename this to self
+* make services members of the platform/library
