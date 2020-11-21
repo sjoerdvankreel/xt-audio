@@ -1,8 +1,5 @@
 #ifdef _WIN32
 #include <xt/Win32.hpp>
-#include <xt/asio/Service.hpp>
-#include <xt/dsound/Service.hpp>
-#include <xt/wasapi/Service.hpp>
 #include <vector>
 #include <cstring>
 #include <algorithm>
@@ -96,43 +93,6 @@ const char* XtwWfxChannelNames[18] = {
   "Top Front Left", "Top Front Center", "Top Front Right",
   "Top Back Left", "Top Back Center", "Top Back Right"
 };
-
-// ---- api ----
-
-void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
-  std::vector<XtSystem> systems;
-  if(XtiGetAsioService() != nullptr) systems.push_back(XtSystemASIO);
-  if(XtiGetWasapiService() != nullptr) systems.push_back(XtSystemWASAPI);
-  if(XtiGetDirectSoundService() != nullptr) systems.push_back(XtSystemDirectSound);
-  auto count = static_cast<int32_t>(systems.size());
-  if(buffer == nullptr) 
-    *size = count;
-  else
-    memcpy(buffer, systems.data(), std::min(*size, count)*sizeof(XtSystem));
-}
-
-const XtService* XT_CALL XtAudioGetService(XtSystem system) {
-  XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDirectSound);
-  switch(system) {
-  case XtSystemASIO: return XtiGetAsioService();
-  case XtSystemWASAPI: return XtiGetWasapiService();
-  case XtSystemDirectSound: return XtiGetDirectSoundService();
-  case XtSystemALSA:
-  case XtSystemJACK:
-  case XtSystemPulseAudio: return nullptr;
-  default: return XT_FAIL("Unknown system."), nullptr;
-  }
-}
-
-XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup) {
-  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
-  switch(setup) {
-  case XtSetupProAudio: return XtSystemASIO;
-  case XtSetupSystemAudio: return XtSystemWASAPI;
-  case XtSetupConsumerAudio: return XtSystemDirectSound;
-  default: return XT_FAIL("Unknown setup."), static_cast<XtSystem>(0);
-  }
-}
 
 // ---- internal ----
 

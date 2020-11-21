@@ -1,8 +1,5 @@
 #ifdef __linux__
 #include <xt/Linux.hpp>
-#include <xt/alsa/Service.hpp>
-#include <xt/jack/Service.hpp>
-#include <xt/pulse/Service.hpp>
 #include <pthread.h>
 
 // ---- local ----
@@ -89,43 +86,6 @@ static void* LinuxOnBlockingBuffer(void* user) {
   }
   XT_FAIL("End of stream callback reached.");
   return nullptr;
-}
-
-// ---- api ----
-
-void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
-  std::vector<XtSystem> systems;
-  if(XtiGetAlsaService() != nullptr) systems.push_back(XtSystemALSA);
-  if(XtiGetJackService() != nullptr) systems.push_back(XtSystemJACK);
-  if(XtiGetPulseAudioService() != nullptr) systems.push_back(XtSystemPulseAudio);
-  auto count = static_cast<int32_t>(systems.size());
-  if(buffer == nullptr) 
-    *size = count;
-  else
-    memcpy(buffer, systems.data(), std::min(*size, count)*sizeof(XtSystem));
-}
-
-const XtService* XT_CALL XtAudioGetService(XtSystem system) {
-  XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDirectSound);
-  switch(system) {
-  case XtSystemALSA: return XtiGetAlsaService();
-  case XtSystemJACK: return XtiGetJackService();
-  case XtSystemPulseAudio: return XtiGetPulseAudioService();
-  case XtSystemASIO:
-  case XtSystemWASAPI:
-  case XtSystemDirectSound: return nullptr;
-  default: return XT_FAIL("Unknown system."), nullptr;
-  }
-}
-
-XtSystem XT_CALL XtAudioSetupToSystem(XtSetup setup) {
-  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
-  switch(setup) {
-  case XtSetupProAudio: return XtSystemJACK;
-  case XtSetupSystemAudio: return XtSystemALSA;
-  case XtSetupConsumerAudio: return XtSystemPulseAudio;
-  default: return XT_FAIL("Unknown setup."), static_cast<XtSystem>(0);
-  }
 }
 
 // ---- internal ----

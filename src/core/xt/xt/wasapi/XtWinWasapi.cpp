@@ -5,9 +5,7 @@ XtService const* XtiGetWasapiService()
 { return nullptr; }
 #else // !XT_ENABLE_WASAPI
 
-#include <xt/wasapi/Service.hpp>
 #include <xt/Win32.hpp>
-
 #define INITGUID 1
 #include <mmdeviceapi.h>
 #include <audioclient.h>

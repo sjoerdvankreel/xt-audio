@@ -427,7 +427,7 @@ XtFault AlsaDevice::SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams
   return 0;
 }
 
-XtFault AlsaDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) noexcept {
+XtFault AlsaDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   XtFault fault;
   snd_pcm_t* pcm;

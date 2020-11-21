@@ -5,9 +5,7 @@ XtService const* XtiGetAsioService()
 { return nullptr; }
 #else // !XT_ENABLE_ASIO
 
-#include <xt/asio/Service.hpp>
 #include <xt/Win32.hpp>
-
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
 #include <host/pc/asiolist.h>

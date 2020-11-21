@@ -5,9 +5,7 @@ XtService const* XtiGetDirectSoundService()
 { return nullptr; }
 #else // !XT_ENABLE_DIRECT_SOUND
 
-#include <xt/dsound/Service.hpp>
 #include <xt/Win32.hpp>
-
 #define INITGUID 1
 #include <dsound.h>
 #include <mmdeviceapi.h>
