@@ -1,3 +1,8 @@
+#if !XT_ENABLE_WASAPI
+XtService const* XtiGetWasapiService() 
+{ return nullptr; }
+#else // !XT_ENABLE_WASAPI
+
 #include <xt/wasapi/Service.hpp>
 #include <xt/Win32.hpp>
 
@@ -8,11 +13,6 @@
 #include <avrt.h>
 #include <memory>
 #include <cmath>
-
-#if !defined(_WIN32) || !XT_ENABLE_WASAPI
-XtService const* XtiGetWasapiService() 
-{ return nullptr; }
-#else // !defined(_WIN32) || !XT_ENABLE_WASAPI
 
 // ---- local ----
 
@@ -609,4 +609,4 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !defined(_WIN32) || !XT_ENABLE_WASAPI
+#endif // !XT_ENABLE_WASAPI

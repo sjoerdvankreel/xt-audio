@@ -1,13 +1,13 @@
+#if !XT_ENABLE_PULSE_AUDIO
+XtService const* XtiGetPulseAudioService() 
+{ return nullptr; }
+#else // !XT_ENABLE_PULSE_AUDIO
+
 #include <xt/Linux.hpp>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
 #include <memory>
 #include <vector>
-
-#if !defined(__linux__) || !XT_ENABLE_PULSE_AUDIO
-XtService const* XtiGetPulseAudioService() 
-{ return nullptr; }
-#else // !defined(__linux__) || !XT_ENABLE_PULSE_AUDIO
 
 // ---- local ----
 
@@ -291,4 +291,4 @@ void PulseAudioStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_ON_BUFFER(fault);
 }
 
-#endif !defined(__linux__) || !XT_ENABLE_PULSE_AUDIO
+#endif // !XT_ENABLE_PULSE_AUDIO

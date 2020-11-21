@@ -1,15 +1,15 @@
+#if !XT_ENABLE_ALSA
+void XtlInitAlsa() { }
+void XtlTerminateAlsa() { }
+XtService const* XtiGetAlsaService() 
+{ return nullptr; }
+#else // !XT_ENABLE_ALSA
+
 #include <xt/Linux.hpp>
 #include <alsa/asoundlib.h>
 #include <vector>
 #include <climits>
 #include <cstring>
-
-#if !defined(__linux__) || !XT_ENABLE_ALSA
-void XtlInitAlsa() { }
-void XtlTerminateAlsa() { }
-XtService const* XtiGetAlsaService() 
-{ return nullptr; }
-#else !defined(__linux__) || !XT_ENABLE_ALSA
 
 #define XT_VERIFY_ALSA(c) do { int e = (c); if(e < 0) \
   return XT_TRACE(#c), e; } while(0)
@@ -657,4 +657,4 @@ void AlsaStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif !defined(__linux__) || !XT_ENABLE_ALSA
+#endif // !XT_ENABLE_ALSA

@@ -1,3 +1,8 @@
+#if !XT_ENABLE_DIRECT_SOUND
+XtService const* XtiGetDirectSoundService() 
+{ return nullptr; }
+#else // !XT_ENABLE_DIRECT_SOUND
+
 #include <xt/dsound/Service.hpp>
 #include <xt/Win32.hpp>
 
@@ -7,11 +12,6 @@
 #include <audioclient.h>
 #include <vector>
 #include <memory>
-
-#if !defined(_WIN32) || !XT_ENABLE_DIRECT_SOUND
-XtService const* XtiGetDirectSoundService() 
-{ return nullptr; }
-#else // !defined(_WIN32) || !XT_ENABLE_DIRECT_SOUND
 
 // ---- local ----
 
@@ -530,4 +530,4 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !defined(_WIN32) || !XT_ENABLE_DIRECT_SOUND
+#endif // !XT_ENABLE_DIRECT_SOUND

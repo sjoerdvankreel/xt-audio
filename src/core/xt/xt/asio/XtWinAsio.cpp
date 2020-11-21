@@ -1,3 +1,8 @@
+#if !XT_ENABLE_ASIO
+XtService const* XtiGetAsioService() 
+{ return nullptr; }
+#else // !XT_ENABLE_ASIO
+
 #include <xt/asio/Service.hpp>
 #include <xt/Win32.hpp>
 
@@ -6,11 +11,6 @@
 #include <host/pc/asiolist.h>
 #include <memory>
 #include <vector>
-
-#if !defined(_WIN32) || !XT_ENABLE_ASIO
-XtService const* XtiGetAsioService() 
-{ return nullptr; }
-#else // !defined(_WIN32) || !XT_ENABLE_ASIO
 
 static bool IsAsioSuccess(ASIOError e);
 static const double XtAsioNsPerMs = 1000000.0;
@@ -552,4 +552,4 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   return ASE_OK;
 }
 
-#endif // !defined(_WIN32) || !XT_ENABLE_ASIO
+#endif // !XT_ENABLE_ASIO

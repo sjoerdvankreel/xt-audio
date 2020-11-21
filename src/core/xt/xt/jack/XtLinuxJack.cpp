@@ -1,15 +1,15 @@
+#if !XT_ENABLE_JACK
+void XtlInitJack() { }
+void XtlTerminateJack() { }
+XtService const* XtiGetJackService() 
+{ return nullptr; }
+#else // !XT_ENABLE_JACK
+
 #include <xt/Linux.hpp>
 #include <jack/jack.h>
 #include <vector>
 #include <memory>
 #include <sstream>
-
-#if !defined(__linux__) || !XT_ENABLE_JACK
-void XtlInitJack() { }
-void XtlTerminateJack() { }
-XtService const* XtiGetJackService() 
-{ return nullptr; }
-#else // !defined(__linux__) || !XT_ENABLE_JACK
 
 // ---- local ----
 
@@ -404,4 +404,4 @@ XtFault JackStream::Start() {
   return 0;
 }
 
-#endif !defined(__linux__) || !XT_ENABLE_JACK
+#endif // !XT_ENABLE_JACK

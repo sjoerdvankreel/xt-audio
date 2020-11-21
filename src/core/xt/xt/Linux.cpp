@@ -1,15 +1,14 @@
 #ifdef __linux__
 #include <xt/Linux.hpp>
+#include <xt/alsa/Service.hpp>
+#include <xt/jack/Service.hpp>
+#include <xt/pulse/Service.hpp>
 #include <pthread.h>
 
 // ---- local ----
 
 static pthread_t XtlMainThread;
 static bool XtlInitialized = false;
-
-extern const XtService* XtiServiceAlsa;
-extern const XtService* XtiServiceJack;
-extern const XtService* XtiServicePulseAudio;
 
 static XtBlockingStreamState ReadLinuxBlockingStreamState(
   XtlLinuxBlockingStream* stream) {
@@ -96,9 +95,9 @@ static void* LinuxOnBlockingBuffer(void* user) {
 
 void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
   std::vector<XtSystem> systems;
-  if(XtiServiceAlsa != nullptr) systems.push_back(XtSystemALSA);
-  if(XtiServiceJack != nullptr) systems.push_back(XtSystemJACK);
-  if(XtiServicePulseAudio != nullptr) systems.push_back(XtSystemPulseAudio);
+  if(XtiGetAlsaService() != nullptr) systems.push_back(XtSystemALSA);
+  if(XtiGetJackService() != nullptr) systems.push_back(XtSystemJACK);
+  if(XtiGetPulseAudioService() != nullptr) systems.push_back(XtSystemPulseAudio);
   auto count = static_cast<int32_t>(systems.size());
   if(buffer == nullptr) 
     *size = count;
@@ -109,9 +108,9 @@ void XT_CALL XtAudioGetSystems(XtSystem* buffer, int32_t* size) {
 const XtService* XT_CALL XtAudioGetService(XtSystem system) {
   XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDirectSound);
   switch(system) {
-  case XtSystemALSA: return XtiServiceAlsa;
-  case XtSystemJACK: return XtiServiceJack;
-  case XtSystemPulseAudio: return XtiServicePulseAudio;
+  case XtSystemALSA: return XtiGetAlsaService();
+  case XtSystemJACK: return XtiGetJackService();
+  case XtSystemPulseAudio: return XtiGetPulseAudioService();
   case XtSystemASIO:
   case XtSystemWASAPI:
   case XtSystemDirectSound: return nullptr;
