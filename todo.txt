@@ -32,3 +32,4 @@
 * remove formatfault?
 * pulseaudio->pulse/directsound->dsound
 * rename coreenums->enums
+* move locals above asserts

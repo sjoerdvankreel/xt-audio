@@ -11,13 +11,12 @@ char const* XtiGetPulseFaultText(XtFault fault)
 
 char const*
 XtiGetPulseFaultText(XtFault fault)
-{ return fault == XT_PA_ERR_FORMAT? "XT_PA_ERR_FORMAT": pa_strerror(fault); }
+{ return pa_strerror(fault); }
 
 XtCause
 XtiGetPulseFaultCause(XtFault fault)
 { 
   switch(fault) {
-  case XT_PA_ERR_FORMAT: return XtCauseFormat;
   case PA_ERR_BUSY:
   case PA_ERR_EXIST:
   case PA_ERR_KILLED:

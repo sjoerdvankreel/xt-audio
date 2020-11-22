@@ -8,7 +8,6 @@
 
 #define XT_IMPLEMENT_SERVICE()                                         \
   XtSystem GetSystem() const override;                                 \
-  XtFault GetFormatFault() const override;                             \
   XtCapabilities GetCapabilities() const override;                     \
   XtFault GetDeviceCount(int32_t* count) const override;               \
   XtFault OpenDevice(int32_t index, XtDevice** device) const override; \
@@ -18,7 +17,6 @@ struct XtService
 {
   virtual ~XtService() {};
   virtual XtSystem GetSystem() const = 0;
-  virtual XtFault GetFormatFault() const = 0;
   virtual XtCapabilities GetCapabilities() const = 0;
   virtual XtFault GetDeviceCount(int32_t* count) const = 0;
   virtual XtFault OpenDevice(int32_t index, XtDevice** device) const = 0;

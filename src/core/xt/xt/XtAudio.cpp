@@ -41,7 +41,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   XtError error;
   XtFault fault;
   int32_t frames;
-  XtBool supports;
   XtSystem system;
   XtBool canInterleaved;
   XtBool initInterleaved;
@@ -67,10 +66,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
 
   *stream = nullptr;
   system = d->GetSystem();  
-  if((error = XtDeviceSupportsFormat(d, &params->format, &supports)) != 0)
-    return error;
-  if(!supports)
-    return XtiCreateError(system, XtAudioGetService(system)->GetFormatFault());
   if((error = XtDeviceSupportsAccess(d, XtTrue, &canInterleaved)) != 0)
     return error;
   if((error = XtDeviceSupportsAccess(d, XtFalse, &canNonInterleaved)) != 0)

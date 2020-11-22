@@ -289,10 +289,6 @@ XtSystem AsioService::GetSystem() const {
   return XtSystemASIO;
 }
 
-XtFault AsioService::GetFormatFault() const {
-  return XT_ASE_Format;
-}
-
 XtCapabilities AsioService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 

@@ -95,10 +95,6 @@ XtSystem WasapiService::GetSystem() const {
   return XtSystemWASAPI;
 }
 
-XtFault WasapiService::GetFormatFault() const {
-  return AUDCLNT_E_UNSUPPORTED_FORMAT;
-}
-
 XtCapabilities WasapiService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 

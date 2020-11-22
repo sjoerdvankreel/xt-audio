@@ -109,10 +109,6 @@ XtSystem PulseService::GetSystem() const {
   return XtSystemPulse;
 }
 
-XtFault PulseService::GetFormatFault() const {
-  return XT_PA_ERR_FORMAT;
-}
-
 XtCapabilities PulseService::GetCapabilities() const {
   return XtCapabilitiesChannelMask;
 }

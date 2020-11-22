@@ -222,10 +222,6 @@ XtSystem JackService::GetSystem() const {
   return XtSystemJACK;
 }
 
-XtFault JackService::GetFormatFault() const {
-  return EINVAL;
-}
-
 XtCapabilities JackService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 

@@ -280,10 +280,6 @@ XtSystem AlsaService::GetSystem() const {
   return XtSystemALSA;
 }
 
-XtFault AlsaService::GetFormatFault() const {
-  return EINVAL;
-}
-
 XtCapabilities AlsaService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime |

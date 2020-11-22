@@ -77,12 +77,7 @@ XtDeviceGetBufferSize(XtDevice const* d, XtFormat const* format, XtBufferSize* s
   XT_ASSERT(format != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
-  XtError error;
-  XtBool supports;
-  XtSystem system = d->GetSystem();
   std::memset(size, 0, sizeof(XtBufferSize));
-  if((error = XtDeviceSupportsFormat(d, format, &supports)) != 0) return error;
-  if(!supports) return XtiCreateError(system, XtAudioGetService(system)->GetFormatFault());
   return XtiCreateError(d->GetSystem(), d->GetBufferSize(format, size));
 }
 

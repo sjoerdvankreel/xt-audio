@@ -162,10 +162,6 @@ XtSystem DSoundService::GetSystem() const {
   return XtSystemDSound;
 }
 
-XtFault DSoundService::GetFormatFault() const {
-  return DSERR_BADFORMAT;
-}
-
 XtCapabilities DSoundService::GetCapabilities() const {
   return XtCapabilitiesChannelMask;
 }
