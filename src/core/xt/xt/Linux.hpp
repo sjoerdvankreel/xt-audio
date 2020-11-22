@@ -7,12 +7,6 @@
 
 // ---- linux ----
 
-void XtlInitJack();
-void XtlInitAlsa();
-void XtlTerminateJack();
-void XtlTerminateAlsa();
-XtCause XtlPosixErrorToCause(XtFault fault);
-
 struct XtlMutex {
   pthread_mutex_t m;
   XtlMutex(const XtlMutex&) = delete;

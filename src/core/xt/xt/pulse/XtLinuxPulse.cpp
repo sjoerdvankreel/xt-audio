@@ -1,8 +1,10 @@
-#include <xt/audio/Shared.h>
+#include <xt/private/Shared.hpp>
+#include <xt/private/Service.hpp>
 
 #if !XT_ENABLE_PULSE
-XtService const* XtiGetPulseService() 
-{ return nullptr; }
+std::unique_ptr<XtService>
+XtiCreatePulseService(std::string const& id, void* window)
+{ return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_PULSE
 
 #include <xt/Linux.hpp>
@@ -48,16 +50,18 @@ struct XtPaSimple {
 
 // ---- forward ----
 
-struct PulseService: public XtService {
+struct PulseService: public XtService 
+{
+  ~PulseService();
+  PulseService(std::string const& id);
   XT_IMPLEMENT_SERVICE();
+private:
+  std::string const _id;
 };
 
-XtService const*
-XtiGetPulseService() 
-{ 
-  static PulseService service;
-  return &service;
-}
+std::unique_ptr<XtService>
+XtiCreatePulseService(std::string const& id, void* window)
+{ return std::make_unique<PulseService>(id); }
 
 struct PulseDevice: public XtDevice {
   const bool output;
@@ -106,6 +110,12 @@ static XtPaSimple CreateDefaultClient(XtBool output) {
 }
 
 // ---- service ----
+
+PulseService::PulseService(std::string const& id):
+_id(id) {}
+
+PulseService::~PulseService()
+{  }
 
 XtSystem PulseService::GetSystem() const {
   return XtSystemPulse;

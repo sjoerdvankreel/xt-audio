@@ -1,8 +1,10 @@
-#include <xt/audio/Shared.h>
+#include <xt/private/Shared.hpp>
+#include <xt/private/Service.hpp>
 
 #if !XT_ENABLE_WASAPI
-XtService const* XtiGetWasapiService() 
-{ return nullptr; }
+std::unique_ptr<XtService>
+XtiCreateWasapiService(std::string const& id, void* window)
+{ return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_WASAPI
 
 #include <xt/Win32.hpp>
@@ -28,16 +30,16 @@ static const double XtWsMaxExclusiveBufferMs = 500.0;
 
 // ---- forward ----
 
-struct WasapiService: public XtService {
+struct WasapiService: public XtService 
+{
+  WasapiService();
+  ~WasapiService();
   XT_IMPLEMENT_SERVICE();
 };
 
-XtService const*
-XtiGetWasapiService() 
-{ 
-  static WasapiService service;
-  return &service;
-}
+std::unique_ptr<XtService>
+XtiCreateWasapiService(std::string const& id, void* window)
+{ return std::make_unique<WasapiService>(); }
 
 struct WasapiDevice: public XtDevice {
   const Options options;
@@ -90,6 +92,12 @@ static HRESULT GetDevices(
 }
 
 // ---- service -----
+
+WasapiService::WasapiService()
+{ XT_ASSERT(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)); }
+
+WasapiService::~WasapiService()
+{ CoUninitialize(); }
 
 XtSystem WasapiService::GetSystem() const {
   return XtSystemWASAPI;

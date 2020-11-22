@@ -1,10 +1,10 @@
-#include <xt/audio/Shared.h>
+#include <xt/private/Shared.hpp>
+#include <xt/private/Service.hpp>
 
 #if !XT_ENABLE_JACK
-void XtlInitJack() { }
-void XtlTerminateJack() { }
-XtService const* XtiGetJackService() 
-{ return nullptr; }
+std::unique_ptr<XtService>
+XtiCreateJackService(std::string const& id, void* window)
+{ return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_JACK
 
 #include <xt/private/Platform.hpp>
@@ -88,16 +88,18 @@ struct XtJackConnection {
 
 // ---- forward ----
 
-struct JackService: public XtService {
+struct JackService: public XtService 
+{
+  ~JackService();
+  JackService(std::string const& id);
   XT_IMPLEMENT_SERVICE();
+private:
+  std::string const _id;
 };
 
-XtService const*
-XtiGetJackService() 
-{ 
-  static JackService service;
-  return &service;
-}
+std::unique_ptr<XtService>
+XtiCreateJackService(std::string const& id, void* window)
+{ return std::make_unique<JackService>(id); }
 
 struct JackDevice: public XtDevice {
   const XtJackClient client;
@@ -207,17 +209,14 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   return 0;
 }
 
-// ---- linux ----
-
-void XtlInitJack() {
-  jack_set_error_function(&JackErrorCallback);
-}
-
-void XtlTerminateJack() {
-  jack_set_error_function(&JackSilentCallback);
-}
-
 // ---- service ----
+
+JackService::JackService(std::string const& id):
+_id(id)
+{ jack_set_error_function(&JackErrorCallback); }
+
+JackService::~JackService()
+{ jack_set_error_function(&JackSilentCallback); }
 
 XtSystem JackService::GetSystem() const {
   return XtSystemJACK;

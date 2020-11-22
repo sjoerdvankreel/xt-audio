@@ -1,10 +1,10 @@
-#include <xt/audio/Shared.h>
+#include <xt/private/Shared.hpp>
+#include <xt/private/Service.hpp>
 
 #if !XT_ENABLE_ALSA
-void XtlInitAlsa() { }
-void XtlTerminateAlsa() { }
-XtService const* XtiGetAlsaService() 
-{ return nullptr; }
+std::unique_ptr<XtService>
+XtiCreateAlsaService(std::string const& id, void* window)
+{ return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_ALSA
 
 #include <xt/Linux.hpp>
@@ -75,16 +75,16 @@ struct AlsaHints {
 
 // ---- forward ----
 
-struct AlsaService: public XtService {
+struct AlsaService: public XtService 
+{
+  AlsaService();
+  ~AlsaService();
   XT_IMPLEMENT_SERVICE();
 };
 
-XtService const*
-XtiGetAlsaService() 
-{ 
-  static AlsaService service;
-  return &service;
-}
+std::unique_ptr<XtService>
+XtiCreateAlsaService(std::string const& id, void* window)
+{ return std::make_unique<AlsaService>(); }
 
 struct AlsaDevice: public XtDevice {
   const AlsaDeviceInfo info;
@@ -263,18 +263,17 @@ static int QueryDevice(const AlsaDevice& device, const XtFormat* format,
   return 0;
 }
 
-// ---- linux ----
 
-void XtlInitAlsa() {
-  XT_ASSERT(snd_lib_error_set_handler(&LogError) == 0);
-}
+// ---- service ----
 
-void XtlTerminateAlsa() {
+AlsaService::AlsaService()
+{ XT_ASSERT(snd_lib_error_set_handler(&LogError) == 0); }
+
+AlsaService::~AlsaService()
+{
   XT_ASSERT(snd_lib_error_set_handler(nullptr) == 0);
   XT_ASSERT(snd_config_update_free_global() == 0);
 }
-
-// ---- service ----
 
 XtSystem AlsaService::GetSystem() const {
   return XtSystemALSA;

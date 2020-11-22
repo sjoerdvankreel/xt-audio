@@ -1,8 +1,10 @@
-#include <xt/audio/Shared.h>
+#include <xt/private/Shared.hpp>
+#include <xt/private/Service.hpp>
 
 #if !XT_ENABLE_DSOUND
-XtService const* XtiGetDSoundService() 
-{ return nullptr; }
+std::unique_ptr<XtService>
+XtiCreateDSoundService(std::string const& id, void* window)
+{ return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_DSOUND
 
 #include <xt/Win32.hpp>
@@ -23,16 +25,18 @@ static const double XtDsDefaultBufferMs = 500.0;
 
 // ---- forward ----
 
-struct DSoundService: public XtService {
+struct DSoundService: public XtService 
+{
+  ~DSoundService();
+  DSoundService(void* window);
   XT_IMPLEMENT_SERVICE();
+private:
+  void* const _window;
 };
 
-XtService const*
-XtiGetDSoundService() 
-{ 
-  static DSoundService service;
-  return &service;
-}
+std::unique_ptr<XtService>
+XtiCreateDSoundService(std::string const& id, void* window)
+{ return std::make_unique<DSoundService>(window); }
 
 struct DSoundDevice: public XtDevice {
   const GUID guid;
@@ -158,6 +162,13 @@ static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {
 }
 
 // ---- service ----
+
+DSoundService::DSoundService(void* window):
+_window(window)
+{ XT_ASSERT(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)); }
+
+DSoundService::~DSoundService()
+{ CoUninitialize(); }
 
 XtSystem DSoundService::GetSystem() const {
   return XtSystemDSound;
