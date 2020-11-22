@@ -99,14 +99,6 @@ XtFault WasapiService::GetFormatFault() const {
   return AUDCLNT_E_UNSUPPORTED_FORMAT;
 }
 
-XtCause WasapiService::GetFaultCause(XtFault fault) const {
-  return XtwWasapiGetFaultCause(fault);
-}
-
-const char* WasapiService::GetFaultText(XtFault fault) const {
-  return XtwWasapiGetFaultText(fault);
-}
-
 XtCapabilities WasapiService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 

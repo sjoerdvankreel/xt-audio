@@ -1,4 +1,5 @@
 #include <xt/audio/XtAudio.h>
+#include <xt/private/Shared.hpp>
 #include <xt/Private.hpp>
 #include <cassert>
 #include <algorithm>
@@ -18,8 +19,8 @@ XtAudioGetErrorInfo(XtError error)
   auto service = XtAudioGetService(system);
   result.fault = fault;
   result.system = system;
-  result.text = service->GetFaultText(fault);
-  result.cause = service->GetFaultCause(fault);
+  result.text = XtiGetFaultText(system, fault);
+  result.cause = XtiGetFaultCause(system, fault);
   return result;
 }
 

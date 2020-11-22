@@ -23,8 +23,6 @@ do {                                       \
 extern const char* XtwWfxChannelNames[18];
 
 void* XtwGetWindow();
-XtCause XtwWasapiGetFaultCause(XtFault fault);
-const char* XtwWasapiGetFaultText(XtFault fault);
 std::string XtwWideStringToUtf8(const wchar_t* wide);
 bool XtwFormatToWfx(const XtFormat& format, WAVEFORMATEXTENSIBLE& wfx);
 bool XtwWfxToFormat(const WAVEFORMATEX& wfx, XtBool output, XtFormat& format);
