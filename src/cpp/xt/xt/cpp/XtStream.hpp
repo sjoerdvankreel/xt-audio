@@ -1,12 +1,12 @@
-#ifndef XT_STREAM_HPP
-#define XT_STREAM_HPP
+#ifndef XT_CPP_STREAM_HPP
+#define XT_CPP_STREAM_HPP
 
 /** @file */
 
 #include <xt/cpp/Core.hpp>
 #include <xt/cpp/Forward.hpp>
-#include <xt/cpp/CoreStructs.hpp>
-#include <xt/cpp/CoreCallbacks.hpp>
+#include <xt/cpp/Structs.hpp>
+#include <xt/cpp/Callbacks.hpp>
 
 #include <cstdint>
 
@@ -74,4 +74,4 @@ inline Latency Stream::GetLatency() const
 }
 
 } // namespace Xt
-#endif // XT_STREAM_HPP
+#endif // XT_CPP_STREAM_HPP

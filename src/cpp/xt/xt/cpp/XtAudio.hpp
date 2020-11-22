@@ -1,11 +1,11 @@
-#ifndef XT_AUDIO_HPP
-#define XT_AUDIO_HPP
+#ifndef XT_CPP_AUDIO_HPP
+#define XT_CPP_AUDIO_HPP
 
 /** @file */
 
 #include <xt/cpp/Core.hpp>
+#include <xt/cpp/Structs.hpp>
 #include <xt/cpp/XtService.hpp>
-#include <xt/cpp/CoreStructs.hpp>
 
 #include <memory>
 #include <vector>
@@ -100,4 +100,4 @@ Audio::Init(std::string const& id, void* window, OnError onError)
 }
 
 } // namespace Xt
-#endif // XT_AUDIO_HPP
+#endif // XT_CPP_AUDIO_HPP

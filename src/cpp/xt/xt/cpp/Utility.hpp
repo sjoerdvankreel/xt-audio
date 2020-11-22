@@ -1,5 +1,5 @@
-#ifndef XT_UTILITY_HPP
-#define XT_UTILITY_HPP
+#ifndef XT_CPP_UTILITY_HPP
+#define XT_CPP_UTILITY_HPP
 
 #include <xt/cpp/Core.hpp>
 #include <xt/cpp/XtStream.hpp>
@@ -32,4 +32,4 @@ ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* us
 }
 
 } // namespace Xt::Detail
-#endif // XT_UTILITY_HPP
+#endif // XT_CPP_UTILITY_HPP

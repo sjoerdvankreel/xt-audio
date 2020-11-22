@@ -1,5 +1,5 @@
-#ifndef XT_CORE_ENUMS_HPP
-#define XT_CORE_ENUMS_HPP
+#ifndef XT_CPP_ENUMS_HPP
+#define XT_CPP_ENUMS_HPP
 
 /** @file */
 
@@ -12,4 +12,4 @@ enum class System { ALSA = 1, ASIO, JACK, WASAPI, Pulse, DSound };
 enum Capabilities { CapabilitiesNone = 0x0, CapabilitiesTime = 0x1, CapabilitiesLatency = 0x2, CapabilitiesFullDuplex = 0x4, CapabilitiesChannelMask = 0x8, CapabilitiesXRunDetection = 0x10 };
 
 } // namespace Xt
-#endif // XT_CORE_ENUMS_HPP
+#endif // XT_CPP_ENUMS_HPP
