@@ -40,15 +40,16 @@ XtiCreateDSoundService(std::string const& id, void* window)
 
 struct DSoundDevice: public XtDevice {
   const GUID guid;
+  void* const window;
   const std::string name;
   const CComPtr<IDirectSound> output;
   const CComPtr<IDirectSoundCapture> input;
   XT_IMPLEMENT_DEVICE();
 
   DSoundDevice(
-    const GUID& g, const std::string& n, 
+    const GUID& g, void* w, const std::string& n, 
     CComPtr<IDirectSoundCapture> i, CComPtr<IDirectSound> o):
-  XtDevice(), guid(g), name(n), output(o), input(i) {}
+  XtDevice(), guid(g), window(w), name(n), output(o), input(i) {}
 };
 
 struct DSoundStream: public XtwWin32BlockingStream {
@@ -146,7 +147,7 @@ static HRESULT EnumDevices(std::vector<DeviceInfo>& infos, bool defaults) {
   return S_OK;
 }
 
-static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {  
+static HRESULT OpenDevice(const DeviceInfo& info, void* window, XtDevice** device) {  
   HRESULT hr;
   CComPtr<IDirectSound> output;
   CComPtr<IDirectSoundCapture> input;
@@ -155,9 +156,9 @@ static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {
     XT_VERIFY_COM(DirectSoundCaptureCreate8(&info.guid, &input, nullptr));
   else {
     XT_VERIFY_COM(DirectSoundCreate(&info.guid, &output, nullptr));
-    XT_VERIFY_COM(output->SetCooperativeLevel(static_cast<HWND>(XtPlatform::instance->window), DSSCL_PRIORITY));
+    XT_VERIFY_COM(output->SetCooperativeLevel(static_cast<HWND>(window), DSSCL_PRIORITY));
   }
-  *device = new DSoundDevice(info.guid, info.name, input, output);
+  *device = new DSoundDevice(info.guid, window, info.name, input, output);
   return S_OK;
 }
 
@@ -192,7 +193,7 @@ XtFault DSoundService::OpenDevice(int32_t index, XtDevice** device) const  {
   XT_VERIFY_COM(EnumDevices(infos, false));
   if(static_cast<size_t>(index) >= infos.size())
     return DSERR_NODRIVER;
-  return ::OpenDevice(infos[index], device);
+  return ::OpenDevice(infos[index], _window, device);
 }
 
 XtFault DSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const  {
@@ -201,7 +202,7 @@ XtFault DSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const
   XT_VERIFY_COM(EnumDevices(infos, true));
   for(size_t i = 0; i < infos.size(); i++) {
     if(infos[i].output == (output != XtFalse))
-      return ::OpenDevice(infos[i], device);
+      return ::OpenDevice(infos[i], _window, device);
   }
   return S_OK;
 }
@@ -328,7 +329,7 @@ XtFault DSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool second
     renderDesc.dwBufferBytes = bufferFrames * frameSize;
     renderDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
     XT_VERIFY_COM(DirectSoundCreate(&guid, &newOutput, nullptr));
-    XT_VERIFY_COM(newOutput->SetCooperativeLevel(static_cast<HWND>(XtPlatform::instance->window), DSSCL_PRIORITY));
+    XT_VERIFY_COM(newOutput->SetCooperativeLevel(static_cast<HWND>(window), DSSCL_PRIORITY));
     XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
   }
 

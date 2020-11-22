@@ -47,11 +47,22 @@ XtAudioGetSampleAttributes(XtSample sample)
 XtPlatform* XT_CALL
 XtAudioInitPlatform(char const* id, void* window, XtOnError onError)
 {
+  XT_ASSERT(XtPlatform::instance == nullptr);
   auto result = std::make_unique<XtPlatform>();
-  result->window = window;
   result->onError = onError;
-  result->id = id == nullptr? "XT-Audio": id;
   result->threadId = std::this_thread::get_id();
-  XtPlatform::instance = result.release();
-  return XtPlatform::instance;
+  std::string localid = id == nullptr? "XT-Audio": id;
+  auto alsa = XtiCreateAlsaService(localid, window);
+  if(alsa) result->services.emplace_back(std::move(alsa));
+  auto jack = XtiCreateJackService(localid, window);
+  if(jack) result->services.emplace_back(std::move(jack));
+  auto asio = XtiCreateAsioService(localid, window);
+  if(asio) result->services.emplace_back(std::move(asio));
+  auto pulse = XtiCreatePulseService(localid, window);
+  if(pulse) result->services.emplace_back(std::move(pulse));
+  auto dsound = XtiCreateDSoundService(localid, window);
+  if(dsound) result->services.emplace_back(std::move(dsound));
+  auto wasapi = XtiCreateWasapiService(localid, window);
+  if(wasapi) result->services.emplace_back(std::move(wasapi));
+  return XtPlatform::instance = result.release();
 }
