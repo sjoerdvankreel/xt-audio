@@ -234,14 +234,6 @@ XtCapabilities JackService::GetCapabilities() const {
     XtCapabilitiesXRunDetection);
 }
 
-XtCause JackService::GetFaultCause(XtFault fault) const {
-  return XtlPosixErrorToCause(fault);
-}
-
-const char* JackService::GetFaultText(XtFault fault) const {
-  return strerror(fault);
-}
-
 XtFault JackService::GetDeviceCount(int32_t* count) const {
   XtJackClient client(jack_client_open(XtiId, JackNoStartServer, nullptr));
   *count = client.client == nullptr? 0: 1;

@@ -122,20 +122,6 @@ bool XtiCalledOnMainThread() {
 
 // ---- linux ----
 
-XtCause XtlPosixErrorToCause(XtFault fault) {
-  switch(fault) {
-  case ESRCH: return XtCauseService;
-  case EINVAL: return XtCauseFormat;
-  case EBUSY:
-  case ENXIO:
-  case EPIPE:
-  case ENODEV:
-  case ENOENT:
-  case ESTRPIPE: return XtCauseEndpoint;
-  default: return XtCauseUnknown;
-  }
-}
-
 XtlLinuxBlockingStream::XtlLinuxBlockingStream(bool secondary):
 XtBlockingStream(secondary),
 lock(),

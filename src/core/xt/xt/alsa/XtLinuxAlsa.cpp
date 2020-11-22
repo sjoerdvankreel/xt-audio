@@ -284,14 +284,6 @@ XtFault AlsaService::GetFormatFault() const {
   return EINVAL;
 }
 
-const char* AlsaService::GetFaultText(XtFault fault) const {
-  return snd_strerror(fault);
-}
-
-XtCause AlsaService::GetFaultCause(XtFault fault) const {
-  return XtlPosixErrorToCause(std::abs(static_cast<int>(fault)));
-}
-
 XtCapabilities AlsaService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime |

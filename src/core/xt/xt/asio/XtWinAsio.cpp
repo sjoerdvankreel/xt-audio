@@ -6,6 +6,7 @@ XtService const* XtiGetAsioService()
 #else // !XT_ENABLE_ASIO
 
 #include <xt/Win32.hpp>
+#include <xt/asio/Fault.hpp>
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
 #include <host/pc/asiolist.h>
@@ -14,7 +15,6 @@ XtService const* XtiGetAsioService()
 
 static bool IsAsioSuccess(ASIOError e);
 static const double XtAsioNsPerMs = 1000000.0;
-static const int ASE_Format = ASE_NoMemory + 1;
 
 #define XT_ASIO_CALL __cdecl
 #define XT_TO_UINT64(lo, hi) ((uint64_t)(lo) | ((uint64_t)(hi) << 32))
@@ -290,7 +290,7 @@ XtSystem AsioService::GetSystem() const {
 }
 
 XtFault AsioService::GetFormatFault() const {
-  return ASE_Format;
+  return XT_ASE_Format;
 }
 
 XtCapabilities AsioService::GetCapabilities() const {
@@ -312,34 +312,6 @@ XtFault AsioService::OpenDefaultDevice(XtBool output, XtDevice** device) const  
     return ASE_OK;
   error = XtServiceOpenDevice(this, 0, device);
   return XtiGetErrorFault(error);
-}
-
-XtCause AsioService::GetFaultCause(XtFault fault) const {
-  switch(fault) {
-  case ASE_Format: return XtCauseFormat;
-  case DRVERR_DEVICE_NOT_FOUND:
-  case DRVERR_DEVICE_ALREADY_OPEN:
-  case ASE_NotPresent:
-  case ASE_NoClock: return XtCauseEndpoint;
-  default: return XtCauseUnknown;
-  }
-}
-
-const char* AsioService::GetFaultText(XtFault fault) const {
-  switch(fault) {
-  case ASE_Format: return "ASE_Format";
-  case ASE_NoClock: return "ASE_NoClock";
-  case ASE_NoMemory: return "ASE_NoMemory";
-  case ASE_NotPresent: return "ASE_NotPresent";
-  case ASE_InvalidMode: return "ASE_InvalidMode";
-  case ASE_HWMalfunction: return "ASE_HWMalfunction";
-  case ASE_SPNotAdvancing: return "ASE_SPNotAdvancing";
-  case ASE_InvalidParameter: return "ASE_InvalidParameter";
-  case DRVERR_INVALID_PARAM: return "DRVERR_INVALID_PARAM";
-  case DRVERR_DEVICE_NOT_FOUND: return "DRVERR_DEVICE_NOT_FOUND";
-  case DRVERR_DEVICE_ALREADY_OPEN: return "DRVERR_DEVICE_ALREADY_OPEN";
-  default: return "Unknown fault.";
-  }
 }
 
 XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {  
@@ -396,7 +368,7 @@ XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
   XT_VERIFY_ASIO(GetChannelInfos(asio, infos));
   for(size_t i = 0; i < infos.size(); i++) {
       if(typeFixed && type != infos[i].type)
-        return ASE_Format;
+        return XT_ASE_Format;
       else if(!typeFixed) {
         typeFixed = true;
         type = infos[i].type;
@@ -404,7 +376,7 @@ XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
   }
 
   if(!FromAsioSample(type, sample))
-    return ASE_Format;
+    return XT_ASE_Format;
 
   *valid = XtTrue;
   mix->sample = sample;

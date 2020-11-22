@@ -6,6 +6,7 @@ XtService const* XtiGetPulseAudioService()
 #else // !XT_ENABLE_PULSE_AUDIO
 
 #include <xt/Linux.hpp>
+#include <xt/pulse/Fault.hpp>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
 #include <memory>
@@ -20,7 +21,6 @@ static const int32_t XtPaDefaultChannels = 2;
 static const double XtPaMinBufferSize = 1.0;
 static const double XtPaMaxBufferSize = 2000.0;
 static const double XtPaDefaultBufferSize = 80.0;
-static const XtFault XtPaErrFormat = PA_ERR_MAX + 1;
 static const XtSample XtPaDefaultSample = XtSampleInt16;
 
 struct XtPaSimple {
@@ -110,15 +110,11 @@ XtSystem PulseAudioService::GetSystem() const {
 }
 
 XtFault PulseAudioService::GetFormatFault() const {
-  return XtPaErrFormat;
+  return XT_PA_ERR_FORMAT;
 }
 
 XtCapabilities PulseAudioService::GetCapabilities() const {
   return XtCapabilitiesChannelMask;
-}
-
-const char* PulseAudioService::GetFaultText(XtFault fault) const {
-  return fault == XtPaErrFormat? "XtPaErrFormat": pa_strerror(fault);
 }
 
 XtFault PulseAudioService::GetDeviceCount(int32_t* count) const {
@@ -140,22 +136,6 @@ XtFault PulseAudioService::OpenDefaultDevice(XtBool output, XtDevice** device) c
   if(client.simple != nullptr)
     *device = new PulseAudioDevice(output);
   return PA_OK;
-}
-
-XtCause PulseAudioService::GetFaultCause(XtFault fault) const {
-  switch(fault) {
-  case XtPaErrFormat: return XtCauseFormat;
-  case PA_ERR_BUSY:
-  case PA_ERR_EXIST:
-  case PA_ERR_KILLED:
-  case PA_ERR_NOENTITY: return XtCauseEndpoint;
-  case PA_ERR_VERSION:
-  case PA_ERR_INVALIDSERVER:
-  case PA_ERR_MODINITFAILED:
-  case PA_ERR_CONNECTIONREFUSED:
-  case PA_ERR_CONNECTIONTERMINATED: return XtCauseService;
-  default: return XtCauseUnknown;
-  }
 }
 
 // ---- device ----

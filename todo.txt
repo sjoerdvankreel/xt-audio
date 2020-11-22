@@ -29,3 +29,4 @@
 * drop dummy window handle
 * rename this to self
 * make services members of the platform/library
+* remove formatfault?
