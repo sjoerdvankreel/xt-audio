@@ -31,3 +31,4 @@
 * make services members of the platform/library
 * remove formatfault?
 * pulseaudio->pulse/directsound->dsound
+* rename coreenums->enums

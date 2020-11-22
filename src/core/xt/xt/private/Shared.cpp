@@ -16,8 +16,8 @@ XtiGetFaultText(XtSystem system, XtFault fault)
   case XtSystemJACK: return XtiGetJackFaultText(fault);
   case XtSystemASIO: return XtiGetAsioFaultText(fault);
   case XtSystemWASAPI: return XtiGetWasapiFaultText(fault);
+  case XtSystemDSound: return XtiGetDSoundFaultText(fault);
   case XtSystemPulseAudio: return XtiGetPulseAudioFaultText(fault);
-  case XtSystemDirectSound: return XtiGetDirectSoundFaultText(fault);
   default: return assert(false), nullptr;
   }
 }
@@ -31,8 +31,8 @@ XtiGetFaultCause(XtSystem system, XtFault fault)
   case XtSystemJACK: return XtiGetJackFaultCause(fault);
   case XtSystemASIO: return XtiGetAsioFaultCause(fault);
   case XtSystemWASAPI: return XtiGetWasapiFaultCause(fault);
+  case XtSystemDSound: return XtiGetDSoundFaultCause(fault);
   case XtSystemPulseAudio: return XtiGetPulseAudioFaultCause(fault);
-  case XtSystemDirectSound: return XtiGetDirectSoundFaultCause(fault);
   default: return assert(false), XtCauseUnknown;
   }
 }

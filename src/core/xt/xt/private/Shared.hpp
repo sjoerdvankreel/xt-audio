@@ -16,9 +16,9 @@ XtiGetAsioService();
 XtService const*
 XtiGetWasapiService();
 XtService const*
-XtiGetPulseAudioService();
+XtiGetDSoundService();
 XtService const*
-XtiGetDirectSoundService();
+XtiGetPulseAudioService();
 
 char const* 
 XtiGetFaultText(XtSystem system, XtFault fault);

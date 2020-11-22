@@ -5,8 +5,8 @@
 #include <xt/private/Shared.hpp>
 
 char const* 
-XtiGetDirectSoundFaultText(XtFault fault);
+XtiGetDSoundFaultText(XtFault fault);
 XtCause 
-XtiGetDirectSoundFaultCause(XtFault fault);
+XtiGetDSoundFaultCause(XtFault fault);
 
 #endif // XT_DSOUND_FAULT_HPP

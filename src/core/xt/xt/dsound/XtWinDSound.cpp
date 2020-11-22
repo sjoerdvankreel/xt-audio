@@ -1,9 +1,9 @@
 #include <xt/audio/Shared.h>
 
-#if !XT_ENABLE_DIRECT_SOUND
-XtService const* XtiGetDirectSoundService() 
+#if !XT_ENABLE_DSOUND
+XtService const* XtiGetDSoundService() 
 { return nullptr; }
-#else // !XT_ENABLE_DIRECT_SOUND
+#else // !XT_ENABLE_DSOUND
 
 #include <xt/Win32.hpp>
 #define INITGUID 1
@@ -22,31 +22,31 @@ static const double XtDsDefaultBufferMs = 500.0;
 
 // ---- forward ----
 
-struct DirectSoundService: public XtService {
+struct DSoundService: public XtService {
   XT_IMPLEMENT_SERVICE();
 };
 
 XtService const*
-XtiGetDirectSoundService() 
+XtiGetDSoundService() 
 { 
-  static DirectSoundService service;
+  static DSoundService service;
   return &service;
 }
 
-struct DirectSoundDevice: public XtDevice {
+struct DSoundDevice: public XtDevice {
   const GUID guid;
   const std::string name;
   const CComPtr<IDirectSound> output;
   const CComPtr<IDirectSoundCapture> input;
   XT_IMPLEMENT_DEVICE();
 
-  DirectSoundDevice(
+  DSoundDevice(
     const GUID& g, const std::string& n, 
     CComPtr<IDirectSoundCapture> i, CComPtr<IDirectSound> o):
   XtDevice(), guid(g), name(n), output(o), input(i) {}
 };
 
-struct DirectSoundStream: public XtwWin32BlockingStream {
+struct DSoundStream: public XtwWin32BlockingStream {
   const int32_t frameSize;
   std::vector<char> buffer;
   uint64_t xtBytesProcessed;
@@ -58,10 +58,10 @@ struct DirectSoundStream: public XtwWin32BlockingStream {
   const CComPtr<IDirectSoundCapture> input;
   const CComPtr<IDirectSoundBuffer> render;
   const CComPtr<IDirectSoundCaptureBuffer> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM(DirectSound);
+  XT_IMPLEMENT_BLOCKING_STREAM(DSound);
 
-  ~DirectSoundStream() { Stop(); }
-  DirectSoundStream(bool secondary,
+  ~DSoundStream() { Stop(); }
+  DSoundStream(bool secondary,
     CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
@@ -152,25 +152,25 @@ static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {
     XT_VERIFY_COM(DirectSoundCreate(&info.guid, &output, nullptr));
     XT_VERIFY_COM(output->SetCooperativeLevel(static_cast<HWND>(XtwGetWindow()), DSSCL_PRIORITY));
   }
-  *device = new DirectSoundDevice(info.guid, info.name, input, output);
+  *device = new DSoundDevice(info.guid, info.name, input, output);
   return S_OK;
 }
 
 // ---- service ----
 
-XtSystem DirectSoundService::GetSystem() const {
-  return XtSystemDirectSound;
+XtSystem DSoundService::GetSystem() const {
+  return XtSystemDSound;
 }
 
-XtFault DirectSoundService::GetFormatFault() const {
+XtFault DSoundService::GetFormatFault() const {
   return DSERR_BADFORMAT;
 }
 
-XtCapabilities DirectSoundService::GetCapabilities() const {
+XtCapabilities DSoundService::GetCapabilities() const {
   return XtCapabilitiesChannelMask;
 }
 
-XtFault DirectSoundService::GetDeviceCount(int32_t* count) const {
+XtFault DSoundService::GetDeviceCount(int32_t* count) const {
   HRESULT hr;
   std::vector<DeviceInfo> infos;
   XT_VERIFY_COM(EnumDevices(infos, false));
@@ -178,7 +178,7 @@ XtFault DirectSoundService::GetDeviceCount(int32_t* count) const {
   return S_OK;
 }
 
-XtFault DirectSoundService::OpenDevice(int32_t index, XtDevice** device) const  { 
+XtFault DSoundService::OpenDevice(int32_t index, XtDevice** device) const  { 
   HRESULT hr;
   std::vector<DeviceInfo> infos;
   XT_VERIFY_COM(EnumDevices(infos, false));
@@ -187,7 +187,7 @@ XtFault DirectSoundService::OpenDevice(int32_t index, XtDevice** device) const  
   return ::OpenDevice(infos[index], device);
 }
 
-XtFault DirectSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const  {
+XtFault DSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const  {
   HRESULT hr;
   std::vector<DeviceInfo> infos;
   XT_VERIFY_COM(EnumDevices(infos, true));
@@ -200,32 +200,32 @@ XtFault DirectSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) 
 
 // ---- device ----
 
-XtSystem DirectSoundDevice::GetSystem() const {
-  return XtSystemDirectSound;
+XtSystem DSoundDevice::GetSystem() const {
+  return XtSystemDSound;
 }
 
-XtFault DirectSoundDevice::ShowControlPanel() {
+XtFault DSoundDevice::ShowControlPanel() {
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetName(char* buffer, int32_t* size) const {
+XtFault DSoundDevice::GetName(char* buffer, int32_t* size) const {
   XtiOutputString(this->name.c_str(), buffer, size);
   return S_OK;
 }
 
-XtFault DirectSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
+XtFault DSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
   *supports = interleaved;
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {
+XtFault DSoundDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {
   size->min = XtDsMinBufferMs;
   size->max = XtDsMaxBufferMs;
   size->current = XtDsDefaultBufferMs;
   return S_OK;
 }
 
-XtFault DirectSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
+XtFault DSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
   *supports = format->channels.inputs > 0 != !input 
            && format->channels.outputs > 0 != !output 
            && format->mix.rate >= 8000 
@@ -233,17 +233,17 @@ XtFault DirectSoundDevice::SupportsFormat(const XtFormat* format, XtBool* suppor
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
+XtFault DSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
   XtiOutputString(XtwWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetChannelCount(XtBool output, int32_t* count) const {
+XtFault DSoundDevice::GetChannelCount(XtBool output, int32_t* count) const {
   *count = (output != XtFalse) == !this->output? 0:  sizeof(XtwWfxChannelNames) / sizeof(const char*);
   return S_OK;
 }
 
-XtFault DirectSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
+XtFault DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
 
   UINT count;
   HRESULT hr;
@@ -286,7 +286,7 @@ XtFault DirectSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return S_OK;
 }
 
-XtFault DirectSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault DSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   HRESULT hr;
   int32_t frameSize;
@@ -324,22 +324,22 @@ XtFault DirectSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool s
     XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
   }
 
-  *stream = new DirectSoundStream(secondary, newInput, newOutput, capture, render, bufferFrames, frameSize);
+  *stream = new DSoundStream(secondary, newInput, newOutput, capture, render, bufferFrames, frameSize);
   return S_OK;
 }
 
 // ---- stream ----
 
-XtFault DirectSoundStream::GetFrames(int32_t* frames) const {
+XtFault DSoundStream::GetFrames(int32_t* frames) const {
   *frames = bufferFrames;
   return S_OK;
 }
 
-XtFault DirectSoundStream::GetLatency(XtLatency* latency) const {
+XtFault DSoundStream::GetLatency(XtLatency* latency) const {
   return S_OK;
 }
 
-void DirectSoundStream::StopStream() {
+void DSoundStream::StopStream() {
   if(capture)
     XT_ASSERT(SUCCEEDED(capture->Stop()));
   else
@@ -354,7 +354,7 @@ void DirectSoundStream::StopStream() {
   previousDsPosition = 0;
 }
 
-void DirectSoundStream::StartStream() {
+void DSoundStream::StartStream() {
   LARGE_INTEGER due;
   due.QuadPart = -1;
   UINT timerPeriod = GetTimerPeriod(bufferFrames, format.mix.rate);
@@ -370,7 +370,7 @@ void DirectSoundStream::StartStream() {
     XT_ASSERT(SUCCEEDED(render->Play(0, 0, DSBPLAY_LOOPING)));
 }
 
-void DirectSoundStream::ProcessBuffer(bool prefill) {
+void DSoundStream::ProcessBuffer(bool prefill) {
   
   void* audio1;
   void* audio2;
@@ -480,4 +480,4 @@ void DirectSoundStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !XT_ENABLE_DIRECT_SOUND
+#endif // !XT_ENABLE_DSOUND

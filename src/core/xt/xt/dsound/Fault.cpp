@@ -1,16 +1,16 @@
 #include <xt/dsound/Fault.hpp>
-#if !XT_ENABLE_DIRECT_SOUND
+#if !XT_ENABLE_DSOUND
 
-XtCause XtiGetDirectSoundFaultCause(XtFault fault) 
+XtCause XtiGetDSoundFaultCause(XtFault fault) 
 { return XtCauseUnknown; }
-char const* XtiGetDirectSoundFaultText(XtFault fault) 
+char const* XtiGetDSoundFaultText(XtFault fault) 
 { return nullptr; }
 
-#else // !XT_ENABLE_DIRECT_SOUND 
+#else // !XT_ENABLE_DSOUND 
 #include <dsound.h>
 
 XtCause 
-XtiGetDirectSoundFaultCause(XtFault fault)
+XtiGetDSoundFaultCause(XtFault fault)
 {
   switch(fault) 
   {
@@ -25,7 +25,7 @@ XtiGetDirectSoundFaultCause(XtFault fault)
 }
 
 char const* 
-XtiGetDirectSoundFaultText(XtFault fault)
+XtiGetDSoundFaultText(XtFault fault)
 {
   switch(fault) 
   {
@@ -57,4 +57,4 @@ XtiGetDirectSoundFaultText(XtFault fault)
   }
 }
 
-#endif // !XT_ENABLE_DIRECT_SOUND
+#endif // !XT_ENABLE_DSOUND

@@ -47,15 +47,15 @@ XtAudioGetSampleAttributes(XtSample sample)
 XtService const* XT_CALL 
 XtAudioGetService(XtSystem system) 
 {
-  XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDirectSound);
+  XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDSound);
   switch(system) 
   {
   case XtSystemALSA: return XtiGetAlsaService();
   case XtSystemASIO: return XtiGetAsioService();
   case XtSystemJACK: return XtiGetJackService();
   case XtSystemWASAPI: return XtiGetWasapiService();
+  case XtSystemDSound: return XtiGetDSoundService();
   case XtSystemPulseAudio: return XtiGetPulseAudioService();
-  case XtSystemDirectSound: return XtiGetDirectSoundService();
   default: assert(false); return nullptr;
   }
 }
@@ -68,8 +68,8 @@ XtAudioGetSystems(XtSystem* buffer, int32_t* size)
   if(XtiGetJackService() != nullptr) systems.push_back(XtiGetJackService()->GetSystem());
   if(XtiGetAlsaService() != nullptr) systems.push_back(XtiGetAlsaService()->GetSystem());
   if(XtiGetWasapiService() != nullptr) systems.push_back(XtiGetWasapiService()->GetSystem());
+  if(XtiGetDSoundService() != nullptr) systems.push_back(XtiGetDSoundService()->GetSystem());
   if(XtiGetPulseAudioService() != nullptr) systems.push_back(XtiGetPulseAudioService()->GetSystem());
-  if(XtiGetDirectSoundService() != nullptr) systems.push_back(XtiGetDirectSoundService()->GetSystem());
   auto count = static_cast<int32_t>(systems.size());
   if(buffer == nullptr) *size = count;
   else memcpy(buffer, systems.data(), std::min(*size, count)*sizeof(XtSystem));
@@ -83,7 +83,7 @@ XtAudioSetupToSystem(XtSetup setup)
   {
   case XtSetupProAudio: return XtiGetAsioService()? XtSystemASIO: XtSystemJACK;
   case XtSetupSystemAudio: return XtiGetWasapiService()? XtSystemWASAPI: XtSystemALSA;
-  case XtSetupConsumerAudio: return XtiGetDirectSoundService()? XtSystemDirectSound: XtSystemPulseAudio;
+  case XtSetupConsumerAudio: return XtiGetDSoundService()? XtSystemDSound: XtSystemPulseAudio;
   default: assert(false); return static_cast<XtSystem>(0);
   }
 }
