@@ -6,6 +6,7 @@ XtService const* XtiGetDSoundService()
 #else // !XT_ENABLE_DSOUND
 
 #include <xt/Win32.hpp>
+#include <xt/private/Platform.hpp>
 #define INITGUID 1
 #include <dsound.h>
 #include <mmdeviceapi.h>
@@ -150,7 +151,7 @@ static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {
     XT_VERIFY_COM(DirectSoundCaptureCreate8(&info.guid, &input, nullptr));
   else {
     XT_VERIFY_COM(DirectSoundCreate(&info.guid, &output, nullptr));
-    XT_VERIFY_COM(output->SetCooperativeLevel(static_cast<HWND>(XtwGetWindow()), DSSCL_PRIORITY));
+    XT_VERIFY_COM(output->SetCooperativeLevel(static_cast<HWND>(XtPlatform::instance->window), DSSCL_PRIORITY));
   }
   *device = new DSoundDevice(info.guid, info.name, input, output);
   return S_OK;
@@ -316,7 +317,7 @@ XtFault DSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool second
     renderDesc.dwBufferBytes = bufferFrames * frameSize;
     renderDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
     XT_VERIFY_COM(DirectSoundCreate(&guid, &newOutput, nullptr));
-    XT_VERIFY_COM(newOutput->SetCooperativeLevel(static_cast<HWND>(XtwGetWindow()), DSSCL_PRIORITY));
+    XT_VERIFY_COM(newOutput->SetCooperativeLevel(static_cast<HWND>(XtPlatform::instance->window), DSSCL_PRIORITY));
     XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
   }
 

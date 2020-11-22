@@ -4,9 +4,6 @@
 
 // ---- local ----
 
-static pthread_t XtlMainThread;
-static bool XtlInitialized = false;
-
 static XtBlockingStreamState ReadLinuxBlockingStreamState(
   XtlLinuxBlockingStream* stream) {
 
@@ -90,20 +87,6 @@ static void* LinuxOnBlockingBuffer(void* user) {
 
 // ---- internal ----
 
-void XtiTerminatePlatform() { 
-  XtlTerminateJack();
-  XtlTerminateAlsa();
-  XtlInitialized = false;
-}
-
-void XtiInitPlatform(void* wnd) {
-  XT_ASSERT(!XtlInitialized);
-  XtlMainThread = pthread_self();
-  XtlInitAlsa();
-  XtlInitJack();
-  XtlInitialized = true;
-}
-
 int32_t XtiLockIncr(volatile int32_t* dest) {
   return __sync_add_and_fetch(dest, 1);
 }
@@ -114,10 +97,6 @@ int32_t XtiLockDecr(volatile int32_t* dest) {
 
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
   return __sync_val_compare_and_swap(dest, comp, exch);
-}
-
-bool XtiCalledOnMainThread() {
-  return XtlInitialized && pthread_equal(pthread_self(), XtlMainThread);
 }
 
 // ---- linux ----

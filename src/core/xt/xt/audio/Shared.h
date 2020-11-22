@@ -26,5 +26,6 @@ static XtBool const XtFalse = 0;
 typedef struct XtDevice XtDevice;
 typedef struct XtStream XtStream;
 typedef struct XtService XtService;
+typedef struct XtPlatform XtPlatform;
 
 #endif // XT_AUDIO_SHARED_H

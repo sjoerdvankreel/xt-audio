@@ -1,4 +1,5 @@
 #include <xt/Private.hpp>
+#include <xt/private/Platform.hpp>
 #include <vector>
 #include <cstdarg>
 #include <sstream>
@@ -27,9 +28,6 @@ static void Deinterleave(
 }
  
 // ---- internal ----
-
-char* XtiId = nullptr;
-XtOnError XtiOnError = nullptr;
 
 int32_t XtiGetPopCount64(uint64_t x) {
   const uint64_t m1 = 0x5555555555555555;
@@ -77,10 +75,11 @@ void XtiFail(const char* file, int line, const char* func, const char* message) 
 }
 
 void XtiTrace(const char* file, int32_t line, const char* func, const char* message) {
-  if(XtiOnError == nullptr) return;
+  auto platform = XtPlatform::instance;
+  if(platform == nullptr || platform->onError == nullptr) return;
   std::ostringstream location;
   location << file << ":" << line << ": in function " << func;
-  XtiOnError(location.str().c_str(), message);
+  platform->onError(location.str().c_str(), message);
 }
 
 uint32_t XtiGetErrorFault(XtError error) {

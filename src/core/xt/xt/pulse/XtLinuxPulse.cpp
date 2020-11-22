@@ -6,6 +6,7 @@ XtService const* XtiGetPulseService()
 #else // !XT_ENABLE_PULSE
 
 #include <xt/Linux.hpp>
+#include <xt/private/Platform.hpp>
 #include <xt/pulse/Fault.hpp>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
@@ -99,8 +100,9 @@ static XtPaSimple CreateDefaultClient(XtBool output) {
   spec.channels = XtPaDefaultChannels;
   spec.format = ToPulseSample(XtPaDefaultSample);
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
-  return XtPaSimple(pa_simple_new(nullptr, XtiId, dir,
-    nullptr, XtiId, &spec, nullptr, nullptr, nullptr));
+  auto id = XtPlatform::instance->id.c_str();
+  return XtPaSimple(pa_simple_new(nullptr, id, dir,
+    nullptr, id, &spec, nullptr, nullptr, nullptr));
 }
 
 // ---- service ----
@@ -226,9 +228,10 @@ XtFault PulseDevice::OpenStream(const XtDeviceStreamParams* params, bool seconda
   }
   
   frameSize = (params->format.channels.inputs + params->format.channels.outputs) * XtiGetSampleSize(params->format.mix.sample);
+  auto id = XtPlatform::instance->id.c_str();
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
-  if((client = pa_simple_new(nullptr, XtiId, dir, nullptr, 
-    XtiId, &spec, &map, nullptr, &fault)) == nullptr)
+  if((client = pa_simple_new(nullptr, id, dir, nullptr, 
+    id, &spec, &map, nullptr, &fault)) == nullptr)
     return fault;
   *stream = new PulseStream(secondary, XtPaSimple(client), output, bufferFrames, frameSize);
   return PA_OK;

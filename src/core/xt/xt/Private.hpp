@@ -57,9 +57,7 @@ static_assert(sizeof(XtCapabilities) == 4);
 
 // ---- internal ----
 
-extern char* XtiId;
 struct XtAggregate;
-extern XtOnError XtiOnError;
 
 enum class XtBlockingStreamState {
   Stopped,
@@ -167,9 +165,6 @@ struct XtAggregate: public XtStream {
 
 // ---- internal ----
 
-void XtiTerminatePlatform();
-bool XtiCalledOnMainThread();
-void XtiInitPlatform(void* window);
 int32_t XtiGetPopCount64(uint64_t x);
 uint32_t XtiGetErrorFault(XtError error);
 int32_t XtiGetSampleSize(XtSample sample);

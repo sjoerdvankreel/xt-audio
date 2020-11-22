@@ -6,10 +6,6 @@
 
 // ---- local ----
 
-static HWND XtwWindow = nullptr;
-static DWORD XtwMainThreadId = 0;
-static bool XtwOwnWindow = false;
-
 static XtBlockingStreamState ReadWin32BlockingStreamState(
   XtwWin32BlockingStream* stream) {
 
@@ -81,10 +77,6 @@ static DWORD WINAPI OnWin32BlockingBuffer(void* user) {
 
 // ---- win32 ----
 
-void* XtwGetWindow() {
-  return XtwWindow; 
-}
-
 const char* XtwWfxChannelNames[18] = {
   "Front Left", "Front Right", "Front Center",
   "Low Frequency", "Back Left", "Back Right",
@@ -96,20 +88,6 @@ const char* XtwWfxChannelNames[18] = {
 
 // ---- internal ----
 
-void XtiTerminatePlatform() { 
-  XT_ASSERT(!XtwOwnWindow || DestroyWindow(XtwWindow));
-  CoUninitialize(); 
-  XtwWindow = nullptr;
-  XtwMainThreadId = 0;
-  XtwOwnWindow = false;
-}
-
-bool XtiCalledOnMainThread() {
-  DWORD currentThreadId;
-  XT_ASSERT((currentThreadId = GetThreadId(GetCurrentThread())) != 0);
-  return currentThreadId == XtwMainThreadId;
-}
-
 int32_t XtiLockIncr(volatile int32_t* dest) {
   return InterlockedIncrement(reinterpret_cast<volatile long*>(dest));
 }
@@ -120,16 +98,6 @@ int32_t XtiLockDecr(volatile int32_t* dest) {
 
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
   return InterlockedCompareExchange(reinterpret_cast<volatile long*>(dest), exch, comp);
-}
-
-void XtiInitPlatform(void* wnd) {
-  XT_ASSERT(XtwMainThreadId == 0);
-  XT_ASSERT((XtwMainThreadId = GetThreadId(GetCurrentThread())) != 0);
-  XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
-  if((XtwWindow = static_cast<HWND>(wnd)) == nullptr) {
-    XT_ASSERT(XtwWindow = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0));
-    XtwOwnWindow = true;
-  }
 }
 
 // ---- win32 ----

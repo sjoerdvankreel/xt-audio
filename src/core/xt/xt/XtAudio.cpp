@@ -93,22 +93,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   return 0;
 }
 
-// ---- audio ----
-
-void XT_CALL XtAudioTerminate(void) {
-  XT_ASSERT(XtiCalledOnMainThread());
-  XtiTerminatePlatform();
-  free(XtiId);
-  XtiId = nullptr;
-  XtiOnError = nullptr;
-}
-
-void XT_CALL XtAudioInit(const char* id, void* window, XtOnError onError) {
-  XtiOnError = onError;
-  XtiId = id == nullptr || strlen(id) == 0? strdup("XT-Audio"): strdup(id);
-  XtiInitPlatform(window);
-}
-
 // ---- service ----
 
 XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateStreamParams* params, void* user, XtStream** stream) {

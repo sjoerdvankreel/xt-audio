@@ -20,6 +20,8 @@ XtiGetWasapiService();
 XtService const*
 XtiGetDSoundService();
 
+bool
+XtiCalledOnMainThread();
 char const* 
 XtiGetFaultText(XtSystem system, XtFault fault);
 XtCause 

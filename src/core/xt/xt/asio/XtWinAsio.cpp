@@ -6,6 +6,7 @@ XtService const* XtiGetAsioService()
 #else // !XT_ENABLE_ASIO
 
 #include <xt/Win32.hpp>
+#include <xt/private/Platform.hpp>
 #include <xt/asio/Fault.hpp>
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
@@ -321,7 +322,7 @@ XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {
   XT_VERIFY_ASIO(list.asioGetDriverName(index, &name[0], MAXDRVNAMELEN));
   XT_VERIFY_ASIO(list.asioGetDriverCLSID(index, &classId));
   XT_VERIFY_COM(CoCreateInstance(classId, nullptr, CLSCTX_ALL, classId, reinterpret_cast<void**>(&asio)));
-  if(!asio->init(XtwGetWindow()))
+  if(!asio->init(XtPlatform::instance->window))
     return ASE_NotPresent;
   *device = new AsioDevice(name, asio);
   return ASE_OK;

@@ -11,22 +11,14 @@
 extern "C" {
 #endif
 
-XT_API void XT_CALL 
-XtAudioTerminate(void);
 XT_API XtVersion XT_CALL 
 XtAudioGetVersion(void);
 XT_API XtErrorInfo XT_CALL 
 XtAudioGetErrorInfo(XtError error);
-XT_API XtService const* XT_CALL 
-XtAudioGetService(XtSystem system);
-XT_API XtSystem XT_CALL 
-XtAudioSetupToSystem(XtSetup setup);
 XT_API XtAttributes XT_CALL 
 XtAudioGetSampleAttributes(XtSample sample);
-XT_API void XT_CALL 
-XtAudioGetSystems(XtSystem* buffer, int32_t* size);
-XT_API void XT_CALL 
-XtAudioInit(char const* id, void* window, XtOnError onError);
+XT_API XtPlatform* XT_CALL
+XtAudioInitPlatform(char const* id, void* window, XtOnError onError);
 
 #ifdef __cplusplus
 }
