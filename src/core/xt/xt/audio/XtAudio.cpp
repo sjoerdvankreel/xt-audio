@@ -53,26 +53,11 @@ XtAudioGetService(XtSystem system)
   case XtSystemALSA: return XtiGetAlsaService();
   case XtSystemASIO: return XtiGetAsioService();
   case XtSystemJACK: return XtiGetJackService();
+  case XtSystemPulse: return XtiGetPulseService();
   case XtSystemWASAPI: return XtiGetWasapiService();
   case XtSystemDSound: return XtiGetDSoundService();
-  case XtSystemPulseAudio: return XtiGetPulseAudioService();
   default: assert(false); return nullptr;
   }
-}
-
-void XT_CALL 
-XtAudioGetSystems(XtSystem* buffer, int32_t* size) 
-{
-  std::vector<XtSystem> systems;
-  if(XtiGetAsioService() != nullptr) systems.push_back(XtiGetAsioService()->GetSystem());
-  if(XtiGetJackService() != nullptr) systems.push_back(XtiGetJackService()->GetSystem());
-  if(XtiGetAlsaService() != nullptr) systems.push_back(XtiGetAlsaService()->GetSystem());
-  if(XtiGetWasapiService() != nullptr) systems.push_back(XtiGetWasapiService()->GetSystem());
-  if(XtiGetDSoundService() != nullptr) systems.push_back(XtiGetDSoundService()->GetSystem());
-  if(XtiGetPulseAudioService() != nullptr) systems.push_back(XtiGetPulseAudioService()->GetSystem());
-  auto count = static_cast<int32_t>(systems.size());
-  if(buffer == nullptr) *size = count;
-  else memcpy(buffer, systems.data(), std::min(*size, count)*sizeof(XtSystem));
 }
 
 XtSystem XT_CALL 
@@ -83,7 +68,22 @@ XtAudioSetupToSystem(XtSetup setup)
   {
   case XtSetupProAudio: return XtiGetAsioService()? XtSystemASIO: XtSystemJACK;
   case XtSetupSystemAudio: return XtiGetWasapiService()? XtSystemWASAPI: XtSystemALSA;
-  case XtSetupConsumerAudio: return XtiGetDSoundService()? XtSystemDSound: XtSystemPulseAudio;
+  case XtSetupConsumerAudio: return XtiGetDSoundService()? XtSystemDSound: XtSystemPulse;
   default: assert(false); return static_cast<XtSystem>(0);
   }
+}
+
+void XT_CALL 
+XtAudioGetSystems(XtSystem* buffer, int32_t* size) 
+{
+  std::vector<XtSystem> systems;
+  if(XtiGetAsioService() != nullptr) systems.push_back(XtiGetAsioService()->GetSystem());
+  if(XtiGetJackService() != nullptr) systems.push_back(XtiGetJackService()->GetSystem());
+  if(XtiGetAlsaService() != nullptr) systems.push_back(XtiGetAlsaService()->GetSystem());
+  if(XtiGetPulseService() != nullptr) systems.push_back(XtiGetPulseService()->GetSystem());
+  if(XtiGetWasapiService() != nullptr) systems.push_back(XtiGetWasapiService()->GetSystem());
+  if(XtiGetDSoundService() != nullptr) systems.push_back(XtiGetDSoundService()->GetSystem());
+  auto count = static_cast<int32_t>(systems.size());
+  if(buffer == nullptr) *size = count;
+  else memcpy(buffer, systems.data(), std::min(*size, count)*sizeof(XtSystem));
 }

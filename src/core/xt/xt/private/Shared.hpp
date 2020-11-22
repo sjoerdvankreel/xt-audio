@@ -14,11 +14,11 @@ XtiGetJackService();
 XtService const*
 XtiGetAsioService();
 XtService const*
+XtiGetPulseService();
+XtService const*
 XtiGetWasapiService();
 XtService const*
 XtiGetDSoundService();
-XtService const*
-XtiGetPulseAudioService();
 
 char const* 
 XtiGetFaultText(XtSystem system, XtFault fault);

@@ -1,20 +1,20 @@
 #include <xt/pulse/Fault.hpp>
-#if !XT_ENABLE_PULSE_AUDIO
+#if !XT_ENABLE_PULSE
 
-XtCause XtiGetPulseAudioFaultCause(XtFault fault) 
+XtCause XtiGetPulseFaultCause(XtFault fault) 
 { return XtCauseUnknown; }
-char const* XtiGetPulseAudioFaultText(XtFault fault) 
+char const* XtiGetPulseFaultText(XtFault fault) 
 { return nullptr; }
 
-#else // !XT_ENABLE_PULSE_AUDIO
+#else // !XT_ENABLE_PULSE
 #include <pulse/pulseaudio.h>
 
 char const*
-XtiGetPulseAudioFaultText(XtFault fault)
+XtiGetPulseFaultText(XtFault fault)
 { return fault == XT_PA_ERR_FORMAT? "XT_PA_ERR_FORMAT": pa_strerror(fault); }
 
 XtCause
-XtiGetPulseAudioFaultCause(XtFault fault)
+XtiGetPulseFaultCause(XtFault fault)
 { 
   switch(fault) {
   case XT_PA_ERR_FORMAT: return XtCauseFormat;
@@ -31,4 +31,4 @@ XtiGetPulseAudioFaultCause(XtFault fault)
   }
 }
 
-#endif // !XT_ENABLE_PULSE_AUDIO
+#endif // !XT_ENABLE_PULSE

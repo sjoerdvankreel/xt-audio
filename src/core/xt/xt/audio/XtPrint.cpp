@@ -42,8 +42,8 @@ XtPrintSystemToString(XtSystem system)
   case XtSystemASIO: return "ASIO";
   case XtSystemJACK: return "JACK";
   case XtSystemWASAPI: return "WASAPI";
+  case XtSystemPulse: return "PulseAudio";
   case XtSystemDSound: return "DirectSound";
-  case XtSystemPulseAudio: return "PulseAudio";
   default: assert(false); return nullptr;
   }
 }
