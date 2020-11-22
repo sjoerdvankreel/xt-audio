@@ -56,7 +56,6 @@ XtError XtiCreateError(XtSystem system, XtFault fault) {
 }
 
 bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
-  const XtService* service = XtAudioGetService(system);
   if(format.channels.inputs < 0 || format.channels.outputs < 0)
     return false;
   if(format.channels.inputs == 0 && format.channels.outputs == 0)

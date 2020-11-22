@@ -16,7 +16,6 @@ XtAudioGetErrorInfo(XtError error)
   auto fault = XtiGetErrorFault(error);
   auto sysid = (error & 0xFFFFFFFF00000000) >> 32ULL;
   auto system = static_cast<XtSystem>(sysid);
-  auto service = XtAudioGetService(system);
   result.fault = fault;
   result.system = system;
   result.text = XtiGetFaultText(system, fault);
