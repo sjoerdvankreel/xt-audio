@@ -1,4 +1,4 @@
-#include <xt/pulse/Fault.hpp>
+#include <xt/private/Services.hpp>
 #if !XT_ENABLE_PULSE
 
 XtCause XtiGetPulseFaultCause(XtFault fault) 

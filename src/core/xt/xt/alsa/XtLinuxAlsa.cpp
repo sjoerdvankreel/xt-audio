@@ -1,5 +1,6 @@
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
+#include <xt/private/Services.hpp>
 
 #if !XT_ENABLE_ALSA
 std::unique_ptr<XtService>

@@ -1,4 +1,4 @@
-#include <xt/wasapi/Fault.hpp>
+#include <xt/private/Services.hpp>
 #if !XT_ENABLE_WASAPI
 
 XtCause XtiGetWasapiFaultCause(XtFault fault) 

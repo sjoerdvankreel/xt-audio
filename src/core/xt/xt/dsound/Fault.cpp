@@ -1,4 +1,4 @@
-#include <xt/dsound/Fault.hpp>
+#include <xt/private/Services.hpp>
 #if !XT_ENABLE_DSOUND
 
 XtCause XtiGetDSoundFaultCause(XtFault fault) 

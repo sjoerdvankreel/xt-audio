@@ -1,4 +1,4 @@
-#include <xt/asio/Fault.hpp>
+#include <xt/private/Services.hpp>
 #if !XT_ENABLE_ASIO
 
 XtCause XtiGetAsioFaultCause(XtFault fault) 

@@ -1,5 +1,6 @@
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
+#include <xt/private/Services.hpp>
 
 #if !XT_ENABLE_ASIO
 std::unique_ptr<XtService>
@@ -9,7 +10,6 @@ XtiCreateAsioService(std::string const& id, void* window)
 
 #include <xt/Win32.hpp>
 #include <xt/private/Platform.hpp>
-#include <xt/asio/Fault.hpp>
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
 #include <host/pc/asiolist.h>

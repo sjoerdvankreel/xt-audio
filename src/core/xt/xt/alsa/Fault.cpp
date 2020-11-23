@@ -1,4 +1,4 @@
-#include <xt/alsa/Fault.hpp>
+#include <xt/private/Services.hpp>
 #if !XT_ENABLE_ALSA
 
 XtCause XtiGetAlsaFaultCause(XtFault fault) 

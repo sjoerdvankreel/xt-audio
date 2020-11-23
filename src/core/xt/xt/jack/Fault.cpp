@@ -1,4 +1,4 @@
-#include <xt/jack/Fault.hpp>
+#include <xt/private/Services.hpp>
 #if !XT_ENABLE_JACK
 
 XtCause XtiGetJackFaultCause(XtFault fault) 

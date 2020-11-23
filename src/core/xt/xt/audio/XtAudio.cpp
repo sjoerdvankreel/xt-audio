@@ -1,6 +1,8 @@
 #include <xt/audio/XtAudio.h>
-#include <xt/private/Platform.hpp>
 #include <xt/Private.hpp>
+#include <xt/private/Platform.hpp>
+#include <xt/private/Services.hpp>
+
 #include <memory>
 #include <thread>
 #include <cstring>

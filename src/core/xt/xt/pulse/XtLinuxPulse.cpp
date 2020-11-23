@@ -1,5 +1,6 @@
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
+#include <xt/private/Services.hpp>
 
 #if !XT_ENABLE_PULSE
 std::unique_ptr<XtService>
@@ -9,7 +10,6 @@ XtiCreatePulseService(std::string const& id, void* window)
 
 #include <xt/Linux.hpp>
 #include <xt/private/Platform.hpp>
-#include <xt/pulse/Fault.hpp>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
 #include <memory>
