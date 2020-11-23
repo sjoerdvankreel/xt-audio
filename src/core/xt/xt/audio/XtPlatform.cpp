@@ -46,7 +46,6 @@ XtPlatformGetSystems(XtPlatform const* p, XtSystem* buffer, int32_t* size)
 XtSystem XT_CALL 
 XtPlatformSetupToSystem(XtPlatform const* p, XtSetup setup)
 {
-  XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
   switch(setup) 
   {

@@ -2,6 +2,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #include <xt/Private.hpp>
+#include <cassert>
 
 void
 XtiPlatformDestroy()
@@ -12,6 +13,18 @@ XtiDestroyMessageWindow(void* window)
 void
 XtiPlatformInit()
 { XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
+
+XtSystem
+XtiSetupToSystem(XtSetup setup)
+{
+  switch(setup)
+  {
+  case XtSetupProAudio: return XtSystemASIO;
+  case XtSetupSystemAudio: return XtSystemWASAPI;
+  case XtSetupConsumerAudio: return XtSystemDSound;
+  default: assert(false); return static_cast<XtSystem>(0);
+  }
+}
 
 void* 
 XtiCreateMessageWindow()
