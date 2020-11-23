@@ -18,9 +18,9 @@ int FullDuplexMain()
   Xt::Format float44100(Xt::Mix(44100, Xt::Sample::Float32), Xt::Channels(2, 0, 2, 0));
   Xt::Format float48000(Xt::Mix(48000, Xt::Sample::Float32), Xt::Channels(2, 0, 2, 0));
 
-  auto audio = Xt::Audio::Init("", nullptr, nullptr);
-  Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
-  std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
+  Xt::System system = platform->SetupToSystem(Xt::Setup::ProAudio);
+  std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if(!service) return 0;
 
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);

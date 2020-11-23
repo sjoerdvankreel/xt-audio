@@ -18,7 +18,7 @@ XtAudioGetErrorInfo(XtError error);
 XT_API XtAttributes XT_CALL 
 XtAudioGetSampleAttributes(XtSample sample);
 XT_API XtPlatform* XT_CALL
-XtAudioInitPlatform(char const* id, void* window, XtOnError onError);
+XtAudioInit(char const* id, void* window, XtOnError onError);
 
 #ifdef __cplusplus
 }

@@ -54,10 +54,10 @@ static void OnNonInterleavedBuffer(const Xt::Stream& stream, const Xt::Buffer& b
 
 int RenderAdvancedMain() 
 {
-  auto audio = Xt::Audio::Init("", nullptr, nullptr);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   Xt::Format format(Mix, Xt::Channels(0, 0, 2, 0));
-  Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
-  std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
+  Xt::System system = platform->SetupToSystem(Xt::Setup::ConsumerAudio);
+  std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if(!service) return 0;
 
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);

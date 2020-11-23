@@ -10,21 +10,21 @@ static void OnError(const std::string& location, const std::string& message)
 
 int PrintDetailedMain()
 {
-  auto audio = Xt::Audio::Init("Sample", nullptr, OnError);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   try 
   {
     Xt::Version version = Xt::Audio::GetVersion();
     std::cout << "Version: " << version.major << "." << version.minor << "\n";    
-    Xt::System pro = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
-    std::cout << "Pro Audio: " << pro << " (" << (Xt::Audio::GetService(pro) != nullptr) << ")\n";
-    Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
-    std::cout << "System Audio: " << system << " (" << (Xt::Audio::GetService(system) != nullptr) << ")\n";
-    Xt::System consumer = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
-    std::cout << "Consumer Audio: " << consumer << " (" << (Xt::Audio::GetService(consumer) != nullptr) << ")\n";
+    Xt::System pro = platform->SetupToSystem(Xt::Setup::ProAudio);
+    std::cout << "Pro Audio: " << pro << " (" << (platform->GetService(pro) != nullptr) << ")\n";
+    Xt::System system = platform->SetupToSystem(Xt::Setup::SystemAudio);
+    std::cout << "System Audio: " << system << " (" << (platform->GetService(system) != nullptr) << ")\n";
+    Xt::System consumer = platform->SetupToSystem(Xt::Setup::ConsumerAudio);
+    std::cout << "Consumer Audio: " << consumer << " (" << (platform->GetService(consumer) != nullptr) << ")\n";
 
-    for(Xt::System s: Xt::Audio::GetSystems()) 
+    for(Xt::System s: platform->GetSystems()) 
     {
-      std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(s);
+      std::unique_ptr<Xt::Service> service = platform->GetService(s);
       std::cout << "System " << s << ":\n";
       std::cout << "  Device count: " << service->GetDeviceCount() << "\n";
       std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";

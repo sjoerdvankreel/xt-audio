@@ -12,24 +12,16 @@
 * move doxygen to own file
 * caller allocated array of device infos
 * move all docs to own file
-* remove formatfault
-* XtService::init/cleanup
 * explain no io in callback
 * fix javadoc warnings
 * Allow different mix and interleaved on aggregation
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
-* tydef struct foo {} foo;
 * package zip in build script
 * cleanup cli gui
 * drop dsound wasapi dependency
 * test selective compilation
 * test compile headers as c
 * arm
-* cpp noexcept
-* drop dummy window handle
-* rename this to self
-* make services members of the platform/library
-* remove formatfault?
-* pulseaudio->pulse/directsound->dsound
 * rename coreenums->enums
 * move locals above asserts
+* restore x86

@@ -3,6 +3,7 @@
 #include <xt/Private.hpp>
 #include <memory>
 #include <thread>
+#include <cstring>
 #include <cassert>
 
 XtVersion XT_CALL
@@ -45,13 +46,13 @@ XtAudioGetSampleAttributes(XtSample sample)
 }
 
 XtPlatform* XT_CALL
-XtAudioInitPlatform(char const* id, void* window, XtOnError onError)
+XtAudioInit(char const* id, void* window, XtOnError onError)
 {
   XT_ASSERT(XtPlatform::instance == nullptr);
   auto result = std::make_unique<XtPlatform>();
   result->onError = onError;
   result->threadId = std::this_thread::get_id();
-  std::string localid = id == nullptr? "XT-Audio": id;
+  std::string localid = id == nullptr || strlen(id) == 0? "XT-Audio": id;
   auto alsa = XtiCreateAlsaService(localid, window);
   if(alsa) result->services.emplace_back(std::move(alsa));
   auto jack = XtiCreateJackService(localid, window);

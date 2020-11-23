@@ -12,5 +12,6 @@
 #include <xt/audio/XtStream.h>
 #include <xt/audio/XtDevice.h>
 #include <xt/audio/XtService.h>
+#include <xt/audio/XtPlatform.h>
 
 #endif /* XT_AUDIO_H */

@@ -6,6 +6,7 @@
 #include <xt/cpp/Core.hpp>
 #include <xt/cpp/Structs.hpp>
 #include <xt/cpp/XtService.hpp>
+#include <xt/cpp/XtPlatform.hpp>
 
 #include <memory>
 #include <vector>
@@ -18,15 +19,11 @@ using namespace Detail;
 class Audio final 
 {
   Audio() = default;
-  typedef std::unique_ptr<void, void(*)(void*)> Disposer;
 public:
   static Version GetVersion();
-  static std::vector<System> GetSystems();
-  static System SetupToSystem(Setup setup); 
   static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
-  static std::unique_ptr<Service> GetService(System system);
-  static Disposer Init(std::string const& id, void* window, OnError onError);
+  static std::unique_ptr<Platform> Init(std::string const& id, void* window, OnError onError);
 };
 
 inline Version
@@ -48,14 +45,6 @@ Audio::GetErrorInfo(uint64_t error)
   return result;
 }
 
-inline System 
-Audio::SetupToSystem(Setup setup) 
-{
-  auto coreSetup = static_cast<XtSetup>(setup);
-  auto coreSystem = XtAudioSetupToSystem(coreSetup);
-  return static_cast<System>(coreSystem);
-}
-
 inline Attributes 
 Audio::GetSampleAttributes(Sample sample) 
 {
@@ -69,34 +58,13 @@ Audio::GetSampleAttributes(Sample sample)
   return result;
 }
 
-inline std::unique_ptr<Service> 
-Audio::GetService(System system) 
-{
-  auto coreSystem = static_cast<XtSystem>(system);
-  XtService const* service = XtAudioGetService(coreSystem);
-  if(!service) return std::unique_ptr<Service>();
-  return std::unique_ptr<Service>(new Service(service));
-}
-
-inline std::vector<System> 
-Audio::GetSystems() 
-{
-  int32_t size = 0;
-  XtAudioGetSystems(nullptr, &size);
-  std::vector<System> result(static_cast<size_t>(size));
-  auto coreSystems = reinterpret_cast<XtSystem*>(result.data());
-  XtAudioGetSystems(coreSystems, &size);
-  return result;
-}
-
-inline Audio::Disposer
+inline std::unique_ptr<Platform>
 Audio::Init(std::string const& id, void* window, OnError onError) 
 {
-  static int32_t token = 0;
   Detail::_onError = onError;
-  XtAudioInit(id.c_str(), window, &Detail::ForwardOnError);
-  auto disposer = [](void*) { XtAudioTerminate(); };
-  return Disposer(static_cast<void*>(&token), disposer);
+  XtOnError coreOnError = onError == nullptr? nullptr: &Detail::ForwardOnError;
+  XtPlatform* result = XtAudioInit(id.c_str(), window, coreOnError);
+  return std::unique_ptr<Platform>(new Platform(result));
 }
 
 } // namespace Xt

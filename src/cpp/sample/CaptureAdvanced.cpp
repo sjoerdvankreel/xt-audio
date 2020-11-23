@@ -45,10 +45,10 @@ static void OnNonInterleavedBuffer(const Xt::Stream& stream, const Xt::Buffer& b
 
 int CaptureAdvancedMain() 
 {
-  auto audio = Xt::Audio::Init("", nullptr, nullptr);
-  Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
-  std::unique_ptr<Xt::Service> service = Xt::Audio::GetService(system);
-  if(!service)return 0; 
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
+  Xt::System system = platform->SetupToSystem(Xt::Setup::ConsumerAudio);
+  std::unique_ptr<Xt::Service> service = platform->GetService(system);
+  if(!service) return 0; 
 
   std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(false);
   if(!device || !device->SupportsFormat(Format)) return 0;  

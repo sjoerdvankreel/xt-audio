@@ -17,7 +17,7 @@ using namespace Detail;
 
 class Service final 
 {
-  friend class Audio;
+  friend class Platform;
   XtService const* const _s;
   Service(XtService const* s): _s(s) { }
 public:
