@@ -1,4 +1,5 @@
 #include <xt/audio/XtPlatform.h>
+#include <xt/private/OS.hpp>
 #include <xt/private/Platform.hpp>
 #include <xt/Private.hpp>
 #include <cassert>
@@ -7,7 +8,10 @@
 void XT_CALL 
 XtPlatformDestroy(XtPlatform* p)
 {
+  XT_ASSERT(p != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
+  if(p->ownWindow) XtiDestroyMessageWindow(p->window);
+  XtiPlatformDestroy();
   delete p; 
   XtPlatform::instance = nullptr;
 }

@@ -4,7 +4,7 @@
 
 #if !XT_ENABLE_PULSE
 std::unique_ptr<XtService>
-XtiCreatePulseService(std::string const& id, void* window)
+XtiCreatePulseService()
 { return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_PULSE
 
@@ -52,23 +52,18 @@ struct XtPaSimple {
 
 struct PulseService: public XtService 
 {
-  ~PulseService();
-  PulseService(std::string const& id);
   XT_IMPLEMENT_SERVICE();
-private:
-  std::string const _id;
 };
 
 std::unique_ptr<XtService>
-XtiCreatePulseService(std::string const& id, void* window)
-{ return std::make_unique<PulseService>(id); }
+XtiCreatePulseService()
+{ return std::make_unique<PulseService>(); }
 
 struct PulseDevice: public XtDevice {
   const bool output;
-  const std::string _id;
   XT_IMPLEMENT_DEVICE();
-  PulseDevice(bool output, std::string const& id):
-  output(output), _id(id) {}
+  PulseDevice(bool output):
+  output(output) {}
 };
 
 struct PulseStream: public XtlLinuxBlockingStream {
@@ -99,23 +94,17 @@ static pa_sample_format ToPulseSample(XtSample sample) {
   }
 }
 
-static XtPaSimple CreateDefaultClient(XtBool output, std::string const& id) {
+static XtPaSimple CreateDefaultClient(XtBool output) {
   pa_sample_spec spec;
   spec.rate = XtPaDefaultRate;
   spec.channels = XtPaDefaultChannels;
   spec.format = ToPulseSample(XtPaDefaultSample);
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
-  return XtPaSimple(pa_simple_new(nullptr, id.c_str(), dir,
-    nullptr, id.c_str(), &spec, nullptr, nullptr, nullptr));
+  return XtPaSimple(pa_simple_new(nullptr, XtPlatform::instance->id.c_str(), dir,
+    nullptr, XtPlatform::instance->id.c_str(), &spec, nullptr, nullptr, nullptr));
 }
 
 // ---- service ----
-
-PulseService::PulseService(std::string const& id):
-_id(id) {}
-
-PulseService::~PulseService()
-{  }
 
 XtSystem PulseService::GetSystem() const {
   return XtSystemPulse;
@@ -126,23 +115,23 @@ XtCapabilities PulseService::GetCapabilities() const {
 }
 
 XtFault PulseService::GetDeviceCount(int32_t* count) const {
-  XtPaSimple client = CreateDefaultClient(XtTrue, _id);
+  XtPaSimple client = CreateDefaultClient(XtTrue);
   *count = client.simple == nullptr? 0: 2;
   return PA_OK;
 }
 
 XtFault PulseService::OpenDevice(int32_t index, XtDevice** device) const {
-  XtPaSimple client = CreateDefaultClient(index != 0, _id);
+  XtPaSimple client = CreateDefaultClient(index != 0);
   if(client.simple == nullptr)
     return PA_ERR_INVALIDSERVER;
-  *device = new PulseDevice(index != 0, _id);
+  *device = new PulseDevice(index != 0);
   return PA_OK;
 }
 
 XtFault PulseService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
-  XtPaSimple client = CreateDefaultClient(output, _id);
+  XtPaSimple client = CreateDefaultClient(output);
   if(client.simple != nullptr)
-    *device = new PulseDevice(output, _id);
+    *device = new PulseDevice(output);
   return PA_OK;
 }
 
@@ -238,7 +227,7 @@ XtFault PulseDevice::OpenStream(const XtDeviceStreamParams* params, bool seconda
   }
   
   frameSize = (params->format.channels.inputs + params->format.channels.outputs) * XtiGetSampleSize(params->format.mix.sample);
-  auto id = _id.c_str();
+  auto id = XtPlatform::instance->id.c_str();
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   if((client = pa_simple_new(nullptr, id, dir, nullptr, 
     id, &spec, &map, nullptr, &fault)) == nullptr)

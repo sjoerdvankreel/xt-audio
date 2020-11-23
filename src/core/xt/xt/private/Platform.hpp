@@ -10,6 +10,9 @@
 
 struct XtPlatform
 {
+  void* window;
+  bool ownWindow;
+  std::string id;
   XtOnError onError;
   std::thread::id threadId;
   std::vector<std::unique_ptr<XtService>> services;

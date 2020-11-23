@@ -4,7 +4,7 @@
 
 #if !XT_ENABLE_ALSA
 std::unique_ptr<XtService>
-XtiCreateAlsaService(std::string const& id, void* window)
+XtiCreateAlsaService()
 { return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_ALSA
 
@@ -84,7 +84,7 @@ struct AlsaService: public XtService
 };
 
 std::unique_ptr<XtService>
-XtiCreateAlsaService(std::string const& id, void* window)
+XtiCreateAlsaService()
 { return std::make_unique<AlsaService>(); }
 
 struct AlsaDevice: public XtDevice {

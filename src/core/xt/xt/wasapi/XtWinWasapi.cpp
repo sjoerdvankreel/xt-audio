@@ -4,7 +4,7 @@
 
 #if !XT_ENABLE_WASAPI
 std::unique_ptr<XtService>
-XtiCreateWasapiService(std::string const& id, void* window)
+XtiCreateWasapiService()
 { return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_WASAPI
 
@@ -33,13 +33,11 @@ static const double XtWsMaxExclusiveBufferMs = 500.0;
 
 struct WasapiService: public XtService 
 {
-  WasapiService();
-  ~WasapiService();
   XT_IMPLEMENT_SERVICE();
 };
 
 std::unique_ptr<XtService>
-XtiCreateWasapiService(std::string const& id, void* window)
+XtiCreateWasapiService()
 { return std::make_unique<WasapiService>(); }
 
 struct WasapiDevice: public XtDevice {
@@ -93,12 +91,6 @@ static HRESULT GetDevices(
 }
 
 // ---- service -----
-
-WasapiService::WasapiService()
-{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
-
-WasapiService::~WasapiService()
-{ CoUninitialize(); }
 
 XtSystem WasapiService::GetSystem() const {
   return XtSystemWASAPI;

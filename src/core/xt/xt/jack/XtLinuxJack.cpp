@@ -4,7 +4,7 @@
 
 #if !XT_ENABLE_JACK
 std::unique_ptr<XtService>
-XtiCreateJackService(std::string const& id, void* window)
+XtiCreateJackService()
 { return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_JACK
 
@@ -92,22 +92,19 @@ struct XtJackConnection {
 struct JackService: public XtService 
 {
   ~JackService();
-  JackService(std::string const& id);
+  JackService();
   XT_IMPLEMENT_SERVICE();
-private:
-  std::string const _id;
 };
 
 std::unique_ptr<XtService>
-XtiCreateJackService(std::string const& id, void* window)
-{ return std::make_unique<JackService>(id); }
+XtiCreateJackService()
+{ return std::make_unique<JackService>(); }
 
 struct JackDevice: public XtDevice {
   const XtJackClient client;
-  const std::string _id;
   XT_IMPLEMENT_DEVICE();
-  JackDevice(XtJackClient&& c, std::string const& id):
-  client(std::move(c)), _id(id) { XT_ASSERT(client.client != nullptr); }
+  JackDevice(XtJackClient&& c):
+  client(std::move(c)) { XT_ASSERT(client.client != nullptr); }
 };
 
 struct JackStream: public XtStream {
@@ -213,8 +210,7 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
 
 // ---- service ----
 
-JackService::JackService(std::string const& id):
-_id(id)
+JackService::JackService()
 { jack_set_error_function(&JackErrorCallback); }
 
 JackService::~JackService()
@@ -233,23 +229,23 @@ XtCapabilities JackService::GetCapabilities() const {
 }
 
 XtFault JackService::GetDeviceCount(int32_t* count) const {
-  XtJackClient client(jack_client_open(_id.c_str(), JackNoStartServer, nullptr));
+  XtJackClient client(jack_client_open(XtPlatform::instance->id.c_str(), JackNoStartServer, nullptr));
   *count = client.client == nullptr? 0: 1;
   return 0;
 }
 
 XtFault JackService::OpenDevice(int32_t index, XtDevice** device) const {  
-  XtJackClient client(jack_client_open(_id.c_str(), JackNoStartServer, nullptr));
+  XtJackClient client(jack_client_open(XtPlatform::instance->id.c_str(), JackNoStartServer, nullptr));
   if(client.client == nullptr)
     return ESRCH;
-  *device = new JackDevice(std::move(client), _id);
+  *device = new JackDevice(std::move(client));
   return 0;
 }
 
 XtFault JackService::OpenDefaultDevice(XtBool output, XtDevice** device) const { 
-  XtJackClient client(jack_client_open(_id.c_str(), JackNoStartServer, nullptr));
+  XtJackClient client(jack_client_open(XtPlatform::instance->id.c_str(), JackNoStartServer, nullptr));
   if(client.client != nullptr)
-    *device = new JackDevice(std::move(client), _id);
+    *device = new JackDevice(std::move(client));
   return 0;
 }
 
@@ -328,7 +324,7 @@ XtFault JackDevice::OpenStream(const XtDeviceStreamParams* params, bool secondar
   size_t bufferFrames, sampleSize;
   std::unique_ptr<JackStream> result;
 
-  c = jack_client_open(_id.c_str(), JackNoStartServer, nullptr);
+  c = jack_client_open(XtPlatform::instance->id.c_str(), JackNoStartServer, nullptr);
   if(c == nullptr)
     return ESRCH;
   XtJackClient streamClient(c);

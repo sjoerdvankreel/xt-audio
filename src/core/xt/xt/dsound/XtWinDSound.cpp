@@ -4,7 +4,7 @@
 
 #if !XT_ENABLE_DSOUND
 std::unique_ptr<XtService>
-XtiCreateDSoundService(std::string const& id, void* window)
+XtiCreateDSoundService()
 { return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_DSOUND
 
@@ -28,16 +28,12 @@ static const double XtDsDefaultBufferMs = 500.0;
 
 struct DSoundService: public XtService 
 {
-  ~DSoundService();
-  DSoundService(void* window);
   XT_IMPLEMENT_SERVICE();
-private:
-  void* const _window;
 };
 
 std::unique_ptr<XtService>
-XtiCreateDSoundService(std::string const& id, void* window)
-{ return std::make_unique<DSoundService>(window); }
+XtiCreateDSoundService()
+{ return std::make_unique<DSoundService>(); }
 
 struct DSoundDevice: public XtDevice {
   const GUID guid;
@@ -165,13 +161,6 @@ static HRESULT OpenDevice(const DeviceInfo& info, void* window, XtDevice** devic
 
 // ---- service ----
 
-DSoundService::DSoundService(void* window):
-_window(window)
-{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
-
-DSoundService::~DSoundService()
-{ CoUninitialize(); }
-
 XtSystem DSoundService::GetSystem() const {
   return XtSystemDSound;
 }
@@ -194,7 +183,7 @@ XtFault DSoundService::OpenDevice(int32_t index, XtDevice** device) const  {
   XT_VERIFY_COM(EnumDevices(infos, false));
   if(static_cast<size_t>(index) >= infos.size())
     return DSERR_NODRIVER;
-  return ::OpenDevice(infos[index], _window, device);
+  return ::OpenDevice(infos[index], XtPlatform::instance->window, device);
 }
 
 XtFault DSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const  {
@@ -203,7 +192,7 @@ XtFault DSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const
   XT_VERIFY_COM(EnumDevices(infos, true));
   for(size_t i = 0; i < infos.size(); i++) {
     if(infos[i].output == (output != XtFalse))
-      return ::OpenDevice(infos[i], _window, device);
+      return ::OpenDevice(infos[i], XtPlatform::instance->window, device);
   }
   return S_OK;
 }

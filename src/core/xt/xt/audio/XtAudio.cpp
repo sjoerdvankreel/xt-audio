@@ -1,5 +1,6 @@
 #include <xt/audio/XtAudio.h>
 #include <xt/Private.hpp>
+#include <xt/private/OS.hpp>
 #include <xt/private/Platform.hpp>
 #include <xt/private/Services.hpp>
 
@@ -51,21 +52,24 @@ XtPlatform* XT_CALL
 XtAudioInit(char const* id, void* window, XtOnError onError)
 {
   XT_ASSERT(XtPlatform::instance == nullptr);
+  XtiPlatformInit();
   auto result = std::make_unique<XtPlatform>();
   result->onError = onError;
+  result->ownWindow = window == nullptr;
   result->threadId = std::this_thread::get_id();
-  std::string localid = id == nullptr || strlen(id) == 0? "XT-Audio": id;
-  auto alsa = XtiCreateAlsaService(localid, window);
+  result->id = id == nullptr || strlen(id) == 0? "XT-Audio": id;
+  result->window = window == nullptr? XtiCreateMessageWindow(): window;
+  auto alsa = XtiCreateAlsaService();
   if(alsa) result->services.emplace_back(std::move(alsa));
-  auto jack = XtiCreateJackService(localid, window);
+  auto jack = XtiCreateJackService();
   if(jack) result->services.emplace_back(std::move(jack));
-  auto asio = XtiCreateAsioService(localid, window);
+  auto asio = XtiCreateAsioService();
   if(asio) result->services.emplace_back(std::move(asio));
-  auto pulse = XtiCreatePulseService(localid, window);
+  auto pulse = XtiCreatePulseService();
   if(pulse) result->services.emplace_back(std::move(pulse));
-  auto dsound = XtiCreateDSoundService(localid, window);
+  auto dsound = XtiCreateDSoundService();
   if(dsound) result->services.emplace_back(std::move(dsound));
-  auto wasapi = XtiCreateWasapiService(localid, window);
+  auto wasapi = XtiCreateWasapiService();
   if(wasapi) result->services.emplace_back(std::move(wasapi));
   return XtPlatform::instance = result.release();
 }

@@ -4,7 +4,7 @@
 
 #if !XT_ENABLE_ASIO
 std::unique_ptr<XtService>
-XtiCreateAsioService(std::string const& id, void* window)
+XtiCreateAsioService()
 { return std::unique_ptr<XtService>(); }
 #else // !XT_ENABLE_ASIO
 
@@ -32,16 +32,12 @@ typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, 
 // ---- forward ----
 
 struct AsioService: public XtService {
-  ~AsioService();
-  AsioService(void* window);
   XT_IMPLEMENT_SERVICE();
-private:
-  void* const _window;
 };
 
 std::unique_ptr<XtService>
-XtiCreateAsioService(std::string const& id, void* window)
-{ return std::make_unique<AsioService>(window); }
+XtiCreateAsioService()
+{ return std::make_unique<AsioService>(); }
 
 struct AsioDevice: public XtDevice {
   bool streamOpen;
@@ -288,14 +284,6 @@ static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
 }
 
 // ---- service ----
-
-AsioService::AsioService(void* window):
-_window(window)
-{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
-
-AsioService::~AsioService()
-{ CoUninitialize(); }
-
 XtSystem AsioService::GetSystem() const {
   return XtSystemASIO;
 }
@@ -332,7 +320,7 @@ XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {
   XT_VERIFY_ASIO(list.asioGetDriverName(index, &name[0], MAXDRVNAMELEN));
   XT_VERIFY_ASIO(list.asioGetDriverCLSID(index, &classId));
   XT_VERIFY_COM(CoCreateInstance(classId, nullptr, CLSCTX_ALL, classId, reinterpret_cast<void**>(&asio)));
-  if(!asio->init(_window))
+  if(!asio->init(XtPlatform::instance->window))
     return ASE_NotPresent;
   *device = new AsioDevice(name, asio);
   return ASE_OK;
