@@ -1,10 +1,12 @@
 #include <xt/private/Services.hpp>
 #if !XT_ENABLE_DSOUND
 
-XtCause XtiGetDSoundFaultCause(XtFault fault) 
-{ return XtCauseUnknown; }
-char const* XtiGetDSoundFaultText(XtFault fault) 
+char const* 
+XtiGetDSoundFaultText(XtFault fault) 
 { return nullptr; }
+XtCause 
+XtiGetDSoundFaultCause(XtFault fault) 
+{ return XtCauseUnknown; }
 
 #else // !XT_ENABLE_DSOUND 
 #include <dsound.h>

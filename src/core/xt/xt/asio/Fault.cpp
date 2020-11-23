@@ -1,10 +1,12 @@
 #include <xt/private/Services.hpp>
 #if !XT_ENABLE_ASIO
 
-XtCause XtiGetAsioFaultCause(XtFault fault) 
-{ return XtCauseUnknown; }
-char const* XtiGetAsioFaultText(XtFault fault) 
+char const* 
+XtiGetAsioFaultText(XtFault fault) 
 { return nullptr; }
+XtCause 
+XtiGetAsioFaultCause(XtFault fault) 
+{ return XtCauseUnknown; }
 
 #else // !XT_ENABLE_ASIO
 #include <Windows.h>

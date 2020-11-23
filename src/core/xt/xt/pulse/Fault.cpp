@@ -1,10 +1,12 @@
 #include <xt/private/Services.hpp>
 #if !XT_ENABLE_PULSE
 
-XtCause XtiGetPulseFaultCause(XtFault fault) 
-{ return XtCauseUnknown; }
-char const* XtiGetPulseFaultText(XtFault fault) 
+char const* 
+XtiGetPulseFaultText(XtFault fault) 
 { return nullptr; }
+XtCause 
+XtiGetPulseFaultCause(XtFault fault) 
+{ return XtCauseUnknown; }
 
 #else // !XT_ENABLE_PULSE
 #include <pulse/pulseaudio.h>

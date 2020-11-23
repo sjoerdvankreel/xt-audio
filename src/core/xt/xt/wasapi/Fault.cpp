@@ -1,10 +1,12 @@
 #include <xt/private/Services.hpp>
 #if !XT_ENABLE_WASAPI
 
-XtCause XtiGetWasapiFaultCause(XtFault fault) 
-{ return XtCauseUnknown; }
-char const* XtiGetWasapiFaultText(XtFault fault) 
+char const* 
+XtiGetWasapiFaultText(XtFault fault) 
 { return nullptr; }
+XtCause 
+XtiGetWasapiFaultCause(XtFault fault) 
+{ return XtCauseUnknown; }
 
 #else // !XT_ENABLE_WASAPI 
 #include <audioclient.h>
