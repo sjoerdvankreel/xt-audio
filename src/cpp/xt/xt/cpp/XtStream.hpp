@@ -52,20 +52,23 @@ inline void
 Stream::Start() 
 { Detail::HandleError(XtStreamStart(_s)); }
 
-inline int32_t Stream::GetFrames() const 
+inline int32_t
+Stream::GetFrames() const 
 {
   int32_t frames;
   Detail::HandleError(XtStreamGetFrames(_s, &frames));
   return frames;
 }
 
-inline Format const& Stream::GetFormat() const
+inline Format const& 
+Stream::GetFormat() const
 {
   auto coreFormat = XtStreamGetFormat(_s);
   return *reinterpret_cast<Format const*>(coreFormat);
 }
 
-inline Latency Stream::GetLatency() const
+inline Latency
+Stream::GetLatency() const
 {
   Latency latency;
   auto coreLatency = reinterpret_cast<XtLatency*>(&latency);

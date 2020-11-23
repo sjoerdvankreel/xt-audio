@@ -9,11 +9,14 @@ namespace Xt::Detail {
 
 inline OnError _onError = nullptr;
 
-inline void HandleError(XtError error) 
+inline void 
+HandleError(XtError error) 
 { if(error != 0) throw Exception(error); }
-inline void XT_CALLBACK ForwardOnError(char const* location, char const* message) 
+inline void XT_CALLBACK 
+ForwardOnError(char const* location, char const* message) 
 { if(_onError) _onError(location, message); }
-inline void XT_CALLBACK ForwardOnXRun(int32_t index, void* user) 
+inline void XT_CALLBACK 
+ForwardOnXRun(int32_t index, void* user) 
 { static_cast<Stream*>(user)->_onXRun(index, static_cast<Stream*>(user)->_user); }
 
 inline void XT_CALLBACK 

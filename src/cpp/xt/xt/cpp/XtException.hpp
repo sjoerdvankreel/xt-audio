@@ -7,7 +7,8 @@
 
 namespace Xt {
 
-class Exception final: public std::exception 
+class Exception final: 
+public std::exception 
 {
   uint64_t const _error;
 public:
