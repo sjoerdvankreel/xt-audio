@@ -94,7 +94,7 @@ static HRESULT GetDevices(
 // ---- service -----
 
 WasapiService::WasapiService()
-{ XT_ASSERT(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)); }
+{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
 
 WasapiService::~WasapiService()
 { CoUninitialize(); }

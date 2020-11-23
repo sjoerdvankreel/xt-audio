@@ -291,7 +291,7 @@ static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
 
 AsioService::AsioService(void* window):
 _window(window)
-{ XT_ASSERT(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)); }
+{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
 
 AsioService::~AsioService()
 { CoUninitialize(); }

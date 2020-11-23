@@ -166,7 +166,7 @@ static HRESULT OpenDevice(const DeviceInfo& info, void* window, XtDevice** devic
 
 DSoundService::DSoundService(void* window):
 _window(window)
-{ XT_ASSERT(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)); }
+{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
 
 DSoundService::~DSoundService()
 { CoUninitialize(); }
