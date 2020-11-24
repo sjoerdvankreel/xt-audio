@@ -1,8 +1,8 @@
 #if XT_ENABLE_WASAPI
+#include <xt/Win32.hpp>
 #define INITGUID 1
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
-#include <xt/Win32.hpp>
 #include <mmdeviceapi.h>
 #include <audioclient.h>
 #include <functiondiscoverykeys_devpkey.h>
