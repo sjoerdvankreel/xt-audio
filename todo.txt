@@ -23,7 +23,4 @@
 * test compile headers as c
 * arm
 * rename coreenums->enums
-* move locals above asserts
 * restore x86
-* move empty services&faults to private/services.cpp
-* add some comment as to what each file is supposed to contain
