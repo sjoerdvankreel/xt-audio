@@ -15,6 +15,8 @@ XT_API XtVersion XT_CALL
 XtAudioGetVersion(void);
 XT_API XtErrorInfo XT_CALL 
 XtAudioGetErrorInfo(XtError error);
+XT_API XtSystem XT_CALL
+XtAudioSetupToSystem(XtSetup setup);
 XT_API XtAttributes XT_CALL 
 XtAudioGetSampleAttributes(XtSample sample);
 XT_API XtPlatform* XT_CALL

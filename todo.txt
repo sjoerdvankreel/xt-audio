@@ -25,6 +25,4 @@
 * rename coreenums->enums
 * move locals above asserts
 * restore x86
-* xtAUDIOsetuptosystem
 * move empty services&faults to private/services.cpp
-* do OS.hpp inside platform ctor

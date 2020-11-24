@@ -1,6 +1,5 @@
 #include <xt/audio/XtAudio.h>
 #include <xt/Private.hpp>
-#include <xt/private/OS.hpp>
 #include <xt/private/Platform.hpp>
 #include <xt/private/Services.hpp>
 
@@ -12,6 +11,13 @@
 XtVersion XT_CALL
 XtAudioGetVersion(void) 
 { return { 1, 7 }; }
+
+XtSystem XT_CALL 
+XtAudioSetupToSystem(XtSetup setup)
+{
+  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
+  return XtPlatform::SetupToSystem(setup);
+}
 
 XtErrorInfo XT_CALL
 XtAudioGetErrorInfo(XtError error) 
@@ -52,13 +58,10 @@ XtPlatform* XT_CALL
 XtAudioInit(char const* id, void* window, XtOnError onError)
 {
   XT_ASSERT(XtPlatform::instance == nullptr);
-  XtiPlatformInit();
   auto result = std::make_unique<XtPlatform>();
   result->onError = onError;
-  result->ownWindow = window == nullptr;
   result->threadId = std::this_thread::get_id();
   result->id = id == nullptr || strlen(id) == 0? "XT-Audio": id;
-  result->window = window == nullptr? XtiCreateMessageWindow(): window;
   auto alsa = XtiCreateAlsaService();
   if(alsa) result->services.emplace_back(std::move(alsa));
   auto jack = XtiCreateJackService();

@@ -21,6 +21,7 @@ class Audio final
   Audio() = default;
 public:
   static Version GetVersion();
+  static System SetupToSystem(Setup setup);
   static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
   static std::unique_ptr<Platform> Init(std::string const& id, void* window, OnError onError);
@@ -31,6 +32,14 @@ Audio::GetVersion()
 {
   auto result = XtAudioGetVersion();
   return *reinterpret_cast<Version*>(&result);
+}
+
+inline System
+Audio::SetupToSystem(Setup setup)
+{ 
+  auto coreSetup = static_cast<XtSetup>(setup);
+  auto result = XtAudioSetupToSystem(coreSetup);
+  return static_cast<System>(result); 
 }
 
 inline ErrorInfo

@@ -24,7 +24,7 @@ int AggregateMain()
   Xt::Format outputFormat(mix, Xt::Channels(0, 0, 2, 0));
   
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
-  Xt::System system = platform->SetupToSystem(Xt::Setup::SystemAudio);
+  Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if(!service) return 0;
 

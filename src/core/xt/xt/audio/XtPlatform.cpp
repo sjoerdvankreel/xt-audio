@@ -1,5 +1,4 @@
 #include <xt/audio/XtPlatform.h>
-#include <xt/private/OS.hpp>
 #include <xt/private/Platform.hpp>
 #include <xt/Private.hpp>
 #include <cassert>
@@ -10,8 +9,6 @@ XtPlatformDestroy(XtPlatform* p)
 {
   XT_ASSERT(p != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  if(p->ownWindow) XtiDestroyMessageWindow(p->window);
-  XtiPlatformDestroy();
   delete p; 
   XtPlatform::instance = nullptr;
 }
@@ -41,17 +38,4 @@ XtPlatformGetSystems(XtPlatform const* p, XtSystem* buffer, int32_t* size)
   auto count = static_cast<int32_t>(systems.size());
   if(buffer == nullptr) *size = count;
   else memcpy(buffer, systems.data(), std::min(*size, count)*sizeof(XtSystem));
-}
-
-XtSystem XT_CALL 
-XtPlatformSetupToSystem(XtPlatform const* p, XtSetup setup)
-{
-  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
-  switch(setup) 
-  {
-  case XtSetupProAudio: return XtPlatformGetService(p, XtSystemASIO)? XtSystemASIO: XtSystemJACK;
-  case XtSetupSystemAudio: return XtPlatformGetService(p, XtSystemWASAPI)? XtSystemWASAPI: XtSystemALSA;
-  case XtSetupConsumerAudio: return XtPlatformGetService(p, XtSystemDSound)? XtSystemDSound: XtSystemPulse;
-  default: assert(false); return static_cast<XtSystem>(0);
-  }
 }

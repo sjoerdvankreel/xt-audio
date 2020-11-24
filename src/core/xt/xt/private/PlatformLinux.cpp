@@ -1,19 +1,13 @@
-#include <xt/private/OS.hpp>
+#include <xt/private/Platform.hpp>
 #ifdef __linux__
 #include <cassert>
 
-void
-XtiPlatformInit() {}
-void
-XtiPlatformDestroy() {}
-void
-XtiDestroyMessageWindow(void* window) {}
-void* 
-XtiCreateMessageWindow()
-{ return nullptr; }
+XtPlatform::~XtPlatform() {}
+XtPlatform::XtPlatform(void* window): 
+XtPlatform() {}
 
 XtSystem
-XtiSetupToSystem(XtSetup setup)
+XtPlatform::SetupToSystem(XtSetup setup)
 {
   switch(setup)
   {
