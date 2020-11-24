@@ -1,4 +1,5 @@
 #if XT_ENABLE_PULSE
+
 #include <xt/private/Services.hpp>
 #include <pulse/pulseaudio.h>
 

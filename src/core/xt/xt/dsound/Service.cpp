@@ -1,4 +1,5 @@
 #if XT_ENABLE_DSOUND
+
 #include <xt/private/Services.hpp>
 #include <dsound.h>
 

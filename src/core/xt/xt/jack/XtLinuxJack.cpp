@@ -1,6 +1,5 @@
 #if XT_ENABLE_JACK
 #include <xt/private/Shared.hpp>
-#include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
 #include <xt/private/Platform.hpp>
 #include <xt/Linux.hpp>

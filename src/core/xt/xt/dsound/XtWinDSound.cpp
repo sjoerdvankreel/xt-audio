@@ -1,6 +1,5 @@
 #if XT_ENABLE_DSOUND
 #include <xt/private/Shared.hpp>
-#include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
 #include <xt/Win32.hpp>
 #include <xt/private/Platform.hpp>

@@ -1,6 +1,8 @@
 #if XT_ENABLE_JACK
-#include <xt/private/Services.hpp>
+
 #include <xt/private/Linux.hpp>
+#include <xt/private/Services.hpp>
+
 #include <cstring>
 
 char const* 

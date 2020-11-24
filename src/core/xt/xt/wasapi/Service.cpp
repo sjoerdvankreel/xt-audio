@@ -1,4 +1,5 @@
 #if XT_ENABLE_WASAPI
+
 #include <xt/private/Services.hpp>
 #include <audioclient.h>
 

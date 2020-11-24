@@ -1,7 +1,6 @@
 #if XT_ENABLE_ALSA
 #include <xt/Linux.hpp>
 #include <xt/private/Shared.hpp>
-#include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
 #include <alsa/asoundlib.h>
 #include <vector>
