@@ -58,7 +58,7 @@ XtPlatform* XT_CALL
 XtAudioInit(char const* id, void* window, XtOnError onError)
 {
   XT_ASSERT(XtPlatform::instance == nullptr);
-  auto result = std::make_unique<XtPlatform>();
+  auto result = std::make_unique<XtPlatform>(window);
   result->onError = onError;
   result->threadId = std::this_thread::get_id();
   result->id = id == nullptr || strlen(id) == 0? "XT-Audio": id;
