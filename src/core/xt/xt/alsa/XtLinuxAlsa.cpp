@@ -1,14 +1,8 @@
+#if XT_ENABLE_ALSA
+#include <xt/Linux.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
-
-#if !XT_ENABLE_ALSA
-std::unique_ptr<XtService>
-XtiCreateAlsaService()
-{ return std::unique_ptr<XtService>(); }
-#else // !XT_ENABLE_ALSA
-
-#include <xt/Linux.hpp>
 #include <alsa/asoundlib.h>
 #include <vector>
 #include <climits>
@@ -647,4 +641,4 @@ void AlsaStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !XT_ENABLE_ALSA
+#endif // XT_ENABLE_ALSA

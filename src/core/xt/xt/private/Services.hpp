@@ -4,6 +4,7 @@
 #include <xt/audio/Enums.h>
 #include <xt/audio/Shared.h>
 #include <xt/private/Shared.hpp>
+#include <xt/private/Service.hpp>
 #include <string>
 #include <memory>
 

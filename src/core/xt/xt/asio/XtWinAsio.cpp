@@ -1,14 +1,8 @@
+#if XT_ENABLE_ASIO
+#include <xt/Win32.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
-
-#if !XT_ENABLE_ASIO
-std::unique_ptr<XtService>
-XtiCreateAsioService()
-{ return std::unique_ptr<XtService>(); }
-#else // !XT_ENABLE_ASIO
-
-#include <xt/Win32.hpp>
 #include <xt/private/Platform.hpp>
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
@@ -519,4 +513,4 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   return ASE_OK;
 }
 
-#endif // !XT_ENABLE_ASIO
+#endif // XT_ENABLE_ASIO

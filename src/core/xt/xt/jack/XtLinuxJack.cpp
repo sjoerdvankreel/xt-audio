@@ -1,13 +1,7 @@
+#if XT_ENABLE_JACK
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
-
-#if !XT_ENABLE_JACK
-std::unique_ptr<XtService>
-XtiCreateJackService()
-{ return std::unique_ptr<XtService>(); }
-#else // !XT_ENABLE_JACK
-
 #include <xt/private/Platform.hpp>
 #include <xt/Linux.hpp>
 #include <jack/jack.h>
@@ -392,4 +386,4 @@ XtFault JackStream::Start() {
   return 0;
 }
 
-#endif // !XT_ENABLE_JACK
+#endif // XT_ENABLE_JACK

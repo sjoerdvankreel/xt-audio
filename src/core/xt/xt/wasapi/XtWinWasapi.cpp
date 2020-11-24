@@ -1,15 +1,9 @@
+#if XT_ENABLE_WASAPI
+#define INITGUID 1
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
-
-#if !XT_ENABLE_WASAPI
-std::unique_ptr<XtService>
-XtiCreateWasapiService()
-{ return std::unique_ptr<XtService>(); }
-#else // !XT_ENABLE_WASAPI
-
 #include <xt/Win32.hpp>
-#define INITGUID 1
 #include <mmdeviceapi.h>
 #include <audioclient.h>
 #include <functiondiscoverykeys_devpkey.h>
@@ -541,4 +535,4 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !XT_ENABLE_WASAPI
+#endif // XT_ENABLE_WASAPI

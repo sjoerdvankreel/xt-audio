@@ -1,13 +1,7 @@
+#if XT_ENABLE_DSOUND
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
-
-#if !XT_ENABLE_DSOUND
-std::unique_ptr<XtService>
-XtiCreateDSoundService()
-{ return std::unique_ptr<XtService>(); }
-#else // !XT_ENABLE_DSOUND
-
 #include <xt/Win32.hpp>
 #include <xt/private/Platform.hpp>
 #define INITGUID 1
@@ -479,4 +473,4 @@ void DSoundStream::ProcessBuffer(bool prefill) {
   }
 }
 
-#endif // !XT_ENABLE_DSOUND
+#endif // XT_ENABLE_DSOUND

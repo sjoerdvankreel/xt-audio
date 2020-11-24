@@ -1,13 +1,7 @@
+#if XT_ENABLE_PULSE
 #include <xt/private/Shared.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/private/Services.hpp>
-
-#if !XT_ENABLE_PULSE
-std::unique_ptr<XtService>
-XtiCreatePulseService()
-{ return std::unique_ptr<XtService>(); }
-#else // !XT_ENABLE_PULSE
-
 #include <xt/Linux.hpp>
 #include <xt/private/Platform.hpp>
 #include <pulse/simple.h>
@@ -271,4 +265,4 @@ void PulseStream::ProcessBuffer(bool prefill) {
     XT_VERIFY_ON_BUFFER(fault);
 }
 
-#endif // !XT_ENABLE_PULSE
+#endif // XT_ENABLE_PULSE
