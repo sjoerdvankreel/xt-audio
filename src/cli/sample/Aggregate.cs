@@ -26,9 +26,9 @@ namespace Xt
             XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
             XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
 
-            using IDisposable audio = XtAudio.Init(null, IntPtr.Zero, null);
+            using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero, null);
             XtSystem system = XtAudio.SetupToSystem(XtSetup.SystemAudio);
-            XtService service = XtAudio.GetService(system);
+            XtService service = platform.GetService(system);
             if (service == null) return;
 
             using XtDevice input = service.OpenDefaultDevice(false);

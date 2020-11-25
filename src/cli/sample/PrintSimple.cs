@@ -6,10 +6,10 @@ namespace Xt
 	{
 		public static void Main()
 		{
-			using IDisposable audio = XtAudio.Init(null, IntPtr.Zero,  null);
-			foreach(XtSystem system in XtAudio.GetSystems())
+			using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero,  null);
+			foreach(XtSystem system in platform.GetSystems())
 			{
-				XtService service = XtAudio.GetService(system);
+				XtService service = platform.GetService(system);
 				for (int d = 0; d < service.GetDeviceCount(); d++)
 					using (XtDevice device = service.OpenDevice(d))
 						Console.WriteLine(system + ": " + device);

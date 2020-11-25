@@ -30,7 +30,7 @@ namespace Xt
 			Application.Run(new XtGui());
 		}
 
-		private IDisposable audio;
+		private XtPlatform platform;
 		private TextWriter log;
 		private XtStream inputStream;
 		private XtStream outputStream;
@@ -104,7 +104,7 @@ namespace Xt
 			base.OnClosing(e);
 			Stop();
 			ClearDevices();
-			audio.Dispose();
+			platform.Dispose();
 			log.Dispose();
 		}
 
@@ -147,7 +147,7 @@ namespace Xt
 			log = new StreamWriter("xt-audio.log");
 
 			Text = $"XT-Audio {libraryVersion.major}.{libraryVersion.minor}";
-			audio = XtAudio.Init("XT-Gui", Handle, OnError);
+			platform = XtAudio.Init("XT-Gui", Handle, OnError);
 			rate.DataSource = Rates;
 			rate.SelectedItem = 44100;
 			sample.DataSource = Samples;
@@ -156,12 +156,12 @@ namespace Xt
 			channelCount.SelectedItem = 2;
 			streamType.DataSource = StreamTypes;
 			streamType.SelectedItem = StreamType.Render;
-			system.DataSource = XtAudio.GetSystems();
+			system.DataSource = platform.GetSystems();
 		}
 
 		private void SystemChanged()
 		{
-			XtService s = XtAudio.GetService((XtSystem)(system.SelectedItem));
+			XtService s = platform.GetService((XtSystem)(system.SelectedItem));
 			inputDevice.DataSource = null;
 			outputDevice.DataSource = null;
 			ClearDevices();
@@ -459,7 +459,7 @@ namespace Xt
 					AggregateCallback streamCallback = new AggregateCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage);
 					var streamParams = new XtStreamParams(streamInterleaved.Checked, streamCallback.OnCallback, onXRun);
 					var aggregateParams= new XtAggregateStreamParams(in streamParams, devices.ToArray(), devices.Count, outputFormat.mix, master);
-					outputStream = XtAudio.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "aggregate-user-data");
+					outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "aggregate-user-data");
 					streamCallback.Init(outputStream.GetFrames());
 					_safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
 					outputStream.Start();
@@ -485,7 +485,7 @@ namespace Xt
 					LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage);
 					XtStreamParams streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun );
 					XtAggregateStreamParams aggregateParams = new XtAggregateStreamParams(in streamParams, devices, 2, in outputFormat.mix, master);
-					outputStream = XtAudio.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "latency-user-data");
+					outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "latency-user-data");
 					_safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
 					outputStream.Start();
 				}
