@@ -3,7 +3,7 @@
 #include <pulse/pulseaudio.h>
 
 XtServiceError
-XtiGetPulseServiceError(XtFault fault)
+XtiGetPulseError(XtFault fault)
 {
   XtServiceError result;
   result.text = pa_strerror(fault);

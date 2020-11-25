@@ -36,9 +36,9 @@ operator<<(std::ostream& os, ErrorInfo const& info)
 {
   XtErrorInfo i;
   i.fault = info.fault;
-  i.text = info.text.c_str();
-  i.cause = static_cast<XtCause>(info.cause);
+  i.service.text = info.service.text.c_str();
   i.system = static_cast<XtSystem>(info.system);
+  i.service.cause = static_cast<XtCause>(info.service.cause);
   return os << XtPrintErrorInfoToString(&i);
 }
 

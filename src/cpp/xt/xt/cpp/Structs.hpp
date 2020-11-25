@@ -33,12 +33,17 @@ struct Version final
   int32_t minor;
 };
 
-struct ErrorInfo final 
+struct ServiceError final
 {
-  System system;
   Cause cause;
   std::string text;
+};
+
+struct ErrorInfo  final
+{
   uint32_t fault;
+  System system;
+  ServiceError service;
 };
 
 struct BufferSize final 

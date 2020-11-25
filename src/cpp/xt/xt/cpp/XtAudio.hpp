@@ -42,18 +42,6 @@ Audio::SetupToSystem(Setup setup)
   return static_cast<System>(result); 
 }
 
-inline ErrorInfo
-Audio::GetErrorInfo(uint64_t error) 
-{ 
-  ErrorInfo result;
-  auto info = XtAudioGetErrorInfo(error);
-  result.fault = info.fault;
-  result.text = std::string(info.text);
-  result.cause = static_cast<Cause>(info.cause);
-  result.system = static_cast<System>(info.system);
-  return result;
-}
-
 inline Attributes 
 Audio::GetSampleAttributes(Sample sample) 
 {
@@ -64,6 +52,18 @@ Audio::GetSampleAttributes(Sample sample)
   result.count = attrs.count;
   result.isFloat = attrs.isFloat != XtFalse;
   result.isSigned = attrs.isSigned != XtFalse;
+  return result;
+}
+
+inline ErrorInfo
+Audio::GetErrorInfo(uint64_t error) 
+{ 
+  ErrorInfo result;
+  auto info = XtAudioGetErrorInfo(error);
+  result.fault = info.fault;
+  result.system = static_cast<System>(info.system);
+  result.service.text = std::string(info.service.text);
+  result.service.cause = static_cast<Cause>(info.service.cause);
   return result;
 }
 
