@@ -1,7 +1,7 @@
 #include <xt/private/Platform.hpp>
 #ifdef _WIN32
-#include <Windows.h>
 #include <xt/Private.hpp>
+#include <Windows.h>
 #include <cassert>
 
 int32_t 
