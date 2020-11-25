@@ -2,10 +2,10 @@ package xt.audio;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import xt.audio.CoreEnums.XtSample;
-import xt.audio.CoreStructs.XtAttributes;
-import xt.audio.CoreStructs.XtBuffer;
-import xt.audio.CoreStructs.XtFormat;
+import xt.audio.Enums.XtSample;
+import xt.audio.Structs.XtAttributes;
+import xt.audio.Structs.XtBuffer;
+import xt.audio.Structs.XtFormat;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package xt.sample;
 
-import xt.audio.CoreEnums.XtSystem;
+import xt.audio.Enums.XtSystem;
 import xt.audio.XtAudio;
 import xt.audio.XtDevice;
 import xt.audio.XtPlatform;

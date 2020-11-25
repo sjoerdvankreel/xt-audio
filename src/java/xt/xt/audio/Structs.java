@@ -3,18 +3,18 @@ package xt.audio;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.TypeMapper;
-import xt.audio.CoreCallbacks.OnBuffer;
-import xt.audio.CoreCallbacks.OnXRun;
-import xt.audio.CoreCallbacks.XtOnBuffer;
-import xt.audio.CoreCallbacks.XtOnXRun;
-import xt.audio.CoreEnums.XtCause;
-import xt.audio.CoreEnums.XtSample;
-import xt.audio.CoreEnums.XtSystem;
+import xt.audio.Callbacks.OnBuffer;
+import xt.audio.Callbacks.OnXRun;
+import xt.audio.Callbacks.XtOnBuffer;
+import xt.audio.Callbacks.XtOnXRun;
+import xt.audio.Enums.XtCause;
+import xt.audio.Enums.XtSample;
+import xt.audio.Enums.XtSystem;
 import static xt.audio.Utility.XtPrintErrorInfoToString;
 import java.util.Arrays;
 import java.util.List;
 
-public interface CoreStructs {
+public interface Structs {
 
     public static class DeviceStreamParams extends Structure {
         public StreamParams stream;

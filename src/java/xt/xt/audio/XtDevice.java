@@ -2,12 +2,12 @@ package xt.audio;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import xt.audio.CoreStructs.DeviceStreamParams;
-import xt.audio.CoreStructs.StreamParams;
-import xt.audio.CoreStructs.XtBufferSize;
-import xt.audio.CoreStructs.XtDeviceStreamParams;
-import xt.audio.CoreStructs.XtFormat;
-import xt.audio.CoreStructs.XtMix;
+import xt.audio.Structs.DeviceStreamParams;
+import xt.audio.Structs.StreamParams;
+import xt.audio.Structs.XtBufferSize;
+import xt.audio.Structs.XtDeviceStreamParams;
+import xt.audio.Structs.XtFormat;
+import xt.audio.Structs.XtMix;
 import java.nio.charset.Charset;
 import java.util.Optional;
 

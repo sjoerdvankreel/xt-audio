@@ -4,8 +4,8 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-import xt.audio.CoreCallbacks.XtOnError;
-import xt.audio.CoreEnums.XtSystem;
+import xt.audio.Callbacks.XtOnError;
+import xt.audio.Enums.XtSystem;
 import java.util.Arrays;
 
 public final class XtPlatform implements AutoCloseable {

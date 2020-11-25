@@ -1,15 +1,15 @@
 package xt.sample;
 
-import xt.audio.CoreEnums.XtSample;
-import xt.audio.CoreEnums.XtSetup;
-import xt.audio.CoreEnums.XtSystem;
-import xt.audio.CoreStructs.XtBuffer;
-import xt.audio.CoreStructs.XtBufferSize;
-import xt.audio.CoreStructs.XtChannels;
-import xt.audio.CoreStructs.XtDeviceStreamParams;
-import xt.audio.CoreStructs.XtFormat;
-import xt.audio.CoreStructs.XtMix;
-import xt.audio.CoreStructs.XtStreamParams;
+import xt.audio.Enums.XtSample;
+import xt.audio.Enums.XtSetup;
+import xt.audio.Enums.XtSystem;
+import xt.audio.Structs.XtBuffer;
+import xt.audio.Structs.XtBufferSize;
+import xt.audio.Structs.XtChannels;
+import xt.audio.Structs.XtDeviceStreamParams;
+import xt.audio.Structs.XtFormat;
+import xt.audio.Structs.XtMix;
+import xt.audio.Structs.XtStreamParams;
 import xt.audio.XtAudio;
 import xt.audio.XtDevice;
 import xt.audio.XtPlatform;

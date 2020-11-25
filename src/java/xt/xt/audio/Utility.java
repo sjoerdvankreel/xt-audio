@@ -8,11 +8,11 @@ import com.sun.jna.NativeLibrary;
 import com.sun.jna.ToNativeContext;
 import com.sun.jna.TypeConverter;
 import java.io.File;
-import xt.audio.CoreEnums.XtCause;
-import xt.audio.CoreEnums.XtSample;
-import xt.audio.CoreEnums.XtSetup;
-import xt.audio.CoreEnums.XtSystem;
-import xt.audio.CoreStructs.XtErrorInfo;
+import xt.audio.Enums.XtCause;
+import xt.audio.Enums.XtSample;
+import xt.audio.Enums.XtSetup;
+import xt.audio.Enums.XtSystem;
+import xt.audio.Structs.XtErrorInfo;
 import java.util.HashMap;
 import java.util.Map;
 

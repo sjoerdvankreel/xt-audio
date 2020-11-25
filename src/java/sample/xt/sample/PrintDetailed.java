@@ -1,9 +1,9 @@
 package xt.sample;
 
-import xt.audio.CoreEnums.XtSetup;
-import xt.audio.CoreEnums.XtSystem;
-import xt.audio.CoreStructs.XtMix;
-import xt.audio.CoreStructs.XtVersion;
+import xt.audio.Enums.XtSetup;
+import xt.audio.Enums.XtSystem;
+import xt.audio.Structs.XtMix;
+import xt.audio.Structs.XtVersion;
 import xt.audio.XtAudio;
 import xt.audio.XtDevice;
 import xt.audio.XtException;

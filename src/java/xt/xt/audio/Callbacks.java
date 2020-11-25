@@ -2,9 +2,9 @@ package xt.audio;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
-import xt.audio.CoreStructs.XtBuffer;
+import xt.audio.Structs.XtBuffer;
 
-public interface CoreCallbacks {
+public interface Callbacks {
 
     interface OnXRun extends Callback {
         void callback(int index, Pointer user) throws Exception;

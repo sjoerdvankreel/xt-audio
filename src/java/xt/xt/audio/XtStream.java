@@ -3,13 +3,13 @@ package xt.audio;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import xt.audio.CoreCallbacks.OnBuffer;
-import xt.audio.CoreCallbacks.OnXRun;
-import xt.audio.CoreCallbacks.XtOnBuffer;
-import xt.audio.CoreCallbacks.XtOnXRun;
-import xt.audio.CoreStructs.XtBuffer;
-import xt.audio.CoreStructs.XtFormat;
-import xt.audio.CoreStructs.XtLatency;
+import xt.audio.Callbacks.OnBuffer;
+import xt.audio.Callbacks.OnXRun;
+import xt.audio.Callbacks.XtOnBuffer;
+import xt.audio.Callbacks.XtOnXRun;
+import xt.audio.Structs.XtBuffer;
+import xt.audio.Structs.XtFormat;
+import xt.audio.Structs.XtLatency;
 import static xt.audio.Utility.handleError;
 
 public final class XtStream implements AutoCloseable {

@@ -1,6 +1,6 @@
 package xt.audio;
 
-public interface CoreEnums {
+public interface Enums {
 
     public enum XtSample { UINT8, INT16, INT24, INT32, FLOAT32 }
     public enum XtSetup { PRO_AUDIO, SYSTEM_AUDIO, CONSUMER_AUDIO }

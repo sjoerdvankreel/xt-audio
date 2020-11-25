@@ -3,13 +3,13 @@ package xt.audio;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
-import xt.audio.CoreCallbacks.XtOnError;
-import xt.audio.CoreEnums.XtSample;
-import xt.audio.CoreEnums.XtSetup;
-import xt.audio.CoreEnums.XtSystem;
-import xt.audio.CoreStructs.XtAttributes;
-import xt.audio.CoreStructs.XtErrorInfo;
-import xt.audio.CoreStructs.XtVersion;
+import xt.audio.Callbacks.XtOnError;
+import xt.audio.Enums.XtSample;
+import xt.audio.Enums.XtSetup;
+import xt.audio.Enums.XtSystem;
+import xt.audio.Structs.XtAttributes;
+import xt.audio.Structs.XtErrorInfo;
+import xt.audio.Structs.XtVersion;
 
 public final class XtAudio {
 
