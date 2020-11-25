@@ -7,6 +7,7 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.ToNativeContext;
 import com.sun.jna.TypeConverter;
+import java.io.File;
 import xt.audio.CoreEnums.XtCause;
 import xt.audio.CoreEnums.XtSample;
 import xt.audio.CoreEnums.XtSetup;
@@ -36,6 +37,8 @@ class EnumConverter<E extends Enum<E>> implements TypeConverter {
 class Utility {
     static final NativeLibrary LIBRARY;
     static {
+        File library = new File("./" + System.mapLibraryName("xt-core"));
+        System.load(library.getAbsolutePath());
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
