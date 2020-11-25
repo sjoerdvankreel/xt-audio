@@ -12,6 +12,7 @@ import xt.audio.CoreStructs.XtMix;
 import xt.audio.CoreStructs.XtStreamParams;
 import xt.audio.XtAudio;
 import xt.audio.XtDevice;
+import xt.audio.XtPlatform;
 import xt.audio.XtSafeBuffer;
 import xt.audio.XtService;
 import xt.audio.XtStream;
@@ -34,9 +35,9 @@ public class FullDuplex {
         XtFormat float44100 = new XtFormat(new XtMix(44100, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
         XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.FLOAT32), new XtChannels(2, 0, 2, 0));
 
-        try(AutoCloseable audio = XtAudio.init(null, null, null)) {
+        try(XtPlatform platform = XtAudio.init(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
-            XtService service = XtAudio.getService(system);
+            XtService service = platform.getService(system);
             if(service == null) return;
 
             try(XtDevice device = service.openDefaultDevice(true)) {

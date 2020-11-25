@@ -12,6 +12,7 @@ import xt.audio.CoreStructs.XtMix;
 import xt.audio.CoreStructs.XtStreamParams;
 import xt.audio.XtAudio;
 import xt.audio.XtDevice;
+import xt.audio.XtPlatform;
 import xt.audio.XtSafeBuffer;
 import xt.audio.XtService;
 import xt.audio.XtStream;
@@ -37,9 +38,9 @@ public class Aggregate {
         XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
         XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
 
-        try(AutoCloseable audio = XtAudio.init(null, null, null)) {
+        try(XtPlatform platform = XtAudio.init(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
-            XtService service = XtAudio.getService(system);
+            XtService service = platform.getService(system);
             if(service == null) return;
 
             try(XtDevice input = service.openDefaultDevice(false);

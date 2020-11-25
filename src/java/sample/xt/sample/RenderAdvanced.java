@@ -13,6 +13,7 @@ import xt.audio.CoreStructs.XtMix;
 import xt.audio.CoreStructs.XtStreamParams;
 import xt.audio.XtAudio;
 import xt.audio.XtDevice;
+import xt.audio.XtPlatform;
 import xt.audio.XtSafeBuffer;
 import xt.audio.XtService;
 import xt.audio.XtStream;
@@ -87,9 +88,9 @@ public class RenderAdvanced {
         XtStreamParams streamParams;
         XtDeviceStreamParams deviceParams;
 
-        try(AutoCloseable audio = XtAudio.init(null, null, null)) {
+        try(XtPlatform platform = XtAudio.init(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
-            XtService service = XtAudio.getService(system);
+            XtService service = platform.getService(system);
             if(service == null) return;
 
             XtFormat format = new XtFormat(MIX, new XtChannels(0, 0, 2, 0));

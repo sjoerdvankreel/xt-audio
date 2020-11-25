@@ -7,6 +7,7 @@ import xt.audio.CoreStructs.XtVersion;
 import xt.audio.XtAudio;
 import xt.audio.XtDevice;
 import xt.audio.XtException;
+import xt.audio.XtPlatform;
 import xt.audio.XtService;
 import java.util.Optional;
 
@@ -17,18 +18,18 @@ public class PrintDetailed {
     }
 
     public static void main() throws Exception {
-        try(AutoCloseable audio = XtAudio.init("Sample", null, PrintDetailed::onError)) {
+        try(XtPlatform platform = XtAudio.init("Sample", null, PrintDetailed::onError)) {
             XtVersion version = XtAudio.getVersion();
             System.out.println("Version: " + version.major + "." + version.minor);
             XtSystem pro = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
-            System.out.println("Pro Audio: " + pro + " (" + (XtAudio.getService(pro) != null) + ")");
+            System.out.println("Pro Audio: " + pro + " (" + (platform.getService(pro) != null) + ")");
             XtSystem system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
-            System.out.println("System Audio: " + system + " (" + (XtAudio.getService(system) != null) + ")");
+            System.out.println("System Audio: " + system + " (" + (platform.getService(system) != null) + ")");
             XtSystem consumer = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
-            System.out.println("Consumer Audio: " + consumer + " (" + (XtAudio.getService(consumer) != null) + ")");
+            System.out.println("Consumer Audio: " + consumer + " (" + (platform.getService(consumer) != null) + ")");
 
-            for(XtSystem s: XtAudio.getSystems()) {
-                XtService service = XtAudio.getService(s);
+            for(XtSystem s: platform.getSystems()) {
+                XtService service = platform.getService(s);
                 System.out.println("System " + s + ":");
                 System.out.println("  Device count: " + service.getDeviceCount());
                 System.out.println("  Capabilities: " + service.getCapabilities());
@@ -49,6 +50,8 @@ public class PrintDetailed {
                         System.out.println("    Non-interleaved access: " + device.supportsAccess(false));
                         if(mix.isPresent())
                             System.out.println("    Current mix: " + mix.get().rate + " " + mix.get().sample);
+                    } catch(XtException e) {
+                        System.out.println(XtAudio.getErrorInfo(e.getError()));
                     }
             }
         } catch(XtException e) {
