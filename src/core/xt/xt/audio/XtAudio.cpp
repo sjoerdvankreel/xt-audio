@@ -12,13 +12,6 @@ XtVersion XT_CALL
 XtAudioGetVersion(void) 
 { return { 1, 7 }; }
 
-XtSystem XT_CALL 
-XtAudioSetupToSystem(XtSetup setup)
-{
-  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
-  return XtPlatform::SetupToSystem(setup);
-}
-
 XtErrorInfo XT_CALL
 XtAudioGetErrorInfo(XtError error) 
 {
@@ -29,8 +22,7 @@ XtAudioGetErrorInfo(XtError error)
   auto system = static_cast<XtSystem>(sysid);
   result.fault = fault;
   result.system = system;
-  result.text = XtiGetFaultText(system, fault);
-  result.cause = XtiGetFaultCause(system, fault);
+  result.service = XtiGetServiceError(system, fault);
   return result;
 }
 
@@ -75,4 +67,11 @@ XtAudioInit(char const* id, void* window, XtOnError onError)
   auto wasapi = XtiCreateWasapiService();
   if(wasapi) result->services.emplace_back(std::move(wasapi));
   return XtPlatform::instance = result.release();
+}
+
+XtSystem XT_CALL 
+XtAudioSetupToSystem(XtSetup setup)
+{
+  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
+  return XtPlatform::SetupToSystem(setup);
 }

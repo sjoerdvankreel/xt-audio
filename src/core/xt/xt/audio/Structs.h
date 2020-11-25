@@ -49,12 +49,17 @@ typedef struct XtFormat
   XtChannels channels;
 } XtFormat;
 
-typedef struct XtErrorInfo 
+typedef struct XtServiceError
 {
-  XtSystem system;
   XtCause cause;
   char const* text;
+} XtServiceError;
+
+typedef struct XtErrorInfo 
+{
   uint32_t fault;
+  XtSystem system;
+  XtServiceError service;
 } XtErrorInfo;
 
 typedef struct XtBufferSize

@@ -1,5 +1,6 @@
 #if XT_ENABLE_ASIO
 #include <xt/Win32.hpp>
+#include <xt/asio/Fault.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
 #include <xt/private/Platform.hpp>

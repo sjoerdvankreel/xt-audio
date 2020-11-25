@@ -84,8 +84,8 @@ XtPrintErrorInfoToString(XtErrorInfo const* info)
   static thread_local char buffer[1024];
   std::memset(buffer, 0, sizeof(buffer));
   stream << XtPrintSystemToString(info->system);
-  stream << " " << XtPrintCauseToString(info->cause);
-  stream << " Error: " << info->fault << " (" << info->text << ")";
+  stream << " " << XtPrintCauseToString(info->service.cause);
+  stream << " Error: " << info->fault << " (" << info->service.text << ")";
   auto result = stream.str();
   std::memcpy(buffer, result.c_str(), std::min(static_cast<size_t>(1023), result.size()));
   return buffer;

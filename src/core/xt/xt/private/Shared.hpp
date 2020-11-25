@@ -3,6 +3,7 @@
 
 #include <xt/audio/Enums.h>
 #include <xt/audio/Shared.h>
+#include <xt/audio/Structs.h>
 #include <cstdint>
 
 typedef uint32_t XtFault;
@@ -17,10 +18,8 @@ int32_t
 XtiGetSampleSize(XtSample sample);
 XtError
 XtiCreateError(XtSystem system, XtFault fault);
-char const* 
-XtiGetFaultText(XtSystem system, XtFault fault);
-XtCause 
-XtiGetFaultCause(XtSystem system, XtFault fault);
+XtServiceError
+XtiGetServiceError(XtSystem system, XtFault fault);
 void
 XtiCopyString(char const* source, char* buffer, int32_t* size);
 
