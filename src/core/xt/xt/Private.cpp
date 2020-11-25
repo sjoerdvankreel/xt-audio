@@ -29,28 +29,8 @@ static void Deinterleave(
  
 // ---- internal ----
 
-int32_t XtiGetPopCount64(uint64_t x) {
-  const uint64_t m1 = 0x5555555555555555;
-  const uint64_t m2 = 0x3333333333333333;
-  const uint64_t m4 = 0x0f0f0f0f0f0f0f0f;
-  const uint64_t h01 = 0x0101010101010101;
-  x -= (x >> 1) & m1;
-  x = (x & m2) + ((x >> 2) & m2);
-  x = (x + (x >> 4)) & m4;
-  return (x * h01) >> 56;
-}
-
 int32_t XtiGetSampleSize(XtSample sample) {
   return XtAudioGetSampleAttributes(sample).size;
-}
-
-XtError XtiCreateError(XtSystem system, XtFault fault) {
-  if(fault == 0)
-    return 0;
-  auto result = static_cast<XtError>(system) << 32ULL | fault;
-  auto info = XtAudioGetErrorInfo(result);
-  XT_TRACE(XtPrintErrorInfoToString(&info));
-  return result;
 }
 
 bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
@@ -80,10 +60,6 @@ void XtiTrace(const char* file, int32_t line, const char* func, const char* mess
   std::ostringstream location;
   location << file << ":" << line << ": in function " << func;
   platform->onError(location.str().c_str(), message);
-}
-
-uint32_t XtiGetErrorFault(XtError error) {
-  return static_cast<XtFault>(error & 0x00000000FFFFFFFF);
 }
 
 void XtiOutputString(const char* source, char* buffer, int32_t* size) {

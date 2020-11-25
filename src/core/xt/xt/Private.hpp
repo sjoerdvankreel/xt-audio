@@ -165,12 +165,9 @@ struct XtAggregate: public XtStream {
 
 // ---- internal ----
 
-int32_t XtiGetPopCount64(uint64_t x);
-uint32_t XtiGetErrorFault(XtError error);
 int32_t XtiGetSampleSize(XtSample sample);
 int32_t XtiLockIncr(volatile int32_t* dest);
 int32_t XtiLockDecr(volatile int32_t* dest);
-XtError XtiCreateError(XtSystem system, XtFault fault);
 bool XtiValidateFormat(XtSystem system, const XtFormat& format);
 int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp);
 void XtiOutputString(const char* source, char* buffer, int32_t* size);
