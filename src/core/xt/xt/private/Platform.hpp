@@ -14,15 +14,18 @@ struct XtPlatform
   XtPlatform() = default;
   XtPlatform(void* window);
 
-  static XtPlatform* instance;
-  static XtSystem SetupToSystem(XtSetup setup);
-
   void* window;
   bool ownWindow;
   std::string id;
   XtOnError onError;
   std::thread::id threadId;
   std::vector<std::unique_ptr<XtService>> services;
+
+  static XtPlatform* instance;
+  static XtSystem SetupToSystem(XtSetup setup);
+  static int32_t LockIncr(int32_t volatile* dest);
+  static int32_t LockDecr(int32_t volatile* dest);
+  static int32_t Cas(int32_t volatile* dest, int32_t exch, int32_t comp);
 };
 
 inline XtPlatform*

@@ -85,20 +85,6 @@ static void* LinuxOnBlockingBuffer(void* user) {
   return nullptr;
 }
 
-// ---- internal ----
-
-int32_t XtiLockIncr(volatile int32_t* dest) {
-  return __sync_add_and_fetch(dest, 1);
-}
-
-int32_t XtiLockDecr(volatile int32_t* dest) {
-  return __sync_sub_and_fetch(dest, 1);
-}
-
-int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp) {
-  return __sync_val_compare_and_swap(dest, comp, exch);
-}
-
 // ---- linux ----
 
 XtlLinuxBlockingStream::XtlLinuxBlockingStream(bool secondary):

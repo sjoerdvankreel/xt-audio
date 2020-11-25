@@ -166,9 +166,9 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   AsioTimeInfo& info = asioTime->timeInfo;
   AsioStream* s = static_cast<AsioStream*>(ctx);
 
-  if(XtiCas(&s->running, 1, 1) != 1)
+  if(XtPlatform::Cas(&s->running, 1, 1) != 1)
     return nullptr;
-  if(XtiCas(&s->insideCallback, 1, 0) != 0)
+  if(XtPlatform::Cas(&s->insideCallback, 1, 0) != 0)
     return nullptr;
 
   if(info.flags & kSamplePositionValid && info.flags & kSystemTimeValid) {
@@ -195,7 +195,7 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
 
-  XT_ASSERT(XtiCas(&s->insideCallback, 0, 1) == 1);
+  XT_ASSERT(XtPlatform::Cas(&s->insideCallback, 0, 1) == 1);
   return nullptr; 
 }
 
@@ -482,13 +482,13 @@ XtFault AsioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondar
 // ---- stream ----
 
 XtFault AsioStream::Stop() {
-  XtiCas(&running, 0, 1);
-  while(XtiCas(&insideCallback, 1, 1) == 1);
+  XtPlatform::Cas(&running, 0, 1);
+  while(XtPlatform::Cas(&insideCallback, 1, 1) == 1);
   return device->asio->stop();
 }
 
 XtFault AsioStream::Start() {
-  XtiCas(&running, 1, 0);
+  XtPlatform::Cas(&running, 1, 0);
   return device->asio->start();
 }
 

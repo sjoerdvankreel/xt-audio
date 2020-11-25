@@ -4,6 +4,27 @@
 #include <xt/Private.hpp>
 #include <cassert>
 
+int32_t 
+XtPlatform::LockIncr(int32_t volatile* dest) 
+{ 
+  auto d = reinterpret_cast<long volatile*>(dest);
+  return InterlockedIncrement(d);
+}
+
+int32_t 
+XtPlatform::LockDecr(int32_t volatile* dest) 
+{
+  auto d = reinterpret_cast<long volatile*>(dest);
+  return InterlockedDecrement(d); 
+}
+
+int32_t 
+XtPlatform::Cas(int32_t volatile* dest, int32_t exch, int32_t comp)
+{ 
+  auto d = reinterpret_cast<volatile long*>(dest);
+  return InterlockedCompareExchange(d, exch, comp); 
+}
+
 XtPlatform::~XtPlatform()
 {
   if(ownWindow) DestroyWindow(static_cast<HWND>(window));

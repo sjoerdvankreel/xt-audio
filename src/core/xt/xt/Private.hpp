@@ -165,11 +165,7 @@ struct XtAggregate: public XtStream {
 
 // ---- internal ----
 
-
-int32_t XtiLockIncr(volatile int32_t* dest);
-int32_t XtiLockDecr(volatile int32_t* dest);
 bool XtiValidateFormat(XtSystem system, const XtFormat& format);
-int32_t XtiCas(volatile int32_t* dest, int32_t exch, int32_t comp);
 void XtiOutputString(const char* source, char* buffer, int32_t* size);
 void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(const char* file, int32_t line, const char* func, const char* message);
