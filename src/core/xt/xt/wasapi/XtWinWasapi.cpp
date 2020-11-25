@@ -192,7 +192,7 @@ XtFault WasapiDevice::ShowControlPanel() {
 }
 
 XtFault WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  XtiOutputString(XtwWfxChannelNames[index], buffer, size);
+  XtiCopyString(XtwWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 
@@ -216,7 +216,7 @@ XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const {
   XT_VERIFY_COM(store->GetValue(PKEY_Device_FriendlyName, &n.pv));
   result = XtwWideStringToUtf8(n.pv.pwszVal);
   result.append(options.loopback? " (Loopback)": options.exclusive? " (Exclusive)": " (Shared)");
-  XtiOutputString(result.c_str(), buffer, size);
+  XtiCopyString(result.c_str(), buffer, size);
   return S_OK;
 }
 

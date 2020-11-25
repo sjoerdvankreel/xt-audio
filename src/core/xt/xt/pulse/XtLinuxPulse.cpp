@@ -139,7 +139,7 @@ XtFault PulseDevice::ShowControlPanel() {
 }
 
 XtFault PulseDevice::GetName(char* buffer, int32_t* size) const {
-  XtiOutputString(output? "Output": "Input", buffer, size);
+  XtiCopyString(output? "Output": "Input", buffer, size);
   return PA_OK;
 }
 
@@ -168,7 +168,7 @@ XtFault PulseDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) c
 }
 
 XtFault PulseDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  XtiOutputString(pa_channel_position_to_pretty_string(static_cast<pa_channel_position_t>(index)), buffer, size);
+  XtiCopyString(pa_channel_position_to_pretty_string(static_cast<pa_channel_position_t>(index)), buffer, size);
   return PA_OK;
 }
 

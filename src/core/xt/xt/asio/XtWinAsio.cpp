@@ -330,7 +330,7 @@ XtFault AsioDevice::ShowControlPanel() {
 }
 
 XtFault AsioDevice::GetName(char* buffer, int32_t* size) const {
-  XtiOutputString(this->name.c_str(), buffer, size);
+  XtiCopyString(this->name.c_str(), buffer, size);
   return ASE_OK;
 }
 
@@ -397,7 +397,7 @@ XtFault AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, i
   info.isInput = !output;
   info.channel = index;
   XT_VERIFY_ASIO(asio->getChannelInfo(&info));
-  XtiOutputString(info.name, buffer, size);
+  XtiCopyString(info.name, buffer, size);
   return ASE_OK;
 }
 

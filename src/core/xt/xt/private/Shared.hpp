@@ -21,5 +21,7 @@ char const*
 XtiGetFaultText(XtSystem system, XtFault fault);
 XtCause 
 XtiGetFaultCause(XtSystem system, XtFault fault);
+void
+XtiCopyString(char const* source, char* buffer, int32_t* size);
 
 #endif // XT_PRIVATE_SHARED_HPP

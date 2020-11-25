@@ -333,7 +333,7 @@ XtFault AlsaDevice::GetMix(XtBool* valid, XtMix* mix) const {
 }
 
 XtFault AlsaDevice::GetName(char* buffer, int32_t* size) const {
-  XtiOutputString(info.description.c_str(), buffer, size);
+  XtiCopyString(info.description.c_str(), buffer, size);
   return 0;
 }
 
@@ -343,7 +343,7 @@ XtFault AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const {
 }
 
 XtFault AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  XtiOutputString(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)), buffer, size);
+  XtiCopyString(snd_pcm_chmap_long_name(static_cast<snd_pcm_chmap_position>(index)), buffer, size);
   return 0;
 }
 

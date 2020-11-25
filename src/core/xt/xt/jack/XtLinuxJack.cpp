@@ -253,7 +253,7 @@ XtFault JackDevice::ShowControlPanel() {
 }
 
 XtFault JackDevice::GetName(char* buffer, int32_t* size) const {
-  XtiOutputString("JACK", buffer, size);
+  XtiCopyString("JACK", buffer, size);
   return 0;
 }
 
@@ -287,7 +287,7 @@ XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, i
   JackPtr<const char*> ports(jack_get_ports(client.client, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
   if(index >= CountPorts(client.client, output))
     return ENODEV;
-  XtiOutputString(ports.p[index], buffer, size);
+  XtiCopyString(ports.p[index], buffer, size);
   return 0;
 }
 

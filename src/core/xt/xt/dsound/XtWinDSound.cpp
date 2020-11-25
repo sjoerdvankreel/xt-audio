@@ -200,7 +200,7 @@ XtFault DSoundDevice::ShowControlPanel() {
 }
 
 XtFault DSoundDevice::GetName(char* buffer, int32_t* size) const {
-  XtiOutputString(this->name.c_str(), buffer, size);
+  XtiCopyString(this->name.c_str(), buffer, size);
   return S_OK;
 }
 
@@ -225,7 +225,7 @@ XtFault DSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
 }
 
 XtFault DSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  XtiOutputString(XtwWfxChannelNames[index], buffer, size);
+  XtiCopyString(XtwWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 

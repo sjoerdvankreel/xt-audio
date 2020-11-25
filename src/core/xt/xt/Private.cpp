@@ -58,15 +58,6 @@ void XtiTrace(const char* file, int32_t line, const char* func, const char* mess
   platform->onError(location.str().c_str(), message);
 }
 
-void XtiOutputString(const char* source, char* buffer, int32_t* size) {
-  if(buffer == nullptr) {
-    *size = strlen(source) + 1;
-    return;
-  }
-  memcpy(buffer, source, static_cast<size_t>(*size) - 1);
-  buffer[*size - 1] = '\0';
-}
-
 // ---- stream ----
 
 XtBlockingStream::XtBlockingStream(bool secondary):

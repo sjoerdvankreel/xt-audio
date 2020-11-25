@@ -6,6 +6,7 @@
 #include <xt/Private.hpp>
 #include <thread>
 #include <cassert>
+#include <cstring>
 
 int32_t
 XtiGetPopCount64(uint64_t x) 
@@ -80,4 +81,12 @@ XtiCreateError(XtSystem system, XtFault fault)
   auto info = XtAudioGetErrorInfo(result);
   XT_TRACE(XtPrintErrorInfoToString(&info));
   return result;
+}
+
+void
+XtiCopyString(char const* source, char* buffer, int32_t* size) 
+{
+  if(buffer == nullptr) return (*size = strlen(source) + 1), void();
+  memcpy(buffer, source, static_cast<size_t>(*size) - 1);
+  buffer[*size - 1] = '\0';
 }
