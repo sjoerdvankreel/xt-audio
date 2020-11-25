@@ -10,7 +10,7 @@ static void OnError(const std::string& location, const std::string& message)
 
 int PrintDetailedMain()
 {
-  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, OnError);
   try 
   {
     Xt::Version version = Xt::Audio::GetVersion();
