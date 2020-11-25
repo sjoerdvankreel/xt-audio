@@ -25,9 +25,5 @@ public final class XtAudio {
     public static XtErrorInfo getErrorInfo(long error) { return XtAudioGetErrorInfo(error); }
     public static XtSystem setupToSystem(XtSetup setup) { return XtAudioSetupToSystem(setup); }
     public static XtAttributes getSampleAttributes(XtSample sample) { return XtAudioGetSampleAttributes(sample); }
-
-    public static XtPlatform init(String id, Pointer window, XtOnError onError) {
-        XtAudioInit(id, window, onError);
-        return new XtPlatform(XtAudioInit(id, window, onError), onError);
-    }
+    public static XtPlatform init(String id, Pointer window, XtOnError onError) { return new XtPlatform(XtAudioInit(id, window, onError), onError); }
 }
