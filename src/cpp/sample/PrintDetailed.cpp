@@ -5,10 +5,12 @@
 #include <cstdlib>
 #include <iostream>
 
-static void OnError(const std::string& location, const std::string& message)
+static void 
+OnError(std::string const& location, std::string const& message)
 { std::cout << location << ": " << message << std::endl; }
 
-int PrintDetailedMain()
+int 
+PrintDetailedMain()
 {
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, OnError);
   try 
@@ -46,8 +48,7 @@ int PrintDetailedMain()
       }
     }
     return EXIT_SUCCESS;
-  }
-  catch(const Xt::Exception& e) 
+  } catch(Xt::Exception const& e) 
   { 
     std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; 
     return EXIT_FAILURE;

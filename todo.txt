@@ -15,7 +15,7 @@
 * explain no io in callback
 * fix javadoc warnings
 * Allow different mix and interleaved on aggregation
-* SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE
+* SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE (alsa grouping)
 * package zip in build script
 * cleanup cli gui
 * drop dsound wasapi dependency
@@ -24,3 +24,4 @@
 * arm
 * rename coreenums->enums
 * restore x86
+* skip alsa devices that fail snd_pcm_hw_params_any or use try_open

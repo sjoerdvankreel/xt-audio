@@ -4,7 +4,8 @@
 #include <cstdint>
 #include <iostream>
 
-int PrintSimpleMain() 
+int 
+PrintSimpleMain() 
 {
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   for(Xt::System system: platform->GetSystems()) 

@@ -6,18 +6,21 @@
 #include <cstring>
 #include <iostream>
 
-static void OnXRun(int32_t index, void* user) 
+static void 
+OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
-static void OnBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+static void 
+OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
-  const Xt::Format& format = stream.GetFormat();
+  Xt::Format const& format = stream.GetFormat();
   Xt::Attributes attrs = Xt::Audio::GetSampleAttributes(format.mix.sample);
   int32_t bytes = buffer.frames * format.channels.inputs * attrs.size;
   std::memcpy(buffer.output, buffer.input, bytes);
 }
 
-int AggregateMain()
+int 
+AggregateMain()
 {
   Xt::Mix mix(48000, Xt::Sample::Int16);
   Xt::Format inputFormat(mix, Xt::Channels(2, 0, 0, 0));

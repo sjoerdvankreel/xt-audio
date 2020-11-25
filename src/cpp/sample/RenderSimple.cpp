@@ -7,25 +7,28 @@
 #include <cstdint>
 
 static float _phase = 0.0f;
-static const float Frequency = 440.0f;
-static const Xt::Channels Channels(0, 0, 1, 0);
-static const Xt::Mix Mix(44100, Xt::Sample::Float32);
-static const Xt::Format Format(Mix, Channels);
+static float const Frequency = 440.0f;
+static Xt::Channels const Channels(0, 0, 1, 0);
+static Xt::Mix const Mix(44100, Xt::Sample::Float32);
+static Xt::Format const Format(Mix, Channels);
 
-static float NextSample()
+static float 
+NextSample()
 {
   _phase += Frequency / Mix.rate;
   if (_phase >= 1.0f) _phase = -1.0f;
   return sinf(2.0f * _phase * static_cast<float>(M_PI));
 }
 
-static void OnBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user)
+static void 
+OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user)
 {
   float* output = static_cast<float*>(buffer.output);
   for (int32_t f = 0; f < buffer.frames; f++) output[f] = NextSample();
 }
 
-int RenderSimpleMain()
+int 
+RenderSimpleMain()
 {
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);

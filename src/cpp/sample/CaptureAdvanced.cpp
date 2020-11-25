@@ -5,45 +5,51 @@
 #include <fstream>
 #include <iostream>
 
-static const Xt::Channels Channels(2, 0, 0, 0);
-static const Xt::Mix Mix(44100, Xt::Sample::Int24);
-static const Xt::Format Format(Mix, Channels);
+static Xt::Channels const Channels(2, 0, 0, 0);
+static Xt::Mix const Mix(44100, Xt::Sample::Int24);
+static Xt::Format const Format(Mix, Channels);
 
-static void OnXRun(int32_t index, void* user) 
+static void 
+OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
-static void RunStream(Xt::Stream* stream)
+static void 
+RunStream(Xt::Stream* stream)
 {
   stream->Start();
   std::this_thread::sleep_for(std::chrono::seconds(2));
   stream->Stop();
 }
 
-static int32_t GetBufferSize(int32_t channels, int32_t frames)
+static int32_t 
+GetBufferSize(int32_t channels, int32_t frames)
 {
   int32_t size = Xt::Audio::GetSampleAttributes(Mix.sample).size;
   return channels * frames * size;
 }
 
-static void OnInterleavedBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+static void 
+OnInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   auto output = static_cast<std::ofstream*>(user);
-  auto input = static_cast<const char*>(buffer.input);
+  auto input = static_cast<char const*>(buffer.input);
   int32_t bytes = GetBufferSize(Channels.inputs, buffer.frames);
   output->write(input, bytes);
 }
 
-static void OnNonInterleavedBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+static void 
+OnNonInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   auto output = static_cast<std::ofstream*>(user);  
-  auto input = static_cast<const char* const*>(buffer.input);
+  auto input = static_cast<char const* const*>(buffer.input);
   int32_t size = Xt::Audio::GetSampleAttributes(Mix.sample).size;
   for(int32_t f = 0; f < buffer.frames; f++)
     for(int32_t c = 0; c < Channels.inputs; c++)
       output->write(&input[c][f * size], size);
 }
 
-int CaptureAdvancedMain() 
+int 
+CaptureAdvancedMain() 
 {
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);

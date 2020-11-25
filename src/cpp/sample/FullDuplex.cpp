@@ -4,13 +4,15 @@
 #include <chrono>
 #include <cstring>
 
-static void OnBuffer(const Xt::Stream& stream, const Xt::Buffer& buffer, void* user) 
+static void 
+OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   int32_t bytes = buffer.frames * 2 * 4;
   std::memcpy(buffer.output, buffer.input, bytes);
 }
 
-int FullDuplexMain() 
+int 
+FullDuplexMain() 
 {
   Xt::Format format;
   Xt::Format int44100(Xt::Mix(44100, Xt::Sample::Int32), Xt::Channels(2, 0, 2, 0));
