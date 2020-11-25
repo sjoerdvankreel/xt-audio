@@ -27,6 +27,13 @@ XtiGetErrorFault(XtError error)
   return static_cast<XtFault>(result); 
 }
 
+int32_t
+XtiGetSampleSize(XtSample sample) 
+{
+  auto attrs = XtAudioGetSampleAttributes(sample);
+  return attrs.size;
+}
+
 bool
 XtiCalledOnMainThread()
 { 

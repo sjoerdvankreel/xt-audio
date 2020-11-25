@@ -165,7 +165,7 @@ struct XtAggregate: public XtStream {
 
 // ---- internal ----
 
-int32_t XtiGetSampleSize(XtSample sample);
+
 int32_t XtiLockIncr(volatile int32_t* dest);
 int32_t XtiLockDecr(volatile int32_t* dest);
 bool XtiValidateFormat(XtSystem system, const XtFormat& format);

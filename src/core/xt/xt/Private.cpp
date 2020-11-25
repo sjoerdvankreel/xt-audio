@@ -29,10 +29,6 @@ static void Deinterleave(
  
 // ---- internal ----
 
-int32_t XtiGetSampleSize(XtSample sample) {
-  return XtAudioGetSampleAttributes(sample).size;
-}
-
 bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
   if(format.channels.inputs < 0 || format.channels.outputs < 0)
     return false;
