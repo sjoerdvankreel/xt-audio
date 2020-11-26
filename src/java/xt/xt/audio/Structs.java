@@ -132,15 +132,21 @@ public interface Structs {
         }
     }
 
-    public static class XtErrorInfo extends Structure {
-        public XtSystem system;
+    public static class XtServiceError extends Structure {
         public XtCause cause;
         public String text;
-        public int fault;
         public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
-        public static class ByValue extends XtErrorInfo implements Structure.ByValue {}
+        @Override protected List getFieldOrder() { return Arrays.asList("cause", "text"); }
+    }
+
+    public static class XtErrorInfo extends Structure {
+        public int fault;
+        public XtSystem system;
+        public XtServiceError service;
+        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
         @Override public String toString() { return XtPrintErrorInfoToString(this); }
-        @Override protected List getFieldOrder() { return Arrays.asList("system", "cause", "text", "fault"); }
+        public static class ByValue extends XtErrorInfo implements Structure.ByValue {}
+        @Override protected List getFieldOrder() { return Arrays.asList("fault", "system", "service"); }
     }
 
     public static class XtAttributes extends Structure {
