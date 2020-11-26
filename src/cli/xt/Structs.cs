@@ -71,7 +71,15 @@ namespace Xt
         public int frames;
         int _timeValid;
         public bool timeValid => _timeValid != 0;
-    };
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XtServiceError
+    {
+        public XtCause cause;
+        IntPtr _text;
+        public string text => PtrToStringUTF8(_text);
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct XtMix
@@ -102,6 +110,15 @@ namespace Xt
         public bool isSigned { get => _isSigned != 0; set => _isSigned = value ? 0 : 1; }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XtErrorInfo
+    {
+        public int fault;
+        public XtSystem system;
+        public XtServiceError service;        
+        public override string ToString() => PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
+    }
+
     public struct XtAggregateDeviceParams
     {
         public XtDevice device;
@@ -129,17 +146,6 @@ namespace Xt
         public ulong outMask;
         public XtChannels(int inputs, ulong inMask, int outputs, ulong outMask)
         => (this.inputs, this.inMask, this.outputs, this.outMask) = (inputs, inMask, outputs, outMask);
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct XtErrorInfo
-    {
-        public XtSystem system;
-        public XtCause cause;
-        IntPtr _text;
-        public int fault;
-        public string text => PtrToStringUTF8(_text);
-        public override string ToString() => PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
     }
 
     public struct XtStreamParams
