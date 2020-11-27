@@ -165,7 +165,6 @@ struct XtAggregate: public XtStream {
 
 // ---- internal ----
 
-bool XtiValidateFormat(XtSystem system, const XtFormat& format);
 void XtiFail(const char* file, int line, const char* func, const char* message);
 void XtiTrace(const char* file, int32_t line, const char* func, const char* message);
 

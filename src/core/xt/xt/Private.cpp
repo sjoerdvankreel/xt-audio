@@ -29,22 +29,6 @@ static void Deinterleave(
  
 // ---- internal ----
 
-bool XtiValidateFormat(XtSystem system, const XtFormat& format) {
-  if(format.channels.inputs < 0 || format.channels.outputs < 0)
-    return false;
-  if(format.channels.inputs == 0 && format.channels.outputs == 0)
-    return false;
-  if(format.mix.rate < 1 || format.mix.rate > 384000)
-    return false;
-  if(format.channels.inMask != 0 && format.channels.inputs != XtiGetPopCount64(format.channels.inMask))
-    return false;
-  if(format.channels.outMask != 0 && format.channels.outputs != XtiGetPopCount64(format.channels.outMask))
-    return false;
-  if(format.mix.sample < XtSampleUInt8 || format.mix.sample > XtSampleFloat32)
-    return false;
-  return true;
-}
-
 void XtiFail(const char* file, int line, const char* func, const char* message) {
   XtiTrace(file, line, func, message);
   std::abort();

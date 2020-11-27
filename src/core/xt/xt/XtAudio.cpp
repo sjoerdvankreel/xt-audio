@@ -53,7 +53,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(params->bufferSize > 0.0);
   XT_ASSERT(params->stream.onBuffer != nullptr);
-  XT_ASSERT(XtiValidateFormat(d->GetSystem(), params->format));
 
   double rate = params->format.mix.rate;
   uint64_t inMask = params->format.channels.inMask;

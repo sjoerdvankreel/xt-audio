@@ -64,7 +64,6 @@ XtDeviceSupportsFormat(XtDevice const* d, XtFormat const* format, XtBool* suppor
   XT_ASSERT(format != nullptr);
   XT_ASSERT(supports != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
   *supports = XtFalse;
   return XtiCreateError(d->GetSystem(), d->SupportsFormat(format, supports));
 }
@@ -76,7 +75,6 @@ XtDeviceGetBufferSize(XtDevice const* d, XtFormat const* format, XtBufferSize* s
   XT_ASSERT(size != nullptr);
   XT_ASSERT(format != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(XtiValidateFormat(d->GetSystem(), *format));
   std::memset(size, 0, sizeof(XtBufferSize));
   return XtiCreateError(d->GetSystem(), d->GetBufferSize(format, size));
 }
