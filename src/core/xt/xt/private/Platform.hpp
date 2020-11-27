@@ -31,4 +31,7 @@ struct XtPlatform
 inline XtPlatform*
 XtPlatform::instance = nullptr;
 
+#include <xt/private/PlatformLinux.ipp>
+#include <xt/private/PlatformWin32.ipp>
+
 #endif // XT_PRIVATE_PLATFORM_HPP
