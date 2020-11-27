@@ -11,12 +11,6 @@
 #include <cstring>
 #include <cstdarg>
 
-#ifdef _WIN32
-#define XT_SEPARATOR '\\'
-#else
-#define XT_SEPARATOR '/'
-#endif // _WIN32
-
 // ---- internal ----
 
 #define XT_VERIFY_ON_BUFFER(expr) \
