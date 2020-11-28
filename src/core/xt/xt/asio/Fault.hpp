@@ -4,7 +4,7 @@
 #include <xt/audio/Enums.h>
 #include <xt/private/Shared.hpp>
 
-#define XT_ASE_Format (static_cast<XtFault>(-993))
+#define XT_ASE_Format (static_cast<XtFault>(-1001))
 
 char const* 
 XtiGetAsioFaultText(XtFault fault);

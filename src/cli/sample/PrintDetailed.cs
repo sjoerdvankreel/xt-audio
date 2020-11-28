@@ -49,9 +49,7 @@ namespace Xt
                         }
                 }
             } catch (XtException e)
-            {
-                Console.WriteLine(XtAudio.GetErrorInfo(e.GetError()));
-            }
+            { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError())); }
         }
     }
 }
