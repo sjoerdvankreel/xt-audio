@@ -6,6 +6,8 @@
 #include <xt/audio/Structs.h>
 #include <cstdint>
 
+#define XT_STRINGIFY(s) #s
+
 typedef uint32_t XtFault;
 
 bool
