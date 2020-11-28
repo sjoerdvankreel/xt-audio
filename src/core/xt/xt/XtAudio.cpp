@@ -38,13 +38,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   XtSystem system;
   XtBool supports;
 
-  XT_ASSERT(d != nullptr);
-  XT_ASSERT(params != nullptr);
-  XT_ASSERT(stream != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(params->bufferSize > 0.0);
-  XT_ASSERT(params->stream.onBuffer != nullptr);
-
   double rate = params->format.mix.rate;
   uint64_t inMask = params->format.channels.inMask;
   int32_t inputs = params->format.channels.inputs;
@@ -162,7 +155,13 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
 
 // ---- device ----
 
-XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream) {
+XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream) {  
 
+  XT_ASSERT(d != nullptr);
+  XT_ASSERT(params != nullptr);
+  XT_ASSERT(stream != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(params->bufferSize > 0.0);
+  XT_ASSERT(params->stream.onBuffer != nullptr);
   return OpenStreamInternal(d, params, false, user, stream);
 }
