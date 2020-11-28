@@ -93,6 +93,7 @@ XtCapabilities WasapiService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 
     XtCapabilitiesLatency | 
+    XtCapabilitiesAggregation |
     XtCapabilitiesChannelMask |
     XtCapabilitiesXRunDetection);
 }

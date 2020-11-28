@@ -79,6 +79,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   XT_ASSERT(params->master != nullptr);
   XT_ASSERT(params->devices != nullptr);
   XT_ASSERT(params->stream.onBuffer != nullptr);
+  XT_ASSERT((s->GetCapabilities() & XtCapabilitiesAggregation) != 0);
 
   XtSystem system = s->GetSystem();
   auto attrs = XtAudioGetSampleAttributes(params->mix.sample);

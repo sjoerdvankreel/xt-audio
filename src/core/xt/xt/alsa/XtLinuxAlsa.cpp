@@ -277,6 +277,7 @@ XtCapabilities AlsaService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime |
     XtCapabilitiesLatency |
+    XtCapabilitiesAggregation |
     XtCapabilitiesXRunDetection);
 }
 

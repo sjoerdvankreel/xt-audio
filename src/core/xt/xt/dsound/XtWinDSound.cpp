@@ -158,7 +158,7 @@ XtSystem DSoundService::GetSystem() const {
 }
 
 XtCapabilities DSoundService::GetCapabilities() const {
-  return XtCapabilitiesChannelMask;
+  return static_cast<XtCapabilities>(XtCapabilitiesAggregation | XtCapabilitiesChannelMask);
 }
 
 XtFault DSoundService::GetDeviceCount(int32_t* count) const {

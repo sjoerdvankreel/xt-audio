@@ -104,7 +104,7 @@ XtSystem PulseService::GetSystem() const {
 }
 
 XtCapabilities PulseService::GetCapabilities() const {
-  return XtCapabilitiesChannelMask;
+  return static_cast<XtCapabilities>(XtCapabilitiesAggregation | XtCapabilitiesChannelMask);
 }
 
 XtFault PulseService::GetDeviceCount(int32_t* count) const {
