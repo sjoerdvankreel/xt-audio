@@ -5,7 +5,6 @@
 #include <xt/private/Services.hpp>
 #include <xt/Private.hpp>
 #include <thread>
-#include <sstream>
 #include <cstring>
 
 int32_t
@@ -33,6 +32,13 @@ XtiGetSampleSize(XtSample sample)
 {
   auto attrs = XtAudioGetSampleAttributes(sample);
   return attrs.size;
+}
+
+void
+XtiFail(XtLocation const& location, char const* msg)
+{
+  XtiTrace(location, msg);
+  std::terminate();
 }
 
 XtServiceError
@@ -69,20 +75,11 @@ XtiCreateError(XtSystem system, XtFault fault)
 }
 
 void
-XtiFail(char const* file, int32_t line, char const* fun, char const* msg)
-{
-  XtiTrace(file, line, fun, msg);
-  std::terminate();
-}
-
-void
-XtiTrace(char const* file, int32_t line, char const* fun, char const* msg)
+XtiTrace(XtLocation const& location, char const* msg)
 {
   auto platform = XtPlatform::instance;
   if(platform == nullptr || platform->_onError == nullptr) return;
-  std::ostringstream location;
-  location << file << ":" << line << ": in function " << fun;
-  platform->_onError(location.str().c_str(), msg);
+  platform->_onError(&location, msg);
 }
 
 void

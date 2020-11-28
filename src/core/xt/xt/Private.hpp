@@ -16,7 +16,7 @@
 // ---- internal ----
 
 #define XT_VERIFY_ON_BUFFER(expr) \
-  VerifyOnBuffer((expr), __FILE__, __LINE__, __func__, #expr)
+  VerifyOnBuffer((expr), {__FILE__,  __func__, __LINE__}, #expr)
 
 #define XT_WAIT_TIMEOUT_MS 10000
 

@@ -134,11 +134,11 @@ void XtwWin32BlockingStream::RequestStop() {
   }
 }
 
-bool XtwWin32BlockingStream::VerifyOnBuffer(HRESULT hr, const char* file, int line, const char* func, const char* expr) {
+bool XtwWin32BlockingStream::VerifyOnBuffer(HRESULT hr, XtLocation const& location, const char* expr) {
   if(SUCCEEDED(hr))
     return true;
   RequestStop();
-  XtiTrace(file, line, func, expr);
+  XtiTrace(location, expr);
   XtBuffer buffer = { 0 };
   buffer.error = XtiCreateError(GetSystem(), hr);
   OnBuffer(&buffer);

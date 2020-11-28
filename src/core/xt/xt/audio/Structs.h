@@ -35,6 +35,13 @@ typedef struct XtLatency
   double output;
 } XtLatency;
 
+typedef struct XtLocation
+{
+  char const* file;
+  char const* func;
+  int32_t line;
+} XtLocation;
+
 typedef struct XtChannels 
 {
   int32_t inputs;

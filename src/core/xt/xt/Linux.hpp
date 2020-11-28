@@ -32,7 +32,7 @@ struct XtlLinuxBlockingStream: public XtBlockingStream {
 
   XtlLinuxBlockingStream(bool secondary);
   ~XtlLinuxBlockingStream();
-  bool VerifyOnBuffer(int error, const char* file, int line, const char* func, const char* expr);
+  bool VerifyOnBuffer(int error, XtLocation const& location, const char* expr);
 };
 
 #endif // __linux__

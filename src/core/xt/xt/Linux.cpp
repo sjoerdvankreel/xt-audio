@@ -132,11 +132,11 @@ void XtlLinuxBlockingStream::RequestStop() {
   }
 }
 
-bool XtlLinuxBlockingStream::VerifyOnBuffer(int error, const char* file, int line, const char* func, const char* expr) {
+bool XtlLinuxBlockingStream::VerifyOnBuffer(int error, XtLocation const& location, const char* expr) {
   if(error == 0)
     return true;
   RequestStop();
-  XtiTrace(file, line, func, expr);
+  XtiTrace(location, expr);
   XtBuffer buffer = { 0 };
   buffer.error = XtiCreateError(GetSystem(), error);
   OnBuffer(&buffer);
