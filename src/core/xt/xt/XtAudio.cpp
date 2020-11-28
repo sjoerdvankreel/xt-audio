@@ -58,12 +58,12 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
     return XtiCreateError(d->GetSystem(), fault);
   }
 
-  (*stream)->_internal.user = user;
+  (*stream)->_user = user;
   (*stream)->_params = *params;
   (*stream)->_internal.aggregated = false;
   (*stream)->_internal.index = 0;
-  (*stream)->_internal.emulated = !supports;
-  InitStreamBuffers((*stream)->_internal.buffers, &params->format, frames);
+  (*stream)->_emulated = !supports;
+  InitStreamBuffers((*stream)->_buffers, &params->format, frames);
   return 0;
 }
 
@@ -84,7 +84,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   XtSystem system = s->GetSystem();
   auto attrs = XtAudioGetSampleAttributes(params->mix.sample);
   std::unique_ptr<XtAggregate> result(new XtAggregate);
-  result->_internal.user = user;
+  result->_user = user;
   result->running = 0;
   result->system = system;
   result->masterIndex = -1;
@@ -92,7 +92,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->_internal.index = -1;
   result->insideCallbackCount = 0;
   result->_params.stream = params->stream;
-  result->_internal.emulated = false;
+  result->_emulated = false;
   result->inputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->outputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->contexts = std::vector<XtAggregateContext>(params->count, XtAggregateContext());
@@ -144,7 +144,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->_params.format = format;
   result->frames = frames * 2;
   InitStreamBuffers(result->_weave, &format, frames);
-  InitStreamBuffers(result->_internal.buffers, &format, frames);
+  InitStreamBuffers(result->_buffers, &format, frames);
   for(int32_t i = 0; i < params->count; i++) {
     result->inputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.inputs, attrs.size);
     result->outputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.outputs, attrs.size);

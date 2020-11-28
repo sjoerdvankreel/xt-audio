@@ -96,16 +96,16 @@ struct XtIOBuffers
 
 struct XtInternalStreamParams
 {
-  void* user;
   int32_t index;
-  bool emulated;
   bool aggregated;
-  XtIOBuffers buffers;
 };
 
 // ---- forward ----
 
 struct XtStream {
+  void* _user;
+  bool _emulated;
+  XtIOBuffers _buffers;
   XtDeviceStreamParams _params;
   XtInternalStreamParams _internal;
 

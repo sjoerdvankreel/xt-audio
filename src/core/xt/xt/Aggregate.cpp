@@ -287,7 +287,7 @@ void XT_CALLBACK XtiOnSlaveBuffer(
     for(i = 0; i < aggregate->streams.size(); i++)
       if(i != static_cast<size_t>(index))
         aggregate->streams[i]->RequestStop();
-    aggregate->_params.stream.onBuffer(aggregate, buffer, aggregate->_internal.user);
+    aggregate->_params.stream.onBuffer(aggregate, buffer, aggregate->_user);
   } else {
 
     if(XtPlatform::Cas(&aggregate->running, 1, 1) != 1) {
@@ -299,7 +299,7 @@ void XT_CALLBACK XtiOnSlaveBuffer(
         written = inputRing.Write(buffer->input, buffer->frames);
         inputRing.Unlock();
         if(written < buffer->frames && onXRun != nullptr)
-          onXRun(-1, aggregate->_internal.user);
+          onXRun(-1, aggregate->_user);
       }
   
       if(buffer->output != nullptr) {
@@ -309,7 +309,7 @@ void XT_CALLBACK XtiOnSlaveBuffer(
         if(read < buffer->frames) {
           ZeroBuffer(buffer->output, aggregate->_params.stream.interleaved, read, channels.outputs, buffer->frames - read, sampleSize);
           if(onXRun != nullptr)
-            onXRun(-1, aggregate->_internal.user);
+            onXRun(-1, aggregate->_user);
         }
       }
     }
@@ -367,13 +367,13 @@ void XT_CALLBACK XtiOnMasterBuffer(
   appInput = format->channels.inputs == 0?
     nullptr:
     interleaved? 
-    static_cast<void*>(&(aggregate->_internal.buffers.input.interleaved[0])):
-    &(aggregate->_internal.buffers.input.nonInterleaved[0]);
+    static_cast<void*>(&(aggregate->_buffers.input.interleaved[0])):
+    &(aggregate->_buffers.input.nonInterleaved[0]);
   appOutput = format->channels.outputs == 0?
     nullptr:
     interleaved? 
-    static_cast<void*>(&(aggregate->_internal.buffers.output.interleaved[0])):
-    &(aggregate->_internal.buffers.output.nonInterleaved[0]);
+    static_cast<void*>(&(aggregate->_buffers.output.interleaved[0])):
+    &(aggregate->_buffers.output.nonInterleaved[0]);
 
   totalChannels = 0;
   for(i = 0; i < aggregate->streams.size(); i++) {
@@ -387,7 +387,7 @@ void XT_CALLBACK XtiOnMasterBuffer(
       if(read < buffer->frames) {
         ZeroBuffer(ringInput, interleaved, read, thisFormat->channels.inputs, buffer->frames - read, sampleSize);
         if(onXRun != nullptr)
-          onXRun(-1, aggregate->_internal.user);
+          onXRun(-1, aggregate->_user);
       }
       for(c = 0; c < thisFormat->channels.inputs; c++)
         Weave(appInput, ringInput, interleaved, format->channels.inputs, thisFormat->channels.inputs, totalChannels + c, c, buffer->frames, sampleSize);
@@ -398,7 +398,7 @@ void XT_CALLBACK XtiOnMasterBuffer(
   XtBuffer appBuffer = *buffer;
   appBuffer.input = appInput;
   appBuffer.output = appOutput;
-  aggregate->_params.stream.onBuffer(aggregate, &appBuffer, aggregate->_internal.user);
+  aggregate->_params.stream.onBuffer(aggregate, &appBuffer, aggregate->_user);
 
   totalChannels = 0;
   for(i = 0; i < aggregate->streams.size(); i++) {
@@ -413,7 +413,7 @@ void XT_CALLBACK XtiOnMasterBuffer(
       written = thisOutRing->Write(ringOutput, buffer->frames);
       thisOutRing->Unlock();
       if(written < buffer->frames && onXRun != nullptr)
-        onXRun(-1, aggregate->_internal.user);
+        onXRun(-1, aggregate->_user);
     }
   }
 
