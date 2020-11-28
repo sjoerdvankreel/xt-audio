@@ -76,13 +76,9 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   }
 
   (*stream)->user = user;
-  (*stream)->format = params->format;
+  (*stream)->_params = *params;
   (*stream)->aggregated = false;
   (*stream)->aggregationIndex = 0;
-  (*stream)->interleaved = params->stream.interleaved;
-  (*stream)->onXRun = params->stream.onXRun;
-  (*stream)->sampleSize = attributes.size;
-  (*stream)->onBuffer = params->stream.onBuffer;
   (*stream)->canInterleaved = canInterleaved;
   (*stream)->canNonInterleaved = canNonInterleaved;
   initInterleaved = params->stream.interleaved && !canInterleaved;
@@ -114,11 +110,8 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->aggregated = false;
   result->aggregationIndex = -1;
   result->insideCallbackCount = 0;
-  result->sampleSize = attrs.size;
-  result->interleaved = params->stream.interleaved;
-  result->onXRun = params->stream.onXRun;
+  result->_params.stream = params->stream;
   result->canInterleaved = params->stream.interleaved;
-  result->onBuffer = params->stream.onBuffer;
   result->canNonInterleaved = !params->stream.interleaved;
   result->inputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->outputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
@@ -168,7 +161,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   }
   XT_ASSERT(masterFound);
 
-  result->format = format;
+  result->_params.format = format;
   result->frames = frames * 2;
   InitStreamBuffers(result->weave, params->stream.interleaved, !params->stream.interleaved, &format, frames, attrs.size);
   InitStreamBuffers(result->intermediate, params->stream.interleaved, !params->stream.interleaved, &format, frames, attrs.size);

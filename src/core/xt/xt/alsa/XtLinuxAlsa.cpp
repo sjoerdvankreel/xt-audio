@@ -476,8 +476,8 @@ XtFault AlsaStream::GetLatency(XtLatency* latency) const {
   snd_pcm_sframes_t delay;
   if(snd_pcm_delay(pcm.pcm, &delay) < 0)
     return 0;
-  latency->input = output? 0.0: delay * 1000.0 / format.mix.rate;
-  latency->output = !output? 0.0: delay * 1000.0 / format.mix.rate;
+  latency->input = output? 0.0: delay * 1000.0 / _params.format.mix.rate;
+  latency->output = !output? 0.0: delay * 1000.0 / _params.format.mix.rate;
   return 0;
 }
 
@@ -601,7 +601,7 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       data = static_cast<char*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
     else {
       data = &nonInterleavedAudio[0];
-      for(c = 0; c < format.channels.inputs + format.channels.outputs; c++) {
+      for(c = 0; c < _params.format.channels.inputs + _params.format.channels.outputs; c++) {
         nonInterleavedAudio[c] = static_cast<char*>(areas[c].addr) + areas[c].first / 8 + offset * areas[c].step / 8;
       }
     }

@@ -5,7 +5,7 @@ XtFormat const* XT_CALL
 XtStreamGetFormat(XtStream const* s) 
 {
   XT_ASSERT(s != nullptr);
-  return &s->format;
+  return &s->_params.format;
 }
 
 void XT_CALL 

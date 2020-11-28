@@ -337,7 +337,7 @@ void DSoundStream::StopStream() {
     XT_ASSERT(SUCCEEDED(render->Stop()));
   if(!secondary) {
     XT_ASSERT(CancelWaitableTimer(timer.timer));
-    XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, format.mix.rate) / 2) == TIMERR_NOERROR);
+    XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, _params.format.mix.rate) / 2) == TIMERR_NOERROR);
     XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
   }
   xtBytesProcessed = 0;
@@ -348,7 +348,7 @@ void DSoundStream::StopStream() {
 void DSoundStream::StartStream() {
   LARGE_INTEGER due;
   due.QuadPart = -1;
-  UINT timerPeriod = GetTimerPeriod(bufferFrames, format.mix.rate);
+  UINT timerPeriod = GetTimerPeriod(bufferFrames, _params.format.mix.rate);
   long lTimerPeriod = timerPeriod;
   if(!secondary) {
     XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL));
@@ -368,7 +368,7 @@ void DSoundStream::ProcessBuffer(bool prefill) {
   int32_t gap, available, dsProcessed;
   DWORD bufferBytes = static_cast<DWORD>(buffer.size());
   DWORD size1, size2, read, write, lockPosition, waitResult;
-  DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
+  DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / _params.format.mix.rate);
 
   XtBuffer xtBuffer = { 0 };
 

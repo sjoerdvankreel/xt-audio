@@ -176,7 +176,7 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
   jack_nframes_t jackPosition;
   jack_time_t jackTime, nextTime;
   JackStream* s = static_cast<JackStream*>(arg);
-  int32_t sampleSize = XtiGetSampleSize(s->format.mix.sample);
+  int32_t sampleSize = XtiGetSampleSize(s->_params.format.mix.sample);
   XtBuffer xtBuffer = { 0 };
 
   input = s->inputs.size() == 0? nullptr: &s->inputChannels[0];
@@ -365,7 +365,7 @@ XtFault JackStream::Start() {
   if((fault = jack_activate(client.client)) != 0)
     return fault;
 
-  for(int32_t i = 0; i < format.channels.inputs; i++) {
+  for(int32_t i = 0; i < _params.format.channels.inputs; i++) {
     if((fault = jack_connect(client.client, 
       inputs[i].connectTo, jack_port_name(inputs[i].port))) != 0)
       return fault;
@@ -373,7 +373,7 @@ XtFault JackStream::Start() {
       inputs[i].connectTo, jack_port_name(inputs[i].port)));
   }
 
-  for(int32_t i = 0; i < format.channels.outputs; i++) {
+  for(int32_t i = 0; i < _params.format.channels.outputs; i++) {
     if((fault = jack_connect(client.client, 
       jack_port_name(outputs[i].port), outputs[i].connectTo)) != 0)
       return fault;

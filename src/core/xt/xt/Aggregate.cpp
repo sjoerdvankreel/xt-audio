@@ -251,13 +251,13 @@ XtFault XtAggregate::GetLatency(XtLatency* latency) const {
       return 0;
     if(local.input > 0.0) {
       inputRings[i].Lock();
-      local.input += inputRings[i].Full() * 1000.0 / format.mix.rate;
+      local.input += inputRings[i].Full() * 1000.0 / _params.format.mix.rate;
       inputRings[i].Unlock();
       latency->input = local.input > latency->input? local.input: latency->input;
     }      
     if(local.output > 0.0) {
       outputRings[i].Lock();
-      local.output += outputRings[i].Full() * 1000.0 / format.mix.rate;
+      local.output += outputRings[i].Full() * 1000.0 / _params.format.mix.rate;
       outputRings[i].Unlock();
       latency->output = local.output > latency->output? local.output: latency->output;
     }      
@@ -275,7 +275,8 @@ void XT_CALLBACK XtiOnSlaveBuffer(
   auto ctx = static_cast<XtAggregateContext*>(user);
   int32_t index = ctx->index;
   XtAggregate* aggregate = ctx->stream;
-  XtOnXRun onXRun = aggregate->onXRun;
+  auto sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
+  XtOnXRun onXRun = aggregate->_params.stream.onXRun;
   XtRingBuffer& inputRing = aggregate->inputRings[index];
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
@@ -286,11 +287,11 @@ void XT_CALLBACK XtiOnSlaveBuffer(
     for(i = 0; i < aggregate->streams.size(); i++)
       if(i != static_cast<size_t>(index))
         aggregate->streams[i]->RequestStop();
-    aggregate->onBuffer(aggregate, buffer, aggregate->user);
+    aggregate->_params.stream.onBuffer(aggregate, buffer, aggregate->user);
   } else {
 
     if(XtPlatform::Cas(&aggregate->running, 1, 1) != 1) {
-      ZeroBuffer(buffer->output, aggregate->interleaved, 0, channels.outputs, buffer->frames, aggregate->sampleSize);
+      ZeroBuffer(buffer->output, aggregate->_params.stream.interleaved, 0, channels.outputs, buffer->frames, sampleSize);
     } else {
 
       if(buffer->input != nullptr) {
@@ -306,7 +307,7 @@ void XT_CALLBACK XtiOnSlaveBuffer(
         read = outputRing.Read(buffer->output, buffer->frames);
         outputRing.Unlock();
         if(read < buffer->frames) {
-          ZeroBuffer(buffer->output, aggregate->interleaved, read, channels.outputs, buffer->frames - read, aggregate->sampleSize);
+          ZeroBuffer(buffer->output, aggregate->_params.stream.interleaved, read, channels.outputs, buffer->frames - read, sampleSize);
           if(onXRun != nullptr)
             onXRun(-1, aggregate->user);
         }
@@ -334,10 +335,10 @@ void XT_CALLBACK XtiOnMasterBuffer(
   auto ctx = static_cast<XtAggregateContext*>(user);
   int32_t index = ctx->index;
   XtAggregate* aggregate = ctx->stream;
-  int32_t sampleSize = aggregate->sampleSize;
-  XtBool interleaved = aggregate->interleaved;
-  const XtFormat* format = &aggregate->format;
-  XtOnXRun onXRun = aggregate->onXRun;
+  int32_t sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
+  XtBool interleaved = aggregate->_params.stream.interleaved;
+  const XtFormat* format = &aggregate->_params.format;
+  XtOnXRun onXRun = aggregate->_params.stream.onXRun;
   XtRingBuffer& inputRing = aggregate->inputRings[index];
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
@@ -378,7 +379,7 @@ void XT_CALLBACK XtiOnMasterBuffer(
   for(i = 0; i < aggregate->streams.size(); i++) {
     thisInRing = &aggregate->inputRings[i];
     thisStream = aggregate->streams[i].get();
-    thisFormat = &aggregate->streams[i]->format;
+    thisFormat = &aggregate->streams[i]->_params.format;
     if(thisFormat->channels.inputs > 0) {
       thisInRing->Lock();
       read = thisInRing->Read(ringInput, buffer->frames);
@@ -397,13 +398,13 @@ void XT_CALLBACK XtiOnMasterBuffer(
   XtBuffer appBuffer = *buffer;
   appBuffer.input = appInput;
   appBuffer.output = appOutput;
-  aggregate->onBuffer(aggregate, &appBuffer, aggregate->user);
+  aggregate->_params.stream.onBuffer(aggregate, &appBuffer, aggregate->user);
 
   totalChannels = 0;
   for(i = 0; i < aggregate->streams.size(); i++) {
     thisOutRing = &aggregate->outputRings[i];
     thisStream = aggregate->streams[i].get();
-    thisFormat = &aggregate->streams[i]->format;
+    thisFormat = &aggregate->streams[i]->_params.format;
     if(thisFormat->channels.outputs > 0) {
       for(c = 0; c < thisFormat->channels.outputs; c++)
         Weave(ringOutput, appOutput, interleaved, thisFormat->channels.outputs, format->channels.outputs, c, totalChannels + c, buffer->frames, sampleSize);

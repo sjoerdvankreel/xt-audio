@@ -178,12 +178,12 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
     time = XT_TO_UINT64(info.systemTime.lo, info.systemTime.hi) / XtAsioNsPerMs;
   }
 
-  input = s->format.channels.inputs > 0? &s->inputChannels[0]: nullptr;
-  output = s->format.channels.outputs > 0? &s->outputChannels[0]: nullptr;
-  for(int32_t i = 0; i < s->format.channels.inputs; i++)
+  input = s->_params.format.channels.inputs > 0? &s->inputChannels[0]: nullptr;
+  output = s->_params.format.channels.outputs > 0? &s->outputChannels[0]: nullptr;
+  for(int32_t i = 0; i < s->_params.format.channels.inputs; i++)
     s->inputChannels[i] = s->buffers[i].buffers[index];
-  for(int32_t i = 0; i < s->format.channels.outputs; i++)
-    s->outputChannels[i] = s->buffers[s->format.channels.inputs + i].buffers[index];
+  for(int32_t i = 0; i < s->_params.format.channels.outputs; i++)
+    s->outputChannels[i] = s->buffers[s->_params.format.channels.inputs + i].buffers[index];
 
   XtBuffer buffer = { 0 };
   buffer.input = input;
@@ -508,8 +508,8 @@ XtFault AsioStream::GetLatency(XtLatency* latency) const {
   ASIOSampleRate rate;
   XT_VERIFY_ASIO(device->asio->getSampleRate(&rate));
   XT_VERIFY_ASIO(device->asio->getLatencies(&input, &output));
-  latency->input = format.channels.inputs == 0? 0.0: input * 1000.0 / rate;
-  latency->output = format.channels.outputs == 0? 0.0: output * 1000.0 / rate;
+  latency->input = _params.format.channels.inputs == 0? 0.0: input * 1000.0 / rate;
+  latency->output = _params.format.channels.outputs == 0? 0.0: output * 1000.0 / rate;
   return ASE_OK;
 }
 

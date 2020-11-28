@@ -443,7 +443,7 @@ XtFault WasapiStream::GetLatency(XtLatency* latency) const {
   UINT bufferFrames;
   XT_VERIFY_COM(client->GetStreamLatency(&l));
   XT_VERIFY_COM(client->GetBufferSize(&bufferFrames));
-  double bufferLatency = options.exclusive? 0.0: bufferFrames * 1000.0 / format.mix.rate;
+  double bufferLatency = options.exclusive? 0.0: bufferFrames * 1000.0 / _params.format.mix.rate;
   if(capture)
     latency->input = l / XtWsHnsPerMs + bufferLatency;
   else
@@ -465,7 +465,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
   uint64_t position = 0;
   uint64_t wasapiPosition;
   XtBool timeValid = XtFalse;
-  DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / format.mix.rate);
+  DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / _params.format.mix.rate);
   XtBuffer buffer = { 0 };
 
   if(!prefill && !secondary) {
@@ -512,7 +512,7 @@ void WasapiStream::ProcessBuffer(bool prefill) {
           return;
         if(!XT_VERIFY_ON_BUFFER(clock->GetPosition(&wasapiPosition, &wasapiTime)))
           return;
-        position = wasapiPosition * format.mix.rate / frequency;
+        position = wasapiPosition * _params.format.mix.rate / frequency;
       } else {
         if(!XT_VERIFY_ON_BUFFER(clock2->GetDevicePosition(&wasapiPosition, &wasapiTime)))
           return;

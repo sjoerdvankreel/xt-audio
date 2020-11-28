@@ -95,14 +95,10 @@ struct XtIntermediateBuffers {
 struct XtStream {
   void* user;
   bool aggregated;
-  XtFormat format;
-  int32_t sampleSize;
-  XtBool interleaved;
   XtBool canInterleaved;
   XtBool canNonInterleaved;
   int32_t aggregationIndex;
-  XtOnXRun onXRun;
-  XtOnBuffer onBuffer;
+  XtDeviceStreamParams _params;
   XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
