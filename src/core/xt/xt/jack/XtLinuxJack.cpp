@@ -107,7 +107,7 @@ struct JackStream: public XtStream {
   std::vector<void*> inputChannels;
   std::vector<void*> outputChannels;
   std::vector<XtJackConnection> connections;
-  XT_IMPLEMENT_CALLBACK_STREAM(JACK);
+  XT_IMPLEMENT_STREAM();
 
   JackStream(XtJackClient&& client, 
     std::vector<XtJackPort>&& inputs, std::vector<XtJackPort>&& outputs,
@@ -343,6 +343,10 @@ XtFault JackDevice::OpenStream(const XtDeviceStreamParams* params, bool secondar
 }
 
 // ---- stream ----
+
+XtSystem JackStream::GetSystem() const {
+  return XtSystemJACK;
+}
 
 XtFault JackStream::Stop() {
   connections.clear();

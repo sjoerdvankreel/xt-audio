@@ -27,9 +27,15 @@ XtServiceError
 XtiGetServiceError(XtSystem system, XtFault fault);
 void
 XtiCopyString(char const* source, char* buffer, int32_t* size);
+
 void
 XtiFail(char const* file, int32_t line, char const* fun, char const* msg);
 void
 XtiTrace(char const* file, int32_t line, char const* fun, char const* msg);
+
+void
+XtiDeinterleave(void** dst, void const* src, int32_t frames, int32_t channels, int32_t size);
+void
+XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channels, int32_t size);
 
 #endif // XT_PRIVATE_SHARED_HPP

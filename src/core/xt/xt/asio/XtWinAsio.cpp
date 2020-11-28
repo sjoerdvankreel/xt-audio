@@ -55,7 +55,7 @@ struct AsioStream: public XtStream {
   std::vector<void*> outputChannels;
   std::vector<ASIOBufferInfo> buffers;
   const std::unique_ptr<asmjit::JitRuntime> runtime;
-  XT_IMPLEMENT_CALLBACK_STREAM(ASIO);
+  XT_IMPLEMENT_STREAM();
 
   ~AsioStream();
   AsioStream(AsioDevice* d, const XtFormat& format, 
@@ -481,6 +481,10 @@ XtFault AsioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondar
 }
 
 // ---- stream ----
+
+XtSystem AsioStream::GetSystem() const {
+  return XtSystemASIO;
+}
 
 XtFault AsioStream::Stop() {
   XtPlatform::Cas(&running, 0, 1);

@@ -4,6 +4,7 @@
 #include <xt/XtAudio.h>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Device.hpp>
+#include <xt/private/Stream.hpp>
 #include <xt/private/Structs.hpp>
 #include <xt/private/Service.hpp>
 #include <string>
@@ -25,13 +26,6 @@
   XtFault Stop() override;                           \
   XtFault Start() override;                          \
   void RequestStop() override;
-
-#define XT_IMPLEMENT_CALLBACK_STREAM(system)             \
-  XtFault Stop() override;                               \
-  XtFault Start() override;                              \
-  XtFault GetFrames(int32_t* frames) const override;     \
-  XtFault GetLatency(XtLatency* latency) const override; \
-  XtSystem GetSystem() const override { return XtSystem ## system; }
 
 #define XT_IMPLEMENT_BLOCKING_STREAM(system)             \
   void StopStream() override;                            \
@@ -80,24 +74,6 @@ struct XtRingBuffer {
   int32_t Full() const;
   int32_t Read(void* target, int32_t frames);
   int32_t Write(const void* source, int32_t frames);
-};
-
-struct XtStream 
-{
-  void* _user;
-  bool _emulated;
-  XtIOBuffers _buffers;
-  XtDeviceStreamParams _params;
-
-  virtual void OnXRun() const;
-  void OnBuffer(XtBuffer const* buffer);
-
-  virtual ~XtStream() {};
-  virtual XtFault Stop() = 0;
-  virtual XtFault Start() = 0;
-  virtual XtSystem GetSystem() const = 0;
-  virtual XtFault GetFrames(int32_t* frames) const = 0;
-  virtual XtFault GetLatency(XtLatency* latency) const = 0;
 };
 
 struct XtBlockingStream: 

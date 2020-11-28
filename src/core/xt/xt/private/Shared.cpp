@@ -92,3 +92,23 @@ XtiCopyString(char const* source, char* buffer, int32_t* size)
   memcpy(buffer, source, static_cast<size_t>(*size) - 1);
   buffer[*size - 1] = '\0';
 }
+
+void
+XtiDeinterleave(void** dst, void const* src, int32_t frames, int32_t channels, int32_t size)
+{
+  uint8_t** d = reinterpret_cast<uint8_t**>(dst);
+  uint8_t const* s = static_cast<uint8_t const*>(src);
+  for(int32_t f = 0; f < frames; f++)
+    for(int32_t c = 0; c < channels; c++)
+      memcpy(&d[c][f * size], &s[(f * channels + c) * size], size);
+}
+
+void
+XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channels, int32_t size)
+{
+  uint8_t* d = static_cast<uint8_t*>(dst);
+  uint8_t const* const* s = reinterpret_cast<uint8_t const* const*>(src);
+  for(int32_t f = 0; f < frames; f++)
+    for(int32_t c = 0; c < channels; c++)
+      memcpy(&d[(f * channels + c) * size], &s[c][f * size], size);
+}
