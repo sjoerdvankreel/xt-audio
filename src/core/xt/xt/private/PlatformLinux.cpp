@@ -1,6 +1,6 @@
 #include <xt/private/Platform.hpp>
 #ifdef __linux__
-#include <cassert>
+#include <xt/Private.hpp>
 
 XtPlatform::~XtPlatform() {}
 XtPlatform::XtPlatform(void* window): 
@@ -14,7 +14,7 @@ XtPlatform::SetupToSystem(XtSetup setup)
   case XtSetupProAudio: return XtSystemJACK;
   case XtSetupSystemAudio: return XtSystemALSA;
   case XtSetupConsumerAudio: return XtSystemPulse;
-  default: assert(false); return static_cast<XtSystem>(0);
+  default: XT_ASSERT(false); return static_cast<XtSystem>(0);
   }
 }
 

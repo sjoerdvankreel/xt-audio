@@ -1,5 +1,5 @@
 #include <xt/private/Services.hpp>
-#include <cassert>
+#include <xt/Private.hpp>
 
 #if !XT_ENABLE_ALSA
 std::unique_ptr<XtService>
@@ -7,7 +7,7 @@ XtiCreateAlsaService()
 { return std::unique_ptr<XtService>(); }
 XtServiceError
 XtiGetAlsaError(XtFault fault) 
-{ return assert(false), XtServiceError(); }
+{ return XT_ASSERT(false), XtServiceError(); }
 #endif // !XT_ENABLE_ALSA
 
 #if !XT_ENABLE_JACK
@@ -16,7 +16,7 @@ XtiCreateJackService()
 { return std::unique_ptr<XtService>(); }
 XtServiceError
 XtiGetJackError(XtFault fault) 
-{ return assert(false), XtServiceError(); }
+{ return XT_ASSERT(false), XtServiceError(); }
 #endif // !XT_ENABLE_JACK
 
 #if !XT_ENABLE_ASIO
@@ -25,7 +25,7 @@ XtiCreateAsioService()
 { return std::unique_ptr<XtService>(); }
 XtServiceError
 XtiGetAsioError(XtFault fault) 
-{ return assert(false), XtServiceError(); }
+{ return XT_ASSERT(false), XtServiceError(); }
 #endif // !XT_ENABLE_ASIO
 
 #if !XT_ENABLE_PULSE
@@ -34,7 +34,7 @@ XtiCreatePulseService()
 { return std::unique_ptr<XtService>(); }
 XtServiceError
 XtiGetPulseError(XtFault fault) 
-{ return assert(false), XtServiceError(); }
+{ return XT_ASSERT(false), XtServiceError(); }
 #endif // !XT_ENABLE_PULSE
 
 #if !XT_ENABLE_DSOUND
@@ -43,7 +43,7 @@ XtiCreateDSoundService()
 { return std::unique_ptr<XtService>(); }
 XtServiceError
 XtiGetDSoundError(XtFault fault) 
-{ return assert(false), XtServiceError(); }
+{ return XT_ASSERT(false), XtServiceError(); }
 #endif // !XT_ENABLE_DSOUND
 
 #if !XT_ENABLE_WASAPI
@@ -52,5 +52,5 @@ XtiCreateWasapiService()
 { return std::unique_ptr<XtService>(); }
 XtServiceError
 XtiGetWasapiError(XtFault fault) 
-{ return assert(false), XtServiceError(); }
+{ return XT_ASSERT(false), XtServiceError(); }
 #endif // !XT_ENABLE_WASAPI

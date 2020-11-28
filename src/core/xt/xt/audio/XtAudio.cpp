@@ -6,7 +6,6 @@
 #include <memory>
 #include <thread>
 #include <cstring>
-#include <cassert>
 
 XtVersion XT_CALL
 XtAudioGetVersion(void) 
@@ -41,7 +40,7 @@ XtAudioGetSampleAttributes(XtSample sample)
   case XtSampleInt24: result.size = 3; break;
   case XtSampleInt32: result.size = 4; break;
   case XtSampleFloat32: result.size = 4; break;
-  default: assert(false);
+  default: XT_ASSERT(false);
   }
   return result;
 }

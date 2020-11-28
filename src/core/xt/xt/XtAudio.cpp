@@ -4,7 +4,6 @@
 #endif
 
 #include <xt/Private.hpp>
-#include <cassert>
 #include <sstream>
 #include <cstring>
 #include <iomanip>

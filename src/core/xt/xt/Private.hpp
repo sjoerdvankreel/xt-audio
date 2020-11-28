@@ -21,12 +21,6 @@
 #define XT_ASSERT(c) ((c) || (XT_FAIL("Assertion failed: " #c), 0))
 #define XT_TRACE(msg) XtiTrace(__FILE__, __LINE__, __func__, msg)
 
-static_assert(sizeof(XtCause) == 4);
-static_assert(sizeof(XtSetup) == 4);
-static_assert(sizeof(XtSystem) == 4);
-static_assert(sizeof(XtSample) == 4);
-static_assert(sizeof(XtCapabilities) == 4);
-
 // ---- forward ----
 
 #define XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM() \

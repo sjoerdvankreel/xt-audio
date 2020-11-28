@@ -5,7 +5,6 @@
 #include <xt/private/Services.hpp>
 #include <xt/Private.hpp>
 #include <thread>
-#include <cassert>
 #include <cstring>
 
 int32_t
@@ -46,7 +45,7 @@ XtiGetServiceError(XtSystem system, XtFault fault)
   case XtSystemPulse: return XtiGetPulseError(fault);
   case XtSystemWASAPI: return XtiGetWasapiError(fault);
   case XtSystemDSound: return XtiGetDSoundError(fault);
-  default: return assert(false), XtServiceError();
+  default: return XT_ASSERT(false), XtServiceError();
   }
 }
 

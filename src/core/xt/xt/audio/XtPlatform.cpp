@@ -1,7 +1,6 @@
 #include <xt/audio/XtPlatform.h>
 #include <xt/private/Platform.hpp>
 #include <xt/Private.hpp>
-#include <cassert>
 #include <algorithm>
 
 void XT_CALL 

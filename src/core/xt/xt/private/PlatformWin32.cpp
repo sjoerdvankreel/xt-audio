@@ -2,7 +2,6 @@
 #ifdef _WIN32
 #include <xt/Private.hpp>
 #include <Windows.h>
-#include <cassert>
 
 XtPlatform::~XtPlatform()
 {
@@ -18,7 +17,7 @@ XtPlatform::SetupToSystem(XtSetup setup)
   case XtSetupProAudio: return XtSystemASIO;
   case XtSetupSystemAudio: return XtSystemWASAPI;
   case XtSetupConsumerAudio: return XtSystemDSound;
-  default: assert(false); return static_cast<XtSystem>(0);
+  default: XT_ASSERT(false); return static_cast<XtSystem>(0);
   }
 }
 

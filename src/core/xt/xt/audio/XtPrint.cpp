@@ -1,7 +1,7 @@
 #include <xt/audio/XtPrint.h>
+#include <xt/Private.hpp>
 #include <string>
 #include <cstring>
-#include <cassert>
 #include <sstream>
 #include <algorithm>
 
@@ -15,7 +15,7 @@ XtPrintSampleToString(XtSample sample)
   case XtSampleInt24: return "Int24";
   case XtSampleInt32: return "Int32";
   case XtSampleFloat32: return "Float32";
-  default: assert(false); return nullptr;
+  default: XT_ASSERT(false); return nullptr;
   }
 }
 
@@ -29,7 +29,7 @@ XtPrintCauseToString(XtCause cause)
   case XtCauseService: return "Service";
   case XtCauseUnknown: return "Unknown";
   case XtCauseEndpoint: return "Endpoint";
-  default: assert(false); return nullptr;
+  default: XT_ASSERT(false); return nullptr;
   }
 }
 
@@ -44,7 +44,7 @@ XtPrintSystemToString(XtSystem system)
   case XtSystemWASAPI: return "WASAPI";
   case XtSystemPulse: return "PulseAudio";
   case XtSystemDSound: return "DirectSound";
-  default: assert(false); return nullptr;
+  default: XT_ASSERT(false); return nullptr;
   }
 }
 
@@ -56,7 +56,7 @@ XtPrintSetupToString(XtSetup setup)
   case XtSetupProAudio: return "ProAudio";
   case XtSetupSystemAudio: return "SystemAudio";
   case XtSetupConsumerAudio: return "ConsumerAudio";
-  default: assert(false); return nullptr;
+  default: XT_ASSERT(false); return nullptr;
   }
 }
 
