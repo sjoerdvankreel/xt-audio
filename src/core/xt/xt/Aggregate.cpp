@@ -343,10 +343,9 @@ void XT_CALLBACK XtiOnMasterBuffer(
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
 
-  if(aggregate->streams[aggregate->masterIndex]->IsBlocking())
-    for(i = 0; i < aggregate->streams.size(); i++)
-      if(i != static_cast<size_t>(aggregate->masterIndex))
-        static_cast<XtBlockingStream*>(aggregate->streams[i].get())->ProcessBuffer(false);
+  for(i = 0; i < aggregate->streams.size(); i++)
+    if(i != static_cast<size_t>(aggregate->masterIndex))
+      static_cast<XtBlockingStream*>(aggregate->streams[i].get())->ProcessBuffer(false);
 
   XtiOnSlaveBuffer(stream, buffer, user);
   if(buffer->error != 0) {

@@ -102,12 +102,12 @@ controlEvent() {
 }
 
 XtwWin32BlockingStream::~XtwWin32BlockingStream() {
-  if(!secondary)
+  if(!_secondary)
     SendWin32BlockingStreamControl(this, XtBlockingStreamState::Closing, XtBlockingStreamState::Closed);
 }
 
 XtFault XtwWin32BlockingStream::Start() {
-  if(!secondary)
+  if(!_secondary)
     SendWin32BlockingStreamControl(this, XtBlockingStreamState::Starting, XtBlockingStreamState::Started);
   else {
     ProcessBuffer(true);
@@ -117,7 +117,7 @@ XtFault XtwWin32BlockingStream::Start() {
 }
 
 XtFault XtwWin32BlockingStream::Stop() {
-  if(secondary)
+  if(_secondary)
     StopStream();
   else
     SendWin32BlockingStreamControl(this, XtBlockingStreamState::Stopping, XtBlockingStreamState::Stopped);
@@ -126,7 +126,7 @@ XtFault XtwWin32BlockingStream::Stop() {
 
 void XtwWin32BlockingStream::RequestStop() {
   StopStream();
-  if(!secondary) {
+  if(!_secondary) {
     EnterCriticalSection(&lock.cs);
     state = XtBlockingStreamState::Stopped;
     XT_ASSERT(SetEvent(respondEvent.event));

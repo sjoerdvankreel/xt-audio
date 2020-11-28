@@ -60,8 +60,6 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
 
   (*stream)->_user = user;
   (*stream)->_params = *params;
-  (*stream)->_internal.aggregated = false;
-  (*stream)->_internal.index = 0;
   (*stream)->_emulated = !supports;
   InitStreamBuffers((*stream)->_buffers, &params->format, frames);
   return 0;
@@ -88,8 +86,6 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->running = 0;
   result->system = system;
   result->masterIndex = -1;
-  result->_internal.aggregated = false;
-  result->_internal.index = -1;
   result->insideCallbackCount = 0;
   result->_params.stream = params->stream;
   result->_emulated = false;
@@ -132,9 +128,10 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
     thisParams.stream.onXRun = params->stream.onXRun;
     if((error = OpenStreamInternal(params->devices[i].device, &thisParams, params->master != params->devices[i].device, &result->contexts[i], &thisStream) != 0))
       return error;
-    result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
-    thisStream->_internal.aggregated = true;
-    thisStream->_internal.index = i;
+    auto thisBlocking = &dynamic_cast<XtBlockingStream&>(*thisStream);
+    result->streams.push_back(std::unique_ptr<XtBlockingStream>(thisBlocking));
+    thisBlocking->_index = i;
+    thisBlocking->_aggregated = true;
     if((error = XtStreamGetFrames(thisStream, &thisFrames)) != 0)
       return error;
     frames = thisFrames > frames? thisFrames: frames;

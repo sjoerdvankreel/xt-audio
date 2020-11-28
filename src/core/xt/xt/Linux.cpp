@@ -93,19 +93,19 @@ lock(),
 state(XtBlockingStreamState::Stopped),
 respondCv(), 
 controlCv() {
-  if(!secondary) {
+  if(!_secondary) {
     pthread_t thread;
     XT_ASSERT(pthread_create(&thread, nullptr, &LinuxOnBlockingBuffer, this) == 0);
   }
 }
 
 XtlLinuxBlockingStream::~XtlLinuxBlockingStream() {
-  if(!secondary) 
+  if(!_secondary) 
     SendLinuxBlockingStreamControl(this, XtBlockingStreamState::Closing, XtBlockingStreamState::Closed);
 }
 
 XtFault XtlLinuxBlockingStream::Start() {
-  if(!secondary)
+  if(!_secondary)
     SendLinuxBlockingStreamControl(this, XtBlockingStreamState::Starting, XtBlockingStreamState::Started);
   else {
     ProcessBuffer(true);
@@ -115,7 +115,7 @@ XtFault XtlLinuxBlockingStream::Start() {
 }
 
 XtFault XtlLinuxBlockingStream::Stop() {
-  if(secondary)
+  if(_secondary)
     StopStream();
   else
     SendLinuxBlockingStreamControl(this, XtBlockingStreamState::Stopping, XtBlockingStreamState::Stopped);
@@ -124,7 +124,7 @@ XtFault XtlLinuxBlockingStream::Stop() {
 
 void XtlLinuxBlockingStream::RequestStop() {
   StopStream();
-  if(!secondary) {
+  if(!_secondary) {
     XT_ASSERT(pthread_mutex_lock(&lock.m) == 0);
     state = XtBlockingStreamState::Stopped;
     XT_ASSERT(pthread_cond_signal(&respondCv.cv) == 0);

@@ -335,7 +335,7 @@ void DSoundStream::StopStream() {
     XT_ASSERT(SUCCEEDED(capture->Stop()));
   else
     XT_ASSERT(SUCCEEDED(render->Stop()));
-  if(!secondary) {
+  if(!_secondary) {
     XT_ASSERT(CancelWaitableTimer(timer.timer));
     XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, _params.format.mix.rate) / 2) == TIMERR_NOERROR);
     XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
@@ -350,7 +350,7 @@ void DSoundStream::StartStream() {
   due.QuadPart = -1;
   UINT timerPeriod = GetTimerPeriod(bufferFrames, _params.format.mix.rate);
   long lTimerPeriod = timerPeriod;
-  if(!secondary) {
+  if(!_secondary) {
     XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL));
     XT_ASSERT(timeBeginPeriod(timerPeriod / 2) == TIMERR_NOERROR);
     XT_ASSERT(SetWaitableTimer(timer.timer, &due, lTimerPeriod, nullptr, nullptr, TRUE));
@@ -372,7 +372,7 @@ void DSoundStream::ProcessBuffer(bool prefill) {
 
   XtBuffer xtBuffer = { 0 };
 
-  if(!prefill && !secondary) {
+  if(!prefill && !_secondary) {
     waitResult = WaitForSingleObject(timer.timer, bufferMillis);
     if(waitResult == WAIT_TIMEOUT)
       return;

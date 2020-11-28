@@ -29,21 +29,20 @@ static void Deinterleave(
  
 // ---- stream ----
 
-XtBlockingStream::XtBlockingStream(bool secondary):
-secondary(secondary) {
+void
+XtStream::OnXRun() const
+{
+  auto xRun = _params.stream.onXRun;
+  if(xRun != nullptr) xRun(-1, _user);
 }
 
-void XtStream::RequestStop() {
-  XT_FAIL("Async stop request not supported on the current stream.");
-}
-
-void XtStream::OnXRun() {
-  if(_params.stream.onXRun == nullptr)
-    return;
-  if(_internal.aggregated)
-    _params.stream.onXRun(_internal.index, static_cast<XtAggregateContext*>(_user)->stream->_user);
-  else
-    _params.stream.onXRun(0, _user);
+void 
+XtBlockingStream::OnXRun() const
+{
+  auto xRun = _params.stream.onXRun;
+  if(xRun == nullptr) return;
+  if(!_aggregated) xRun(-1, _user);
+  else xRun(_index, static_cast<XtAggregateContext*>(_user)->stream->_user);
 }
 
 void XtStream::OnBuffer(const XtBuffer* buffer) {

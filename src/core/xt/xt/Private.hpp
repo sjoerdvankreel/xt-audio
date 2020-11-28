@@ -94,41 +94,39 @@ struct XtIOBuffers
   XtBuffers output;
 };
 
-struct XtInternalStreamParams
+struct XtStream 
 {
-  int32_t index;
-  bool aggregated;
-};
-
-// ---- forward ----
-
-struct XtStream {
   void* _user;
   bool _emulated;
   XtIOBuffers _buffers;
   XtDeviceStreamParams _params;
-  XtInternalStreamParams _internal;
+
+  virtual void OnXRun() const;
+  void OnBuffer(XtBuffer const* buffer);
 
   virtual ~XtStream() {};
-  virtual void RequestStop();
   virtual XtFault Stop() = 0;
   virtual XtFault Start() = 0;
   virtual XtSystem GetSystem() const = 0;
-  virtual bool IsBlocking() const { return false; }
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
-  void OnXRun();
-  void OnBuffer(const XtBuffer* buffer);
 };
 
-struct XtBlockingStream: public XtStream {
-  const bool secondary;
-  XtBlockingStream(bool secondary);
-  virtual ~XtBlockingStream() {};
+struct XtBlockingStream: 
+public XtStream 
+{
+  int32_t _index;
+  bool _aggregated;
+  bool const _secondary;
+
+  virtual void OnXRun() const override;
+  XtBlockingStream(bool secondary):
+  _index(-1), _aggregated(false), _secondary(secondary) {}
+
   virtual void StopStream() = 0;
-  virtual void StartStream() = 0;
+  virtual void StartStream() = 0;  
+  virtual void RequestStop() = 0;
   virtual void ProcessBuffer(bool prefill) = 0;
-  bool IsBlocking() const override { return true; }
 };
 
 struct XtAggregate: public XtStream {
@@ -142,7 +140,7 @@ struct XtAggregate: public XtStream {
   std::vector<XtRingBuffer> inputRings; 
   std::vector<XtRingBuffer> outputRings;
   std::vector<XtAggregateContext> contexts;
-  std::vector<std::unique_ptr<XtStream>> streams;
+  std::vector<std::unique_ptr<XtBlockingStream>> streams;
 
   virtual ~XtAggregate();
   virtual XtFault Stop();
