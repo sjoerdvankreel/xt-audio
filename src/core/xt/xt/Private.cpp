@@ -10,8 +10,8 @@
 static void Interleave(
   void* dest, const void* const* source, int32_t frames, int32_t channels, int32_t sampleSize) {
 
-  char* dst = static_cast<char*>(dest);
-  const char* const* src = reinterpret_cast<const char* const*>(source);
+  uint8_t* dst = static_cast<uint8_t*>(dest);
+  const uint8_t* const* src = reinterpret_cast<const uint8_t* const*>(source);
   for(int32_t f = 0; f < frames; f++)
     for(int32_t c = 0; c < channels; c++)
       memcpy(&dst[(f * channels + c) * sampleSize], &src[c][f * sampleSize], sampleSize);
@@ -20,8 +20,8 @@ static void Interleave(
 static void Deinterleave(
   void** dest, const void* source, int32_t frames, int32_t channels, int32_t sampleSize) {
 
-  const char* src = static_cast<const char*>(source);
-  char** dst = reinterpret_cast<char**>(dest);
+  const uint8_t* src = static_cast<const uint8_t*>(source);
+  uint8_t** dst = reinterpret_cast<uint8_t**>(dest);
   for(int32_t f = 0; f < frames; f++)
     for(int32_t c = 0; c < channels; c++)
       memcpy(&dst[c][f * sampleSize], &src[(f * channels + c) * sampleSize], sampleSize);

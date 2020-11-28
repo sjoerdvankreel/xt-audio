@@ -43,7 +43,7 @@ struct DSoundDevice: public XtDevice {
 
 struct DSoundStream: public XtwWin32BlockingStream {
   const int32_t frameSize;
-  std::vector<char> buffer;
+  std::vector<uint8_t> buffer;
   uint64_t xtBytesProcessed;
   uint64_t dsBytesProcessed;
   int32_t previousDsPosition;
@@ -61,7 +61,7 @@ struct DSoundStream: public XtwWin32BlockingStream {
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
   XtwWin32BlockingStream(secondary), frameSize(frameSize),
-  buffer(static_cast<size_t>(bufferFrames * frameSize), '\0'),
+  buffer(static_cast<size_t>(bufferFrames * frameSize), 0),
   xtBytesProcessed(0), dsBytesProcessed(0),
   previousDsPosition(0), bufferFrames(bufferFrames), timer(),
   output(output), input(input), render(render), capture(capture) {}
@@ -95,7 +95,7 @@ static UINT GetTimerPeriod(int32_t bufferFrames, int32_t rate) {
 }
 
 static void SplitBufferParts(
-  std::vector<char>& buffer, void* part1, DWORD size1, void* part2, DWORD size2) {
+  std::vector<uint8_t>& buffer, void* part1, DWORD size1, void* part2, DWORD size2) {
 
   memcpy(part1, &buffer[0], size1);
   if(size2 != 0)
@@ -103,7 +103,7 @@ static void SplitBufferParts(
 }
 
 static void CombineBufferParts(
-  std::vector<char>& buffer, void* part1, DWORD size1, void* part2, DWORD size2) {
+  std::vector<uint8_t>& buffer, void* part1, DWORD size1, void* part2, DWORD size2) {
 
   memcpy(&buffer[0], part1, size1);
   if(size2 != 0)

@@ -98,9 +98,9 @@ struct AlsaStream: public XtlLinuxBlockingStream {
   uint64_t processed;
   const bool alsaInterleaved;
   const int32_t bufferFrames;
-  std::vector<char> interleavedAudio;
+  std::vector<uint8_t> interleavedAudio;
   std::vector<void*> nonInterleavedAudio;
-  std::vector<std::vector<char>> nonInterleavedAudioChannels;  
+  std::vector<std::vector<uint8_t>> nonInterleavedAudioChannels;  
   XT_IMPLEMENT_BLOCKING_STREAM(ALSA);
 
   ~AlsaStream() { Stop(); }
@@ -113,9 +113,9 @@ struct AlsaStream: public XtlLinuxBlockingStream {
   processed(0), 
   alsaInterleaved(alsaInterleaved),
   bufferFrames(bufferFrames),
-  interleavedAudio(bufferFrames * channels * sampleSize, '\0'),
+  interleavedAudio(bufferFrames * channels * sampleSize, 0),
   nonInterleavedAudio(channels, nullptr), 
-  nonInterleavedAudioChannels(channels, std::vector<char>(bufferFrames * sampleSize, '\0')) {
+  nonInterleavedAudioChannels(channels, std::vector<uint8_t>(bufferFrames * sampleSize, 0)) {
     for(size_t i = 0; i < channels; i++)
       nonInterleavedAudio[i] = &(nonInterleavedAudioChannels[i][0]);
   }
@@ -598,11 +598,11 @@ void AlsaStream::ProcessBuffer(bool prefill) {
       }
     }
     if(alsaInterleaved)
-      data = static_cast<char*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
+      data = static_cast<uint8_t*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
     else {
       data = &nonInterleavedAudio[0];
       for(c = 0; c < _params.format.channels.inputs + _params.format.channels.outputs; c++) {
-        nonInterleavedAudio[c] = static_cast<char*>(areas[c].addr) + areas[c].first / 8 + offset * areas[c].step / 8;
+        nonInterleavedAudio[c] = static_cast<uint8_t*>(areas[c].addr) + areas[c].first / 8 + offset * areas[c].step / 8;
       }
     }
     if(!output)

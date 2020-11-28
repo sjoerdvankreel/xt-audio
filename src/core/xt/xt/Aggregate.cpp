@@ -14,10 +14,10 @@ static void Weave(
   assert(sourceChannels > 0);
   assert(0 <= destChannel && destChannel < destChannels);
   assert(0 <= sourceChannel && sourceChannel < sourceChannels);
-  char* di = static_cast<char*>(dest);
-  const char* si = static_cast<const char*>(source);
+  uint8_t* di = static_cast<uint8_t*>(dest);
+  const uint8_t* si = static_cast<const uint8_t*>(source);
   char** dn = static_cast<char**>(dest);
-  const char* const* sn = static_cast<const char* const*>(source);
+  const uint8_t* const* sn = static_cast<const uint8_t* const*>(source);
 
   if(interleaved)
     for(int32_t f = 0; f < frames; f++)
@@ -42,10 +42,10 @@ static void ZeroBuffer(
   int32_t fs = channels * ss;
   if(frames > 0)
     if(interleaved)
-      memset(static_cast<char*>(buffer) + posFrames * fs, 0, frames * fs);
+      memset(static_cast<uint8_t*>(buffer) + posFrames * fs, 0, frames * fs);
     else
       for(int32_t i = 0; i < channels; i++)
-        memset(static_cast<char**>(buffer)[i] + posFrames * ss, 0, frames * ss);
+        memset(static_cast<uint8_t**>(buffer)[i] + posFrames * ss, 0, frames * ss);
 }
 
 // ---- ring buffer ----
@@ -62,11 +62,11 @@ frames(frames), channels(channels),
 sampleSize(sampleSize), interleaved(interleaved) {
 
   if(!interleaved) {
-    std::vector<char> channel = std::vector<char>(frames * sampleSize, '\0');
-    blocks = std::vector<std::vector<char>>(channels, channel);
+    std::vector<uint8_t> channel = std::vector<uint8_t>(frames * sampleSize, 0);
+    blocks = std::vector<std::vector<uint8_t>>(channels, channel);
   } else {
-    std::vector<char> buffer = std::vector<char>(frames * channels * sampleSize, '\0');
-    blocks = std::vector<std::vector<char>>(1, buffer);
+    std::vector<uint8_t> buffer = std::vector<uint8_t>(frames * channels * sampleSize, 0);
+    blocks = std::vector<std::vector<uint8_t>>(1, buffer);
   }
 }
 
@@ -101,8 +101,8 @@ int32_t XtRingBuffer::Read(void* target, int32_t frames) {
   int32_t wrapSize;
   int32_t splitSize;
   int32_t frameSize = channels * sampleSize;
-  char* ilTarget = static_cast<char*>(target);
-  char** niTarget = static_cast<char**>(target);
+  uint8_t* ilTarget = static_cast<uint8_t*>(target);
+  uint8_t** niTarget = static_cast<uint8_t**>(target);
 
   assert(locked);
   assert(0 <= full && full <= this->frames);
@@ -147,8 +147,8 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
   int32_t wrapSize;
   int32_t splitSize;
   int32_t frameSize = channels * sampleSize;
-  const char* ilSource = static_cast<const char*>(source);
-  const char* const* niSource = static_cast<const char* const*>(source);
+  const uint8_t* ilSource = static_cast<const uint8_t*>(source);
+  const uint8_t* const* niSource = static_cast<const uint8_t* const*>(source);
 
   assert(locked);
   assert(0 <= full && full <= this->frames);

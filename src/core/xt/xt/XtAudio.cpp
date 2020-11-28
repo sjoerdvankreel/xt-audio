@@ -16,14 +16,14 @@ static void InitStreamBuffers(
   XtIOBuffers& buffers, const XtFormat* format, int32_t frames) {
 
   int32_t sampleSize = XtiGetSampleSize(format->mix.sample);
-  buffers.input.interleaved = std::vector<char>(frames * format->channels.inputs * sampleSize, '\0');
-  buffers.output.interleaved = std::vector<char>(frames * format->channels.outputs * sampleSize, '\0');
+  buffers.input.interleaved = std::vector<uint8_t>(frames * format->channels.inputs * sampleSize, 0);
+  buffers.output.interleaved = std::vector<uint8_t>(frames * format->channels.outputs * sampleSize, 0);
   buffers.input.nonInterleaved = std::vector<void*>(format->channels.inputs, nullptr);
   buffers.output.nonInterleaved = std::vector<void*>(format->channels.outputs, nullptr);
-  buffers.input.channels = std::vector<std::vector<char>>(
-    format->channels.inputs, std::vector<char>(frames * sampleSize, '\0'));
-  buffers.output.channels = std::vector<std::vector<char>>(
-    format->channels.outputs, std::vector<char>(frames * sampleSize, '\0'));
+  buffers.input.channels = std::vector<std::vector<uint8_t>>(
+    format->channels.inputs, std::vector<uint8_t>(frames * sampleSize, 0));
+  buffers.output.channels = std::vector<std::vector<uint8_t>>(
+    format->channels.outputs, std::vector<uint8_t>(frames * sampleSize, 0));
   for(int32_t i = 0; i < format->channels.inputs; i++)
     buffers.input.nonInterleaved[i] = &(buffers.input.channels[i][0]);
   for(int32_t i = 0; i < format->channels.outputs; i++)

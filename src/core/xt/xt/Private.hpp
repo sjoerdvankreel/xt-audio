@@ -67,7 +67,7 @@ struct XtRingBuffer {
   bool interleaved;
   int32_t sampleSize;
   mutable int32_t locked;
-  std::vector<std::vector<char>> blocks;
+  std::vector<std::vector<uint8_t>> blocks;
 
   XtRingBuffer();
   XtRingBuffer(bool interleaved, int32_t frames, 
@@ -81,20 +81,11 @@ struct XtRingBuffer {
   int32_t Write(const void* source, int32_t frames);
 };
 
-struct XtIntermediateBuffers {
-  std::vector<char> inputInterleaved;
-  std::vector<char> outputInterleaved;
-  std::vector<void*> inputNonInterleaved;
-  std::vector<void*> outputNonInterleaved;
-  std::vector<std::vector<char>> inputChannelsNonInterleaved;
-  std::vector<std::vector<char>> outputChannelsNonInterleaved;
-};
-
 struct XtBuffers
 {
-  std::vector<char> interleaved;
+  std::vector<uint8_t> interleaved;
   std::vector<void*> nonInterleaved;
-  std::vector<std::vector<char>> channels;
+  std::vector<std::vector<uint8_t>> channels;
 };
 
 struct XtIOBuffers
