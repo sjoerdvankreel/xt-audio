@@ -5,6 +5,7 @@
 #include <xt/private/Services.hpp>
 #include <xt/Private.hpp>
 #include <thread>
+#include <sstream>
 #include <cstring>
 
 int32_t
@@ -73,4 +74,21 @@ XtiCopyString(char const* source, char* buffer, int32_t* size)
   if(buffer == nullptr) return (*size = strlen(source) + 1), void();
   memcpy(buffer, source, static_cast<size_t>(*size) - 1);
   buffer[*size - 1] = '\0';
+}
+
+void
+XtiFail(char const* file, int32_t line, char const* fun, char const* msg)
+{
+  XtiTrace(file, line, fun, msg);
+  std::terminate();
+}
+
+void
+XtiTrace(char const* file, int32_t line, char const* fun, char const* msg)
+{
+  auto platform = XtPlatform::instance;
+  if(platform == nullptr || platform->onError == nullptr) return;
+  std::ostringstream location;
+  location << file << ":" << line << ": in function " << fun;
+  platform->onError(location.str().c_str(), msg);
 }

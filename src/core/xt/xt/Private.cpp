@@ -27,21 +27,6 @@ static void Deinterleave(
       memcpy(&dst[c][f * sampleSize], &src[(f * channels + c) * sampleSize], sampleSize);
 }
  
-// ---- internal ----
-
-void XtiFail(const char* file, int line, const char* func, const char* message) {
-  XtiTrace(file, line, func, message);
-  std::abort();
-}
-
-void XtiTrace(const char* file, int32_t line, const char* func, const char* message) {
-  auto platform = XtPlatform::instance;
-  if(platform == nullptr || platform->onError == nullptr) return;
-  std::ostringstream location;
-  location << file << ":" << line << ": in function " << func;
-  platform->onError(location.str().c_str(), message);
-}
-
 // ---- stream ----
 
 XtBlockingStream::XtBlockingStream(bool secondary):

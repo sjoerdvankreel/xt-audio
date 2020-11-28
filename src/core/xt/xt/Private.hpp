@@ -17,9 +17,6 @@
   VerifyOnBuffer((expr), __FILE__, __LINE__, __func__, #expr)
 
 #define XT_WAIT_TIMEOUT_MS 10000
-#define XT_FAIL(m) XtiFail(__FILE__, __LINE__, __func__, m)
-#define XT_ASSERT(c) ((c) || (XT_FAIL("Assertion failed: " #c), 0))
-#define XT_TRACE(msg) XtiTrace(__FILE__, __LINE__, __func__, msg)
 
 // ---- forward ----
 
@@ -150,11 +147,6 @@ struct XtAggregate: public XtStream {
   virtual XtFault GetFrames(int32_t* frames) const;
   virtual XtFault GetLatency(XtLatency* latency) const;
 };
-
-// ---- internal ----
-
-void XtiFail(const char* file, int line, const char* func, const char* message);
-void XtiTrace(const char* file, int32_t line, const char* func, const char* message);
 
 void XT_CALLBACK XtiOnSlaveBuffer(const XtStream* stream, const XtBuffer* buffer, void* user);
 void XT_CALLBACK XtiOnMasterBuffer(const XtStream* stream, const XtBuffer* buffer, void* user);
