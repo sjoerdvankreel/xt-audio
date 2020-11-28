@@ -8,7 +8,7 @@ public interface Enums {
     public enum XtSystem { ALSA, ASIO, JACK, WASAPI, PULSE_AUDIO, DIRECT_SOUND }
 
     public enum XtCapabilities {
-        NONE(0x0), TIME(0x1), LATENCY(0x2), FULL_DUPLEX(0x4), CHANNEL_MASK(0x8), XRUN_DETECTION(0x10);
+        NONE(0x0), TIME(0x1), LATENCY(0x2), FULL_DUPLEX(0x4), AGGREGATION(0x8), CHANNEL_MASK(0x10), XRUN_DETECTION(0x20);
         final int _flag;
         private XtCapabilities(int flag) { _flag = flag; }
     }
