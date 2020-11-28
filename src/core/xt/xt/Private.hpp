@@ -94,9 +94,8 @@ struct XtIntermediateBuffers {
 
 struct XtStream {
   void* user;
+  bool _emulated;
   bool aggregated;
-  XtBool canInterleaved;
-  XtBool canNonInterleaved;
   int32_t aggregationIndex;
   XtDeviceStreamParams _params;
   XtIntermediateBuffers intermediate;

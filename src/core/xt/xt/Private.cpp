@@ -59,7 +59,7 @@ void XtStream::OnBuffer(const XtBuffer* buffer) {
   bool haveInput = buffer->input != nullptr && buffer->frames > 0;
   bool haveOutput = buffer->output != nullptr && buffer->frames > 0;
 
-  if(_params.stream.interleaved && canInterleaved || !_params.stream.interleaved && canNonInterleaved) {
+  if(!_emulated) {
     converted.input = haveInput? buffer->input: nullptr;
     converted.output = haveOutput? buffer->output: nullptr;
     _params.stream.onBuffer(this, &converted, user);

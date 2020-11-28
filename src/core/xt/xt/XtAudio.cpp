@@ -41,10 +41,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   XtFault fault;
   int32_t frames;
   XtSystem system;
-  XtBool canInterleaved;
-  XtBool initInterleaved;
-  XtBool canNonInterleaved;
-  XtBool initNonInterleaved;
+  XtBool supports;
 
   XT_ASSERT(d != nullptr);
   XT_ASSERT(params != nullptr);
@@ -64,9 +61,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
 
   *stream = nullptr;
   system = d->GetSystem();  
-  if((error = XtDeviceSupportsAccess(d, XtTrue, &canInterleaved)) != 0)
-    return error;
-  if((error = XtDeviceSupportsAccess(d, XtFalse, &canNonInterleaved)) != 0)
+  if((error = XtDeviceSupportsAccess(d, params->stream.interleaved, &supports)) != 0)
     return error;
   if((fault = d->OpenStream(params, secondary, user, stream)) != 0)
     return XtiCreateError(d->GetSystem(), fault);
@@ -79,10 +74,9 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   (*stream)->_params = *params;
   (*stream)->aggregated = false;
   (*stream)->aggregationIndex = 0;
-  (*stream)->canInterleaved = canInterleaved;
-  (*stream)->canNonInterleaved = canNonInterleaved;
-  initInterleaved = params->stream.interleaved && !canInterleaved;
-  initNonInterleaved = !params->stream.interleaved && !canNonInterleaved;
+  (*stream)->_emulated = !supports;
+  XtBool initInterleaved = params->stream.interleaved && !supports;
+  XtBool initNonInterleaved = !params->stream.interleaved && !supports;
   InitStreamBuffers((*stream)->intermediate, initInterleaved, initNonInterleaved, &params->format, frames, attributes.size);
   return 0;
 }
@@ -111,8 +105,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->aggregationIndex = -1;
   result->insideCallbackCount = 0;
   result->_params.stream = params->stream;
-  result->canInterleaved = params->stream.interleaved;
-  result->canNonInterleaved = !params->stream.interleaved;
+  result->_emulated = false;
   result->inputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->outputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->contexts = std::vector<XtAggregateContext>(params->count, XtAggregateContext());
