@@ -4,6 +4,7 @@
 #include <xt/XtAudio.h>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Device.hpp>
+#include <xt/private/Structs.hpp>
 #include <xt/private/Service.hpp>
 #include <string>
 #include <vector>
@@ -79,19 +80,6 @@ struct XtRingBuffer {
   int32_t Full() const;
   int32_t Read(void* target, int32_t frames);
   int32_t Write(const void* source, int32_t frames);
-};
-
-struct XtBuffers
-{
-  std::vector<uint8_t> interleaved;
-  std::vector<void*> nonInterleaved;
-  std::vector<std::vector<uint8_t>> channels;
-};
-
-struct XtIOBuffers
-{
-  XtBuffers input;
-  XtBuffers output;
 };
 
 struct XtStream 
