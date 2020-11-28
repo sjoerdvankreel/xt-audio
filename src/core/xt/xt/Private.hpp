@@ -90,15 +90,28 @@ struct XtIntermediateBuffers {
   std::vector<std::vector<char>> outputChannelsNonInterleaved;
 };
 
+struct XtBuffers
+{
+  std::vector<char> interleaved;
+  std::vector<void*> nonInterleaved;
+  std::vector<std::vector<char>> channels;
+};
+
+struct XtIOBuffers
+{
+  XtBuffers input;
+  XtBuffers output;
+};
+
 // ---- forward ----
 
 struct XtStream {
   void* user;
   bool _emulated;
   bool aggregated;
+  XtIOBuffers _buffers;
   int32_t aggregationIndex;
   XtDeviceStreamParams _params;
-  XtIntermediateBuffers intermediate;
 
   virtual ~XtStream() {};
   virtual void RequestStop();
@@ -127,7 +140,7 @@ struct XtAggregate: public XtStream {
   XtSystem system;
   int32_t masterIndex;
   volatile int32_t running;
-  XtIntermediateBuffers weave;
+  XtIOBuffers _weave;
   std::vector<XtChannels> channels;
   volatile int32_t insideCallbackCount;
   std::vector<XtRingBuffer> inputRings; 

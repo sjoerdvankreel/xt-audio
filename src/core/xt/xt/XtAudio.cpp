@@ -13,26 +13,21 @@
 // ---- local ----
 
 static void InitStreamBuffers(
-  XtIntermediateBuffers& buffers, XtBool interleaved, XtBool nonInterleaved,
-  const XtFormat* format, int32_t frames, int32_t sampleSize) {
+  XtIOBuffers& buffers, const XtFormat* format, int32_t frames) {
 
-  if(interleaved) {
-    buffers.inputInterleaved = std::vector<char>(frames * format->channels.inputs * sampleSize, '\0');
-    buffers.outputInterleaved = std::vector<char>(frames * format->channels.outputs * sampleSize, '\0');
-  }
-
-  if(nonInterleaved) {
-    buffers.inputNonInterleaved = std::vector<void*>(format->channels.inputs, nullptr);
-    buffers.outputNonInterleaved = std::vector<void*>(format->channels.outputs, nullptr);
-    buffers.inputChannelsNonInterleaved = std::vector<std::vector<char>>(
-      format->channels.inputs, std::vector<char>(frames * sampleSize, '\0'));
-    buffers.outputChannelsNonInterleaved = std::vector<std::vector<char>>(
-      format->channels.outputs, std::vector<char>(frames * sampleSize, '\0'));
-    for(int32_t i = 0; i < format->channels.inputs; i++)
-      buffers.inputNonInterleaved[i] = &(buffers.inputChannelsNonInterleaved[i][0]);
-    for(int32_t i = 0; i < format->channels.outputs; i++)
-      buffers.outputNonInterleaved[i] = &(buffers.outputChannelsNonInterleaved[i][0]);
-  }
+  int32_t sampleSize = XtiGetSampleSize(format->mix.sample);
+  buffers.input.interleaved = std::vector<char>(frames * format->channels.inputs * sampleSize, '\0');
+  buffers.output.interleaved = std::vector<char>(frames * format->channels.outputs * sampleSize, '\0');
+  buffers.input.nonInterleaved = std::vector<void*>(format->channels.inputs, nullptr);
+  buffers.output.nonInterleaved = std::vector<void*>(format->channels.outputs, nullptr);
+  buffers.input.channels = std::vector<std::vector<char>>(
+    format->channels.inputs, std::vector<char>(frames * sampleSize, '\0'));
+  buffers.output.channels = std::vector<std::vector<char>>(
+    format->channels.outputs, std::vector<char>(frames * sampleSize, '\0'));
+  for(int32_t i = 0; i < format->channels.inputs; i++)
+    buffers.input.nonInterleaved[i] = &(buffers.input.channels[i][0]);
+  for(int32_t i = 0; i < format->channels.outputs; i++)
+    buffers.output.nonInterleaved[i] = &(buffers.output.channels[i][0]);
 }
 
 static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
@@ -75,9 +70,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   (*stream)->aggregated = false;
   (*stream)->aggregationIndex = 0;
   (*stream)->_emulated = !supports;
-  XtBool initInterleaved = params->stream.interleaved && !supports;
-  XtBool initNonInterleaved = !params->stream.interleaved && !supports;
-  InitStreamBuffers((*stream)->intermediate, initInterleaved, initNonInterleaved, &params->format, frames, attributes.size);
+  InitStreamBuffers((*stream)->_buffers, &params->format, frames);
   return 0;
 }
 
@@ -156,8 +149,8 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
 
   result->_params.format = format;
   result->frames = frames * 2;
-  InitStreamBuffers(result->weave, params->stream.interleaved, !params->stream.interleaved, &format, frames, attrs.size);
-  InitStreamBuffers(result->intermediate, params->stream.interleaved, !params->stream.interleaved, &format, frames, attrs.size);
+  InitStreamBuffers(result->_weave, &format, frames);
+  InitStreamBuffers(result->_buffers, &format, frames);
   for(int32_t i = 0; i < params->count; i++) {
     result->inputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.inputs, attrs.size);
     result->outputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.outputs, attrs.size);

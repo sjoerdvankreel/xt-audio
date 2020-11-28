@@ -64,20 +64,20 @@ void XtStream::OnBuffer(const XtBuffer* buffer) {
     converted.output = haveOutput? buffer->output: nullptr;
     _params.stream.onBuffer(this, &converted, user);
   } else if(_params.stream.interleaved) {
-    converted.input = haveInput? &intermediate.inputInterleaved[0]: nullptr;
-    converted.output = haveOutput? &intermediate.outputInterleaved[0]: nullptr;
+    converted.input = haveInput? &_buffers.input.interleaved[0]: nullptr;
+    converted.output = haveOutput? &_buffers.output.interleaved[0]: nullptr;
     if(haveInput)
-      Interleave(&intermediate.inputInterleaved[0], static_cast<const void* const*>(buffer->input), buffer->frames, _params.format.channels.inputs, sampleSize);
+      Interleave(&_buffers.input.interleaved[0], static_cast<const void* const*>(buffer->input), buffer->frames, _params.format.channels.inputs, sampleSize);
     _params.stream.onBuffer(this, &converted, user);
     if(haveOutput)
-      Deinterleave(static_cast<void**>(buffer->output), &intermediate.outputInterleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
+      Deinterleave(static_cast<void**>(buffer->output), &_buffers.output.interleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
   } else {
-    converted.input = haveInput? &intermediate.inputNonInterleaved[0]: nullptr;
-    converted.output = haveOutput? &intermediate.outputNonInterleaved[0]: nullptr;
+    converted.input = haveInput? &_buffers.input.nonInterleaved[0]: nullptr;
+    converted.output = haveOutput? &_buffers.output.nonInterleaved[0]: nullptr;
     if(haveInput)
-      Deinterleave(&intermediate.inputNonInterleaved[0], buffer->input, buffer->frames, _params.format.channels.inputs, sampleSize);
+      Deinterleave(&_buffers.input.nonInterleaved[0], buffer->input, buffer->frames, _params.format.channels.inputs, sampleSize);
     _params.stream.onBuffer(this, &converted, user);
     if(haveOutput)
-      Interleave(buffer->output, &intermediate.outputNonInterleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
+      Interleave(buffer->output, &_buffers.output.nonInterleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
   }
 }

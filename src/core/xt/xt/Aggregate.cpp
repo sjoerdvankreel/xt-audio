@@ -359,21 +359,21 @@ void XT_CALLBACK XtiOnMasterBuffer(
   XtPlatform::LockIncr(&aggregate->insideCallbackCount);
 
   ringInput = interleaved? 
-    static_cast<void*>(&(aggregate->weave.inputInterleaved[0])):
-    &(aggregate->weave.inputNonInterleaved[0]);
+    static_cast<void*>(&(aggregate->_weave.input.interleaved[0])):
+    &(aggregate->_weave.input.nonInterleaved[0]);
   ringOutput = interleaved? 
-    static_cast<void*>(&(aggregate->weave.outputInterleaved[0])):
-    &(aggregate->weave.outputNonInterleaved[0]);
+    static_cast<void*>(&(aggregate->_weave.output.interleaved[0])):
+    &(aggregate->_weave.output.nonInterleaved[0]);
   appInput = format->channels.inputs == 0?
     nullptr:
     interleaved? 
-    static_cast<void*>(&(aggregate->intermediate.inputInterleaved[0])):
-    &(aggregate->intermediate.inputNonInterleaved[0]);
+    static_cast<void*>(&(aggregate->_buffers.input.interleaved[0])):
+    &(aggregate->_buffers.input.nonInterleaved[0]);
   appOutput = format->channels.outputs == 0?
     nullptr:
     interleaved? 
-    static_cast<void*>(&(aggregate->intermediate.outputInterleaved[0])):
-    &(aggregate->intermediate.outputNonInterleaved[0]);
+    static_cast<void*>(&(aggregate->_buffers.output.interleaved[0])):
+    &(aggregate->_buffers.output.nonInterleaved[0]);
 
   totalChannels = 0;
   for(i = 0; i < aggregate->streams.size(); i++) {
