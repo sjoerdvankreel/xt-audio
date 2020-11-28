@@ -65,12 +65,12 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
     return XtiCreateError(d->GetSystem(), fault);
   }
 
-  (*stream)->user = user;
+  (*stream)->_internal.user = user;
   (*stream)->_params = *params;
-  (*stream)->aggregated = false;
-  (*stream)->aggregationIndex = 0;
-  (*stream)->_emulated = !supports;
-  InitStreamBuffers((*stream)->_buffers, &params->format, frames);
+  (*stream)->_internal.aggregated = false;
+  (*stream)->_internal.index = 0;
+  (*stream)->_internal.emulated = !supports;
+  InitStreamBuffers((*stream)->_internal.buffers, &params->format, frames);
   return 0;
 }
 
@@ -90,15 +90,15 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   XtSystem system = s->GetSystem();
   auto attrs = XtAudioGetSampleAttributes(params->mix.sample);
   std::unique_ptr<XtAggregate> result(new XtAggregate);
-  result->user = user;
+  result->_internal.user = user;
   result->running = 0;
   result->system = system;
   result->masterIndex = -1;
-  result->aggregated = false;
-  result->aggregationIndex = -1;
+  result->_internal.aggregated = false;
+  result->_internal.index = -1;
   result->insideCallbackCount = 0;
   result->_params.stream = params->stream;
-  result->_emulated = false;
+  result->_internal.emulated = false;
   result->inputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->outputRings = std::vector<XtRingBuffer>(params->count, XtRingBuffer());
   result->contexts = std::vector<XtAggregateContext>(params->count, XtAggregateContext());
@@ -139,8 +139,8 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
     if((error = OpenStreamInternal(params->devices[i].device, &thisParams, params->master != params->devices[i].device, &result->contexts[i], &thisStream) != 0))
       return error;
     result->streams.push_back(std::unique_ptr<XtStream>(thisStream));
-    thisStream->aggregated = true;
-    thisStream->aggregationIndex = i;
+    thisStream->_internal.aggregated = true;
+    thisStream->_internal.index = i;
     if((error = XtStreamGetFrames(thisStream, &thisFrames)) != 0)
       return error;
     frames = thisFrames > frames? thisFrames: frames;
@@ -150,7 +150,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->_params.format = format;
   result->frames = frames * 2;
   InitStreamBuffers(result->_weave, &format, frames);
-  InitStreamBuffers(result->_buffers, &format, frames);
+  InitStreamBuffers(result->_internal.buffers, &format, frames);
   for(int32_t i = 0; i < params->count; i++) {
     result->inputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.inputs, attrs.size);
     result->outputRings[i] = XtRingBuffer(params->stream.interleaved != XtFalse, result->frames, params->devices[i].channels.outputs, attrs.size);

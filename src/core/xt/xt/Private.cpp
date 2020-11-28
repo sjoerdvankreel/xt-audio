@@ -40,17 +40,17 @@ void XtStream::RequestStop() {
 void XtStream::OnXRun() {
   if(_params.stream.onXRun == nullptr)
     return;
-  if(aggregated)
-    _params.stream.onXRun(aggregationIndex, static_cast<XtAggregateContext*>(user)->stream->user);
+  if(_internal.aggregated)
+    _params.stream.onXRun(_internal.index, static_cast<XtAggregateContext*>(_internal.user)->stream->_internal.user);
   else
-    _params.stream.onXRun(0, user);
+    _params.stream.onXRun(0, _internal.user);
 }
 
 void XtStream::OnBuffer(const XtBuffer* buffer) {
 
   if(buffer->error != 0)
   {
-    _params.stream.onBuffer(this, buffer, user);
+    _params.stream.onBuffer(this, buffer, _internal.user);
     return;
   }
 
@@ -59,25 +59,25 @@ void XtStream::OnBuffer(const XtBuffer* buffer) {
   bool haveInput = buffer->input != nullptr && buffer->frames > 0;
   bool haveOutput = buffer->output != nullptr && buffer->frames > 0;
 
-  if(!_emulated) {
+  if(!_internal.emulated) {
     converted.input = haveInput? buffer->input: nullptr;
     converted.output = haveOutput? buffer->output: nullptr;
-    _params.stream.onBuffer(this, &converted, user);
+    _params.stream.onBuffer(this, &converted, _internal.user);
   } else if(_params.stream.interleaved) {
-    converted.input = haveInput? &_buffers.input.interleaved[0]: nullptr;
-    converted.output = haveOutput? &_buffers.output.interleaved[0]: nullptr;
+    converted.input = haveInput? &_internal.buffers.input.interleaved[0]: nullptr;
+    converted.output = haveOutput? &_internal.buffers.output.interleaved[0]: nullptr;
     if(haveInput)
-      Interleave(&_buffers.input.interleaved[0], static_cast<const void* const*>(buffer->input), buffer->frames, _params.format.channels.inputs, sampleSize);
-    _params.stream.onBuffer(this, &converted, user);
+      Interleave(&_internal.buffers.input.interleaved[0], static_cast<const void* const*>(buffer->input), buffer->frames, _params.format.channels.inputs, sampleSize);
+    _params.stream.onBuffer(this, &converted, _internal.user);
     if(haveOutput)
-      Deinterleave(static_cast<void**>(buffer->output), &_buffers.output.interleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
+      Deinterleave(static_cast<void**>(buffer->output), &_internal.buffers.output.interleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
   } else {
-    converted.input = haveInput? &_buffers.input.nonInterleaved[0]: nullptr;
-    converted.output = haveOutput? &_buffers.output.nonInterleaved[0]: nullptr;
+    converted.input = haveInput? &_internal.buffers.input.nonInterleaved[0]: nullptr;
+    converted.output = haveOutput? &_internal.buffers.output.nonInterleaved[0]: nullptr;
     if(haveInput)
-      Deinterleave(&_buffers.input.nonInterleaved[0], buffer->input, buffer->frames, _params.format.channels.inputs, sampleSize);
-    _params.stream.onBuffer(this, &converted, user);
+      Deinterleave(&_internal.buffers.input.nonInterleaved[0], buffer->input, buffer->frames, _params.format.channels.inputs, sampleSize);
+    _params.stream.onBuffer(this, &converted, _internal.user);
     if(haveOutput)
-      Interleave(buffer->output, &_buffers.output.nonInterleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
+      Interleave(buffer->output, &_internal.buffers.output.nonInterleaved[0], buffer->frames, _params.format.channels.outputs, sampleSize);
   }
 }

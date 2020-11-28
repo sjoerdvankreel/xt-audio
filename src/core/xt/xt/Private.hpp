@@ -94,15 +94,20 @@ struct XtIOBuffers
   XtBuffers output;
 };
 
+struct XtInternalStreamParams
+{
+  void* user;
+  int32_t index;
+  bool emulated;
+  bool aggregated;
+  XtIOBuffers buffers;
+};
+
 // ---- forward ----
 
 struct XtStream {
-  void* user;
-  bool _emulated;
-  bool aggregated;
-  XtIOBuffers _buffers;
-  int32_t aggregationIndex;
   XtDeviceStreamParams _params;
+  XtInternalStreamParams _internal;
 
   virtual ~XtStream() {};
   virtual void RequestStop();
