@@ -17,9 +17,9 @@ XtPlatformGetService(XtPlatform const* p, XtSystem system)
 {
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(XtSystemALSA <= system && system <= XtSystemDSound);
-  for(size_t i = 0; i < p->services.size(); i++)
-    if(p->services[i]->GetSystem() == system)
-      return p->services[i].get();
+  for(size_t i = 0; i < p->_services.size(); i++)
+    if(p->_services[i]->GetSystem() == system)
+      return p->_services[i].get();
   return nullptr;
 }
 

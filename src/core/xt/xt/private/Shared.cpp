@@ -55,7 +55,7 @@ XtiCalledOnMainThread()
 { 
   auto platform = XtPlatform::instance;
   auto id = std::this_thread::get_id();
-  return platform != nullptr && id == platform->threadId;
+  return platform != nullptr && id == platform->_threadId;
 }
 
 XtError
@@ -87,8 +87,8 @@ void
 XtiTrace(char const* file, int32_t line, char const* fun, char const* msg)
 {
   auto platform = XtPlatform::instance;
-  if(platform == nullptr || platform->onError == nullptr) return;
+  if(platform == nullptr || platform->_onError == nullptr) return;
   std::ostringstream location;
   location << file << ":" << line << ": in function " << fun;
-  platform->onError(location.str().c_str(), msg);
+  platform->_onError(location.str().c_str(), msg);
 }

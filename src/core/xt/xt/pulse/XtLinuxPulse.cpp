@@ -93,8 +93,8 @@ static XtPaSimple CreateDefaultClient(XtBool output) {
   spec.channels = XtPaDefaultChannels;
   spec.format = ToPulseSample(XtPaDefaultSample);
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
-  return XtPaSimple(pa_simple_new(nullptr, XtPlatform::instance->id.c_str(), dir,
-    nullptr, XtPlatform::instance->id.c_str(), &spec, nullptr, nullptr, nullptr));
+  return XtPaSimple(pa_simple_new(nullptr, XtPlatform::instance->_id.c_str(), dir,
+    nullptr, XtPlatform::instance->_id.c_str(), &spec, nullptr, nullptr, nullptr));
 }
 
 // ---- service ----
@@ -220,7 +220,7 @@ XtFault PulseDevice::OpenStream(const XtDeviceStreamParams* params, bool seconda
   }
   
   frameSize = (params->format.channels.inputs + params->format.channels.outputs) * XtiGetSampleSize(params->format.mix.sample);
-  auto id = XtPlatform::instance->id.c_str();
+  auto id = XtPlatform::instance->_id.c_str();
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   if((client = pa_simple_new(nullptr, id, dir, nullptr, 
     id, &spec, &map, nullptr, &fault)) == nullptr)

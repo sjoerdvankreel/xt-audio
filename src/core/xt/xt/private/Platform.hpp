@@ -14,12 +14,12 @@ struct XtPlatform
   XtPlatform() = default;
   XtPlatform(void* window);
 
-  void* window;
-  bool ownWindow;
-  std::string id;
-  XtOnError onError;
-  std::thread::id threadId;
-  std::vector<std::unique_ptr<XtService>> services;
+  void* _window;
+  bool _ownWindow;
+  std::string _id;
+  XtOnError _onError;
+  std::thread::id _threadId;
+  std::vector<std::unique_ptr<XtService>> _services;
 
   static XtPlatform* instance;
   static XtSystem SetupToSystem(XtSetup setup);

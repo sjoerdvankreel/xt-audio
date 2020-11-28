@@ -5,7 +5,7 @@
 
 XtPlatform::~XtPlatform()
 {
-  if(ownWindow) DestroyWindow(static_cast<HWND>(window));
+  if(_ownWindow) DestroyWindow(static_cast<HWND>(_window));
   CoUninitialize();
 }
 
@@ -24,10 +24,10 @@ XtPlatform::SetupToSystem(XtSetup setup)
 XtPlatform::XtPlatform(void* window):
 XtPlatform()
 {
-  this->window = window;
-  this->ownWindow = window == nullptr;
+  _window = window;
+  _ownWindow = window == nullptr;
   XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
-  if(window == nullptr) XT_ASSERT(this->window = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0));
+  if(window == nullptr) XT_ASSERT(_window = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0));
 }
 
 #endif // _WIN32
