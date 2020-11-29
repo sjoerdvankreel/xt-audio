@@ -69,9 +69,10 @@ namespace Xt
 			bufferTip.SetToolTip(bufferSize, bufferSize.Value.ToString());
 		}
 
-		private void OnError(string location, string message)
+		private void OnError(in XtLocation location, string message)
 		{
-			AddMessage(() => string.Format("{0}: {1}", location, message));
+			var loc = location;
+			AddMessage(() => string.Format("{0}: {1}", loc, message));
 		}
 
 		private void OnStreamError(Func<string> error)

@@ -296,11 +296,9 @@ XtFault AsioService::GetDeviceCount(int32_t* count) const {
 }
 
 XtFault AsioService::OpenDefaultDevice(XtBool output, XtDevice** device) const  { 
-  XtError error;
   if(AsioDriverList().asioGetNumDev() == 0)
     return ASE_OK;
-  error = XtServiceOpenDevice(this, 0, device);
-  return XtiGetErrorFault(error);
+  return OpenDevice(0, device);
 }
 
 XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {  

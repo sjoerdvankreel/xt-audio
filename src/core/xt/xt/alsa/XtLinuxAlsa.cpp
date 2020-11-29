@@ -134,7 +134,7 @@ static void LogError(const char *file, int line,
   int size = vsnprintf(nullptr, 0, fmt, arg);
   std::vector<char> message(static_cast<size_t>(size + 1), '\0');
   vsnprintf(&message[0], size + 1, fmt, argCopy);
-  XtiTrace(file, line, fun, message.data());
+  XtiTrace({file, fun, line}, message.data());
   va_end(argCopy);
   va_end(arg);
 }
