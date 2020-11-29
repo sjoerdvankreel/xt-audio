@@ -6,7 +6,7 @@
 #include <iostream>
 
 static void 
-OnError(std::string const& location, std::string const& message)
+OnError(Xt::Location const& location, std::string const& message)
 { std::cout << location << ": " << message << std::endl; }
 
 int 

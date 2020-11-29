@@ -6,6 +6,7 @@
 #include <xt/cpp/Enums.hpp>
 #include <xt/cpp/Callbacks.hpp>
 
+#include <string>
 #include <cstdint>
 
 namespace Xt {
@@ -31,6 +32,13 @@ struct Version final
 {
   int32_t major;
   int32_t minor;
+};
+
+struct Location final
+{
+  std::string file;
+  std::string func;
+  int32_t line;
 };
 
 struct ServiceError final

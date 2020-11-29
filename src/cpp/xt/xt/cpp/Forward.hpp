@@ -10,7 +10,7 @@ HandleError(XtError error);
 inline void XT_CALLBACK 
 ForwardOnXRun(int32_t index, void* user);
 inline void XT_CALLBACK 
-ForwardOnError(char const* location, char const* message);
+ForwardOnError(XtLocation const* location, char const* message);
 inline void XT_CALLBACK 
 ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
 

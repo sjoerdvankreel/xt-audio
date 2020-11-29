@@ -2,6 +2,7 @@
 #define XT_CPP_UTILITY_HPP
 
 #include <xt/cpp/Core.hpp>
+#include <xt/cpp/Structs.hpp>
 #include <xt/cpp/XtStream.hpp>
 #include <xt/cpp/XtException.hpp>
 
@@ -13,11 +14,19 @@ inline void
 HandleError(XtError error) 
 { if(error != 0) throw Exception(error); }
 inline void XT_CALLBACK 
-ForwardOnError(char const* location, char const* message) 
-{ if(_onError) _onError(location, message); }
-inline void XT_CALLBACK 
 ForwardOnXRun(int32_t index, void* user) 
 { static_cast<Stream*>(user)->_onXRun(index, static_cast<Stream*>(user)->_user); }
+
+inline void XT_CALLBACK 
+ForwardOnError(XtLocation const* location, char const* message) 
+{ 
+  Location loc;
+  if(!_onError) return;
+  loc.line = location->line;
+  loc.file = location->file;
+  loc.func = location->func;
+  _onError(loc, message); 
+}
 
 inline void XT_CALLBACK 
 ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user)

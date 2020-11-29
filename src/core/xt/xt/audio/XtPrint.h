@@ -19,6 +19,8 @@ XT_API char const* XT_CALL
 XtPrintSampleToString(XtSample sample);
 XT_API char const* XT_CALL 
 XtPrintErrorInfoToString(XtErrorInfo const* info);
+XT_API char const* XT_CALL
+XtPrintLocationToString(XtLocation const* location);
 XT_API char const* XT_CALL 
 XtPrintCapabilitiesToString(XtCapabilities capabilities);
 

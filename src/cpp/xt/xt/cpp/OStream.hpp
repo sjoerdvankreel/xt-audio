@@ -32,6 +32,16 @@ operator<<(std::ostream& os, Capabilities capabilities)
 { return os << XtPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities)); }
 
 inline std::ostream& 
+operator<<(std::ostream& os, Location const& location) 
+{
+  XtLocation loc;
+  loc.line = location.line;
+  loc.file = location.file.c_str();
+  loc.func = location.func.c_str();
+  return os << XtPrintLocationToString(&loc);
+}
+
+inline std::ostream& 
 operator<<(std::ostream& os, ErrorInfo const& info) 
 {
   XtErrorInfo i;
