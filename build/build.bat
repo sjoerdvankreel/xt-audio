@@ -12,6 +12,7 @@ msbuild xt-audio.sln /p:Configuration=Release /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
 copy ..\dist\core\xt\Debug\xt-core.dll ..\dist\cpp\sample\Debug\xt-core.dll
+copy ..\dist\core\xt\Debug\xt-core.pdb ..\dist\cpp\sample\Debug\xt-core.pdb
 copy ..\dist\core\xt\Release\xt-core.dll ..\dist\cpp\sample\Release\xt-core.dll
 if not exist ..\dist\cpp\xt (mkdir ..\dist\cpp\xt)
 xcopy ..\src\cpp\xt ..\dist\cpp\xt /s /q /y
