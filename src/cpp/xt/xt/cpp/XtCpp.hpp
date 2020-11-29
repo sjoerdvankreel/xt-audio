@@ -12,6 +12,7 @@
 #include <xt/cpp/XtDevice.hpp>
 #include <xt/cpp/XtStream.hpp>
 #include <xt/cpp/XtService.hpp>
+#include <xt/cpp/XtPlatform.hpp>
 #include <xt/cpp/XtException.hpp>
 
 #endif // XT_CPP_CPP_HPP
