@@ -3,6 +3,7 @@ package xt.audio;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import xt.audio.Structs.XtBuffer;
+import xt.audio.Structs.XtLocation;
 
 public interface Callbacks {
 
@@ -15,7 +16,7 @@ public interface Callbacks {
     }
 
     public interface XtOnError extends Callback {
-        void callback(String location, String message) throws Exception;
+        void callback(XtLocation location, String message) throws Exception;
     }
 
     interface OnBuffer extends Callback {

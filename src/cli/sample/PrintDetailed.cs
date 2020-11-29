@@ -4,7 +4,7 @@ namespace Xt
 {
     public static class PrintDetailed
     {
-        static void OnError(string location, string message)
+        static void OnError(in XtLocation location, string message)
         => Console.WriteLine($"{location}: {message}");
 
         public static void Main()

@@ -30,3 +30,4 @@
 * disable c26451
 * group file/line/fun/expr?
 * xtlocation(tostring)
+* aggregate performance

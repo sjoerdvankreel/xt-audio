@@ -15,6 +15,7 @@ import xt.audio.Enums.XtSystem;
 import xt.audio.Structs.XtErrorInfo;
 import java.util.HashMap;
 import java.util.Map;
+import xt.audio.Structs.XtLocation;
 
 class XtTypeMapper extends DefaultTypeMapper {
     XtTypeMapper() {
@@ -47,6 +48,7 @@ class Utility {
     }
 
     static native String XtPrintErrorInfoToString(XtErrorInfo info);
+    static native String XtPrintLocationToString(XtLocation location);
     static void handleError(long error) { if(error != 0) throw new XtException(error); }
     static <T> T handleError(long error, T result) { if(error != 0) throw new XtException(error); return result; }
 }
