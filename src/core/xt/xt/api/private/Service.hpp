@@ -1,8 +1,8 @@
-#ifndef XT_PRIVATE_SERVICE_HPP
-#define XT_PRIVATE_SERVICE_HPP
+#ifndef XT_API_PRIVATE_SERVICE_HPP
+#define XT_API_PRIVATE_SERVICE_HPP
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
 #include <xt/private/Shared.hpp>
 #include <cstdint>
 
@@ -23,4 +23,4 @@ struct XtService
   virtual XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const = 0;
 };
 
-#endif // XT_PRIVATE_SERVICE_HPP
+#endif // XT_API_PRIVATE_SERVICE_HPP

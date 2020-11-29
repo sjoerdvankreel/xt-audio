@@ -1,9 +1,9 @@
-#ifndef XT_AUDIO_SERVICE_H
-#define XT_AUDIO_SERVICE_H
+#ifndef XT_API_PUBLIC_SERVICE_H
+#define XT_API_PUBLIC_SERVICE_H
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
-#include <xt/audio/Structs.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
 #include <cstdint>
 
 #ifdef __cplusplus
@@ -24,4 +24,4 @@ XtServiceAggregateStream(XtService const* s, XtAggregateStreamParams const* para
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#endif // XT_AUDIO_SERVICE_H
+#endif // XT_API_PUBLIC_SERVICE_H

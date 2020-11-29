@@ -1,10 +1,10 @@
-#ifndef XT_AUDIO_AUDIO_H
-#define XT_AUDIO_AUDIO_H
+#ifndef XT_API_PUBLIC_AUDIO_H
+#define XT_API_PUBLIC_AUDIO_H
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
-#include <xt/audio/Structs.h>
-#include <xt/audio/Callbacks.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
+#include <xt/api/public/Callbacks.h>
 #include <cstdint>
 
 #ifdef __cplusplus
@@ -25,4 +25,4 @@ XtAudioInit(char const* id, void* window, XtOnError onError);
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#endif // XT_AUDIO_AUDIO_H
+#endif // XT_API_PUBLIC_AUDIO_H

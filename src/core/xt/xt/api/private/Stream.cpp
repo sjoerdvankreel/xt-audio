@@ -1,4 +1,4 @@
-#include <xt/private/Stream.hpp>
+#include <xt/api/private/Stream.hpp>
 #include <xt/private/Shared.hpp>
 
 void

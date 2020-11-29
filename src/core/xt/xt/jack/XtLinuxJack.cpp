@@ -1,7 +1,7 @@
 #if XT_ENABLE_JACK
+#include <xt/api/private/Platform.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
-#include <xt/private/Platform.hpp>
 #include <xt/Linux.hpp>
 #include <jack/jack.h>
 #include <vector>

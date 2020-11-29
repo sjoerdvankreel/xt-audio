@@ -1,7 +1,7 @@
 #ifndef XT_WASAPI_FAULT_HPP
 #define XT_WASAPI_FAULT_HPP
 
-#include <xt/audio/Enums.h>
+#include <xt/api/public/Enums.h>
 #include <xt/private/Shared.hpp>
 
 char const* 

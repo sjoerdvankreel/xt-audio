@@ -1,8 +1,8 @@
 #if XT_ENABLE_DSOUND
+#include <xt/api/private/Platform.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
 #include <xt/Win32.hpp>
-#include <xt/private/Platform.hpp>
 #define INITGUID 1
 #include <dsound.h>
 #include <mmdeviceapi.h>

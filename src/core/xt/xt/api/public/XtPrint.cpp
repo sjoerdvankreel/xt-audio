@@ -1,4 +1,4 @@
-#include <xt/audio/XtPrint.h>
+#include <xt/api/public/XtPrint.h>
 #include <xt/Private.hpp>
 #include <string>
 #include <cstring>

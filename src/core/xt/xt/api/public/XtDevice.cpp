@@ -1,4 +1,4 @@
-#include <xt/audio/XtDevice.h>
+#include <xt/api/public/XtDevice.h>
 #include <xt/Private.hpp>
 #include <cstring>
 

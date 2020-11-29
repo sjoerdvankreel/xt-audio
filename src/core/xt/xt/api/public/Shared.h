@@ -1,5 +1,5 @@
-#ifndef XT_AUDIO_SHARED_H
-#define XT_AUDIO_SHARED_H
+#ifndef XT_API_PUBLIC_SHARED_H
+#define XT_API_PUBLIC_SHARED_H
 
 #include <stdint.h>
 
@@ -28,4 +28,4 @@ typedef struct XtStream XtStream;
 typedef struct XtService XtService;
 typedef struct XtPlatform XtPlatform;
 
-#endif // XT_AUDIO_SHARED_H
+#endif // XT_API_PUBLIC_SHARED_H

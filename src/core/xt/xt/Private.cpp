@@ -1,5 +1,5 @@
 #include <xt/Private.hpp>
-#include <xt/private/Platform.hpp>
+#include <xt/api/private/Platform.hpp>
 #include <vector>
 #include <cstdarg>
 #include <sstream>

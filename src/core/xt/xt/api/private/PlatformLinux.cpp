@@ -1,4 +1,4 @@
-#include <xt/private/Platform.hpp>
+#include <xt/api/private/Platform.hpp>
 #ifdef __linux__
 #include <xt/Private.hpp>
 

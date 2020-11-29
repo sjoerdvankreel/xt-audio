@@ -1,9 +1,9 @@
-#ifndef XT_PRIVATE_DEVICE_HPP
-#define XT_PRIVATE_DEVICE_HPP
+#ifndef XT_API_PRIVATE_DEVICE_HPP
+#define XT_API_PRIVATE_DEVICE_HPP
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
-#include <xt/audio/Structs.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
 #include <xt/private/Shared.hpp>
 
 #define XT_IMPLEMENT_DEVICE()                                                                       \
@@ -33,4 +33,4 @@ struct XtDevice
   virtual XtFault OpenStream(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream) = 0;
 };
 
-#endif // XT_PRIVATE_DEVICE_HPP
+#endif // XT_API_PRIVATE_DEVICE_HPP

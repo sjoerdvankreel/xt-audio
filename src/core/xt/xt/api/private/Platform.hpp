@@ -1,8 +1,8 @@
-#ifndef XT_PRIVATE_PLATFORM_HPP
-#define XT_PRIVATE_PLATFORM_HPP
+#ifndef XT_API_PRIVATE_PLATFORM_HPP
+#define XT_API_PRIVATE_PLATFORM_HPP
 
-#include <xt/audio/Callbacks.h>
-#include <xt/private/Service.hpp>
+#include <xt/api/public/Callbacks.h>
+#include <xt/api/private/Service.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -31,7 +31,7 @@ struct XtPlatform
 inline XtPlatform*
 XtPlatform::instance = nullptr;
 
-#include <xt/private/PlatformLinux.ipp>
-#include <xt/private/PlatformWin32.ipp>
+#include <xt/api/private/PlatformLinux.ipp>
+#include <xt/api/private/PlatformWin32.ipp>
 
-#endif // XT_PRIVATE_PLATFORM_HPP
+#endif // XT_API_PRIVATE_PLATFORM_HPP

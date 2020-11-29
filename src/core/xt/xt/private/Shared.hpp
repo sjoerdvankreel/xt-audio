@@ -1,9 +1,9 @@
 #ifndef XT_PRIVATE_SHARED_HPP
 #define XT_PRIVATE_SHARED_HPP
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
-#include <xt/audio/Structs.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
 #include <cstdint>
 
 #define XT_STRINGIFY(s) #s

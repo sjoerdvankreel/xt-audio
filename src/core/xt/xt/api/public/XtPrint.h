@@ -1,9 +1,9 @@
-#ifndef XT_AUDIO_PRINT_H
-#define XT_AUDIO_PRINT_H
+#ifndef XT_API_PUBLIC_PRINT_H
+#define XT_API_PUBLIC_PRINT_H
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
-#include <xt/audio/Structs.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,4 +27,4 @@ XtPrintCapabilitiesToString(XtCapabilities capabilities);
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#endif // XT_AUDIO_PRINT_H
+#endif // XT_API_PUBLIC_PRINT_H

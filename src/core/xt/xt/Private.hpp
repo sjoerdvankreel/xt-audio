@@ -2,11 +2,11 @@
 #define XT_PRIVATE_HPP
 
 #include <xt/XtAudio.h>
+#include <xt/api/private/Device.hpp>
+#include <xt/api/private/Stream.hpp>
+#include <xt/api/private/Service.hpp>
 #include <xt/private/Shared.hpp>
-#include <xt/private/Device.hpp>
-#include <xt/private/Stream.hpp>
 #include <xt/private/Structs.hpp>
-#include <xt/private/Service.hpp>
 #include <string>
 #include <vector>
 #include <memory>

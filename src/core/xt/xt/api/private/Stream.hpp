@@ -1,7 +1,7 @@
-#ifndef XT_PRIVATE_STREAM_HPP
-#define XT_PRIVATE_STREAM_HPP
+#ifndef XT_API_PRIVATE_STREAM_HPP
+#define XT_API_PRIVATE_STREAM_HPP
 
-#include <xt/audio/Structs.h>
+#include <xt/api/public/Structs.h>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Structs.hpp>
 
@@ -30,4 +30,4 @@ struct XtStream
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
 };
 
-#endif // XT_PRIVATE_STREAM_HPP
+#endif // XT_API_PRIVATE_STREAM_HPP

@@ -1,4 +1,4 @@
-#include <xt/audio/XtStream.h>
+#include <xt/api/public/XtStream.h>
 #include <xt/Private.hpp>
 
 XtFormat const* XT_CALL 

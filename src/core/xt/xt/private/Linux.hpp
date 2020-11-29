@@ -2,7 +2,7 @@
 #define XT_PRIVATE_LINUX_HPP
 #ifdef __linux__
 
-#include <xt/audio/Enums.h>
+#include <xt/api/public/Enums.h>
 #include <xt/private/Shared.hpp>
 
 XtCause

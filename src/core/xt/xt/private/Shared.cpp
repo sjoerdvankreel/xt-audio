@@ -1,7 +1,7 @@
-#include <xt/audio/XtAudio.h>
-#include <xt/audio/XtPrint.h>
+#include <xt/api/public/XtAudio.h>
+#include <xt/api/public/XtPrint.h>
+#include <xt/api/private/Platform.hpp>
 #include <xt/private/Shared.hpp>
-#include <xt/private/Platform.hpp>
 #include <xt/private/Services.hpp>
 #include <xt/Private.hpp>
 #include <thread>

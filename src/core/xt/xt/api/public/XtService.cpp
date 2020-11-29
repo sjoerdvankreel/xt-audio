@@ -1,4 +1,4 @@
-#include <xt/audio/XtService.h>
+#include <xt/api/public/XtService.h>
 #include <xt/Private.hpp>
 
 XtCapabilities XT_CALL

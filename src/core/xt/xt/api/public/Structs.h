@@ -1,9 +1,9 @@
-#ifndef XT_AUDIO_STRUCTS_H
-#define XT_AUDIO_STRUCTS_H
+#ifndef XT_API_PUBLIC_STRUCTS_H
+#define XT_API_PUBLIC_STRUCTS_H
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
-#include <xt/audio/Callbacks.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Callbacks.h>
 #include <cstdint>
 
 typedef struct XtMix
@@ -114,4 +114,4 @@ typedef struct XtAggregateStreamParams
   XtDevice const* master;
 } XtAggregateStreamParams;
 
-#endif // XT_AUDIO_STRUCTS_H
+#endif // XT_API_PUBLIC_STRUCTS_H

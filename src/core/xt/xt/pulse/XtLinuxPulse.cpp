@@ -1,8 +1,8 @@
 #if XT_ENABLE_PULSE
+#include <xt/api/private/Platform.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
 #include <xt/Linux.hpp>
-#include <xt/private/Platform.hpp>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
 #include <memory>

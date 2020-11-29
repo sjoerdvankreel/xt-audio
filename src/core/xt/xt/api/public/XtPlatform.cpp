@@ -1,5 +1,5 @@
-#include <xt/audio/XtPlatform.h>
-#include <xt/private/Platform.hpp>
+#include <xt/api/public/XtPlatform.h>
+#include <xt/api/private/Platform.hpp>
 #include <xt/Private.hpp>
 #include <algorithm>
 

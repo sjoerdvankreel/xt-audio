@@ -1,11 +1,11 @@
 #ifndef XT_PRIVATE_SERVICES_HPP
 #define XT_PRIVATE_SERVICES_HPP
 
-#include <xt/audio/Enums.h>
-#include <xt/audio/Shared.h>
-#include <xt/audio/Structs.h>
+#include <xt/api/public/Enums.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
+#include <xt/api/private/Service.hpp>
 #include <xt/private/Shared.hpp>
-#include <xt/private/Service.hpp>
 #include <memory>
 
 std::unique_ptr<XtService>

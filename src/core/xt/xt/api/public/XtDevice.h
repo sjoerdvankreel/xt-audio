@@ -1,8 +1,8 @@
-#ifndef XT_AUDIO_DEVICE_H
-#define XT_AUDIO_DEVICE_H
+#ifndef XT_API_PUBLIC_DEVICE_H
+#define XT_API_PUBLIC_DEVICE_H
 
-#include <xt/audio/Shared.h>
-#include <xt/audio/Structs.h>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
 #include <cstdint>
 
 #ifdef __cplusplus
@@ -33,4 +33,4 @@ XtDeviceGetChannelName(XtDevice const* d, XtBool output, int32_t index, char* bu
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#endif // XT_AUDIO_DEVICE_H
+#endif // XT_API_PUBLIC_DEVICE_H
