@@ -6,7 +6,6 @@
 #include <xt/api/private/Stream.hpp>
 #include <xt/api/private/Service.hpp>
 #include <xt/private/Shared.hpp>
-#include <xt/private/Structs.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -39,15 +38,6 @@
 
 struct XtAggregate;
 
-enum class XtBlockingStreamState {
-  Stopped,
-  Starting,
-  Started,
-  Stopping,
-  Closing,
-  Closed
-};
-
 struct XtAggregateContext {
   int32_t index;
   XtAggregate* stream;
@@ -74,23 +64,6 @@ struct XtRingBuffer {
   int32_t Full() const;
   int32_t Read(void* target, int32_t frames);
   int32_t Write(const void* source, int32_t frames);
-};
-
-struct XtBlockingStream: 
-public XtStream 
-{
-  int32_t _index;
-  bool _aggregated;
-  bool const _secondary;
-
-  virtual void OnXRun() const override;
-  XtBlockingStream(bool secondary):
-  _index(-1), _aggregated(false), _secondary(secondary) {}
-
-  virtual void StopStream() = 0;
-  virtual void StartStream() = 0;  
-  virtual void RequestStop() = 0;
-  virtual void ProcessBuffer(bool prefill) = 0;
 };
 
 struct XtAggregate: public XtStream {

@@ -26,43 +26,8 @@ std::string XtwWideStringToUtf8(const wchar_t* wide);
 bool XtwFormatToWfx(const XtFormat& format, WAVEFORMATEXTENSIBLE& wfx);
 bool XtwWfxToFormat(const WAVEFORMATEX& wfx, XtBool output, XtFormat& format);
 
-struct XtwPropVariant {
-  PROPVARIANT pv;
-  XtwPropVariant(const XtwPropVariant&) = delete;
-  XtwPropVariant& operator=(const XtwPropVariant&) = delete;
-  ~XtwPropVariant() { PropVariantClear(&pv); }
-  XtwPropVariant(): pv() { PropVariantInit(&pv); }
-};
-
-struct XtwCriticalSection {
-  CRITICAL_SECTION cs;
-  XtwCriticalSection(const XtwCriticalSection&) = delete;
-  XtwCriticalSection& operator=(const XtwCriticalSection&) = delete;
-  ~XtwCriticalSection() { DeleteCriticalSection(&cs); }
-  XtwCriticalSection(): cs() { InitializeCriticalSection(&cs); }
-};
-
-struct XtwWaitableTimer {
-  HANDLE timer;
-  XtwWaitableTimer(const XtwWaitableTimer&) = delete;
-  XtwWaitableTimer& operator=(const XtwWaitableTimer&) = delete;
-  ~XtwWaitableTimer() { XT_ASSERT(CloseHandle(timer)); }
-  XtwWaitableTimer() { XT_ASSERT((timer = CreateWaitableTimer(nullptr, FALSE, nullptr)) != nullptr) ; }
-};
-
-struct XtwEvent {
-  HANDLE event;
-  XtwEvent(const XtwEvent&) = delete;
-  XtwEvent& operator=(const XtwEvent&) = delete;
-  ~XtwEvent() { XT_ASSERT(CloseHandle(event)); }
-  XtwEvent(): event() { XT_ASSERT((event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
-};
-
 struct XtwWin32BlockingStream: public XtBlockingStream {
-  XtwCriticalSection lock;
-  const XtwEvent respondEvent;
-  const XtwEvent controlEvent;
-  XtBlockingStreamState state;
+  
   XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
 
   XtwWin32BlockingStream(bool secondary);

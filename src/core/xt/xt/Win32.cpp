@@ -88,63 +88,6 @@ const char* XtwWfxChannelNames[18] = {
 
 // ---- win32 ----
 
-XtwWin32BlockingStream::XtwWin32BlockingStream(bool secondary):
-XtBlockingStream(secondary),
-state(XtBlockingStreamState::Stopped), 
-lock(),
-respondEvent(),
-controlEvent() {
-  if(!secondary) {
-    HANDLE thread = CreateThread(nullptr, 0, &OnWin32BlockingBuffer, this, 0, nullptr);
-    XT_ASSERT(thread != nullptr);
-    CloseHandle(thread);
-  }
-}
-
-XtwWin32BlockingStream::~XtwWin32BlockingStream() {
-  if(!_secondary)
-    SendWin32BlockingStreamControl(this, XtBlockingStreamState::Closing, XtBlockingStreamState::Closed);
-}
-
-XtFault XtwWin32BlockingStream::Start() {
-  if(!_secondary)
-    SendWin32BlockingStreamControl(this, XtBlockingStreamState::Starting, XtBlockingStreamState::Started);
-  else {
-    ProcessBuffer(true);
-    StartStream();
-  }
-  return S_OK;
-}
-
-XtFault XtwWin32BlockingStream::Stop() {
-  if(_secondary)
-    StopStream();
-  else
-    SendWin32BlockingStreamControl(this, XtBlockingStreamState::Stopping, XtBlockingStreamState::Stopped);
-  return S_OK;
-}
-
-void XtwWin32BlockingStream::RequestStop() {
-  StopStream();
-  if(!_secondary) {
-    EnterCriticalSection(&lock.cs);
-    state = XtBlockingStreamState::Stopped;
-    XT_ASSERT(SetEvent(respondEvent.event));
-    LeaveCriticalSection(&lock.cs);
-  }
-}
-
-bool XtwWin32BlockingStream::VerifyOnBuffer(HRESULT hr, XtLocation const& location, const char* expr) {
-  if(SUCCEEDED(hr))
-    return true;
-  RequestStop();
-  XtiTrace(location, expr);
-  XtBuffer buffer = { 0 };
-  buffer.error = XtiCreateError(GetSystem(), hr);
-  OnBuffer(&buffer);
-  return false;
-}
-
 std::string XtwWideStringToUtf8(const wchar_t* wide) {
   int count;
   XT_ASSERT((count = WideCharToMultiByte(CP_UTF8, 0, wide, -1, nullptr, 0, nullptr, 0)) > 0);

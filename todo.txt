@@ -31,3 +31,6 @@
 * group file/line/fun/expr?
 * xtlocation(tostring)
 * aggregate performance
+* !secondary->master
+* drop I/W/L prefixes
+* private/blocking (move to folder)
