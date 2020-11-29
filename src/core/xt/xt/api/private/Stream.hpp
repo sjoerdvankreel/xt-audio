@@ -3,20 +3,7 @@
 
 #include <xt/api/public/Structs.h>
 #include <xt/private/Shared.hpp>
-#include <vector>
-
-struct XtBuffers
-{
-  std::vector<uint8_t> interleaved;
-  std::vector<void*> nonInterleaved;
-  std::vector<std::vector<uint8_t>> channels;
-};
-
-struct XtIOBuffers
-{
-  XtBuffers input;
-  XtBuffers output;
-};
+#include <xt/private/Structs.hpp>
 
 #define XT_IMPLEMENT_STREAM()                        \
   XtFault Stop() override;                           \

@@ -6,12 +6,13 @@
 #include <xt/api/public/Structs.h>
 #include <cstdint>
 
+typedef uint32_t XtFault;
+
 #define XT_STRINGIFY(s) #s
+#define XT_WAIT_TIMEOUT_MS 10000
 #define XT_FAIL(m) XtiFail({__FILE__,  __func__, __LINE__}, m)
 #define XT_TRACE(m) XtiTrace({__FILE__,  __func__, __LINE__}, m)
 #define XT_ASSERT(c) ((c) || (XT_FAIL("Assertion failed: " #c), 0))
-
-typedef uint32_t XtFault;
 
 bool
 XtiCalledOnMainThread();

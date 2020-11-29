@@ -4,10 +4,8 @@
 #include <xt/api/private/Stream.hpp>
 #include <xt/private/BlockingStreamLinux.hpp>
 #include <xt/private/BlockingStreamWin32.hpp>
+#include <xt/private/Enums.hpp>
 #include <cstdint>
-
-enum class XtBlockingStreamState
-{ Stopped, Starting, Started, Stopping, Closing, Closed };
 
 struct XtBlockingStream:
 public XtStream 
@@ -19,6 +17,8 @@ public XtStream
   XtBlockingStreamState _state;
 
   XT_IMPLEMENT_STREAM();
+
+  ~XtBlockingStream();
   XtBlockingStream(bool secondary):
   _index(-1),
   _aggregated(false),
@@ -32,6 +32,7 @@ public XtStream
   virtual void ProcessBuffer(bool prefill) = 0;
 
   void RequestStop();
+  XtBlockingStreamState ReadState();
   void ReceiveControl(XtBlockingStreamState state);
   void SendControl(XtBlockingStreamState from, XtBlockingStreamState to);
   bool VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr);

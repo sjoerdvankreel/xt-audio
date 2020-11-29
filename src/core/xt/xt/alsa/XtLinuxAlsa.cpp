@@ -91,7 +91,7 @@ struct AlsaDevice: public XtDevice {
                             XtBool interleaved, XtBool* alsaInterleaved) const;
 };
 
-struct AlsaStream: public XtlLinuxBlockingStream {
+struct AlsaStream: public XtBlockingStream {
   const bool mmap;
   const bool output;
   const AlsaPcm pcm;
@@ -106,7 +106,7 @@ struct AlsaStream: public XtlLinuxBlockingStream {
   ~AlsaStream() { Stop(); }
   AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
              int32_t bufferFrames, int32_t channels, int32_t sampleSize):
-  XtlLinuxBlockingStream(secondary),
+  XtBlockingStream(secondary),
   mmap(mmap), 
   output(output),
   pcm(std::move(p)), 

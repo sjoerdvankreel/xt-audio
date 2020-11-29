@@ -1,6 +1,7 @@
 #if XT_ENABLE_DSOUND
 #include <xt/api/private/Platform.hpp>
 #include <xt/private/Shared.hpp>
+#include <xt/private/Win32.hpp>
 #include <xt/private/Services.hpp>
 #include <xt/Win32.hpp>
 #define INITGUID 1
@@ -41,14 +42,14 @@ struct DSoundDevice: public XtDevice {
   XtDevice(), guid(g), name(n), output(o), input(i) {}
 };
 
-struct DSoundStream: public XtwWin32BlockingStream {
+struct DSoundStream: public XtBlockingStream {
   const int32_t frameSize;
   std::vector<uint8_t> buffer;
   uint64_t xtBytesProcessed;
   uint64_t dsBytesProcessed;
   int32_t previousDsPosition;
   const int32_t bufferFrames;
-  const XtwWaitableTimer timer;
+  const XtWaitableTimer timer;
   const CComPtr<IDirectSound> output;
   const CComPtr<IDirectSoundCapture> input;
   const CComPtr<IDirectSoundBuffer> render;
@@ -60,7 +61,7 @@ struct DSoundStream: public XtwWin32BlockingStream {
     CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
     int32_t bufferFrames, int32_t frameSize):
-  XtwWin32BlockingStream(secondary), frameSize(frameSize),
+  XtBlockingStream(secondary), frameSize(frameSize),
   buffer(static_cast<size_t>(bufferFrames * frameSize), 0),
   xtBytesProcessed(0), dsBytesProcessed(0),
   previousDsPosition(0), bufferFrames(bufferFrames), timer(),
@@ -258,7 +259,7 @@ XtFault DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
     CComPtr<IAudioClient> client;
     CComPtr<IPropertyStore> store;
     CComHeapPtr<WAVEFORMATEX> wfx;
-    XtwPropVariant currentIdString;
+    XtPropVariant currentIdString;
     XT_VERIFY_COM(devices->Item(i, &device));
     XT_VERIFY_COM(device->OpenPropertyStore(STGM_READ, &store));
     XT_VERIFY_COM(store->GetValue(PKEY_AudioEndpoint_GUID, &currentIdString.pv));

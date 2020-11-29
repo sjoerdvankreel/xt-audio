@@ -44,11 +44,11 @@ struct WasapiDevice: public XtDevice {
   XtDevice(), options(o), device(d), client(c), client3(c3) {}
 };
 
-struct WasapiStream: public XtwWin32BlockingStream {
+struct WasapiStream: public XtBlockingStream {
   HANDLE mmcssHandle;
   UINT32 bufferFrames;
   const Options options;
-  const XtwEvent streamEvent;
+  const XtEvent streamEvent;
   const CComPtr<IAudioClock> clock;
   const CComPtr<IAudioClock2> clock2;
   const CComPtr<IAudioClient> client;
@@ -61,7 +61,7 @@ struct WasapiStream: public XtwWin32BlockingStream {
   WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
     CComPtr<IAudioClient> client, CComPtr<IAudioClient> loopback, CComPtr<IAudioCaptureClient> capture,
     CComPtr<IAudioRenderClient> render, const Options& options):
-  XtwWin32BlockingStream(secondary), mmcssHandle(), bufferFrames(bufferFrames),
+  XtBlockingStream(secondary), mmcssHandle(), bufferFrames(bufferFrames),
   options(options), streamEvent(), clock(clock), clock2(clock2), 
   client(client), loopback(loopback), render(render), capture(capture) {}
 
@@ -209,7 +209,7 @@ XtFault WasapiDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 
 XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const {  
   HRESULT hr;
-  XtwPropVariant n;
+  XtPropVariant n;
   std::string result;
   CComPtr<IPropertyStore> store;
 

@@ -6,65 +6,31 @@
 
 // ---- local ----
 
-static XtBlockingStreamState ReadWin32BlockingStreamState(
-  XtwWin32BlockingStream* stream) {
-
-  XtBlockingStreamState result;
-  EnterCriticalSection(&stream->lock.cs);
-  result = stream->state;
-  LeaveCriticalSection(&stream->lock.cs);
-  return result;
-}
-
-static void ReceiveWin32BlockingStreamControl(
-  XtwWin32BlockingStream* stream, XtBlockingStreamState state) {
-
-  EnterCriticalSection(&stream->lock.cs);
-  stream->state = state;
-  XT_ASSERT(SetEvent(stream->respondEvent.event));
-  LeaveCriticalSection(&stream->lock.cs);
-}
-
-static void SendWin32BlockingStreamControl(
-  XtwWin32BlockingStream* stream, XtBlockingStreamState from, XtBlockingStreamState to) {
-
-  EnterCriticalSection(&stream->lock.cs);
-  if(stream->state == to) {
-    LeaveCriticalSection(&stream->lock.cs);
-    return;
-  }
-  stream->state = from;
-  XT_ASSERT(SetEvent(stream->controlEvent.event));
-  LeaveCriticalSection(&stream->lock.cs);
-  while(ReadWin32BlockingStreamState(stream) != to)
-    XT_ASSERT(WaitForSingleObject(stream->respondEvent.event, XT_WAIT_TIMEOUT_MS) == WAIT_OBJECT_0);
-}
-
 static DWORD WINAPI OnWin32BlockingBuffer(void* user) {
   XtBlockingStreamState state;
-  auto stream = static_cast<XtwWin32BlockingStream*>(user);
+  auto stream = static_cast<XtBlockingStream*>(user);
 
   XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
-  while((state = ReadWin32BlockingStreamState(stream)) != XtBlockingStreamState::Closed) {
+  while((state = stream->ReadState()) != XtBlockingStreamState::Closed) {
     switch(state) {
     case XtBlockingStreamState::Started:
       stream->ProcessBuffer(false);
       break;
     case XtBlockingStreamState::Closing:
-      ReceiveWin32BlockingStreamControl(stream, XtBlockingStreamState::Closed);
+      stream->ReceiveControl(XtBlockingStreamState::Closed);
       CoUninitialize();
       return S_OK;
     case XtBlockingStreamState::Stopping:
       stream->StopStream();
-      ReceiveWin32BlockingStreamControl(stream, XtBlockingStreamState::Stopped);
+      stream->ReceiveControl(XtBlockingStreamState::Stopped);
       break;
     case XtBlockingStreamState::Starting:
       stream->ProcessBuffer(true);
       stream->StartStream();
-      ReceiveWin32BlockingStreamControl(stream, XtBlockingStreamState::Started);
+      stream->ReceiveControl(XtBlockingStreamState::Started);
       break;
     case XtBlockingStreamState::Stopped:
-      XT_ASSERT(WaitForSingleObject(stream->controlEvent.event, INFINITE) == WAIT_OBJECT_0);
+      XT_ASSERT(WaitForSingleObject(stream->_impl.control.event, INFINITE) == WAIT_OBJECT_0);
       break;
     default:
       XT_FAIL("Unexpected stream state.");

@@ -14,9 +14,9 @@
 
 // ---- win32 ----
 
-#define XT_VERIFY_COM(e)                   \
-do {                                       \
-  if(FAILED(hr = (e)))                     \
+#define XT_VERIFY_COM(e)     \
+do {                         \
+  if(FAILED(hr = (e)))       \
     return XT_TRACE(#e), hr; \
 } while(0)
 
@@ -25,15 +25,6 @@ extern const char* XtwWfxChannelNames[18];
 std::string XtwWideStringToUtf8(const wchar_t* wide);
 bool XtwFormatToWfx(const XtFormat& format, WAVEFORMATEXTENSIBLE& wfx);
 bool XtwWfxToFormat(const WAVEFORMATEX& wfx, XtBool output, XtFormat& format);
-
-struct XtwWin32BlockingStream: public XtBlockingStream {
-  
-  XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM();
-
-  XtwWin32BlockingStream(bool secondary);
-  ~XtwWin32BlockingStream();
-  bool VerifyOnBuffer(HRESULT hr, XtLocation const& location, const char* expr);
-};
 
 #endif // _WIN32
 #endif // XT_WIN32_HPP

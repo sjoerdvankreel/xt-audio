@@ -5,6 +5,7 @@
 #include <xt/api/private/Device.hpp>
 #include <xt/api/private/Stream.hpp>
 #include <xt/api/private/Service.hpp>
+#include <xt/private/BlockingStream.hpp>
 #include <xt/private/Shared.hpp>
 #include <string>
 #include <vector>
@@ -15,10 +16,7 @@
 // ---- internal ----
 
 #define XT_VERIFY_ON_BUFFER(expr) \
-  VerifyOnBuffer((expr), {__FILE__,  __func__, __LINE__}, #expr)
-
-#define XT_WAIT_TIMEOUT_MS 10000
-
+  VerifyOnBuffer({__FILE__,  __func__, __LINE__}, (expr), #expr)
 // ---- forward ----
 
 #define XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM() \

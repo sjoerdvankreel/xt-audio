@@ -4,40 +4,6 @@
 
 // ---- local ----
 
-static XtBlockingStreamState ReadLinuxBlockingStreamState(
-  XtlLinuxBlockingStream* stream) {
-
-  XtBlockingStreamState result;
-  XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
-  result = stream->state;
-  XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
-  return result;
-}
-
-static void ReceiveLinuxBlockingStreamControl(
-  XtlLinuxBlockingStream* stream, XtBlockingStreamState state) {
-
-  XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
-  stream->state = state;
-  XT_ASSERT(pthread_cond_signal(&stream->respondCv.cv) == 0);
-  XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
-}
-
-static void SendLinuxBlockingStreamControl(
-  XtlLinuxBlockingStream* stream, XtBlockingStreamState from, XtBlockingStreamState to) {
-
-  XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
-  if(stream->state == to) {
-    XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
-    return;
-  }
-  stream->state = from;
-  XT_ASSERT(pthread_cond_signal(&stream->controlCv.cv) == 0);
-  while(stream->state != to)
-    XT_ASSERT(pthread_cond_wait(&stream->respondCv.cv, &stream->lock.m) == 0);
-  XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
-}
-
 static void* LinuxOnBlockingBuffer(void* user) {
 
   int policy;
@@ -45,7 +11,7 @@ static void* LinuxOnBlockingBuffer(void* user) {
   int startPriority;
   struct sched_param param;
   XtBlockingStreamState state;
-  auto stream = static_cast<XtlLinuxBlockingStream*>(user);
+  auto stream = static_cast<XtBlockingStream*>(user);
 
   XT_ASSERT(pthread_getschedparam(pthread_self(), &policy, &param) == 0);
   startPriority = param.sched_priority;
