@@ -38,7 +38,7 @@ struct XtEvent
   XtEvent(XtEvent const&) = delete;
   XtEvent& operator=(XtEvent const&) = delete;
   ~XtEvent() { XT_ASSERT(CloseHandle(event)); }
-  XtEvent(): event() { XT_ASSERT((event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
+  XtEvent(): event() { XT_ASSERT((event = CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
 };
 
 #endif // _WIN32

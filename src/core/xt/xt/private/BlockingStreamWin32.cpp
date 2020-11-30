@@ -1,39 +1,42 @@
-#include <xt/private/BlockingStream.hpp>
+#include <xt/private/BlockingStreamWin32.hpp>
 #ifdef _WIN32
 
 XtBlockingStreamState
-XtBlockingStream::ReadState()
+XtBlockingStreamBase<XtWin32BlockingStream>::
+ReadState()
 {
   XtBlockingStreamState result;
-  EnterCriticalSection(&_impl.lock.cs);
+  EnterCriticalSection(&self().lock.cs);
   result = _state;
-  LeaveCriticalSection(&_impl.lock.cs);
+  LeaveCriticalSection(&self().lock.cs);
   return result;
 }
 
 void
-XtBlockingStream::RequestStop() 
+XtBlockingStreamBase<XtWin32BlockingStream>::
+RequestStop() 
 {
   StopStream();
   if(_secondary) return;
-  EnterCriticalSection(&_impl.lock.cs);
+  EnterCriticalSection(&self().lock.cs);
   _state = XtBlockingStreamState::Stopped;
-  XT_ASSERT(SetEvent(_impl.respond.event));
-  LeaveCriticalSection(&_impl.lock.cs);
+  XT_ASSERT(SetEvent(self().respond.event));
+  LeaveCriticalSection(&self().lock.cs);
 }
 
 void
-XtBlockingStream::ReceiveControl(XtBlockingStreamState state)
+XtBlockingStreamBase<XtWin32BlockingStream>::
+ReceiveControl(XtBlockingStreamState state)
 {
-  EnterCriticalSection(&_impl.lock.cs);
+  EnterCriticalSection(&self().lock.cs);
   _state = state;
-  XT_ASSERT(SetEvent(_impl.respond.event));
-  LeaveCriticalSection(&_impl.lock.cs);
+  XT_ASSERT(SetEvent(self().respond.event));
+  LeaveCriticalSection(&self().lock.cs);
 }
 
-XtBlockingStreamImpl::
-XtBlockingStreamImpl(bool secondary):
-respond(), control(), lock()
+XtWin32BlockingStream::
+XtWin32BlockingStream(bool secondary):
+XtBlockingStreamBase(secondary), respond(), control(), lock()
 {
   if(secondary) return;
   HANDLE thread = CreateThread(nullptr, 0, &OnWin32BlockingBuffer, this, 0, nullptr);
@@ -42,15 +45,16 @@ respond(), control(), lock()
 }
 
 void
-XtBlockingStream::SendControl(XtBlockingStreamState from, XtBlockingStreamState to)
+XtBlockingStreamBase<XtWin32BlockingStream>::
+SendControl(XtBlockingStreamState from, XtBlockingStreamState to)
 {
-  EnterCriticalSection(&_impl.lock.cs);
-  if(_state == to) { LeaveCriticalSection(&_impl.lock.cs); return; }
+  EnterCriticalSection(&self().lock.cs);
+  if(_state == to) { LeaveCriticalSection(&self().lock.cs); return; }
   _state = from;
-  XT_ASSERT(SetEvent(_impl.control.event));
-  LeaveCriticalSection(&_impl.lock.cs);
+  XT_ASSERT(SetEvent(self().control.event));
+  LeaveCriticalSection(&self().lock.cs);
   while(ReadState() != to) 
-    XT_ASSERT(WaitForSingleObject(_impl.respond.event, XT_WAIT_TIMEOUT_MS) == WAIT_OBJECT_0);
+    XT_ASSERT(WaitForSingleObject(self().respond.event, XT_WAIT_TIMEOUT_MS) == WAIT_OBJECT_0);
 }
 
 #endif // _WIN32

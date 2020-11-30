@@ -1,5 +1,7 @@
 #ifdef __linux__
-#include <xt/Linux.hpp>
+#include <xt/private/Linux.hpp>
+#include <xt/private/BlockingStream.hpp>
+#include <xt/private/BlockingStreamLinux.hpp>
 #include <pthread.h>
 
 // ---- local ----
@@ -38,9 +40,9 @@ static void* LinuxOnBlockingBuffer(void* user) {
       ReceiveLinuxBlockingStreamControl(stream, XtBlockingStreamState::Started);
       break;
     case XtBlockingStreamState::Stopped:
-      XT_ASSERT(pthread_mutex_lock(&stream->lock.m) == 0);
-      XT_ASSERT(pthread_cond_wait(&stream->controlCv.cv, &stream->lock.m) == 0);
-      XT_ASSERT(pthread_mutex_unlock(&stream->lock.m) == 0);
+      XT_ASSERT(pthread_mutex_lock(&stream->self().lock.m) == 0);
+      XT_ASSERT(pthread_cond_wait(&stream->self().control.cv, &stream->self().lock.m) == 0);
+      XT_ASSERT(pthread_mutex_unlock(&stream->self().lock.m) == 0);
       break;
     default:
       XT_FAIL("Unexpected stream state.");

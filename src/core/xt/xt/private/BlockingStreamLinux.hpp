@@ -1,14 +1,19 @@
 #ifndef XT_PRIVATE_BLOCKING_STREAM_LINUX_HPP
 #define XT_PRIVATE_BLOCKING_STREAM_LINUX_HPP
 #ifdef __linux__
+#include <xt/private/BlockingStream.hpp>
 #include <xt/private/Linux.hpp>
 
-struct XtBlockingStreamImpl
+typedef XtBlockingStreamBase<struct XtLinuxBlockingStream>
+XtBlockingStream;
+
+struct XtLinuxBlockingStream:
+public XtBlockingStreamBase<XtLinuxBlockingStream>
 {
   XtMutex lock;
   XtCondition respond;
   XtCondition control;
-  XtBlockingStreamImpl(bool secondary);
+  XtLinuxBlockingStream(bool secondary);
 };
 
 #endif // __linux__

@@ -30,7 +30,7 @@ static DWORD WINAPI OnWin32BlockingBuffer(void* user) {
       stream->ReceiveControl(XtBlockingStreamState::Started);
       break;
     case XtBlockingStreamState::Stopped:
-      XT_ASSERT(WaitForSingleObject(stream->_impl.control.event, INFINITE) == WAIT_OBJECT_0);
+      XT_ASSERT(WaitForSingleObject(stream->self().control.event, INFINITE) == WAIT_OBJECT_0);
       break;
     default:
       XT_FAIL("Unexpected stream state.");

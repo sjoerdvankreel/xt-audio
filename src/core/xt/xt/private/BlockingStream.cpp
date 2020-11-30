@@ -2,32 +2,14 @@
 #include <xt/private/Shared.hpp>
 #include <xt/Private.hpp>
 
-void 
-XtBlockingStream::OnXRun() const
-{
-  auto xRun = _params.stream.onXRun;
-  if(xRun == nullptr) return;
-  if(!_aggregated) xRun(-1, _user);
-  else xRun(_index, static_cast<XtAggregateContext*>(_user)->stream->_user);
-}
+template <class TSelf>
+XtBlockingStreamBase<TSelf>::
+~XtBlockingStreamBase() 
+{ if(!_secondary) SendControl(XtBlockingStreamState::Closing, XtBlockingStreamState::Closed); }
 
-XtFault
-XtBlockingStream::Start() 
-{
-  if(_secondary) { ProcessBuffer(true); StartStream(); }
-  else SendControl(XtBlockingStreamState::Starting, XtBlockingStreamState::Started);
-  return 0;
-}
-
-XtFault
-XtBlockingStream::Stop() {
-  if(_secondary) StopStream();
-  else SendControl(XtBlockingStreamState::Stopping, XtBlockingStreamState::Stopped);
-  return 0;
-}
-
-bool
-XtBlockingStream::VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr)
+template <class TSelf> bool
+XtBlockingStreamBase<TSelf>::
+VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr)
 {
   if(fault == 0) return true;
   XtBuffer buffer = { 0 };
@@ -38,5 +20,30 @@ XtBlockingStream::VerifyOnBuffer(XtLocation const& location, XtFault fault, char
   return false;
 }
 
-XtBlockingStream::~XtBlockingStream() 
-{ if(!_secondary) SendControl(XtBlockingStreamState::Closing, XtBlockingStreamState::Closed); }
+template <class TSelf> void 
+XtBlockingStreamBase<TSelf>::
+OnXRun() const
+{
+  auto xRun = _params.stream.onXRun;
+  if(xRun == nullptr) return;
+  if(!_aggregated) xRun(-1, _user);
+  else xRun(_index, static_cast<XtAggregateContext*>(_user)->stream->_user);
+}
+
+template <class TSelf> XtFault
+XtBlockingStreamBase<TSelf>::
+Start() 
+{
+  if(_secondary) { ProcessBuffer(true); StartStream(); }
+  else SendControl(XtBlockingStreamState::Starting, XtBlockingStreamState::Started);
+  return 0;
+}
+
+template <class TSelf> XtFault
+XtBlockingStreamBase<TSelf>::
+Stop() 
+{
+  if(_secondary) StopStream();
+  else SendControl(XtBlockingStreamState::Stopping, XtBlockingStreamState::Stopped);
+  return 0;
+}
