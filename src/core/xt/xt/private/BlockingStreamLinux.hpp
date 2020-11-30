@@ -14,7 +14,10 @@ public XtBlockingStreamBase<XtLinuxBlockingStream>
   XtCondition respond;
   XtCondition control;
   XtLinuxBlockingStream(bool secondary);
+  static void* OnBlockingBuffer(void* user);
 };
+
+template struct XtBlockingStreamBase<XtLinuxBlockingStream>;
 
 #endif // __linux__
 #endif // XT_PRIVATE_BLOCKING_STREAM_LINUX_HPP

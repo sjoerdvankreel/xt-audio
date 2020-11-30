@@ -6,41 +6,6 @@
 
 // ---- local ----
 
-static DWORD WINAPI OnWin32BlockingBuffer(void* user) {
-  XtBlockingStreamState state;
-  auto stream = static_cast<XtBlockingStream*>(user);
-
-  XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
-  while((state = stream->ReadState()) != XtBlockingStreamState::Closed) {
-    switch(state) {
-    case XtBlockingStreamState::Started:
-      stream->ProcessBuffer(false);
-      break;
-    case XtBlockingStreamState::Closing:
-      stream->ReceiveControl(XtBlockingStreamState::Closed);
-      CoUninitialize();
-      return S_OK;
-    case XtBlockingStreamState::Stopping:
-      stream->StopStream();
-      stream->ReceiveControl(XtBlockingStreamState::Stopped);
-      break;
-    case XtBlockingStreamState::Starting:
-      stream->ProcessBuffer(true);
-      stream->StartStream();
-      stream->ReceiveControl(XtBlockingStreamState::Started);
-      break;
-    case XtBlockingStreamState::Stopped:
-      XT_ASSERT(WaitForSingleObject(stream->self().control.event, INFINITE) == WAIT_OBJECT_0);
-      break;
-    default:
-      XT_FAIL("Unexpected stream state.");
-      break;
-    }
-  }
-  XT_FAIL("End of stream callback reached.");
-  return S_OK;
-}
-
 // ---- win32 ----
 
 const char* XtwWfxChannelNames[18] = {

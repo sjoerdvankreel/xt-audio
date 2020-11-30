@@ -15,7 +15,10 @@ public XtBlockingStreamBase<XtWin32BlockingStream>
   XtEvent const control;
   XtCriticalSection lock;
   XtWin32BlockingStream(bool secondary);
+  static DWORD WINAPI OnBlockingBuffer(void* user);
 };
+
+template struct XtBlockingStreamBase<XtWin32BlockingStream>;
 
 #endif // _WIN32
 #endif // XT_PRIVATE_BLOCKING_STREAM_WIN32_HPP

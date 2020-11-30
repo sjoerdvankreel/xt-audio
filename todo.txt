@@ -36,3 +36,4 @@
 * private/blocking (move to folder)
 * move readstateblocking to CAS
 * check waitforxyz for timeouts
+* check xt_fails

@@ -56,7 +56,7 @@ XtBlockingStreamBase(secondary), lock(), respond(), control()
 {
   if(secondary) return;
   pthread_t thread;
-  XT_ASSERT(pthread_create(&thread, nullptr, &LinuxOnBlockingBuffer, this) == 0);
+  XT_ASSERT(pthread_create(&thread, nullptr, &OnBlockingBuffer, this) == 0);
 }
 
 #endif // __linux__

@@ -1,4 +1,6 @@
 #include <xt/private/BlockingStream.hpp>
+#include <xt/private/BlockingStreamWin32.hpp>
+#include <xt/private/BlockingStreamLinux.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/Private.hpp>
 

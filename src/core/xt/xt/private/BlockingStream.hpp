@@ -14,7 +14,6 @@ public XtStream
   bool const _secondary;
   XtBlockingStreamState _state;
 
-  XT_IMPLEMENT_STREAM();
   ~XtBlockingStreamBase();
   XtBlockingStreamBase(bool secondary):
   _index(-1),
@@ -22,9 +21,12 @@ public XtStream
   _secondary(secondary),
   _state(XtBlockingStreamState::Stopped) {}
 
+  virtual XtFault Stop() override final;
+  virtual XtFault Start() override final;
+  virtual void OnXRun() const override final;
+
   virtual void StopStream() = 0;
   virtual void StartStream() = 0;  
-  virtual void OnXRun() const override;
   virtual void ProcessBuffer(bool prefill) = 0;
   TSelf& self() { return *static_cast<TSelf*>(this); }
 
