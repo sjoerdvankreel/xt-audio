@@ -76,7 +76,7 @@ void XtRingBuffer::Lock() const {
 }
 
 void XtRingBuffer::Unlock() const {
-  XT_ASSERT(XtiCompareExchange(locked, 1, 0));
+  assert(XtiCompareExchange(locked, 1, 0));
 }
 
 void XtRingBuffer::Clear() {
