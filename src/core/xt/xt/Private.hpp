@@ -6,8 +6,6 @@
 #include <xt/api/private/Stream.hpp>
 #include <xt/api/private/Service.hpp>
 #include <xt/private/BlockingStream.hpp>
-#include <xt/private/BlockingStreamWin32.hpp>
-#include <xt/private/BlockingStreamLinux.hpp>
 #include <xt/private/Shared.hpp>
 #include <string>
 #include <vector>
@@ -17,8 +15,7 @@
 
 // ---- internal ----
 
-#define XT_VERIFY_ON_BUFFER(expr) \
-  VerifyOnBuffer({__FILE__,  __func__, __LINE__}, (expr), #expr)
+
 // ---- forward ----
 
 #define XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM() \

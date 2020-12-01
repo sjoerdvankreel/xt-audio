@@ -4,6 +4,7 @@
 #include <xt/api/public/Structs.h>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Structs.hpp>
+#include <vector>
 
 #define XT_IMPLEMENT_STREAM()                        \
   XtFault Stop() override;                           \
@@ -11,6 +12,19 @@
   XtSystem GetSystem() const override;               \
   XtFault GetFrames(int32_t* frames) const override; \
   XtFault GetLatency(XtLatency* latency) const override;
+
+struct XtBuffers
+{
+  std::vector<uint8_t> interleaved;
+  std::vector<void*> nonInterleaved;
+  std::vector<std::vector<uint8_t>> channels;
+};
+
+struct XtIOBuffers
+{
+  XtBuffers input;
+  XtBuffers output;
+};
 
 struct XtStream 
 {
