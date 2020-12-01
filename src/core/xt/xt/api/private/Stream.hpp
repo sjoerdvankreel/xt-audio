@@ -3,15 +3,7 @@
 
 #include <xt/api/public/Structs.h>
 #include <xt/private/Shared.hpp>
-#include <xt/private/Structs.hpp>
 #include <vector>
-
-#define XT_IMPLEMENT_STREAM()                        \
-  XtFault Stop() override;                           \
-  XtFault Start() override;                          \
-  XtSystem GetSystem() const override;               \
-  XtFault GetFrames(int32_t* frames) const override; \
-  XtFault GetLatency(XtLatency* latency) const override;
 
 struct XtBuffers
 {
@@ -25,6 +17,13 @@ struct XtIOBuffers
   XtBuffers input;
   XtBuffers output;
 };
+
+#define XT_IMPLEMENT_STREAM()                        \
+  XtFault Stop() override;                           \
+  XtFault Start() override;                          \
+  XtSystem GetSystem() const override;               \
+  XtFault GetFrames(int32_t* frames) const override; \
+  XtFault GetLatency(XtLatency* latency) const override;
 
 struct XtStream 
 {

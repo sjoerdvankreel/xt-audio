@@ -40,3 +40,4 @@
 * use cpp builtin CAS and friends
 * use cpp builtin threading
 * drop xt_fails
+* readstate() no waits

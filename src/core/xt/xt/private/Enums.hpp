@@ -1,4 +1,0 @@
-#ifndef XT_PRIVATE_ENUMS_HPP
-#define XT_PRIVATE_ENUMS_HPP
-
-#endif // XT_PRIVATE_ENUMS_HPP

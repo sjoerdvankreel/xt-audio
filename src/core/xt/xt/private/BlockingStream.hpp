@@ -2,7 +2,6 @@
 #define XT_PRIVATE_BLOCKING_STREAM_HPP
 
 #include <xt/api/private/Stream.hpp>
-#include <xt/private/Enums.hpp>
 #include <mutex>
 #include <cstdint>
 #include <condition_variable>
@@ -34,12 +33,12 @@ public XtStream
 
   virtual void StopStream() = 0;
   virtual void StartStream() = 0;  
-  virtual void EndCallbackThread() = 0;
-  virtual void BeginCallbackThread() = 0;
   virtual void ProcessBuffer(bool prefill) = 0;
   static void OnBlockingBuffer(XtBlockingStream* stream);
 
   void RequestStop();
+  void EndCallbackThread();
+  void BeginCallbackThread();
   XtBlockingStreamState ReadState();
   void ReceiveControl(XtBlockingStreamState state);
   void SendControl(XtBlockingStreamState from, XtBlockingStreamState to);

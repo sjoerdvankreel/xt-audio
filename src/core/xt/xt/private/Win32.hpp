@@ -23,15 +23,6 @@ struct XtCriticalSection
   XtCriticalSection& operator=(XtCriticalSection const&) = delete;
 };
 
-struct XtWaitableTimer
-{
-  HANDLE timer;
-  XtWaitableTimer(XtWaitableTimer const&) = delete;
-  XtWaitableTimer& operator=(XtWaitableTimer const&) = delete;
-  ~XtWaitableTimer() { XT_ASSERT(CloseHandle(timer)); }
-  XtWaitableTimer() { XT_ASSERT((timer = CreateWaitableTimer(nullptr, FALSE, nullptr)) != nullptr) ; }
-};
-
 struct XtEvent
 {
   HANDLE event;
@@ -39,6 +30,15 @@ struct XtEvent
   XtEvent& operator=(XtEvent const&) = delete;
   ~XtEvent() { XT_ASSERT(CloseHandle(event)); }
   XtEvent(): event() { XT_ASSERT((event = CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
+};
+
+struct XtWaitableTimer
+{
+  HANDLE timer;
+  XtWaitableTimer(XtWaitableTimer const&) = delete;
+  XtWaitableTimer& operator=(XtWaitableTimer const&) = delete;
+  ~XtWaitableTimer() { XT_ASSERT(CloseHandle(timer)); }
+  XtWaitableTimer() { XT_ASSERT((timer = CreateWaitableTimer(nullptr, FALSE, nullptr)) != nullptr) ; }
 };
 
 #endif // _WIN32
