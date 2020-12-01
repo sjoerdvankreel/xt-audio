@@ -80,18 +80,18 @@ void XtRingBuffer::Unlock() const {
 }
 
 void XtRingBuffer::Clear() {
-  assert(locked);
+  assert(locked.load());
   end = 0;
   full = 0;
   begin = 0;
-  assert(locked);
+  assert(locked.load());
 }
 
 int32_t XtRingBuffer::Full() const {
   int32_t result;
-  assert(locked);
+  assert(locked.load());
   result = full;
-  assert(locked);
+  assert(locked.load());
   return result;
 }
 
@@ -105,7 +105,7 @@ int32_t XtRingBuffer::Read(void* target, int32_t frames) {
   uint8_t* ilTarget = static_cast<uint8_t*>(target);
   uint8_t** niTarget = static_cast<uint8_t**>(target);
 
-  assert(locked);
+  assert(locked.load());
   assert(0 <= full && full <= this->frames);
   result = full > frames? frames: full;
   
@@ -135,7 +135,7 @@ int32_t XtRingBuffer::Read(void* target, int32_t frames) {
   begin += result;
   if(begin >= this->frames)
     begin -= this->frames;
-  assert(locked);
+  assert(locked.load());
   assert(0 <= full && full <= this->frames);
   return result;
 }
@@ -151,7 +151,7 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
   const uint8_t* ilSource = static_cast<const uint8_t*>(source);
   const uint8_t* const* niSource = static_cast<const uint8_t* const*>(source);
 
-  assert(locked);
+  assert(locked.load());
   assert(0 <= full && full <= this->frames);
   empty = this->frames - full;
   result = empty > frames? frames: empty;
@@ -182,7 +182,7 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
   full += result;
   if (end >= this->frames)
     end -= this->frames;
-  assert(locked);
+  assert(locked.load());
   assert(0 <= full && full <= this->frames);
   return result;
 }
