@@ -1,3 +1,4 @@
+#include <xt/api/private/Platform.hpp>
 #include <xt/private/BlockingStream.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/Private.hpp>
@@ -86,11 +87,26 @@ XtBlockingStream::Stop()
   return 0;
 }
 
+bool
+XtBlockingStream::VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr)
+{
+  if(fault == 0) return true;
+  XtBuffer buffer = { 0 };
+  RequestStop();
+  XtiTrace(location, expr);
+  buffer.error = XtiCreateError(GetSystem(), fault);
+  OnBuffer(&buffer);
+  return false;
+}
+
 void
 XtBlockingStream::OnBlockingBuffer(XtBlockingStream* stream)
 {  
+  int32_t threadPolicy;
+  int32_t prevThreadPrio;
   XtBlockingStreamState state;
-  stream->BeginCallbackThread();
+  XtPlatform::BeginThread();
+  XtPlatform::RaiseThreadPriority(&threadPolicy, &prevThreadPrio);
   while((state = stream->ReadState()) != XtBlockingStreamState::Closed)
     switch(state)
     {
@@ -121,17 +137,6 @@ XtBlockingStream::OnBlockingBuffer(XtBlockingStream* stream)
       XT_ASSERT(false);
       break;
     }  
-  stream->EndCallbackThread();
-}
-
-bool
-XtBlockingStream::VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr)
-{
-  if(fault == 0) return true;
-  XtBuffer buffer = { 0 };
-  RequestStop();
-  XtiTrace(location, expr);
-  buffer.error = XtiCreateError(GetSystem(), fault);
-  OnBuffer(&buffer);
-  return false;
+  XtPlatform::RevertThreadPriority(threadPolicy, prevThreadPrio);
+  XtPlatform::EndThread();
 }

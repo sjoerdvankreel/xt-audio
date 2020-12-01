@@ -3,10 +3,21 @@
 #include <xt/Private.hpp>
 #include <Windows.h>
 
+void 
+XtPlatform::EndThread() 
+{ CoUninitialize(); }
+void 
+XtPlatform::RevertThreadPriority(int32_t policy, int32_t previous) { }
+void 
+XtPlatform::RaiseThreadPriority(int32_t* policy, int32_t* previous) { }
+void 
+XtPlatform::BeginThread()
+{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
+
 XtPlatform::~XtPlatform()
 {
   if(_ownWindow) DestroyWindow(static_cast<HWND>(_window));
-  CoUninitialize();
+  EndThread();
 }
 
 XtSystem
@@ -26,7 +37,7 @@ XtPlatform()
 {
   _window = window;
   _ownWindow = window == nullptr;
-  XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
+  BeginThread();
   if(window == nullptr) XT_ASSERT(_window = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0));
 }
 

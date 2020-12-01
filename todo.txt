@@ -31,3 +31,4 @@
 * check xt_fails
 * drop xt_fails
 * readstate() no waits
+* make posix thingy cross-platform

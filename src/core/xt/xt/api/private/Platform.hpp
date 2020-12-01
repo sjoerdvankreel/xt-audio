@@ -13,9 +13,7 @@ struct XtPlatform
   ~XtPlatform();
   XtPlatform() = default;
   XtPlatform(void* window);
-
   static inline XtPlatform* instance = nullptr;
-  static XtSystem SetupToSystem(XtSetup setup);
 
   void* _window;
   bool _ownWindow;
@@ -23,6 +21,12 @@ struct XtPlatform
   XtOnError _onError;
   std::thread::id _threadId;
   std::vector<std::unique_ptr<XtService>> _services;
+
+  static void EndThread(); 
+  static void BeginThread();
+  static XtSystem SetupToSystem(XtSetup setup);
+  static void RevertThreadPriority(int32_t policy, int32_t previous);
+  static void RaiseThreadPriority(int32_t* policy, int32_t* previous);
 };
 
 #endif // XT_API_PRIVATE_PLATFORM_HPP

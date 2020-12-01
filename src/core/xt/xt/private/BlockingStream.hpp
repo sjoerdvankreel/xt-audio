@@ -37,8 +37,6 @@ public XtStream
   static void OnBlockingBuffer(XtBlockingStream* stream);
 
   void RequestStop();
-  void EndCallbackThread();
-  void BeginCallbackThread();
   XtBlockingStreamState ReadState();
   void ReceiveControl(XtBlockingStreamState state);
   void SendControl(XtBlockingStreamState from, XtBlockingStreamState to);
