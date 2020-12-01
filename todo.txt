@@ -37,3 +37,5 @@
 * move readstateblocking to CAS
 * check waitforxyz for timeouts
 * check xt_fails
+* use cpp builtin CAS and friends
+* use cpp builtin threading
