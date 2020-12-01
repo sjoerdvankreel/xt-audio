@@ -24,11 +24,4 @@
 * merge fault into SERVICE
 * disable c26451
 * aggregate performance
-* !secondary->master
 * drop W/L prefixes
-* private/blocking (move to folder)
-* move readstateblocking to CAS
-* check xt_fails
-* drop xt_fails
-* readstate() no waits
-* make posix thingy cross-platform

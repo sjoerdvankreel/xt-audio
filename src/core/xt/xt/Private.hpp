@@ -16,19 +16,6 @@
 
 // ---- forward ----
 
-#define XT_IMPLEMENT_CALLBACK_OVER_BLOCKING_STREAM() \
-  XtFault Stop() override;                           \
-  XtFault Start() override;                          \
-  void RequestStop() override;
-
-#define XT_IMPLEMENT_BLOCKING_STREAM(system)             \
-  void StopStream() override;                            \
-  void StartStream() override;                           \
-  void ProcessBuffer(bool prefill) override;             \
-  XtFault GetFrames(int32_t* frames) const override;     \
-  XtFault GetLatency(XtLatency* latency) const override; \
-  XtSystem GetSystem() const override { return XtSystem ## system; }
-
 // ---- internal ----
 
 struct XtAggregate;

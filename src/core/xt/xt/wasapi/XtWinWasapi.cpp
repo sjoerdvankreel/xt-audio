@@ -56,7 +56,7 @@ struct WasapiStream: public XtBlockingStream {
   const CComPtr<IAudioClient> loopback;
   const CComPtr<IAudioRenderClient> render;
   const CComPtr<IAudioCaptureClient> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM(WASAPI);
+  XT_IMPLEMENT_BLOCKING_STREAM();
 
   ~WasapiStream() { Stop(); }
   WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
@@ -409,6 +409,11 @@ XtFault WasapiDevice::OpenStream(const XtDeviceStreamParams* params, bool second
 }
 
 // ---- stream ----
+
+XtSystem
+WasapiStream::GetSystem() const {
+  return XtSystemWASAPI;
+}
 
 void WasapiStream::StopStream() {
   XT_ASSERT(SUCCEEDED(client->Stop()));

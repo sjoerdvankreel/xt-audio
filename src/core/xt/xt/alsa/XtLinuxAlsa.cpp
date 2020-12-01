@@ -1,5 +1,9 @@
 #if XT_ENABLE_ALSA
-#include <xt/Linux.hpp>
+#include <xt/api/private/Platform.hpp>
+#include <xt/api/private/Service.hpp>
+#include <xt/api/private/Device.hpp>
+#include <xt/api/private/Stream.hpp>
+#include <xt/private/BlockingStream.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
 #include <alsa/asoundlib.h>
@@ -101,7 +105,7 @@ struct AlsaStream: public XtBlockingStream {
   std::vector<uint8_t> interleavedAudio;
   std::vector<void*> nonInterleavedAudio;
   std::vector<std::vector<uint8_t>> nonInterleavedAudioChannels;  
-  XT_IMPLEMENT_BLOCKING_STREAM(ALSA);
+  XT_IMPLEMENT_BLOCKING_STREAM();
 
   ~AlsaStream() { Stop(); }
   AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
@@ -146,7 +150,7 @@ static snd_pcm_format_t ToAlsaSample(XtSample sample) {
   case XtSampleInt24: return SND_PCM_FORMAT_S24_3LE; 
   case XtSampleInt32: return SND_PCM_FORMAT_S32_LE; 
   case XtSampleFloat32: return SND_PCM_FORMAT_FLOAT_LE;
-  default: return XT_FAIL("Unknown sample."), SND_PCM_FORMAT_U8;
+  default: return XT_ASSERT(false), SND_PCM_FORMAT_U8;
   }
 }
 
@@ -453,6 +457,11 @@ XtFault AlsaDevice::OpenStream(const XtDeviceStreamParams* params, bool secondar
 }
 
 // ---- stream ----
+
+XtSystem
+AlsaStream::GetSystem() const {
+  return XtSystemALSA;
+}
 
 void AlsaStream::StartStream() {
   processed = 0;

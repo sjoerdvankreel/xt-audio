@@ -54,7 +54,7 @@ struct DSoundStream: public XtBlockingStream {
   const CComPtr<IDirectSoundCapture> input;
   const CComPtr<IDirectSoundBuffer> render;
   const CComPtr<IDirectSoundCaptureBuffer> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM(DSound);
+  XT_IMPLEMENT_BLOCKING_STREAM();
 
   ~DSoundStream() { Stop(); }
   DSoundStream(bool secondary,
@@ -321,6 +321,11 @@ XtFault DSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool second
 }
 
 // ---- stream ----
+
+XtSystem
+DSoundStream::GetSystem() const {
+  return XtSystemDSound;
+}
 
 XtFault DSoundStream::GetFrames(int32_t* frames) const {
   *frames = bufferFrames;

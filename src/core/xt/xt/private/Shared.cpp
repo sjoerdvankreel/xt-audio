@@ -35,9 +35,9 @@ XtiGetSampleSize(XtSample sample)
 }
 
 void
-XtiFail(XtLocation const& location, char const* msg)
+XtiAssert(XtLocation const& location, char const* expr)
 {
-  XtiTrace(location, msg);
+  XtiTrace(location, expr);
   std::terminate();
 }
 

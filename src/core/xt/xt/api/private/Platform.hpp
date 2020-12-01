@@ -25,6 +25,7 @@ struct XtPlatform
   static void EndThread(); 
   static void BeginThread();
   static XtSystem SetupToSystem(XtSetup setup);
+  static XtCause GetPosixFaultCause(XtFault fault);
   static void RevertThreadPriority(int32_t policy, int32_t previous);
   static void RaiseThreadPriority(int32_t* policy, int32_t* previous);
 };

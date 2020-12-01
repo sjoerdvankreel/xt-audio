@@ -1,8 +1,10 @@
 #if XT_ENABLE_JACK
 #include <xt/api/private/Platform.hpp>
+#include <xt/api/private/Service.hpp>
+#include <xt/api/private/Device.hpp>
+#include <xt/api/private/Stream.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
-#include <xt/Linux.hpp>
 #include <jack/jack.h>
 #include <vector>
 #include <memory>

@@ -1,8 +1,11 @@
 #if XT_ENABLE_PULSE
 #include <xt/api/private/Platform.hpp>
+#include <xt/api/private/Service.hpp>
+#include <xt/api/private/Device.hpp>
+#include <xt/api/private/Stream.hpp>
+#include <xt/private/BlockingStream.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
-#include <xt/Linux.hpp>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
 #include <memory>
@@ -64,7 +67,7 @@ struct PulseStream: public XtBlockingStream {
   const XtPaSimple client;
   std::vector<uint8_t> audio;
   const int32_t bufferFrames;
-  XT_IMPLEMENT_BLOCKING_STREAM(Pulse);
+  XT_IMPLEMENT_BLOCKING_STREAM();
 
   ~PulseStream() { Stop(); }
   PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
@@ -83,7 +86,7 @@ static pa_sample_format ToPulseSample(XtSample sample) {
   case XtSampleInt24: return PA_SAMPLE_S24LE; 
   case XtSampleInt32: return PA_SAMPLE_S32LE; 
   case XtSampleFloat32: return PA_SAMPLE_FLOAT32LE;
-  default: return XT_FAIL("Unknown sample."), PA_SAMPLE_U8;
+  default: return XT_ASSERT(false), PA_SAMPLE_U8;
   }
 }
 
@@ -230,6 +233,11 @@ XtFault PulseDevice::OpenStream(const XtDeviceStreamParams* params, bool seconda
 }
 
 // ---- stream ----
+
+XtSystem
+PulseStream::GetSystem() const {
+  return XtSystemPulse;
+}
 
 void PulseStream::StopStream() {
 }

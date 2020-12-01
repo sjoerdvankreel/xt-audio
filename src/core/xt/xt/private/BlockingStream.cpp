@@ -34,13 +34,6 @@ XtBlockingStream::RequestStop()
   _respond.notify_one();
 }
 
-XtBlockingStreamState
-XtBlockingStream::ReadState()
-{
-  std::lock_guard<std::mutex> guard(_lock);
-  return _state;
-}
-
 void
 XtBlockingStream::ReceiveControl(XtBlockingStreamState state)
 {
@@ -107,7 +100,7 @@ XtBlockingStream::OnBlockingBuffer(XtBlockingStream* stream)
   XtBlockingStreamState state;
   XtPlatform::BeginThread();
   XtPlatform::RaiseThreadPriority(&threadPolicy, &prevThreadPrio);
-  while((state = stream->ReadState()) != XtBlockingStreamState::Closed)
+  while((state = stream->_state.load()) != XtBlockingStreamState::Closed)
     switch(state)
     {
     case XtBlockingStreamState::Started:

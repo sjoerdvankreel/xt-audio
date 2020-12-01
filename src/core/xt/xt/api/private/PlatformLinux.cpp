@@ -1,6 +1,7 @@
 #include <xt/api/private/Platform.hpp>
 #ifdef __linux__
 #include <xt/Private.hpp>
+#include <errno.h>
 #include <pthread.h>
 
 void 
@@ -10,6 +11,23 @@ XtPlatform::BeginThread() { }
 XtPlatform::~XtPlatform() {}
 XtPlatform::XtPlatform(void* window): 
 XtPlatform() {}
+
+XtCause
+XtPlatform::GetPosixFaultCause(XtFault fault)
+{
+  switch(fault)
+  {
+  case ESRCH: return XtCauseService;
+  case EINVAL: return XtCauseFormat;
+  case EBUSY:
+  case ENXIO:
+  case EPIPE:
+  case ENODEV:
+  case ENOENT:
+  case ESTRPIPE: return XtCauseEndpoint;
+  default: return XtCauseUnknown;
+  }
+}
 
 XtSystem
 XtPlatform::SetupToSystem(XtSetup setup)
@@ -39,7 +57,7 @@ XtPlatform::RaiseThreadPriority(int32_t* policy, int32_t* previous)
   XT_ASSERT(pthread_getschedparam(pthread_self(), policy, &param) == 0);
   *previous = param.sched_priority;
   param.sched_priority = sched_get_priority_max(*policy);
-  XT_ASSERT(pthread_setschedparam(pthread_self(), policy, &param) == 0);
+  XT_ASSERT(pthread_setschedparam(pthread_self(), *policy, &param) == 0);
 }
 
 #endif // __linux__

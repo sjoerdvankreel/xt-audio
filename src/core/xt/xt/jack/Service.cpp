@@ -1,5 +1,5 @@
 #if XT_ENABLE_JACK
-#include <xt/private/Linux.hpp>
+#include <xt/api/private/Platform.hpp>
 #include <xt/private/Services.hpp>
 #include <cstring>
 
@@ -8,7 +8,7 @@ XtiGetJackError(XtFault fault)
 {
   XtServiceError result;
   result.text = strerror(fault);
-  result.cause = XtiGetPosixFaultCause(fault);
+  result.cause = XtPlatform::GetPosixFaultCause(fault);
   return result;
 }
 

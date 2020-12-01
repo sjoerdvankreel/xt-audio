@@ -3,14 +3,23 @@
 
 #include <xt/api/private/Stream.hpp>
 #include <mutex>
+#include <atomic>
 #include <cstdint>
 #include <condition_variable>
 
-enum class XtBlockingStreamState
-{ Stopped, Starting, Started, Stopping, Closing, Closed };
+#define XT_IMPLEMENT_BLOCKING_STREAM()               \
+  void StopStream() override;                        \
+  void StartStream() override;                       \
+  XtSystem GetSystem() const override;               \
+  void ProcessBuffer(bool prefill) override;         \
+  XtFault GetFrames(int32_t* frames) const override; \
+  XtFault GetLatency(XtLatency* latency) const override;
 
 #define XT_VERIFY_ON_BUFFER(expr) \
-VerifyOnBuffer({__FILE__,  __func__, __LINE__}, (expr), #expr)
+  VerifyOnBuffer({__FILE__,  __func__, __LINE__}, (expr), #expr)
+
+enum class XtBlockingStreamState
+{ Stopped, Starting, Started, Stopping, Closing, Closed };
 
 struct XtBlockingStream:
 public XtStream 
@@ -19,9 +28,9 @@ public XtStream
   bool _aggregated;
   std::mutex _lock;
   bool const _secondary;
-  XtBlockingStreamState _state;
   std::condition_variable _control;
   std::condition_variable _respond;
+  std::atomic<XtBlockingStreamState> _state;
   static inline int const WaitTimeoutMs = 10000;
 
   ~XtBlockingStream();
@@ -37,7 +46,6 @@ public XtStream
   static void OnBlockingBuffer(XtBlockingStream* stream);
 
   void RequestStop();
-  XtBlockingStreamState ReadState();
   void ReceiveControl(XtBlockingStreamState state);
   void SendControl(XtBlockingStreamState from, XtBlockingStreamState to);
   bool VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr);
