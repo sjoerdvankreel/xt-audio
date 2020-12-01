@@ -14,15 +14,6 @@ struct XtPropVariant
   XtPropVariant& operator=(XtPropVariant const&) = delete;
 };
 
-struct XtCriticalSection
-{
-  CRITICAL_SECTION cs;
-  ~XtCriticalSection() { DeleteCriticalSection(&cs); }
-  XtCriticalSection(): cs() { InitializeCriticalSection(&cs); }
-  XtCriticalSection(XtCriticalSection const&) = delete;
-  XtCriticalSection& operator=(XtCriticalSection const&) = delete;
-};
-
 struct XtEvent
 {
   HANDLE event;

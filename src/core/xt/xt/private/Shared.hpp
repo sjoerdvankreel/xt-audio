@@ -4,6 +4,7 @@
 #include <xt/api/public/Enums.h>
 #include <xt/api/public/Shared.h>
 #include <xt/api/public/Structs.h>
+#include <atomic>
 #include <cstdint>
 
 typedef uint32_t XtFault;
@@ -12,6 +13,10 @@ typedef uint32_t XtFault;
 #define XT_FAIL(m) XtiFail({__FILE__,  __func__, __LINE__}, m)
 #define XT_TRACE(m) XtiTrace({__FILE__,  __func__, __LINE__}, m)
 #define XT_ASSERT(c) ((c) || (XT_FAIL("Assertion failed: " #c), 0))
+
+inline bool
+XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired)
+{ return value.compare_exchange_strong(expected, desired); }
 
 bool
 XtiCalledOnMainThread();

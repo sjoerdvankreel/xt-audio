@@ -9,6 +9,7 @@
 #include <host/pc/asiolist.h>
 #include <memory>
 #include <vector>
+#include <atomic>
 
 static bool IsAsioSuccess(ASIOError e);
 static const double XtAsioNsPerMs = 1000000.0;
@@ -49,8 +50,8 @@ struct AsioStream: public XtStream {
   const long bufferSize;
   ASIOCallbacks callbacks;
   AsioDevice* const device;
-  volatile int32_t running;
-  volatile int32_t insideCallback;
+  std::atomic<int32_t> running;
+  std::atomic<int32_t> insideCallback;
   std::vector<void*> inputChannels;
   std::vector<void*> outputChannels;
   std::vector<ASIOBufferInfo> buffers;
@@ -167,9 +168,9 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   AsioTimeInfo& info = asioTime->timeInfo;
   AsioStream* s = static_cast<AsioStream*>(ctx);
 
-  if(XtPlatform::Cas(&s->running, 1, 1) != 1)
+  if(s->running.load() != 1)
     return nullptr;
-  if(XtPlatform::Cas(&s->insideCallback, 1, 0) != 0)
+  if(!XtiCompareExchange(s->insideCallback, 0, 1))
     return nullptr;
 
   if(info.flags & kSamplePositionValid && info.flags & kSystemTimeValid) {
@@ -196,7 +197,7 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   if(s->issueOutputReady)
     s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
 
-  XT_ASSERT(XtPlatform::Cas(&s->insideCallback, 0, 1) == 1);
+  XT_ASSERT(XtiCompareExchange(s->insideCallback, 1, 0));
   return nullptr; 
 }
 
@@ -485,13 +486,13 @@ XtSystem AsioStream::GetSystem() const {
 }
 
 XtFault AsioStream::Stop() {
-  XtPlatform::Cas(&running, 0, 1);
-  while(XtPlatform::Cas(&insideCallback, 1, 1) == 1);
+  XT_ASSERT(XtiCompareExchange(running, 1, 0));
+  while(insideCallback.load() == 1);
   return device->asio->stop();
 }
 
 XtFault AsioStream::Start() {
-  XtPlatform::Cas(&running, 1, 0);
+  XT_ASSERT(XtiCompareExchange(running, 0, 1));
   return device->asio->start();
 }
 

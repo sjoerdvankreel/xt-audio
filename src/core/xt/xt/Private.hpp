@@ -10,11 +10,9 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <atomic>
 #include <cstring>
 #include <cstdarg>
-
-// ---- internal ----
-
 
 // ---- forward ----
 
@@ -48,7 +46,7 @@ struct XtRingBuffer {
   int32_t channels;
   bool interleaved;
   int32_t sampleSize;
-  mutable int32_t locked;
+  mutable std::atomic<int32_t> locked;
   std::vector<std::vector<uint8_t>> blocks;
 
   XtRingBuffer();
@@ -61,27 +59,26 @@ struct XtRingBuffer {
   int32_t Full() const;
   int32_t Read(void* target, int32_t frames);
   int32_t Write(const void* source, int32_t frames);
+
+  XtRingBuffer(XtRingBuffer const&);
+  XtRingBuffer& operator=(XtRingBuffer const&);
 };
 
 struct XtAggregate: public XtStream {
   int32_t frames;
   XtSystem system;
   int32_t masterIndex;
-  volatile int32_t running;
+  std::atomic<int32_t> running;
   XtIOBuffers _weave;
   std::vector<XtChannels> channels;
-  volatile int32_t insideCallbackCount;
+  std::atomic<int32_t> insideCallbackCount;
   std::vector<XtRingBuffer> inputRings; 
   std::vector<XtRingBuffer> outputRings;
   std::vector<XtAggregateContext> contexts;
   std::vector<std::unique_ptr<XtBlockingStream>> streams;
 
   virtual ~XtAggregate();
-  virtual XtFault Stop();
-  virtual XtFault Start();
-  virtual XtSystem GetSystem() const;
-  virtual XtFault GetFrames(int32_t* frames) const;
-  virtual XtFault GetLatency(XtLatency* latency) const;
+  XT_IMPLEMENT_STREAM();
 };
 
 void XT_CALLBACK XtiOnSlaveBuffer(const XtStream* stream, const XtBuffer* buffer, void* user);

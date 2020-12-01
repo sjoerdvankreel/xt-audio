@@ -1,6 +1,7 @@
 #include <xt/Private.hpp>
 #include <xt/api/private/Platform.hpp>
 #include <cassert>
+#include <atomic>
 
 // ---- local ----
 
@@ -71,11 +72,11 @@ sampleSize(sampleSize), interleaved(interleaved) {
 }
 
 void XtRingBuffer::Lock() const {
-  while(XtPlatform::Cas(&locked, 1, 0) != 0);
+  while(!XtiCompareExchange(locked, 0, 1));
 }
 
 void XtRingBuffer::Unlock() const {
-  XT_ASSERT(XtPlatform::Cas(&locked, 0, 1) == 1);
+  XT_ASSERT(XtiCompareExchange(locked, 1, 0));
 }
 
 void XtRingBuffer::Clear() {
@@ -204,8 +205,8 @@ XtFault XtAggregate::GetFrames(int32_t* frames) const {
 XtFault XtAggregate::Stop() {
   XtError error;
   XtError result = 0;
-  XtPlatform::Cas(&running, 0, 1);
-  while(XtPlatform::Cas(&insideCallbackCount, 0, 0) != 0);
+  XT_ASSERT(XtiCompareExchange(running, 1, 0));
+  while(insideCallbackCount.load() != 0);
   if(masterIndex == -1 || static_cast<size_t>(masterIndex) >= streams.size())
     return 0;
   if((error = XtStreamStop(streams[masterIndex].get())) != 0)
@@ -237,7 +238,7 @@ XtFault XtAggregate::Start() {
     Stop();
     return XtiGetErrorFault(error);
   }
-  XtPlatform::Cas(&running, 1, 0);
+  XT_ASSERT(XtiCompareExchange(running, 0, 1));
   return 0;
 }
 
@@ -281,8 +282,7 @@ void XT_CALLBACK XtiOnSlaveBuffer(
   XtRingBuffer& outputRing = aggregate->outputRings[index];
   const XtChannels& channels = aggregate->channels[index];
 
-  XtPlatform::LockIncr(&aggregate->insideCallbackCount);
-
+  aggregate->insideCallbackCount++;
   if(buffer->error != 0) {
     for(i = 0; i < aggregate->streams.size(); i++)
       if(i != static_cast<size_t>(index))
@@ -290,7 +290,7 @@ void XT_CALLBACK XtiOnSlaveBuffer(
     aggregate->_params.stream.onBuffer(aggregate, buffer, aggregate->_user);
   } else {
 
-    if(XtPlatform::Cas(&aggregate->running, 1, 1) != 1) {
+    if(aggregate->running.load() != 1) {
       ZeroBuffer(buffer->output, aggregate->_params.stream.interleaved, 0, channels.outputs, buffer->frames, sampleSize);
     } else {
 
@@ -314,8 +314,7 @@ void XT_CALLBACK XtiOnSlaveBuffer(
       }
     }
   }
-
-  XtPlatform::LockDecr(&aggregate->insideCallbackCount);
+  aggregate->insideCallbackCount--;
 }
 
 void XT_CALLBACK XtiOnMasterBuffer(
@@ -352,10 +351,10 @@ void XT_CALLBACK XtiOnMasterBuffer(
     return;
   }
 
-  if(XtPlatform::Cas(&aggregate->running, 1, 1) != 1)
+  if(aggregate->running.load() != 1)
     return;
 
-  XtPlatform::LockIncr(&aggregate->insideCallbackCount);
+  aggregate->insideCallbackCount++;
 
   ringInput = interleaved? 
     static_cast<void*>(&(aggregate->_weave.input.interleaved[0])):
@@ -416,5 +415,5 @@ void XT_CALLBACK XtiOnMasterBuffer(
     }
   }
 
-  XtPlatform::LockDecr(&aggregate->insideCallbackCount);
+  aggregate->insideCallbackCount--;
 }
