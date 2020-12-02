@@ -26,29 +26,6 @@ struct XtAggregateContext {
   XtAggregate* stream;
 };
 
-struct XtRingBuffer {
-  int32_t end;
-  int32_t full;
-  int32_t begin;
-  int32_t frames;
-  int32_t channels;
-  bool interleaved;
-  int32_t sampleSize;
-  mutable XtAtomicInt locked;
-  std::vector<std::vector<uint8_t>> blocks;
-
-  XtRingBuffer();
-  XtRingBuffer(bool interleaved, int32_t frames, 
-    int32_t channels, int32_t sampleSize);
-
-  void Clear();
-  void Lock() const;
-  void Unlock() const;
-  int32_t Full() const;
-  int32_t Read(void* target, int32_t frames);
-  int32_t Write(const void* source, int32_t frames);
-};
-
 struct XtAggregate: public XtStream {
   int32_t frames;
   XtSystem system;
