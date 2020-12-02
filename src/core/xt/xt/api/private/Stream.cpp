@@ -15,10 +15,10 @@ XtStream::OnBuffer(XtBuffer const* buffer)
   auto onBuffer = _params.stream.onBuffer;
   int32_t inputs = _params.format.channels.inputs;
   int32_t outputs = _params.format.channels.outputs;
-  auto interleavedIn = &_buffers.input.interleaved[0];
-  auto interleavedOut = &_buffers.output.interleaved[0];
-  auto nonInterleavedIn = &_buffers.input.nonInterleaved[0];
-  auto nonInterleavedOut = &_buffers.output.nonInterleaved[0];
+  auto interleavedIn = _buffers.input.interleaved.data();
+  auto interleavedOut = _buffers.output.interleaved.data();
+  auto nonInterleavedIn = _buffers.input.nonInterleaved.data();
+  auto nonInterleavedOut = _buffers.output.nonInterleaved.data();
   bool haveInput = buffer->input != nullptr && buffer->frames > 0;
   bool haveOutput = buffer->output != nullptr && buffer->frames > 0;
   auto nonInterleavedBufferOut = static_cast<void**>(buffer->output);

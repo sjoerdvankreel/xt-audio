@@ -80,7 +80,7 @@ XtBlockingStream::SendControl(State from, State to)
   _state = from;
   _control.notify_one();
   auto pred = [this, to] { return _state == to; };
-  auto timeout = std::chrono::microseconds(WaitTimeoutMs);
+  auto timeout = std::chrono::milliseconds(WaitTimeoutMs);
   XT_ASSERT(_respond.wait_for(guard, timeout, pred));
 }
 
