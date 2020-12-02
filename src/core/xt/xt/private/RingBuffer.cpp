@@ -10,11 +10,13 @@ _sampleSize(size), _locked(), _blocks()
 {
   if(interleaved)
   {
-    std::vector<uint8_t> buffer(frames * channels * size, 0);
+    auto count = frames * channels * size;
+    std::vector<uint8_t> buffer(count, 0);
     _blocks = std::vector<std::vector<uint8_t>>(1, buffer);
   } else
   {
-    std::vector<uint8_t> channel(frames * size, 0);
+    auto count = frames * size;
+    std::vector<uint8_t> channel(count, 0);
     _blocks = std::vector<std::vector<uint8_t>>(channels, channel);
   }
 }
@@ -23,93 +25,101 @@ int32_t
 XtRingBuffer::Read(void* target, int32_t frames)
 {
   int32_t i;
-  int32_t result;
-  int32_t wrapSize;
-  int32_t splitSize;
-  int32_t frameSize = channels * sampleSize;
+  assert(_locked.v.load());
+  assert(0 <= _full && _full <= _frames);
+
+  int32_t frameSize = _channels * _sampleSize;
+  int32_t beginFrames = _begin * frameSize;
+  int32_t beginSamples = _begin * _sampleSize;
+  int32_t result = _full > frames? frames: _full;
   uint8_t* ilTarget = static_cast<uint8_t*>(target);
   uint8_t** niTarget = static_cast<uint8_t**>(target);
-
-  assert(locked.v.load());
-  assert(0 <= full && full <= this->frames);
-  result = full > frames? frames: full;
   
-  if(end > begin) {
-    if(interleaved)
-      memcpy(ilTarget, &(blocks[0][begin * frameSize]), result * frameSize);
-    else
-      for(i = 0; i < channels; i++)
-        memcpy(niTarget[i], &(blocks[i][begin * sampleSize]), result * sampleSize);
-  } else {
-    splitSize = result > this->frames - begin? this->frames - begin: result;
-    wrapSize = result - splitSize;
-    if(interleaved) {
-      memcpy(ilTarget, &(blocks[0][begin * frameSize]), splitSize * frameSize);
-      if(this->frames - begin < result)
-        memcpy(ilTarget + splitSize * frameSize, &(blocks[0][0]), wrapSize * frameSize);
-    } else {
-      for(i = 0; i < channels; i++) {
-        memcpy(niTarget[i], &(blocks[i][begin * sampleSize]), splitSize * sampleSize);
-        if(this->frames - begin < result)
-          memcpy(niTarget[i] + splitSize * sampleSize, &(blocks[i][0]), wrapSize * sampleSize);
-      }
+  if(_end > _begin)
+  {
+    int32_t resultFrames = result * frameSize;
+    int32_t resultSamples = result * _sampleSize;
+    if(_interleaved)
+      memcpy(ilTarget, &(_blocks[0][beginFrames]), resultFrames);
+    else for(i = 0; i < _channels; i++)
+      memcpy(niTarget[i], &(_blocks[i][beginSamples]), resultSamples);
+  } else 
+  {
+    int32_t split = result > _frames - _begin? _frames - _begin: result;
+    int32_t wrap = result - split;
+    int32_t wrapFrames = wrap * frameSize;
+    int32_t splitFrames = split * frameSize;
+    int32_t wrapSamples = wrap * _sampleSize;
+    int32_t splitSamples = split * _sampleSize;
+    if(_interleaved)
+    {
+      memcpy(ilTarget, &(_blocks[0][beginFrames]), splitFrames);
+      if(_frames - _begin < result)
+        memcpy(ilTarget + splitFrames, &(_blocks[0][0]), wrapFrames);
+    } else for(i = 0; i < _channels; i++) 
+    {
+      memcpy(niTarget[i], &(_blocks[i][beginSamples]), splitSamples);
+      if(_frames - _begin < result)
+        memcpy(niTarget[i] + splitSamples, &(_blocks[i][0]), wrapSamples);
     }
   }
 
-  full -= result;
-  begin += result;
-  if(begin >= this->frames)
-    begin -= this->frames;
-  assert(locked.v.load());
-  assert(0 <= full && full <= this->frames);
+  _full -= result;
+  _begin += result;
+  if(_begin >= _frames) _begin -= _frames;
+  assert(0 <= _full && _full <= _frames);
+  assert(_locked.v.load());
   return result;
 }
 
 int32_t
-XtRingBuffer::Write(const void* source, int32_t frames)
+XtRingBuffer::Write(void const* source, int32_t frames)
 {
-
   int32_t i;
-  int32_t empty;
-  int32_t result;
-  int32_t wrapSize;
-  int32_t splitSize;
-  int32_t frameSize = channels * sampleSize;
-  const uint8_t* ilSource = static_cast<const uint8_t*>(source);
-  const uint8_t* const* niSource = static_cast<const uint8_t* const*>(source);
+  assert(_locked.v.load());
+  assert(0 <= _full && _full <= _frames);
 
-  assert(locked.v.load());
-  assert(0 <= full && full <= this->frames);
-  empty = this->frames - full;
-  result = empty > frames? frames: empty;
+  int32_t empty = _frames - _full;
+  int32_t result = empty > frames? frames: empty;
+  int32_t frameSize = _channels * _sampleSize;
+  int32_t endFrames = _end * frameSize;
+  int32_t endSamples = _end * _sampleSize;  
+  auto ilSource = static_cast<uint8_t const*>(source);
+  auto niSource = static_cast<uint8_t const* const*>(source);
 
-  if (end >= begin) {
-    splitSize = result > this->frames - end? this->frames - end: result;
-    wrapSize = result - splitSize;
-    if(interleaved) {
-      memcpy(&(blocks[0][end * frameSize]), ilSource, splitSize * frameSize);
-      if(this->frames - end < result)
-        memcpy(&(blocks[0][0]), ilSource + splitSize * frameSize, wrapSize * frameSize);
-    } else {
-      for(i = 0; i < channels; i++) {
-        memcpy(&(blocks[i][end * sampleSize]), niSource[i], splitSize * sampleSize);
-        if(this->frames - end < result)
-          memcpy(&(blocks[i][0]), niSource[i] + splitSize * sampleSize, wrapSize * sampleSize);
-      }
+  if (_end < _begin)
+  {
+    int32_t resultFrames = result * frameSize;
+    int32_t resultSamples = result * _sampleSize;
+    if(_interleaved)
+      memcpy(&(_blocks[0][endFrames]), ilSource, resultFrames);
+    else for(i = 0; i < _channels; i++)
+      memcpy(&(_blocks[i][endSamples]), niSource[i], resultSamples);
+  } else 
+  {
+    int32_t split = result > _frames - _end? _frames - _end: result;
+    int32_t wrap = result - split;
+    int32_t wrapFrames = wrap * frameSize;
+    int32_t splitFrames = split * frameSize;
+    int32_t wrapSamples = wrap * _sampleSize;
+    int32_t splitSamples = split * _sampleSize;
+    if(_interleaved) 
+    {
+      memcpy(&(_blocks[0][endFrames]), ilSource, splitFrames);
+      if(_frames - _end < result)
+        memcpy(&(_blocks[0][0]), ilSource + splitFrames, wrapFrames);
+    } else for(i = 0; i < _channels; i++) 
+    {
+      memcpy(&(_blocks[i][endSamples]), niSource[i], splitSamples);
+      if(_frames - _end < result)
+        memcpy(&(_blocks[i][0]), niSource[i] + splitSamples, wrapSamples);
     }
-  } else {
-    if(interleaved)
-      memcpy(&(blocks[0][end * frameSize]), ilSource, result * frameSize);
-    else
-      for(i = 0; i < channels; i++)
-        memcpy(&(blocks[i][end * sampleSize]), niSource[i], result * sampleSize);
   }
 
-  end += result;
-  full += result;
-  if (end >= this->frames)
-    end -= this->frames;
-  assert(locked.v.load());
-  assert(0 <= full && full <= this->frames);
+  _end += result;
+  _full += result;
+  if (_end >= _frames) _end -= _frames;
+  assert(0 <= _full && _full <= _frames);
+  assert(_locked.v.load());
   return result;
 }
