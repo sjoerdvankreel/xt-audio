@@ -204,7 +204,7 @@ XtFault XtAggregate::GetFrames(int32_t* frames) const {
 XtFault XtAggregate::Stop() {
   XtError error;
   XtError result = 0;
-  if(!XtiCompareExchange(running, 1, 0)) return;
+  if(!XtiCompareExchange(running, 1, 0)) return 0;
   while(insideCallbackCount.load() != 0);
   if(masterIndex == -1 || static_cast<size_t>(masterIndex) >= streams.size())
     return 0;
