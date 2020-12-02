@@ -70,53 +70,52 @@ XtAggregateStream::GetLatency(XtLatency* latency) const
   return 0;
 }
 
-void XT_CALLBACK XtiOnSlaveBuffer(
-  const XtStream* stream, const XtBuffer* buffer, void* user) {
-
-  size_t i;
-  int32_t read, written;
+void XT_CALLBACK 
+XtAggregateStream::OnSlaveBuffer(XtBlockingStream const* stream, XtBuffer const* buffer, void* user)
+{
   auto ctx = static_cast<XtAggregateContext*>(user);
   int32_t index = ctx->index;
-  XtAggregate* aggregate = ctx->stream;
-  auto sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
+  XtAggregateStream* aggregate = ctx->stream;
   XtOnXRun onXRun = aggregate->_params.stream.onXRun;
-  XtRingBuffer& inputRing = aggregate->inputRings[index];
-  XtRingBuffer& outputRing = aggregate->outputRings[index];
-  const XtChannels& channels = aggregate->channels[index];
+  XtChannels const* channels = &aggregate->_channels[index];
+  XtBool interleaved = aggregate->_params.stream.interleaved;
+  auto sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
 
-  aggregate->insideCallbackCount++;
-  if(buffer->error != 0) {
-    for(i = 0; i < aggregate->streams.size(); i++)
+  aggregate->_insideCallbackCount++;
+  if(buffer->error != 0) 
+  {
+    for(int32_t i = 0; i < aggregate->_streams.size(); i++)
       if(i != static_cast<size_t>(index))
-        aggregate->streams[i]->RequestStop();
+        aggregate->_streams[i]->RequestStop();
     aggregate->_params.stream.onBuffer(aggregate, buffer, aggregate->_user);
-  } else {
-
-    if(aggregate->running.load() != 1) {
-      ZeroBuffer(buffer->output, aggregate->_params.stream.interleaved, 0, channels.outputs, buffer->frames, sampleSize);
-    } else {
-
-      if(buffer->input != nullptr) {
-        inputRing.Lock();
-        written = inputRing.Write(buffer->input, buffer->frames);
-        inputRing.Unlock();
-        if(written < buffer->frames && onXRun != nullptr)
-          onXRun(-1, aggregate->_user);
-      }
-  
-      if(buffer->output != nullptr) {
-        outputRing.Lock();
-        read = outputRing.Read(buffer->output, buffer->frames);
-        outputRing.Unlock();
-        if(read < buffer->frames) {
-          ZeroBuffer(buffer->output, aggregate->_params.stream.interleaved, read, channels.outputs, buffer->frames - read, sampleSize);
-          if(onXRun != nullptr)
-            onXRun(-1, aggregate->_user);
-        }
-      }
+    aggregate->_insideCallbackCount--;
+    return;
+  }
+  if(aggregate->_running.load() != 1)
+  {
+    XtiZeroBuffer(buffer->output, interleaved, 0, channels->outputs, buffer->frames, sampleSize);
+    aggregate->_insideCallbackCount--;
+    return;
+  }
+  if(buffer->input != nullptr)
+  { 
+    XtRingBuffer* inputRing = &aggregate->_rings[index].input;
+    int32_t written = inputRing->Write(buffer->input, buffer->frames);
+    if(written < buffer->frames && onXRun != nullptr)
+      onXRun(-1, aggregate->_user);
+  }
+  if(buffer->output != nullptr)
+  { 
+    XtRingBuffer* outputRing = &aggregate->_rings[index].output;
+    int32_t read = outputRing->Read(buffer->output, buffer->frames);
+    if(read < buffer->frames)
+    {
+      XtiZeroBuffer(buffer->output, interleaved, read, channels->outputs, buffer->frames - read, sampleSize);
+      if(onXRun != nullptr)
+        onXRun(-1, aggregate->_user);
     }
   }
-  aggregate->insideCallbackCount--;
+  aggregate->_insideCallbackCount--;
 }
 
 void XT_CALLBACK XtiOnMasterBuffer(
