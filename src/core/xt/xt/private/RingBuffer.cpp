@@ -1,4 +1,5 @@
 #include <xt/private/RingBuffer.hpp>
+#include <cstring>
 
 XtRingBuffer::
 XtRingBuffer(
