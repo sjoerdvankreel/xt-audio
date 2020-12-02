@@ -118,9 +118,9 @@ XtAggregateStream::OnSlaveBuffer(XtBlockingStream const* stream, XtBuffer const*
   aggregate->_insideCallbackCount--;
 }
 
-void XT_CALLBACK XtiOnMasterBuffer(
-  const XtStream* stream, const XtBuffer* buffer, void* user) {
-
+void XT_CALLBACK 
+XtAggregateStream::OnMasterBuffer(XtBlockingStream const* stream, XtBuffer const* buffer, void* user)
+{
   size_t i;
   void* appInput;
   void* appOutput;
