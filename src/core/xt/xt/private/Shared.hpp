@@ -38,6 +38,10 @@ void
 XtiDeinterleave(void** dst, void const* src, int32_t frames, int32_t channels, int32_t size);
 void
 XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channels, int32_t size);
+void
+XtiZeroBuffer(void* buffer, XtBool interleaved, int32_t posFrames, int32_t channels, int32_t frames, int32_t sampleSize);
+void 
+XtiWeave(void* dst, void const* src, XtBool interleaved, int32_t dstChans, int32_t srcChans, int32_t dstChan, int32_t srcChan, int32_t frames, int32_t sampleSize);
 
 bool
 XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired)

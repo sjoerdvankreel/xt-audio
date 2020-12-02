@@ -109,3 +109,41 @@ XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channel
     for(int32_t c = 0; c < channels; c++)
       memcpy(&d[(f * channels + c) * size], &s[c][f * size], size);
 }
+
+void
+XtiZeroBuffer(void* buffer, XtBool interleaved, int32_t posFrames, int32_t channels, int32_t frames, int32_t sampleSize)
+{
+  size_t ss = sampleSize;
+  size_t fs = channels * ss;
+  if(frames > 0)
+    if(interleaved)
+      memset(static_cast<uint8_t*>(buffer) + posFrames * fs, 0, frames * fs);
+    else for(int32_t i = 0; i < channels; i++)
+      memset(static_cast<uint8_t**>(buffer)[i] + posFrames * ss, 0, frames * ss);
+}
+
+void 
+XtiWeave(void* dst, void const* src, XtBool interleaved, int32_t dstChans, int32_t srcChans, int32_t dstChan, int32_t srcChan, int32_t frames, int32_t sampleSize)
+{
+  assert(dstChans > 0);
+  assert(srcChans > 0);
+  assert(0 <= dstChan && dstChan < dstChans);
+  assert(0 <= srcChan && srcChan < srcChans);
+  char** dn = static_cast<char**>(dst);
+  uint8_t* di = static_cast<uint8_t*>(dst);
+  auto si = static_cast<uint8_t const*>(src);
+  auto sn = static_cast<uint8_t const* const*>(src);
+
+  if(!interleaved) for(int32_t f = 0; f < frames; f++)
+  {
+      auto to = &dn[dstChan][f * sampleSize];
+      auto from = &sn[srcChan][f * sampleSize];
+      memcpy(to, from, sampleSize);
+  }
+  else for(int32_t f = 0; f < frames; f++)
+  {
+      auto to = &di[(f * dstChans + dstChan) * sampleSize];
+      auto from = &si[(f * srcChans + srcChan) * sampleSize];
+      memcpy(to, from, sampleSize);
+  }
+}
