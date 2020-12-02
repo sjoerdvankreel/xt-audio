@@ -11,21 +11,22 @@ XtAggregateStream::GetFrames(int32_t* frames) const
 XtFault
 XtAggregateStream::Stop()
 {
-  XtFault fault;
+  XtFault fault = 0;
+  XtFault result = 0;
   if(!XtiCompareExchange(_running, 1, 0)) return 0;
   while(_insideCallbackCount.load() != 0);
-  XT_ASSERT(0 <= _masterIndex && _masterIndex < _streams.size());
-  if((fault = _streams[_masterIndex]->Stop()) != 0) return fault;
+  if((fault = _streams[_masterIndex]->Stop()) != 0) result = fault;
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
-      if((fault = _streams[i]->Stop) != 0) return fault;
-  return 0;
+      if((fault = _streams[i]->Stop) != 0) result = fault;
+  return result;
 }
 
 XtFault
 XtAggregateStream::Start()
 {
-  XtFault fault;
+  XtFault fault = 0;
+  XtFault result = 0;
   for(size_t i = 0; i < _streams.size(); i++)
   {
     _rings[i].input.Clear();
@@ -33,8 +34,14 @@ XtAggregateStream::Start()
   }
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
-      if((fault = _streams[i]->Start()) != 0) return fault;
-  if((fault = _streams[_masterIndex]->Start()) != 0)  return fault;
+      if((fault = _streams[i]->Start()) != 0) result = fault;
+  if((fault = _streams[_masterIndex]->Start()) != 0) result = fault;
+  if(fault != 0)
+  {
+    for(size_t i = 0; i < _streams.size(); i++)
+      _streams[i]->Stop();
+    return fault;
+  }
   XT_ASSERT(XtiCompareExchange(_running, 0, 1));
   return 0;
 }

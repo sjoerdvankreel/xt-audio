@@ -26,3 +26,4 @@
 * aggregate performance
 * drop W/L prefixes
 * test restart stream
+* make stream::stop idempotent
