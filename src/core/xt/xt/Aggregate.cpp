@@ -190,7 +190,6 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
 // ---- aggregate ----
 
 XtAggregate::~XtAggregate() {
-  Stop();
 }
 
 XtSystem XtAggregate::GetSystem() const {
@@ -205,7 +204,7 @@ XtFault XtAggregate::GetFrames(int32_t* frames) const {
 XtFault XtAggregate::Stop() {
   XtError error;
   XtError result = 0;
-  XT_ASSERT(XtiCompareExchange(running, 1, 0));
+  if(!XtiCompareExchange(running, 1, 0)) return;
   while(insideCallbackCount.load() != 0);
   if(masterIndex == -1 || static_cast<size_t>(masterIndex) >= streams.size())
     return 0;

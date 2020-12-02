@@ -58,7 +58,7 @@ struct WasapiStream: public XtBlockingStream {
   const CComPtr<IAudioCaptureClient> capture;
   XT_IMPLEMENT_BLOCKING_STREAM();
 
-  ~WasapiStream() { Stop(); }
+  ~WasapiStream() {  }
   WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
     CComPtr<IAudioClient> client, CComPtr<IAudioClient> loopback, CComPtr<IAudioCaptureClient> capture,
     CComPtr<IAudioRenderClient> render, const Options& options):

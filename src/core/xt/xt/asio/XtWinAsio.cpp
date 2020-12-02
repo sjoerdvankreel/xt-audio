@@ -486,7 +486,7 @@ XtSystem AsioStream::GetSystem() const {
 }
 
 XtFault AsioStream::Stop() {
-  XT_ASSERT(XtiCompareExchange(running, 1, 0));
+  if(!XtiCompareExchange(running, 1, 0)) return ASE_OK;
   while(insideCallback.load() == 1);
   return device->asio->stop();
 }

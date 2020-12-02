@@ -69,7 +69,7 @@ struct PulseStream: public XtBlockingStream {
   const int32_t bufferFrames;
   XT_IMPLEMENT_BLOCKING_STREAM();
 
-  ~PulseStream() { Stop(); }
+  ~PulseStream() {  }
   PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
   XtBlockingStream(secondary), output(output), client(std::move(c)), 
   audio(static_cast<size_t>(bufferFrames * frameSize), 0),

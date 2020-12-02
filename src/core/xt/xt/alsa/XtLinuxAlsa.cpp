@@ -107,7 +107,7 @@ struct AlsaStream: public XtBlockingStream {
   std::vector<std::vector<uint8_t>> nonInterleavedAudioChannels;  
   XT_IMPLEMENT_BLOCKING_STREAM();
 
-  ~AlsaStream() { Stop(); }
+  ~AlsaStream() { }
   AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
              int32_t bufferFrames, int32_t channels, int32_t sampleSize):
   XtBlockingStream(secondary),

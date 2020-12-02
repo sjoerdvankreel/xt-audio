@@ -56,7 +56,7 @@ struct DSoundStream: public XtBlockingStream {
   const CComPtr<IDirectSoundCaptureBuffer> capture;
   XT_IMPLEMENT_BLOCKING_STREAM();
 
-  ~DSoundStream() { Stop(); }
+  ~DSoundStream() {  }
   DSoundStream(bool secondary,
     CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
     CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
