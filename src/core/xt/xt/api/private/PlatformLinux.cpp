@@ -4,12 +4,11 @@
 #include <errno.h>
 #include <pthread.h>
 
-void 
-XtPlatform::EndThread() { }
-void 
-XtPlatform::BeginThread() { }
+void XtPlatform::EndThread() { }
+void XtPlatform::BeginThread() { }
+
 XtPlatform::~XtPlatform() {}
-XtPlatform::XtPlatform(void* window): 
+XtPlatform::XtPlatform(void* window):
 XtPlatform() {}
 
 XtCause

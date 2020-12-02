@@ -3,18 +3,15 @@
 #include <xt/Private.hpp>
 #include <Windows.h>
 
-void 
-XtPlatform::EndThread() 
-{ CoUninitialize(); }
-void 
-XtPlatform::RevertThreadPriority(int32_t policy, int32_t previous) { }
-void 
-XtPlatform::RaiseThreadPriority(int32_t* policy, int32_t* previous) { }
-void 
-XtPlatform::BeginThread()
-{ XT_ASSERT(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED))); }
+void XtPlatform
+::EndThread() { CoUninitialize(); }
+void XtPlatform::
+RevertThreadPriority(int32_t policy, int32_t previous) { }
+void XtPlatform::
+RaiseThreadPriority(int32_t* policy, int32_t* previous) { }
 
-XtPlatform::~XtPlatform()
+XtPlatform::
+~XtPlatform()
 {
   if(_ownWindow) DestroyWindow(static_cast<HWND>(_window));
   EndThread();
@@ -32,13 +29,22 @@ XtPlatform::SetupToSystem(XtSetup setup)
   }
 }
 
+void 
+XtPlatform::BeginThread() 
+{ 
+  auto hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+  XT_ASSERT(SUCCEEDED(hr)); 
+}
+
 XtPlatform::XtPlatform(void* window):
 XtPlatform()
 {
   _window = window;
   _ownWindow = window == nullptr;
   BeginThread();
-  if(window == nullptr) XT_ASSERT(_window = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0));
+  if(window != nullptr) return;
+  auto handle = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0);
+  XT_ASSERT(_window = handle);
 }
 
 #endif // _WIN32

@@ -3,7 +3,7 @@
 #include <xt/Private.hpp>
 #include <algorithm>
 
-void XT_CALL 
+void XT_CALL
 XtPlatformDestroy(XtPlatform* p)
 {
   XT_ASSERT(p != nullptr);
