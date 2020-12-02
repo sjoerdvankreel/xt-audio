@@ -25,3 +25,4 @@
 * disable c26451
 * aggregate performance
 * drop W/L prefixes
+* test restart stream

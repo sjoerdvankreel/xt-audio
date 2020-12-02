@@ -19,33 +19,40 @@ struct XtRingBuffer
   std::vector<std::vector<uint8_t>> _blocks;
 
   inline void Clear();
-  inline void Lock() const;
-  inline void Unlock() const;
   inline int32_t Full() const;
-
   int32_t Read(void* target, int32_t frames);
   int32_t Write(void const* source, int32_t frames);
 
   XtRingBuffer() = default;
   XtRingBuffer(bool interleaved, int32_t frames, int32_t channels, int32_t size);
+
+private:
+  inline void Lock() const;
+  inline void Unlock() const;
 };
 
-inline void
-XtRingBuffer::Clear() 
+struct XtIORingBuffers
 {
-  assert(_locked.v.load());
-  _begin = _end = _full = 0;
-  assert(_locked.v.load());
-}
+  XtRingBuffer input;
+  XtRingBuffer output;
+};
 
 inline int32_t
 XtRingBuffer::Full() const 
 {
   int32_t result;
-  assert(_locked.v.load());
+  Lock();
   result = _full;
-  assert(_locked.v.load());
+  Unlock();
   return result;
+}
+
+inline void
+XtRingBuffer::Clear() 
+{
+  Lock();
+  _begin = _end = _full = 0;
+  Unlock();
 }
 
 inline void

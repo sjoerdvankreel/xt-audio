@@ -25,10 +25,10 @@ _sampleSize(size), _locked(), _blocks()
 int32_t
 XtRingBuffer::Read(void* target, int32_t frames)
 {
-  int32_t i;
-  assert(_locked.v.load());
+  Lock();
   assert(0 <= _full && _full <= _frames);
 
+  int32_t i;
   int32_t frameSize = _channels * _sampleSize;
   int32_t beginFrames = _begin * frameSize;
   int32_t beginSamples = _begin * _sampleSize;
@@ -69,17 +69,17 @@ XtRingBuffer::Read(void* target, int32_t frames)
   _begin += result;
   if(_begin >= _frames) _begin -= _frames;
   assert(0 <= _full && _full <= _frames);
-  assert(_locked.v.load());
+  Unlock();
   return result;
 }
 
 int32_t
 XtRingBuffer::Write(void const* source, int32_t frames)
 {
-  int32_t i;
-  assert(_locked.v.load());
+  Lock();
   assert(0 <= _full && _full <= _frames);
 
+  int32_t i;
   int32_t empty = _frames - _full;
   int32_t result = empty > frames? frames: empty;
   int32_t frameSize = _channels * _sampleSize;
@@ -121,6 +121,6 @@ XtRingBuffer::Write(void const* source, int32_t frames)
   _full += result;
   if (_end >= _frames) _end -= _frames;
   assert(0 <= _full && _full <= _frames);
-  assert(_locked.v.load());
+  Unlock();
   return result;
 }
