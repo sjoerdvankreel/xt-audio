@@ -58,7 +58,7 @@ interleaved(), sampleSize(), locked(), blocks() {}
 XtRingBuffer::XtRingBuffer(
   bool interleaved, int32_t frames, 
   int32_t channels, int32_t sampleSize):
-end(0), full(0), blocks(), begin(0), locked(0),
+end(0), full(0), blocks(), begin(0), locked(),
 frames(frames), channels(channels),
 sampleSize(sampleSize), interleaved(interleaved) {
 
@@ -72,26 +72,26 @@ sampleSize(sampleSize), interleaved(interleaved) {
 }
 
 void XtRingBuffer::Lock() const {
-  while(!XtiCompareExchange(locked, 0, 1));
+  while(!XtiCompareExchange(locked.v, 0, 1));
 }
 
 void XtRingBuffer::Unlock() const {
-  assert(XtiCompareExchange(locked, 1, 0));
+  assert(XtiCompareExchange(locked.v, 1, 0));
 }
 
 void XtRingBuffer::Clear() {
-  assert(locked.load());
+  assert(locked.v.load());
   end = 0;
   full = 0;
   begin = 0;
-  assert(locked.load());
+  assert(locked.v.load());
 }
 
 int32_t XtRingBuffer::Full() const {
   int32_t result;
-  assert(locked.load());
+  assert(locked.v.load());
   result = full;
-  assert(locked.load());
+  assert(locked.v.load());
   return result;
 }
 
@@ -105,7 +105,7 @@ int32_t XtRingBuffer::Read(void* target, int32_t frames) {
   uint8_t* ilTarget = static_cast<uint8_t*>(target);
   uint8_t** niTarget = static_cast<uint8_t**>(target);
 
-  assert(locked.load());
+  assert(locked.v.load());
   assert(0 <= full && full <= this->frames);
   result = full > frames? frames: full;
   
@@ -135,7 +135,7 @@ int32_t XtRingBuffer::Read(void* target, int32_t frames) {
   begin += result;
   if(begin >= this->frames)
     begin -= this->frames;
-  assert(locked.load());
+  assert(locked.v.load());
   assert(0 <= full && full <= this->frames);
   return result;
 }
@@ -151,7 +151,7 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
   const uint8_t* ilSource = static_cast<const uint8_t*>(source);
   const uint8_t* const* niSource = static_cast<const uint8_t* const*>(source);
 
-  assert(locked.load());
+  assert(locked.v.load());
   assert(0 <= full && full <= this->frames);
   empty = this->frames - full;
   result = empty > frames? frames: empty;
@@ -182,7 +182,7 @@ int32_t XtRingBuffer::Write(const void* source, int32_t frames) {
   full += result;
   if (end >= this->frames)
     end -= this->frames;
-  assert(locked.load());
+  assert(locked.v.load());
   assert(0 <= full && full <= this->frames);
   return result;
 }

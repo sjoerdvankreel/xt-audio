@@ -7,6 +7,7 @@
 #include <xt/api/private/Service.hpp>
 #include <xt/private/BlockingStream.hpp>
 #include <xt/private/Shared.hpp>
+#include <xt/private/Structs.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -33,7 +34,7 @@ struct XtRingBuffer {
   int32_t channels;
   bool interleaved;
   int32_t sampleSize;
-  mutable std::atomic<int32_t> locked;
+  mutable XtAtomicInt locked;
   std::vector<std::vector<uint8_t>> blocks;
 
   XtRingBuffer();
@@ -46,9 +47,6 @@ struct XtRingBuffer {
   int32_t Full() const;
   int32_t Read(void* target, int32_t frames);
   int32_t Write(const void* source, int32_t frames);
-
-  XtRingBuffer(XtRingBuffer const&);
-  XtRingBuffer& operator=(XtRingBuffer const&);
 };
 
 struct XtAggregate: public XtStream {
