@@ -32,3 +32,4 @@
 * no locking in ringbuf
 * public/private/protected in private interface
 * simplify ::GetSystem()
+* expose blocking api?
