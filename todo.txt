@@ -27,9 +27,6 @@
 * drop W/L prefixes
 * test restart stream
 * make stream::stop idempotent
-* aggregate only on blocking, make aggregate run the thread
-* do BlockingStream with no start/stop of its own + BlockingStreamRunner wrapper
-* no locking in ringbuf
 * public/private/protected in private interface
 * simplify ::GetSystem()
-* expose blocking api?
+* expose timeout

@@ -125,12 +125,11 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
   auto ctx = static_cast<XtAggregateContext*>(user);
   int32_t index = ctx->index;
   XtAggregateStream* aggregate = ctx->stream;
-  XtFormat const* format = &aggregate->_params.format;
   XtOnXRun onXRun = aggregate->_params.stream.onXRun;
-  XtBool interleaved = aggregate->_params.stream.interleaved;
   XtChannels const* channels = &aggregate->_channels[index];
   XtRingBuffer* inputRing = &aggregate->_rings[index].input;
   XtRingBuffer* outputRing = &aggregate->_rings[index].output;
+  XtBool interleaved = aggregate->_params.stream.interleaved;
   int32_t sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
 
   for(size_t i = 0; i < aggregate->_streams.size(); i++)
@@ -152,17 +151,19 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
     XtRingBuffer* ring = &aggregate->_rings[i].input;
     XtStream const* str = aggregate->_streams[i].get();
     XtFormat const* fmt = &aggregate->_streams[i]->_params.format;
-    if(fmt->channels.inputs > 0)
+    int32_t thisIns = fmt->channels.inputs;
+    if(thisIns > 0)
     {
       int32_t read = ring->Read(ringInput, buffer->frames);
+      int32_t allIns = aggregate->_params.format.channels.inputs;
       if(read < buffer->frames)
       {
-        XtiZeroBuffer(ringInput, interleaved, read, fmt->channels.inputs, buffer->frames - read, sampleSize);
+        XtiZeroBuffer(ringInput, interleaved, read, thisIns, buffer->frames - read, sampleSize);
         if(onXRun != nullptr) onXRun(-1, aggregate->_user);
       }
-      for(int32_t c = 0; c < fmt->channels.inputs; c++)
-        XtiWeave(appInput, ringInput, interleaved, format->channels.inputs, fmt->channels.inputs, totalChannels + c, c, buffer->frames, sampleSize);
-      totalChannels += fmt->channels.inputs;
+      for(int32_t c = 0; c < thisIns; c++)
+        XtiWeave(appInput, ringInput, interleaved, allIns, thisIns, totalChannels + c, c, buffer->frames, sampleSize);
+      totalChannels += thisIns;
     }
   }
 
@@ -181,11 +182,13 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
     XtRingBuffer* ring = &aggregate->_rings[i].output;
     XtStream const* str = aggregate->_streams[i].get();
     XtFormat const* fmt = &aggregate->_streams[i]->_params.format;
-    if(fmt->channels.outputs > 0)
+    int32_t thisOuts = fmt->channels.outputs;
+    if(thisOuts > 0)
     {
-      for(int32_t c = 0; c < fmt->channels.outputs; c++)
-        XtiWeave(ringOutput, appOutput, interleaved, fmt->channels.outputs, format->channels.outputs, c, totalChannels + c, buffer->frames, sampleSize);
-      totalChannels += fmt->channels.outputs;
+      int32_t allOuts = aggregate->_params.format.channels.outputs;
+      for(int32_t c = 0; c < thisOuts; c++)
+        XtiWeave(ringOutput, appOutput, interleaved, thisOuts, allOuts, c, totalChannels + c, buffer->frames, sampleSize);
+      totalChannels += thisOuts;
       int32_t written = ring->Write(ringOutput, buffer->frames);
       if(written < buffer->frames && onXRun != nullptr)
         onXRun(-1, aggregate->_user);
