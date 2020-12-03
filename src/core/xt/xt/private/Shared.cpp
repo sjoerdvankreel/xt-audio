@@ -52,7 +52,7 @@ XtiGetServiceError(XtSystem system, XtFault fault)
   case XtSystemPulse: return XtiGetPulseError(fault);
   case XtSystemWASAPI: return XtiGetWasapiError(fault);
   case XtSystemDSound: return XtiGetDSoundError(fault);
-  default: return XT_ASSERT(false), XtServiceError();
+  default: XT_ASSERT(false); return XtServiceError();
   }
 }
 

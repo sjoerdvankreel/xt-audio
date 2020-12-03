@@ -19,6 +19,7 @@ struct XtStream
   XtIOBuffers _buffers;
   XtDeviceStreamParams _params;
 
+  XtStream() = default;
   virtual void OnXRun() const;
   void OnBuffer(XtBuffer const* buffer);
 
