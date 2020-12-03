@@ -2,8 +2,8 @@
 #define XT_WIN32_HPP
 #ifdef _WIN32
 
+#include <xt/api/public/Structs.h>
 #define NOMINMAX 1
-#include <xt/Private.hpp>
 #include <windows.h>
 #include <atlbase.h>
 #include <mmsystem.h>

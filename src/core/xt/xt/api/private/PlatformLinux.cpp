@@ -1,6 +1,5 @@
 #include <xt/api/private/Platform.hpp>
 #ifdef __linux__
-#include <xt/Private.hpp>
 #include <errno.h>
 #include <pthread.h>
 

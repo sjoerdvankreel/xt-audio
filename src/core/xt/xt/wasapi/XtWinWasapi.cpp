@@ -1,6 +1,10 @@
 #if XT_ENABLE_WASAPI
 #include <xt/Win32.hpp>
 #include <xt/private/Win32.hpp>
+#include <xt/api/private/Service.hpp>
+#include <xt/api/private/Device.hpp>
+#include <xt/api/private/Stream.hpp>
+#include <xt/private/BlockingStream.hpp>
 #define INITGUID 1
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>

@@ -26,7 +26,7 @@ int32_t
 XtRingBuffer::Read(void* target, int32_t frames)
 {
   Lock();
-  assert(0 <= _full && _full <= _frames);
+  XT_ASSERT(0 <= _full && _full <= _frames);
 
   int32_t i;
   int32_t frameSize = _channels * _sampleSize;
@@ -77,7 +77,7 @@ int32_t
 XtRingBuffer::Write(void const* source, int32_t frames)
 {
   Lock();
-  assert(0 <= _full && _full <= _frames);
+  XT_ASSERT(0 <= _full && _full <= _frames);
 
   int32_t i;
   int32_t empty = _frames - _full;

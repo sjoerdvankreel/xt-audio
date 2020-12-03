@@ -1,5 +1,5 @@
 #include <xt/api/public/XtPrint.h>
-#include <xt/Private.hpp>
+#include <xt/private/Shared.hpp>
 #include <string>
 #include <cstring>
 #include <sstream>

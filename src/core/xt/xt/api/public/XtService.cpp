@@ -1,5 +1,6 @@
 #include <xt/api/public/XtService.h>
-#include <xt/Private.hpp>
+#include <xt/api/private/Service.hpp>
+#include <xt/private/Shared.hpp>
 
 XtCapabilities XT_CALL
 XtServiceGetCapabilities(XtService const* s)

@@ -1,6 +1,6 @@
 #include <xt/api/public/XtPlatform.h>
 #include <xt/api/private/Platform.hpp>
-#include <xt/Private.hpp>
+#include <cstring>
 #include <algorithm>
 
 void XT_CALL

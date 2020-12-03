@@ -3,8 +3,8 @@
 #include <xt/api/private/Platform.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
-#include <xt/Private.hpp>
 #include <thread>
+#include <cassert>
 #include <cstring>
 
 int32_t

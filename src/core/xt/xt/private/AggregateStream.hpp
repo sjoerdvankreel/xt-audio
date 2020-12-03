@@ -27,9 +27,9 @@ public XtStream
 
   XT_IMPLEMENT_STREAM();
   static void XT_CALLBACK
-  OnSlaveBuffer(XtBlockingStream const* stream, XtBuffer const* buffer, void* user);
+  OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
   static void XT_CALLBACK
-  OnMasterBuffer(XtBlockingStream const* stream, XtBuffer const* buffer, void* user);
+  OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
 };
 
 #endif // XT_PRIVATE_AGGREGATE_STREAM_HPP

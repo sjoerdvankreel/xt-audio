@@ -3,6 +3,9 @@
 #include <xt/asio/Fault.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
+#include <xt/api/private/Service.hpp>
+#include <xt/api/private/Device.hpp>
+#include <xt/api/private/Stream.hpp>
 #include <xt/api/private/Platform.hpp>
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>

@@ -1,6 +1,5 @@
 #include <xt/api/private/Platform.hpp>
 #ifdef _WIN32
-#include <xt/Private.hpp>
 #include <Windows.h>
 
 void XtPlatform

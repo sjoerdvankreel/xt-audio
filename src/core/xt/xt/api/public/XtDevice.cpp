@@ -1,5 +1,6 @@
 #include <xt/api/public/XtDevice.h>
-#include <xt/Private.hpp>
+#include <xt/api/private/Device.hpp>
+#include <xt/private/Shared.hpp>
 #include <cstring>
 
 void XT_CALL

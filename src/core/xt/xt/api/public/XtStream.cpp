@@ -1,5 +1,7 @@
 #include <xt/api/public/XtStream.h>
-#include <xt/Private.hpp>
+#include <xt/api/private/Stream.hpp>
+#include <xt/private/Shared.hpp>
+#include <cstring>
 
 XtFormat const* XT_CALL 
 XtStreamGetFormat(XtStream const* s) 

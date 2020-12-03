@@ -1,5 +1,9 @@
 #if XT_ENABLE_DSOUND
 #include <xt/api/private/Platform.hpp>
+#include <xt/api/private/Service.hpp>
+#include <xt/api/private/Device.hpp>
+#include <xt/api/private/Stream.hpp>
+#include <xt/private/BlockingStream.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Win32.hpp>
 #include <xt/private/Services.hpp>

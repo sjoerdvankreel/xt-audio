@@ -1,4 +1,6 @@
 #ifdef _WIN32
+#include <xt/api/public/XtAudio.h>
+#include <xt/private/Shared.hpp>
 #include <xt/Win32.hpp>
 #include <vector>
 #include <cstring>

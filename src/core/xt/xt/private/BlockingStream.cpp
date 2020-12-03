@@ -1,7 +1,7 @@
 #include <xt/api/private/Platform.hpp>
 #include <xt/private/BlockingStream.hpp>
+#include <xt/private/AggregateStream.hpp>
 #include <xt/private/Shared.hpp>
-#include <xt/Private.hpp>
 #include <thread>
 
 XtBlockingStream::
