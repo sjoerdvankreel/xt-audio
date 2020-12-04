@@ -27,3 +27,4 @@
 * test restart stream
 * public/private/protected in private interface
 * simplify ::GetSystem()
+* aggregate insidecallbackcount -> assert CAS
