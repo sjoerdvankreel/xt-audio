@@ -2,8 +2,13 @@
 #define XT_PRIVATE_WIN32_HPP
 #ifdef _WIN32
 #define NOMINMAX 1
-#include <xt/private/Shared.hpp>
+#include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
 #include <Windows.h>
+#include <mmreg.h>
+#include <ks.h>
+#include <ksmedia.h>
+#include <string>
 
 struct XtPropVariant
 {
@@ -14,23 +19,12 @@ struct XtPropVariant
   XtPropVariant& operator=(XtPropVariant const&) = delete;
 };
 
-struct XtEvent
-{
-  HANDLE event;
-  XtEvent(XtEvent const&) = delete;
-  XtEvent& operator=(XtEvent const&) = delete;
-  ~XtEvent() { XT_ASSERT(CloseHandle(event)); }
-  XtEvent(): event() { XT_ASSERT((event = CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
-};
-
-struct XtWaitableTimer
-{
-  HANDLE timer;
-  XtWaitableTimer(XtWaitableTimer const&) = delete;
-  XtWaitableTimer& operator=(XtWaitableTimer const&) = delete;
-  ~XtWaitableTimer() { XT_ASSERT(CloseHandle(timer)); }
-  XtWaitableTimer() { XT_ASSERT((timer = CreateWaitableTimer(nullptr, FALSE, nullptr)) != nullptr) ; }
-};
+std::string
+XtiWideStringToUtf8(wchar_t const* wide);
+bool
+XtiFormatToWfx(XtFormat const& format, WAVEFORMATEXTENSIBLE& wfx);
+bool
+XtiWfxToFormat(WAVEFORMATEX const& wfx, XtBool output, XtFormat& format);
 
 #endif // _WIN32
 #endif // XT_PRIVATE_WIN32_HPP

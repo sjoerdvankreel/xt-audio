@@ -17,6 +17,15 @@
 
 // ---- local ----
 
+struct XtEvent
+{
+  HANDLE event;
+  XtEvent(XtEvent const&) = delete;
+  XtEvent& operator=(XtEvent const&) = delete;
+  ~XtEvent() { XT_ASSERT(CloseHandle(event)); }
+  XtEvent(): event() { XT_ASSERT((event = CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
+};
+
 struct Options {
   bool output;
   bool loopback;
@@ -220,7 +229,7 @@ XtFault WasapiDevice::GetName(char* buffer, int32_t* size) const {
 
   XT_VERIFY_COM(device->OpenPropertyStore(STGM_READ, &store));
   XT_VERIFY_COM(store->GetValue(PKEY_Device_FriendlyName, &n.pv));
-  result = XtwWideStringToUtf8(n.pv.pwszVal);
+  result = XtiWideStringToUtf8(n.pv.pwszVal);
   result.append(options.loopback? " (Loopback)": options.exclusive? " (Exclusive)": " (Shared)");
   XtiCopyString(result.c_str(), buffer, size);
   return S_OK;
@@ -238,7 +247,7 @@ XtFault WasapiDevice::GetMix(XtBool* valid, XtMix* mix) const {
     XT_VERIFY_COM(client->GetMixFormat(&wfx));
   else
     XT_VERIFY_COM(client3->GetCurrentSharedModeEnginePeriod(&wfx, &currentFrames));
-  if(XtwWfxToFormat(*wfx, options.output, match)) {
+  if(XtiWfxToFormat(*wfx, options.output, match)) {
     *valid = XtTrue;
     mix->rate = match.mix.rate;
     mix->sample = match.mix.sample;
@@ -266,7 +275,7 @@ XtFault WasapiDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) 
     size->current = engine / XtWsHnsPerMs;
     return S_OK;
   } else {
-    XT_ASSERT(XtwFormatToWfx(*format, wfx));
+    XT_ASSERT(XtiFormatToWfx(*format, wfx));
     XT_VERIFY_COM(client3->GetSharedModeEnginePeriod(reinterpret_cast<const WAVEFORMATEX*>(&wfx), &default_, &fundamental, &min, &max));
     size->min = min * 1000.0 / format->mix.rate;
     size->max = max * 1000.0 / format->mix.rate;
@@ -281,7 +290,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   CComHeapPtr<WAVEFORMATEX> mix;
   CComHeapPtr<WAVEFORMATEX> match;
 
-  if(format->channels.inputs > 0 && options.output || format->channels.outputs > 0 && !options.output || !XtwFormatToWfx(*format, wfx))
+  if(format->channels.inputs > 0 && options.output || format->channels.outputs > 0 && !options.output || !XtiFormatToWfx(*format, wfx))
     return S_OK;
   if(options.exclusive)
     hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, reinterpret_cast<WAVEFORMATEX*>(&wfx), nullptr);
@@ -322,7 +331,7 @@ XtFault WasapiDevice::OpenStream(const XtDeviceStreamParams* params, bool second
   auto pWfx = reinterpret_cast<WAVEFORMATEX*>(&wfx);
   auto pStreamClient = reinterpret_cast<void**>(&streamClient);
 
-  XT_ASSERT(XtwFormatToWfx(params->format, wfx));
+  XT_ASSERT(XtiFormatToWfx(params->format, wfx));
   wantedSize = params->bufferSize * XtWsHnsPerMs;
   XT_VERIFY_COM(client->GetDevicePeriod(&engine, &hardware));
   if(this->options.exclusive) {

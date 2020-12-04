@@ -22,6 +22,15 @@ static const double XtDsMinBufferMs = 100.0;
 static const double XtDsMaxBufferMs = 5000.0;
 static const double XtDsDefaultBufferMs = 500.0;
 
+struct XtWaitableTimer
+{
+  HANDLE timer;
+  XtWaitableTimer(XtWaitableTimer const&) = delete;
+  XtWaitableTimer& operator=(XtWaitableTimer const&) = delete;
+  ~XtWaitableTimer() { XT_ASSERT(CloseHandle(timer)); }
+  XtWaitableTimer() { XT_ASSERT((timer = CreateWaitableTimer(nullptr, FALSE, nullptr)) != nullptr) ; }
+};
+
 // ---- forward ----
 
 struct DSoundService: public XtService 
@@ -122,7 +131,7 @@ static BOOL CALLBACK EnumCallback(GUID* guid, const wchar_t* desc, const wchar_t
     return TRUE;
 
   info.output = context->output;
-  info.name = XtwWideStringToUtf8(desc);
+  info.name = XtiWideStringToUtf8(desc);
   info.guid = guid == nullptr? GUID_NULL: *guid;
   context->infos->push_back(info);
   return TRUE;
@@ -271,7 +280,7 @@ XtFault DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
     if(deviceId == thisId) {
       XT_VERIFY_COM(device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client)));
       XT_VERIFY_COM(client->GetMixFormat(&wfx));
-      if(!XtwWfxToFormat(*wfx, !input, format))
+      if(!XtiWfxToFormat(*wfx, !input, format))
         return DSERR_BADFORMAT;
       *valid = XtTrue;
       mix->rate = format.mix.rate;
@@ -296,7 +305,7 @@ XtFault DSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool second
   CComPtr<IDirectSoundCaptureBuffer> capture;
 
   double bufferSize = params->bufferSize;
-  XT_ASSERT(XtwFormatToWfx(params->format, wfx));
+  XT_ASSERT(XtiFormatToWfx(params->format, wfx));
   if(bufferSize < XtDsMinBufferMs)
     bufferSize = XtDsMinBufferMs;
   if(bufferSize > XtDsMaxBufferMs)
