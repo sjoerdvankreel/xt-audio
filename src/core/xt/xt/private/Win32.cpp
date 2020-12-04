@@ -2,6 +2,9 @@
 #include <xt/private/Win32.hpp>
 #include <xt/private/Shared.hpp>
 
+static XtSample
+XtBitsToIntSample()
+
 std::string
 XtiWideStringToUtf8(wchar_t const* wide)
 {
@@ -33,6 +36,7 @@ XtiWfxToFormat(WAVEFORMATEX const& wfx, XtBool output, XtFormat& format)
     case 32: format.mix.sample = XtSampleInt32; return true;
     default: return false;
   }
+  // this should go up
   if(wfx.wBitsPerSample != wfxe->Samples.wValidBitsPerSample)
     return false;
   if(wfxe->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
