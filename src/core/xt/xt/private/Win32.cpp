@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #include <xt/api/public/XtAudio.h>
 #include <xt/private/Win32.hpp>
 #include <xt/private/Shared.hpp>
@@ -82,3 +83,5 @@ XtiFormatToWfx(XtFormat const& format, WAVEFORMATEXTENSIBLE& wfx)
   if(wfx.dwChannelMask == 0) wfx.dwChannelMask = (1U << wfx.Format.nChannels) - 1;
   return true;
 }
+
+#endif // _WIN32

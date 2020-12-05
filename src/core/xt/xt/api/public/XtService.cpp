@@ -39,3 +39,18 @@ XtServiceOpenDefaultDevice(XtService const* s, XtBool output, XtDevice** device)
   *device = nullptr;
   return XtiCreateError(s->GetSystem(), s->OpenDefaultDevice(output, device));
 }
+
+XtError XT_CALL 
+XtServiceAggregateStream(XtService const* s, XtAggregateStreamParams const* params, void* user, XtStream** stream)
+{
+  XT_ASSERT(s != nullptr);
+  XT_ASSERT(params != nullptr);
+  XT_ASSERT(params->count > 0);
+  XT_ASSERT(stream != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(params->master != nullptr);
+  XT_ASSERT(params->devices != nullptr);
+  XT_ASSERT(params->stream.onBuffer != nullptr);
+  XT_ASSERT((s->GetCapabilities() & XtCapabilitiesAggregation) != 0);
+  return XtiCreateError(s->GetSystem(), s->AggregateStream(params, user, stream));
+}

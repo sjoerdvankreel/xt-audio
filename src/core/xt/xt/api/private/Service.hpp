@@ -3,6 +3,8 @@
 
 #include <xt/api/public/Enums.h>
 #include <xt/api/public/Shared.h>
+#include <xt/api/public/Structs.h>
+#include <xt/api/public/XtStream.h>
 #include <xt/private/Shared.hpp>
 #include <cstdint>
 
@@ -21,6 +23,7 @@ struct XtService
   virtual XtFault GetDeviceCount(int32_t* count) const = 0;
   virtual XtFault OpenDevice(int32_t index, XtDevice** device) const = 0;
   virtual XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const = 0;
+  XtFault AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const;
 };
 
 #endif // XT_API_PRIVATE_SERVICE_HPP
