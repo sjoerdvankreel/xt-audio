@@ -10,6 +10,6 @@ _output(output),
 _client(std::move(c)), 
 _audio(static_cast<size_t>(bufferFrames * frameSize), 0),
 _bufferFrames(bufferFrames) 
-{ XT_ASSERT(client._simple != nullptr); }
+{ XT_ASSERT(_client.pa != nullptr); }
 
 #endif // XT_ENABLE_PULSE

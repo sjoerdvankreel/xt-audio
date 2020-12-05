@@ -6,6 +6,7 @@
 #include <xt/api/private/Service.hpp>
 #include <xt/private/AggregateStream.hpp>
 #include <memory>
+#include <cstring>
 
 XtFault
 XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const

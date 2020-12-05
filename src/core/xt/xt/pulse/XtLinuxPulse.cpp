@@ -62,13 +62,13 @@ XtCapabilities PulseService::GetCapabilities() const {
 
 XtFault PulseService::GetDeviceCount(int32_t* count) const {
   XtPaSimple client = CreateDefaultClient(XtTrue);
-  *count = client.simple == nullptr? 0: 2;
+  *count = client.pa == nullptr? 0: 2;
   return PA_OK;
 }
 
 XtFault PulseService::OpenDevice(int32_t index, XtDevice** device) const {
   XtPaSimple client = CreateDefaultClient(index != 0);
-  if(client.simple == nullptr)
+  if(client.pa == nullptr)
     return PA_ERR_INVALIDSERVER;
   *device = new PulseDevice(index != 0);
   return PA_OK;
@@ -76,7 +76,7 @@ XtFault PulseService::OpenDevice(int32_t index, XtDevice** device) const {
 
 XtFault PulseService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
   XtPaSimple client = CreateDefaultClient(output);
-  if(client.simple != nullptr)
+  if(client.pa != nullptr)
     *device = new PulseDevice(output);
   return PA_OK;
 }
@@ -92,7 +92,7 @@ XtFault PulseDevice::ShowControlPanel() {
 }
 
 XtFault PulseDevice::GetName(char* buffer, int32_t* size) const {
-  XtiCopyString(output? "Output": "Input", buffer, size);
+  XtiCopyString(_output? "Output": "Input", buffer, size);
   return PA_OK;
 }
 
@@ -109,7 +109,7 @@ XtFault PulseDevice::GetMix(XtBool* valid, XtMix* mix) const {
 }
 
 XtFault PulseDevice::GetChannelCount(XtBool output, int32_t* count) const {
-  *count = this->output != output? 0: PA_CHANNEL_POSITION_MAX;
+  *count = _output != output? 0: PA_CHANNEL_POSITION_MAX;
   return PA_OK;
 }
 
@@ -127,9 +127,9 @@ XtFault PulseDevice::GetChannelName(XtBool output, int32_t index, char* buffer, 
 
 XtFault PulseDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
   pa_sample_format pulse;
-  if(format->channels.inputs > 0 && output)
+  if(format->channels.inputs > 0 && _output)
     return PA_OK;
-  if(format->channels.outputs > 0 && !output)
+  if(format->channels.outputs > 0 && !_output)
     return PA_OK;
   if(format->mix.rate < XtPaMinRate)
     return PA_OK;
@@ -174,11 +174,11 @@ XtFault PulseDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool sec
   
   frameSize = (params->format.channels.inputs + params->format.channels.outputs) * XtiGetSampleSize(params->format.mix.sample);
   auto id = XtPlatform::instance->_id.c_str();
-  auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
+  auto dir = _output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   if((client = pa_simple_new(nullptr, id, dir, nullptr, 
     id, &spec, &map, nullptr, &fault)) == nullptr)
     return fault;
-  *stream = new PulseStream(secondary, XtPaSimple(client), output, bufferFrames, frameSize);
+  *stream = new PulseStream(secondary, XtPaSimple(client), _output, bufferFrames, frameSize);
   return PA_OK;
 }
 
@@ -196,7 +196,7 @@ void PulseStream::StartStream() {
 }
 
 XtFault PulseStream::GetFrames(int32_t* frames) const {
-  *frames = bufferFrames;
+  *frames = _bufferFrames;
   return PA_OK;
 }
 
@@ -207,18 +207,18 @@ XtFault PulseStream::GetLatency(XtLatency* latency) const {
 void PulseStream::ProcessBuffer(bool prefill) {
   int fault;
   XtBuffer xtBuffer = { 0 };
-  void* inData = output? nullptr: &audio[0];
-  void* outData = !output? nullptr: &audio[0];
+  void* inData = _output? nullptr: &_audio[0];
+  void* outData = !_output? nullptr: &_audio[0];
 
-  if(!output && pa_simple_read(client.simple, &audio[0], audio.size(), &fault) < 0) {
+  if(!_output && pa_simple_read(_client.pa, &_audio[0], _audio.size(), &fault) < 0) {
     XT_VERIFY_ON_BUFFER(fault);
     return;
   }
   xtBuffer.input = inData;
   xtBuffer.output = outData;
-  xtBuffer.frames = bufferFrames;
+  xtBuffer.frames = _bufferFrames;
   OnBuffer(&xtBuffer);
-  if(output && pa_simple_write(client.simple, &audio[0], audio.size(), &fault) < 0)
+  if(_output && pa_simple_write(_client.pa, &_audio[0], _audio.size(), &fault) < 0)
     XT_VERIFY_ON_BUFFER(fault);
 }
 
