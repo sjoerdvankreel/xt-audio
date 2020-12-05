@@ -28,13 +28,13 @@ public XtDevice
 struct PulseStream:
 public XtBlockingStream 
 {
+  XtPaSimple _pa;
   bool const _output;
-  XtPaSimple _client;
+  int32_t const _frames;
   std::vector<uint8_t> _audio;
-  int32_t const _bufferFrames;
   
   XT_IMPLEMENT_BLOCKING_STREAM(Pulse);
-  PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize);
+  PulseStream(bool secondary, XtPaSimple&& pa, bool out, int32_t frames, int32_t frameSize);
 };
 
 #endif // XT_ENABLE_PULSE

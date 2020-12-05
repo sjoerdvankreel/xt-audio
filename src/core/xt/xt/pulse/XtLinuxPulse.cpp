@@ -24,30 +24,6 @@
 
 // ---- service ----
 
-XtCapabilities PulseService::GetCapabilities() const {
-  return static_cast<XtCapabilities>(XtCapabilitiesAggregation | XtCapabilitiesChannelMask);
-}
-
-XtFault PulseService::GetDeviceCount(int32_t* count) const {
-  XtFault fault;
-  XtPaSimple pa;
-  if((fault = XtiCreatePulseDefaultClient(XtTrue, &pa.pa)) != PA_OK) return fault;
-  *count = pa.pa == nullptr? 0: 2;
-  return PA_OK;
-}
-
-XtFault PulseService::OpenDevice(int32_t index, XtDevice** device) const {
-  return OpenDefaultDevice(index != 0, device);
-}
-
-XtFault PulseService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
-  XtFault fault;
-  XtPaSimple pa;
-  if((fault = XtiCreatePulseDefaultClient(output, &pa.pa)) != PA_OK) return fault;
-  *device = new PulseDevice(output);
-  return PA_OK;
-}
-
 // ---- device ----
 
 XtFault PulseDevice::ShowControlPanel() {
@@ -147,37 +123,5 @@ XtFault PulseDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool sec
 
 // ---- stream ----
 
-void PulseStream::StopStream() {
-}
-
-void PulseStream::StartStream() {
-}
-
-XtFault PulseStream::GetFrames(int32_t* frames) const {
-  *frames = _bufferFrames;
-  return PA_OK;
-}
-
-XtFault PulseStream::GetLatency(XtLatency* latency) const {
-  return PA_OK;
-}
-
-void PulseStream::ProcessBuffer(bool prefill) {
-  int fault;
-  XtBuffer xtBuffer = { 0 };
-  void* inData = _output? nullptr: &_audio[0];
-  void* outData = !_output? nullptr: &_audio[0];
-
-  if(!_output && pa_simple_read(_client.pa, &_audio[0], _audio.size(), &fault) < 0) {
-    XT_VERIFY_ON_BUFFER(fault);
-    return;
-  }
-  xtBuffer.input = inData;
-  xtBuffer.output = outData;
-  xtBuffer.frames = _bufferFrames;
-  OnBuffer(&xtBuffer);
-  if(_output && pa_simple_write(_client.pa, &_audio[0], _audio.size(), &fault) < 0)
-    XT_VERIFY_ON_BUFFER(fault);
-}
 
 #endif // XT_ENABLE_PULSE
