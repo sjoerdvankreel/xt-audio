@@ -49,16 +49,20 @@ XtiGetPulseFaultCause(XtFault fault)
   }
 }
 
-XtPaSimple
-XtiCreatePulseDefaultClient(XtBool output)
+int
+XtiCreatePulseDefaultClient(XtBool output, pa_simple** pa)
 {
+  int error = 0;
   pa_sample_spec spec;
   spec.rate = XtiPaDefaultRate;
   spec.channels = XtiPaDefaultChannels;
   spec.format = XtiSampleToPulse(XtiPaDefaultSample);
   char const* id = XtPlatform::instance->_id.c_str();
   auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
-  return XtPaSimple(pa_simple_new(nullptr, id, dir, nullptr, id, &spec, nullptr, nullptr, nullptr));
+  *pa = pa_simple_new(nullptr, id, dir, nullptr, id, &spec, nullptr, nullptr, &error);
+  if(error == 0) return 0;
+  if(*pa != nullptr) pa_simple_free(*pa);
+  return error;
 }
 
 #endif // XT_ENABLE_PULSE

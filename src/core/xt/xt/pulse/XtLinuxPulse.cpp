@@ -29,23 +29,22 @@ XtCapabilities PulseService::GetCapabilities() const {
 }
 
 XtFault PulseService::GetDeviceCount(int32_t* count) const {
-  XtPaSimple client = XtiCreatePulseDefaultClient(XtTrue);
-  *count = client.pa == nullptr? 0: 2;
+  XtFault fault;
+  XtPaSimple pa;
+  if((fault = XtiCreatePulseDefaultClient(XtTrue, &pa.pa)) != PA_OK) return fault;
+  *count = pa.pa == nullptr? 0: 2;
   return PA_OK;
 }
 
 XtFault PulseService::OpenDevice(int32_t index, XtDevice** device) const {
-  XtPaSimple client = XtiCreatePulseDefaultClient(index != 0);
-  if(client.pa == nullptr)
-    return PA_ERR_INVALIDSERVER;
-  *device = new PulseDevice(index != 0);
-  return PA_OK;
+  return OpenDefaultDevice(index != 0, device);
 }
 
 XtFault PulseService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
-  XtPaSimple client = XtiCreatePulseDefaultClient(output);
-  if(client.pa != nullptr)
-    *device = new PulseDevice(output);
+  XtFault fault;
+  XtPaSimple pa;
+  if((fault = XtiCreatePulseDefaultClient(output, &pa.pa)) != PA_OK) return fault;
+  *device = new PulseDevice(output);
   return PA_OK;
 }
 

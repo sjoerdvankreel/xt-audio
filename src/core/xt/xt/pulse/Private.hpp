@@ -23,24 +23,25 @@ XtiPaDefaultBufferSize = 80.0;
 inline XtSample const
 XtiPaDefaultSample = XtSampleInt16;
 
+pa_sample_format
+XtiSampleToPulse(XtSample sample);
+XtCause
+XtiGetPulseFaultCause(XtFault fault);
+int
+XtiCreatePulseDefaultClient(XtBool output, pa_simple** pa);
+
 struct XtPaSimple
 {
   pa_simple* pa;
   XtPaSimple(XtPaSimple const&) = delete;
   XtPaSimple& operator=(XtPaSimple const&) = delete;
 
+  XtPaSimple(): pa(nullptr) {}
   XtPaSimple(pa_simple* pa): pa(pa) { }
   ~XtPaSimple() { if(pa != nullptr) pa_simple_free(pa); }
   XtPaSimple(XtPaSimple&& rhs): pa(rhs.pa) { rhs.pa = nullptr; }
   XtPaSimple& operator=(XtPaSimple&& rhs) { pa = rhs.pa; rhs.pa = nullptr; return *this; }
 };
-
-pa_sample_format
-XtiSampleToPulse(XtSample sample);
-XtCause
-XtiGetPulseFaultCause(XtFault fault);
-XtPaSimple
-XtiCreatePulseDefaultClient(XtBool output);
 
 #endif // XT_ENABLE_PULSE
 #endif // XT_PULSE_PRIVATE_HPP
