@@ -26,6 +26,8 @@ public XtStream
   std::vector<std::unique_ptr<XtBlockingStream>> _streams;
 
   XT_IMPLEMENT_STREAM();
+  XtAggregateStream() = default;
+
   static void XT_CALLBACK
   OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
   static void XT_CALLBACK

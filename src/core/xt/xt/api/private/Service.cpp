@@ -25,6 +25,8 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
   result->_insideCallback.store(0);
   result->_params.stream = params->stream;
   result->_params.format.mix = params->mix;
+  result->_contexts.reserve(params->count);
+  memset(&result->_params.format.channels, 0, sizeof(XtChannels));
 
   for(int32_t i = 0; i < params->count; i++)
   {
@@ -50,11 +52,6 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
       onThisBuffer = XtAggregateStream::OnMasterBuffer;
     }
 
-    XtIORingBuffers thisRings;
-    thisRings.input = XtRingBuffer(interleaved, result->_frames, device.channels.inputs, attrs.size);
-    thisRings.output = XtRingBuffer(interleaved, result->_frames, device.channels.outputs, attrs.size);
-    result->_rings.push_back(thisRings);
-
     XtStream* thisStream;
     XtDeviceStreamParams thisParams = { 0 };
     thisParams.format = thisFormat;
@@ -77,6 +74,14 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
   XT_ASSERT(masterFound);
   XtiInitIOBuffers(result->_weave, &result->_params.format, result->_frames);
   XtiInitIOBuffers(result->_buffers, &result->_params.format, result->_frames);
+  for(int32_t i = 0; i < params->count; i++)
+  {
+    XtIORingBuffers thisRings;
+    thisRings.input = XtRingBuffer(interleaved, result->_frames, params->devices[i].channels.inputs, attrs.size);
+    thisRings.output = XtRingBuffer(interleaved, result->_frames, params->devices[i].channels.outputs, attrs.size);
+    result->_rings.push_back(thisRings);
+  }
+
   *stream = result.release();
   return 0;
 }
