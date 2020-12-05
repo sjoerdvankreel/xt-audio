@@ -77,7 +77,7 @@ struct AlsaService: public XtService
 {
   AlsaService();
   ~AlsaService();
-  XT_IMPLEMENT_SERVICE();
+  XT_IMPLEMENT_SERVICE(ALSA);
 };
 
 std::unique_ptr<XtService>
@@ -86,7 +86,7 @@ XtiCreateAlsaService()
 
 struct AlsaDevice: public XtDevice {
   const AlsaDeviceInfo info;
-  XT_IMPLEMENT_DEVICE();
+  XT_IMPLEMENT_DEVICE(ALSA);
 
   AlsaDevice(const AlsaDeviceInfo& info): info(info) {}
   XtFault SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, 
@@ -105,7 +105,7 @@ struct AlsaStream: public XtBlockingStream {
   std::vector<uint8_t> interleavedAudio;
   std::vector<void*> nonInterleavedAudio;
   std::vector<std::vector<uint8_t>> nonInterleavedAudioChannels;  
-  XT_IMPLEMENT_BLOCKING_STREAM();
+  XT_IMPLEMENT_BLOCKING_STREAM(ALSA);
 
   ~AlsaStream() { }
   AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
@@ -273,10 +273,6 @@ AlsaService::~AlsaService()
   XT_ASSERT(snd_config_update_free_global() == 0);
 }
 
-XtSystem AlsaService::GetSystem() const {
-  return XtSystemALSA;
-}
-
 XtCapabilities AlsaService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime |
@@ -324,10 +320,6 @@ XtFault AlsaService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
 }
 
 // ---- device ----
-
-XtSystem AlsaDevice::GetSystem() const {
-  return XtSystemALSA;
-}
 
 XtFault AlsaDevice::ShowControlPanel() {
   return 0;
@@ -457,11 +449,6 @@ XtFault AlsaDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
 }
 
 // ---- stream ----
-
-XtSystem
-AlsaStream::GetSystem() const {
-  return XtSystemALSA;
-}
 
 void AlsaStream::StartStream() {
   processed = 0;

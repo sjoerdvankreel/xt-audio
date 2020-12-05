@@ -39,7 +39,7 @@ static const double XtWsMaxExclusiveBufferMs = 500.0;
 
 struct WasapiService: public XtService 
 {
-  XT_IMPLEMENT_SERVICE();
+  XT_IMPLEMENT_SERVICE(WASAPI);
 };
 
 std::unique_ptr<XtService>
@@ -51,7 +51,7 @@ struct WasapiDevice: public XtDevice {
   const CComPtr<IMMDevice> device;
   const CComPtr<IAudioClient> client;
   const CComPtr<IAudioClient3> client3;
-  XT_IMPLEMENT_DEVICE();
+  XT_IMPLEMENT_DEVICE(WASAPI);
   
   WasapiDevice(CComPtr<IMMDevice> d, CComPtr<IAudioClient> c, CComPtr<IAudioClient3> c3, const Options& o):
   XtDevice(), options(o), device(d), client(c), client3(c3) {}
@@ -68,7 +68,7 @@ struct WasapiStream: public XtBlockingStream {
   const CComPtr<IAudioClient> loopback;
   const CComPtr<IAudioRenderClient> render;
   const CComPtr<IAudioCaptureClient> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM();
+  XT_IMPLEMENT_BLOCKING_STREAM(WASAPI);
 
   ~WasapiStream() {  }
   WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
@@ -97,10 +97,6 @@ static HRESULT GetDevices(
 }
 
 // ---- service -----
-
-XtSystem WasapiService::GetSystem() const {
-  return XtSystemWASAPI;
-}
 
 XtCapabilities WasapiService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
@@ -196,10 +192,6 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
 }
 
 // ---- device ----
-
-XtSystem WasapiDevice::GetSystem() const {
-  return XtSystemWASAPI;
-}
 
 XtFault WasapiDevice::ShowControlPanel() {
   return S_OK;
@@ -421,11 +413,6 @@ XtFault WasapiDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool se
 }
 
 // ---- stream ----
-
-XtSystem
-WasapiStream::GetSystem() const {
-  return XtSystemWASAPI;
-}
 
 void WasapiStream::StopStream() {
   XT_ASSERT(SUCCEEDED(client->Stop()));

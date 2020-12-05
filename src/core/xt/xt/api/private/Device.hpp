@@ -6,10 +6,10 @@
 #include <xt/api/public/Structs.h>
 #include <xt/private/Shared.hpp>
 
-#define XT_IMPLEMENT_DEVICE()                                                                       \
+#define XT_IMPLEMENT_DEVICE(s)                                                                      \
   XtFault ShowControlPanel() override;                                                              \
-  XtSystem GetSystem() const override;                                                              \
   XtFault GetMix(XtBool* valid, XtMix* mix) const override;                                         \
+  XtSystem GetSystem() const override { return XtSystem##s; }                                       \
   XtFault GetName(char* buffer, int32_t* size) const override;                                      \
   XtFault GetChannelCount(XtBool output, int32_t* count) const override;                            \
   XtFault SupportsAccess(XtBool interleaved, XtBool* supports) const override;                      \

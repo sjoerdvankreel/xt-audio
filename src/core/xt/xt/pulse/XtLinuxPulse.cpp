@@ -52,10 +52,6 @@ static XtPaSimple CreateDefaultClient(XtBool output) {
 
 // ---- service ----
 
-XtSystem PulseService::GetSystem() const {
-  return XtSystemPulse;
-}
-
 XtCapabilities PulseService::GetCapabilities() const {
   return static_cast<XtCapabilities>(XtCapabilitiesAggregation | XtCapabilitiesChannelMask);
 }
@@ -82,10 +78,6 @@ XtFault PulseService::OpenDefaultDevice(XtBool output, XtDevice** device) const 
 }
 
 // ---- device ----
-
-XtSystem PulseDevice::GetSystem() const {
-  return XtSystemPulse;
-}
 
 XtFault PulseDevice::ShowControlPanel() {
   return 0;
@@ -183,11 +175,6 @@ XtFault PulseDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool sec
 }
 
 // ---- stream ----
-
-XtSystem
-PulseStream::GetSystem() const {
-  return XtSystemPulse;
-}
 
 void PulseStream::StopStream() {
 }

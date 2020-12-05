@@ -14,14 +14,14 @@
 struct PulseService: 
 public XtService 
 {
-  XT_IMPLEMENT_SERVICE();
+  XT_IMPLEMENT_SERVICE(Pulse);
 };
 
 struct PulseDevice: 
 public XtDevice
 {
   const bool _output;
-  XT_IMPLEMENT_DEVICE();
+  XT_IMPLEMENT_DEVICE(Pulse);
   PulseDevice(bool output);
 };
 
@@ -33,7 +33,7 @@ public XtBlockingStream
   std::vector<uint8_t> _audio;
   int32_t const _bufferFrames;
   
-  XT_IMPLEMENT_BLOCKING_STREAM();
+  XT_IMPLEMENT_BLOCKING_STREAM(Pulse);
   PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize);
 };
 

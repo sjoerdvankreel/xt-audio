@@ -11,13 +11,13 @@
 #define XT_VERIFY_ON_BUFFER(expr) \
   VerifyOnBuffer(XT_LOCATION, (expr), #expr)
 
-#define XT_IMPLEMENT_BLOCKING_STREAM()               \
-  void StopStream() override;                        \
-  void StartStream() override;                       \
-  XtSystem GetSystem() const override;               \
-  void ProcessBuffer(bool prefill) override;         \
-  XtFault GetFrames(int32_t* frames) const override; \
-  XtFault GetLatency(XtLatency* latency) const override;
+#define XT_IMPLEMENT_BLOCKING_STREAM(s)                  \
+  void StopStream() override;                            \
+  void StartStream() override;                           \
+  void ProcessBuffer(bool prefill) override;             \
+  XtFault GetFrames(int32_t* frames) const override;     \
+  XtFault GetLatency(XtLatency* latency) const override; \
+  XtSystem GetSystem() const override { return XtSystem##s; }
 
 struct XtBlockingStream:
 public XtStream 

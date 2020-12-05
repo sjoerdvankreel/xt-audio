@@ -30,7 +30,7 @@ typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, 
 // ---- forward ----
 
 struct AsioService: public XtService {
-  XT_IMPLEMENT_SERVICE();
+  XT_IMPLEMENT_SERVICE(ASIO);
 };
 
 std::unique_ptr<XtService>
@@ -41,7 +41,7 @@ struct AsioDevice: public XtDevice {
   bool streamOpen;
   const std::string name;
   const CComPtr<IASIO> asio;
-  XT_IMPLEMENT_DEVICE();
+  XT_IMPLEMENT_DEVICE(ASIO);
   
   ~AsioDevice() { XT_ASSERT(!streamOpen); }
   AsioDevice(const std::string& name, CComPtr<IASIO> asio): 
@@ -60,6 +60,7 @@ struct AsioStream: public XtStream {
   std::vector<ASIOBufferInfo> buffers;
   const std::unique_ptr<asmjit::JitRuntime> runtime;
   XT_IMPLEMENT_STREAM();
+  XT_IMLEMENT_STREAM_SYSTEM(ASIO);
 
   ~AsioStream();
   AsioStream(AsioDevice* d, const XtFormat& format, 
@@ -282,10 +283,6 @@ static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
 }
 
 // ---- service ----
-XtSystem AsioService::GetSystem() const {
-  return XtSystemASIO;
-}
-
 XtCapabilities AsioService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 
@@ -323,10 +320,6 @@ XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {
 }
 
 // ---- device ----
-
-XtSystem AsioDevice::GetSystem() const {
-  return XtSystemASIO;
-}
 
 XtFault AsioDevice::ShowControlPanel() {
   return asio->controlPanel();
@@ -483,10 +476,6 @@ XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
 }
 
 // ---- stream ----
-
-XtSystem AsioStream::GetSystem() const {
-  return XtSystemASIO;
-}
 
 XtFault AsioStream::Stop() {
   if(!XtiCompareExchange(running, 1, 0)) return ASE_OK;

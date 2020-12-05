@@ -88,7 +88,7 @@ struct JackService: public XtService
 {
   ~JackService();
   JackService();
-  XT_IMPLEMENT_SERVICE();
+  XT_IMPLEMENT_SERVICE(JACK);
 };
 
 std::unique_ptr<XtService>
@@ -97,7 +97,7 @@ XtiCreateJackService()
 
 struct JackDevice: public XtDevice {
   const XtJackClient client;
-  XT_IMPLEMENT_DEVICE();
+  XT_IMPLEMENT_DEVICE(JACK);
   JackDevice(XtJackClient&& c):
   client(std::move(c)) { XT_ASSERT(client.client != nullptr); }
 };
@@ -110,6 +110,7 @@ struct JackStream: public XtStream {
   std::vector<void*> outputChannels;
   std::vector<XtJackConnection> connections;
   XT_IMPLEMENT_STREAM();
+  XT_IMLEMENT_STREAM_SYSTEM(JACK);
 
   JackStream(XtJackClient&& client, 
     std::vector<XtJackPort>&& inputs, std::vector<XtJackPort>&& outputs,
@@ -211,10 +212,6 @@ JackService::JackService()
 JackService::~JackService()
 { jack_set_error_function(&JackSilentCallback); }
 
-XtSystem JackService::GetSystem() const {
-  return XtSystemJACK;
-}
-
 XtCapabilities JackService::GetCapabilities() const {
   return static_cast<XtCapabilities>(
     XtCapabilitiesTime | 
@@ -245,10 +242,6 @@ XtFault JackService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
 }
 
 // ---- device ----
-
-XtSystem JackDevice::GetSystem() const {
-  return XtSystemJACK;
-}
 
 XtFault JackDevice::ShowControlPanel() {
   return 0;
@@ -345,10 +338,6 @@ XtFault JackDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
 }
 
 // ---- stream ----
-
-XtSystem JackStream::GetSystem() const {
-  return XtSystemJACK;
-}
 
 XtFault JackStream::Stop() {
   connections.clear();

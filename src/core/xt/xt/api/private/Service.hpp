@@ -8,10 +8,10 @@
 #include <xt/private/Shared.hpp>
 #include <cstdint>
 
-#define XT_IMPLEMENT_SERVICE()                                         \
-  XtSystem GetSystem() const override;                                 \
+#define XT_IMPLEMENT_SERVICE(s)                                        \
   XtCapabilities GetCapabilities() const override;                     \
   XtFault GetDeviceCount(int32_t* count) const override;               \
+  XtSystem GetSystem() const override { return XtSystem##s; }          \
   XtFault OpenDevice(int32_t index, XtDevice** device) const override; \
   XtFault OpenDefaultDevice(XtBool output, XtDevice** device) const override;
 

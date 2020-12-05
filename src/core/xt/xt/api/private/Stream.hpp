@@ -8,9 +8,11 @@
 #define XT_IMPLEMENT_STREAM()                        \
   XtFault Stop() override;                           \
   XtFault Start() override;                          \
-  XtSystem GetSystem() const override;               \
   XtFault GetFrames(int32_t* frames) const override; \
   XtFault GetLatency(XtLatency* latency) const override;
+
+#define XT_IMLEMENT_STREAM_SYSTEM(s) \
+  XtSystem GetSystem() const override { return XtSystem##s; }
 
 struct XtStream 
 {

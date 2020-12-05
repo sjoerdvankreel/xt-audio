@@ -34,7 +34,7 @@ struct XtWaitableTimer
 
 struct DSoundService: public XtService 
 {
-  XT_IMPLEMENT_SERVICE();
+  XT_IMPLEMENT_SERVICE(DSound);
 };
 
 std::unique_ptr<XtService>
@@ -46,7 +46,7 @@ struct DSoundDevice: public XtDevice {
   const std::string name;
   const CComPtr<IDirectSound> output;
   const CComPtr<IDirectSoundCapture> input;
-  XT_IMPLEMENT_DEVICE();
+  XT_IMPLEMENT_DEVICE(DSound);
 
   DSoundDevice(
     const GUID& g, const std::string& n, 
@@ -66,7 +66,7 @@ struct DSoundStream: public XtBlockingStream {
   const CComPtr<IDirectSoundCapture> input;
   const CComPtr<IDirectSoundBuffer> render;
   const CComPtr<IDirectSoundCaptureBuffer> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM();
+  XT_IMPLEMENT_BLOCKING_STREAM(DSound);
 
   ~DSoundStream() {  }
   DSoundStream(bool secondary,
@@ -166,10 +166,6 @@ static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {
 
 // ---- service ----
 
-XtSystem DSoundService::GetSystem() const {
-  return XtSystemDSound;
-}
-
 XtCapabilities DSoundService::GetCapabilities() const {
   return static_cast<XtCapabilities>(XtCapabilitiesAggregation | XtCapabilitiesChannelMask);
 }
@@ -203,10 +199,6 @@ XtFault DSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const
 }
 
 // ---- device ----
-
-XtSystem DSoundDevice::GetSystem() const {
-  return XtSystemDSound;
-}
 
 XtFault DSoundDevice::ShowControlPanel() {
   return S_OK;
@@ -333,11 +325,6 @@ XtFault DSoundDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool se
 }
 
 // ---- stream ----
-
-XtSystem
-DSoundStream::GetSystem() const {
-  return XtSystemDSound;
-}
 
 XtFault DSoundStream::GetFrames(int32_t* frames) const {
   *frames = bufferFrames;
