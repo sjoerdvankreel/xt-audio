@@ -14,41 +14,13 @@
 
 // ---- local ----
 
-static const int32_t XtPaMinRate = 1;
-static const int32_t XtPaMaxRate = 192000;
-static const int32_t XtPaDefaultRate = 44100;
-static const int32_t XtPaDefaultChannels = 2;
-static const double XtPaMinBufferSize = 1.0;
-static const double XtPaMaxBufferSize = 2000.0;
-static const double XtPaDefaultBufferSize = 80.0;
-static const XtSample XtPaDefaultSample = XtSampleInt16;
+
 
 // ---- forward ----
 
 
 
 // ---- local ----
-
-static pa_sample_format ToPulseSample(XtSample sample) {
-  switch(sample) {
-  case XtSampleUInt8: return PA_SAMPLE_U8; 
-  case XtSampleInt16: return PA_SAMPLE_S16LE; 
-  case XtSampleInt24: return PA_SAMPLE_S24LE; 
-  case XtSampleInt32: return PA_SAMPLE_S32LE; 
-  case XtSampleFloat32: return PA_SAMPLE_FLOAT32LE;
-  default: return XT_ASSERT(false), PA_SAMPLE_U8;
-  }
-}
-
-static XtPaSimple CreateDefaultClient(XtBool output) {
-  pa_sample_spec spec;
-  spec.rate = XtPaDefaultRate;
-  spec.channels = XtPaDefaultChannels;
-  spec.format = ToPulseSample(XtPaDefaultSample);
-  auto dir = output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
-  return XtPaSimple(pa_simple_new(nullptr, XtPlatform::instance->_id.c_str(), dir,
-    nullptr, XtPlatform::instance->_id.c_str(), &spec, nullptr, nullptr, nullptr));
-}
 
 // ---- service ----
 
@@ -57,13 +29,13 @@ XtCapabilities PulseService::GetCapabilities() const {
 }
 
 XtFault PulseService::GetDeviceCount(int32_t* count) const {
-  XtPaSimple client = CreateDefaultClient(XtTrue);
+  XtPaSimple client = XtiCreatePulseDefaultClient(XtTrue);
   *count = client.pa == nullptr? 0: 2;
   return PA_OK;
 }
 
 XtFault PulseService::OpenDevice(int32_t index, XtDevice** device) const {
-  XtPaSimple client = CreateDefaultClient(index != 0);
+  XtPaSimple client = XtiCreatePulseDefaultClient(index != 0);
   if(client.pa == nullptr)
     return PA_ERR_INVALIDSERVER;
   *device = new PulseDevice(index != 0);
@@ -71,7 +43,7 @@ XtFault PulseService::OpenDevice(int32_t index, XtDevice** device) const {
 }
 
 XtFault PulseService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
-  XtPaSimple client = CreateDefaultClient(output);
+  XtPaSimple client = XtiCreatePulseDefaultClient(output);
   if(client.pa != nullptr)
     *device = new PulseDevice(output);
   return PA_OK;
@@ -95,8 +67,8 @@ XtFault PulseDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const 
 
 XtFault PulseDevice::GetMix(XtBool* valid, XtMix* mix) const {
   *valid = XtTrue;
-  mix->rate = XtPaDefaultRate;
-  mix->sample = XtPaDefaultSample;
+  mix->rate = XtiPaDefaultRate;
+  mix->sample = XtiPaDefaultSample;
   return PA_OK;
 }
 
@@ -106,9 +78,9 @@ XtFault PulseDevice::GetChannelCount(XtBool output, int32_t* count) const {
 }
 
 XtFault PulseDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
-  size->min = XtPaMinBufferSize;
-  size->max = XtPaMaxBufferSize;
-  size->current = XtPaDefaultBufferSize;
+  size->min = XtiPaMinBufferSize;
+  size->max = XtiPaMaxBufferSize;
+  size->current = XtiPaDefaultBufferSize;
   return PA_OK;
 }
 
@@ -123,9 +95,9 @@ XtFault PulseDevice::SupportsFormat(const XtFormat* format, XtBool* supports) co
     return PA_OK;
   if(format->channels.outputs > 0 && !_output)
     return PA_OK;
-  if(format->mix.rate < XtPaMinRate)
+  if(format->mix.rate < XtiPaMinRate)
     return PA_OK;
-  if(format->mix.rate > XtPaMaxRate)
+  if(format->mix.rate > XtiPaMaxRate)
     return PA_OK;
   if(format->channels.inputs >= PA_CHANNEL_POSITION_MAX)
     return PA_OK;
@@ -151,7 +123,7 @@ XtFault PulseDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool sec
 
   bufferFrames = static_cast<int32_t>(params->bufferSize / 1000.0 * params->format.mix.rate);
   spec.rate = params->format.mix.rate;
-  spec.format = ToPulseSample(params->format.mix.sample);
+  spec.format = XtiSampleToPulse(params->format.mix.sample);
   spec.channels = params->format.channels.inputs + params->format.channels.outputs;
   mask = params->format.channels.inMask? params->format.channels.inMask: params->format.channels.outMask;
   if(mask == 0)
