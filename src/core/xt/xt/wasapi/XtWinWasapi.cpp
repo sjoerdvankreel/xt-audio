@@ -305,7 +305,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   return S_OK;
 }
 
-XtFault WasapiDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault WasapiDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   HRESULT hr;
   DWORD flags;

@@ -80,6 +80,18 @@ XtDeviceGetBufferSize(XtDevice const* d, XtFormat const* format, XtBufferSize* s
   return XtiCreateError(d->GetSystem(), d->GetBufferSize(format, size));
 }
 
+XtError XT_CALL 
+XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream)
+{  
+  XT_ASSERT(d != nullptr);
+  XT_ASSERT(params != nullptr);
+  XT_ASSERT(stream != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(params->bufferSize > 0.0);
+  XT_ASSERT(params->stream.onBuffer != nullptr);
+  return d->OpenStream(params, false, user, stream);
+}
+
 XtError XT_CALL
 XtDeviceGetChannelName(XtDevice const* d, XtBool output, int32_t index, char* buffer, int32_t* size)
 {

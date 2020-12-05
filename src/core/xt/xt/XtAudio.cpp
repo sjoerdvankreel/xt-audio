@@ -22,44 +22,6 @@
 #include <inttypes.h>
 
 // ---- local ----
-
-
-
-static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
-
-  XtError error;
-  XtFault fault;
-  int32_t frames;
-  XtSystem system;
-  XtBool supports;
-
-  double rate = params->format.mix.rate;
-  uint64_t inMask = params->format.channels.inMask;
-  int32_t inputs = params->format.channels.inputs;
-  uint64_t outMask = params->format.channels.outMask;
-  int32_t outputs = params->format.channels.outputs;
-  XtSample sample = params->format.mix.sample;
-
-  auto attributes = XtAudioGetSampleAttributes(sample);
-
-  *stream = nullptr;
-  system = d->GetSystem();  
-  if((error = XtDeviceSupportsAccess(d, params->stream.interleaved, &supports)) != 0)
-    return error;
-  if((fault = d->OpenStream(params, secondary, user, stream)) != 0)
-    return XtiCreateError(d->GetSystem(), fault);
-  if((fault = (*stream)->GetFrames(&frames)) != 0) {
-    XtStreamDestroy(*stream);
-    return XtiCreateError(d->GetSystem(), fault);
-  }
-
-  (*stream)->_user = user;
-  (*stream)->_params = *params;
-  (*stream)->_emulated = !supports;
-  XtiInitIOBuffers((*stream)->_buffers, &params->format, frames);
-  return 0;
-}
-
 // ---- service ----
 
 XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateStreamParams* params, void* user, XtStream** stream) {
@@ -120,7 +82,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
     thisParams.stream.interleaved = params->stream.interleaved;
     thisParams.stream.onBuffer = onThisBuffer;
     thisParams.stream.onXRun = params->stream.onXRun;
-    if((error = OpenStreamInternal(params->devices[i].device, &thisParams, params->master != params->devices[i].device, &result->_contexts[i], &thisStream) != 0))
+    if((error = params->devices[i].device->OpenStream(&thisParams, params->master != params->devices[i].device, &result->_contexts[i], &thisStream) != 0))
       return error;
     auto thisBlocking = &dynamic_cast<XtBlockingStream&>(*thisStream);
     result->_streams.push_back(std::unique_ptr<XtBlockingStream>(thisBlocking));
@@ -146,14 +108,3 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
 }
 
 // ---- device ----
-
-XtError XT_CALL XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream) {  
-
-  XT_ASSERT(d != nullptr);
-  XT_ASSERT(params != nullptr);
-  XT_ASSERT(stream != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(params->bufferSize > 0.0);
-  XT_ASSERT(params->stream.onBuffer != nullptr);
-  return OpenStreamInternal(d, params, false, user, stream);
-}

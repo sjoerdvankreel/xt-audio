@@ -312,7 +312,7 @@ XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return 0;
 }
 
-XtFault JackDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault JackDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   XtFault fault;
   jack_client_t* c;

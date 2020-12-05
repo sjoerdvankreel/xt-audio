@@ -16,7 +16,7 @@
   XtFault SupportsFormat(XtFormat const* format, XtBool* supports) const override;                  \
   XtFault GetBufferSize(XtFormat const* format, XtBufferSize* size) const override;                 \
   XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const override; \
-  XtFault OpenStream(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream) override
+  XtFault OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream) override
 
 struct XtDevice
 {
@@ -30,7 +30,8 @@ struct XtDevice
   virtual XtFault SupportsFormat(XtFormat const* format, XtBool* supports) const = 0;
   virtual XtFault GetBufferSize(XtFormat const* format, XtBufferSize* size) const = 0;
   virtual XtFault GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const = 0;
-  virtual XtFault OpenStream(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream) = 0;
+  XtFault OpenStream(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream);
+  virtual XtFault OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream) = 0;
 };
 
 #endif // XT_API_PRIVATE_DEVICE_HPP

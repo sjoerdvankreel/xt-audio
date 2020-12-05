@@ -290,7 +290,7 @@ XtFault DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
   return S_OK;
 }
 
-XtFault DSoundDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault DSoundDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   HRESULT hr;
   int32_t frameSize;

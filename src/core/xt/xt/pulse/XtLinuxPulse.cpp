@@ -196,7 +196,7 @@ XtFault PulseDevice::SupportsFormat(const XtFormat* format, XtBool* supports) co
   return PA_OK;
 }
 
-XtFault PulseDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault PulseDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
   uint64_t mask;
   pa_simple* client;

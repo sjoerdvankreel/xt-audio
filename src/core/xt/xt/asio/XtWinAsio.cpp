@@ -443,7 +443,7 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   return ASE_OK;
 }
 
-XtFault AsioDevice::OpenStream(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   double wantedSize;
   long asioBufferSize;
