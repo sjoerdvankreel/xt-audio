@@ -15,7 +15,7 @@ XtAggregateStream::Stop()
   XtFault fault = 0;
   XtFault result = 0;
   if(!XtiCompareExchange(_running, 1, 0)) return 0;
-  while(_insideCallbackCount.load() != 0);
+  while(_insideCallback.load() != 0);
   if((fault = _streams[_masterIndex]->Stop()) != 0) result = fault;
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
@@ -82,20 +82,17 @@ XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer,
   XtBool interleaved = aggregate->_params.stream.interleaved;
   auto sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
 
-  aggregate->_insideCallbackCount++;
   if(buffer->error != 0) 
   {
     for(int32_t i = 0; i < aggregate->_streams.size(); i++)
       if(i != static_cast<size_t>(index))
         aggregate->_streams[i]->RequestStop();
     aggregate->_params.stream.onBuffer(aggregate, buffer, aggregate->_user);
-    aggregate->_insideCallbackCount--;
     return;
   }
   if(aggregate->_running.load() != 1)
   {
     XtiZeroBuffer(buffer->output, interleaved, 0, channels->outputs, buffer->frames, sampleSize);
-    aggregate->_insideCallbackCount--;
     return;
   }
   if(buffer->input != nullptr)
@@ -116,7 +113,6 @@ XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer,
         onXRun(-1, aggregate->_user);
     }
   }
-  aggregate->_insideCallbackCount--;
 }
 
 void XT_CALLBACK 
@@ -132,14 +128,17 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
   XtBool interleaved = aggregate->_params.stream.interleaved;
   int32_t sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
 
+  XT_ASSERT(XtiCompareExchange(aggregate->_insideCallback, 0, 1));
   for(size_t i = 0; i < aggregate->_streams.size(); i++)
     if(i != aggregate->_masterIndex)
       aggregate->_streams[i]->ProcessBuffer(false);
 
   OnSlaveBuffer(stream, buffer, user);
-  if(buffer->error != 0) return;
-  if(aggregate->_running.load() != 1) return;
-  aggregate->_insideCallbackCount++;
+  if(buffer->error != 0 || aggregate->_running.load() != 1)
+  {
+    XT_ASSERT(XtiCompareExchange(aggregate->_insideCallback, 1, 0));
+    return;
+  }
 
   int32_t totalChannels = 0;
   auto& wi = aggregate->_weave.input;
@@ -195,5 +194,5 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
     }
   }
 
-  aggregate->_insideCallbackCount--;
+  XT_ASSERT(XtiCompareExchange(aggregate->_insideCallback, 1, 0));
 }

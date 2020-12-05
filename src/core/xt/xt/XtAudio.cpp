@@ -97,7 +97,7 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
   result->_running = 0;
   result->_system = system;
   result->_masterIndex = -1;
-  result->_insideCallbackCount.store(0);
+  result->_insideCallback.store(0);
   result->_params.stream = params->stream;
   result->_emulated = false;
   result->_rings = std::vector<XtIORingBuffers>(params->count, XtIORingBuffers());

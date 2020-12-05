@@ -2,15 +2,12 @@
 #include <xt/private/Win32.hpp>
 #include <xt/private/Shared.hpp>
 
-static XtSample
-XtBitsToIntSample()
-
 std::string
 XtiWideStringToUtf8(wchar_t const* wide)
 {
   int count;
   XT_ASSERT((count = WideCharToMultiByte(CP_UTF8, 0, wide, -1, nullptr, 0, nullptr, 0)) > 0);
-  std::string result(count - 1, '\0');
+  std::string result(static_cast<size_t>(count) - 1, '\0');
   XT_ASSERT(WideCharToMultiByte(CP_UTF8, 0, wide, -1, &result[0], count, nullptr, 0) > 0);
   return result;
 }
@@ -36,7 +33,6 @@ XtiWfxToFormat(WAVEFORMATEX const& wfx, XtBool output, XtFormat& format)
     case 32: format.mix.sample = XtSampleInt32; return true;
     default: return false;
   }
-  // this should go up
   if(wfx.wBitsPerSample != wfxe->Samples.wValidBitsPerSample)
     return false;
   if(wfxe->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)

@@ -21,8 +21,8 @@ public XtStream
   std::atomic<int32_t> _running;
   std::vector<XtChannels> _channels;
   std::vector<XtIORingBuffers> _rings; 
+  std::atomic<int32_t> _insideCallback;
   std::vector<XtAggregateContext> _contexts;
-  std::atomic<int32_t> _insideCallbackCount;
   std::vector<std::unique_ptr<XtBlockingStream>> _streams;
 
   XT_IMPLEMENT_STREAM();
