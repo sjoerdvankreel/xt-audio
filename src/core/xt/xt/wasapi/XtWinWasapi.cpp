@@ -1,5 +1,4 @@
 #if XT_ENABLE_WASAPI
-#include <xt/Win32.hpp>
 #include <xt/private/Win32.hpp>
 #include <xt/api/private/Service.hpp>
 #include <xt/api/private/Device.hpp>
@@ -207,12 +206,12 @@ XtFault WasapiDevice::ShowControlPanel() {
 }
 
 XtFault WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  XtiCopyString(XtwWfxChannelNames[index], buffer, size);
+  XtiCopyString(XtiWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 
 XtFault WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const {
-  *count =  (output != XtFalse) != options.output? 0: sizeof(XtwWfxChannelNames) / sizeof(const char*);
+  *count =  (output != XtFalse) != options.output? 0: sizeof(XtiWfxChannelNames) / sizeof(const char*);
   return S_OK;
 }
 

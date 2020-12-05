@@ -5,10 +5,17 @@
 #include <xt/api/public/Shared.h>
 #include <xt/api/public/Structs.h>
 #include <Windows.h>
+#include <atlbase.h>
 #include <mmreg.h>
 #include <ks.h>
 #include <ksmedia.h>
 #include <string>
+
+extern char const*
+XtiWfxChannelNames[18];
+
+#define XT_VERIFY_COM(e) \
+  do { if(FAILED(hr = (e))) return XT_TRACE(#e), hr; } while(0)
 
 struct XtPropVariant
 {

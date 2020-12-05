@@ -7,7 +7,6 @@
 #include <xt/private/Shared.hpp>
 #include <xt/private/Win32.hpp>
 #include <xt/private/Services.hpp>
-#include <xt/Win32.hpp>
 #define INITGUID 1
 #include <dsound.h>
 #include <mmdeviceapi.h>
@@ -239,12 +238,12 @@ XtFault DSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
 }
 
 XtFault DSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  XtiCopyString(XtwWfxChannelNames[index], buffer, size);
+  XtiCopyString(XtiWfxChannelNames[index], buffer, size);
   return S_OK;
 }
 
 XtFault DSoundDevice::GetChannelCount(XtBool output, int32_t* count) const {
-  *count = (output != XtFalse) == !this->output? 0:  sizeof(XtwWfxChannelNames) / sizeof(const char*);
+  *count = (output != XtFalse) == !this->output? 0:  sizeof(XtiWfxChannelNames) / sizeof(const char*);
   return S_OK;
 }
 

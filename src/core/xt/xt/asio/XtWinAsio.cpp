@@ -1,8 +1,8 @@
 #if XT_ENABLE_ASIO
-#include <xt/Win32.hpp>
 #include <xt/asio/Fault.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
+#include <xt/private/Win32.hpp>
 #include <xt/api/private/Service.hpp>
 #include <xt/api/private/Device.hpp>
 #include <xt/api/private/Stream.hpp>
