@@ -1,9 +1,14 @@
 #if XT_ENABLE_PULSE
-#include <xt/pulse/Fault.hpp>
+#include <xt/pulse/Shared.hpp>
+#include <xt/private/Services.hpp>
 #include <pulse/pulseaudio.h>
 
-XtCause
-XtiGetPulseFaultCause(XtFault fault)
+std::unique_ptr<XtService>
+XtiCreatePulseService()
+{ return std::make_unique<PulseService>(); }
+
+static XtCause
+GetPulseFaultCause(XtFault fault)
 { 
   switch(fault) 
   {
@@ -18,6 +23,15 @@ XtiGetPulseFaultCause(XtFault fault)
   case PA_ERR_CONNECTIONTERMINATED: return XtCauseService;
   default: return XtCauseUnknown;
   }
+}
+
+XtServiceError
+XtiGetPulseError(XtFault fault)
+{
+  XtServiceError result;
+  result.text = pa_strerror(fault);
+  result.cause = GetPulseFaultCause(fault);
+  return result;
 }
 
 #endif // XT_ENABLE_PULSE

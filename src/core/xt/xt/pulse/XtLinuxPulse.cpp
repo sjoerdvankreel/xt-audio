@@ -6,6 +6,7 @@
 #include <xt/private/BlockingStream.hpp>
 #include <xt/private/Shared.hpp>
 #include <xt/private/Services.hpp>
+#include <xt/pulse/Shared.hpp>
 #include <pulse/simple.h>
 #include <pulse/pulseaudio.h>
 #include <memory>
@@ -22,60 +23,9 @@ static const double XtPaMaxBufferSize = 2000.0;
 static const double XtPaDefaultBufferSize = 80.0;
 static const XtSample XtPaDefaultSample = XtSampleInt16;
 
-struct XtPaSimple {
-  pa_simple* simple;
-  XtPaSimple(const XtPaSimple&) = delete;
-  XtPaSimple& operator=(const XtPaSimple&) = delete;
-
-  XtPaSimple(XtPaSimple&& rhs):
-  simple(rhs.simple)
-  { rhs.simple = nullptr; }
-
-  XtPaSimple(pa_simple* simple):
-  simple(simple) {}
-
-  XtPaSimple& operator=(XtPaSimple&& rhs) {
-    simple = rhs.simple;
-    rhs.simple = nullptr;
-    return *this;
-  }
-
-  ~XtPaSimple() 
-  { if(simple != nullptr) pa_simple_free(simple); }
-};
-
 // ---- forward ----
 
-struct PulseService: public XtService 
-{
-  XT_IMPLEMENT_SERVICE();
-};
 
-std::unique_ptr<XtService>
-XtiCreatePulseService()
-{ return std::make_unique<PulseService>(); }
-
-struct PulseDevice: public XtDevice {
-  const bool output;
-  XT_IMPLEMENT_DEVICE();
-  PulseDevice(bool output):
-  output(output) {}
-};
-
-struct PulseStream: public XtBlockingStream {
-  const bool output;
-  const XtPaSimple client;
-  std::vector<uint8_t> audio;
-  const int32_t bufferFrames;
-  XT_IMPLEMENT_BLOCKING_STREAM();
-
-  ~PulseStream() {  }
-  PulseStream(bool secondary, XtPaSimple&& c, bool output, int32_t bufferFrames, int32_t frameSize):
-  XtBlockingStream(secondary), output(output), client(std::move(c)), 
-  audio(static_cast<size_t>(bufferFrames * frameSize), 0),
-  bufferFrames(bufferFrames) 
-  { XT_ASSERT(client.simple != nullptr); }
-};
 
 // ---- local ----
 
