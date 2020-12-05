@@ -4,6 +4,7 @@
 #include <xt/api/public/Enums.h>
 #include <xt/api/public/Shared.h>
 #include <xt/api/public/Structs.h>
+#include <xt/private/Structs.hpp>
 #include <atomic>
 #include <cstdint>
 
@@ -34,6 +35,10 @@ void
 XtiCopyString(char const* source, char* buffer, int32_t* size);
 inline bool
 XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired);
+void 
+XtiInitIOBuffers(XtIOBuffers& buffers, XtFormat const* format, size_t frames);
+void
+XtiInitBuffers(XtBuffers& buffers, XtSample sample, size_t channels, size_t frames);
 void
 XtiDeinterleave(void** dst, void const* src, int32_t frames, int32_t channels, int32_t size);
 void

@@ -23,23 +23,7 @@
 
 // ---- local ----
 
-static void InitStreamBuffers(
-  XtIOBuffers& buffers, const XtFormat* format, int32_t frames) {
 
-  int32_t sampleSize = XtiGetSampleSize(format->mix.sample);
-  buffers.input.interleaved = std::vector<uint8_t>(frames * format->channels.inputs * sampleSize, 0);
-  buffers.output.interleaved = std::vector<uint8_t>(frames * format->channels.outputs * sampleSize, 0);
-  buffers.input.nonInterleaved = std::vector<void*>(format->channels.inputs, nullptr);
-  buffers.output.nonInterleaved = std::vector<void*>(format->channels.outputs, nullptr);
-  buffers.input.channels = std::vector<std::vector<uint8_t>>(
-    format->channels.inputs, std::vector<uint8_t>(frames * sampleSize, 0));
-  buffers.output.channels = std::vector<std::vector<uint8_t>>(
-    format->channels.outputs, std::vector<uint8_t>(frames * sampleSize, 0));
-  for(int32_t i = 0; i < format->channels.inputs; i++)
-    buffers.input.nonInterleaved[i] = &(buffers.input.channels[i][0]);
-  for(int32_t i = 0; i < format->channels.outputs; i++)
-    buffers.output.nonInterleaved[i] = &(buffers.output.channels[i][0]);
-}
 
 static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 
@@ -72,7 +56,7 @@ static XtError OpenStreamInternal(XtDevice* d, const XtDeviceStreamParams* param
   (*stream)->_user = user;
   (*stream)->_params = *params;
   (*stream)->_emulated = !supports;
-  InitStreamBuffers((*stream)->_buffers, &params->format, frames);
+  XtiInitIOBuffers((*stream)->_buffers, &params->format, frames);
   return 0;
 }
 
@@ -150,8 +134,8 @@ XtError XT_CALL XtServiceAggregateStream(const XtService* s, const XtAggregateSt
 
   result->_params.format = format;
   result->_frames = frames * 2;
-  InitStreamBuffers(result->_weave, &format, frames);
-  InitStreamBuffers(result->_buffers, &format, frames);
+  XtiInitIOBuffers(result->_weave, &format, frames);
+  XtiInitIOBuffers(result->_buffers, &format, frames);
   for(int32_t i = 0; i < params->count; i++) {
     result->_rings[i].input = XtRingBuffer(params->stream.interleaved != XtFalse, result->_frames, params->devices[i].channels.inputs, attrs.size);
     result->_rings[i].output = XtRingBuffer(params->stream.interleaved != XtFalse, result->_frames, params->devices[i].channels.outputs, attrs.size);

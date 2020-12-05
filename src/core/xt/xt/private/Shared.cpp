@@ -83,6 +83,25 @@ XtiTrace(XtLocation const& location, char const* msg)
 }
 
 void
+XtiInitBuffers(XtBuffers& buffers, XtSample sample, size_t channels, size_t frames)
+{
+  int32_t size = XtiGetSampleSize(sample);
+  std::vector<uint8_t> channel(frames * size, 0);
+  buffers.nonInterleaved = std::vector<void*>(channels, nullptr);
+  buffers.interleaved = std::vector<uint8_t>(frames * channels * size, 0);
+  buffers.channels = std::vector<std::vector<uint8_t>>(channels, channel);
+  for(int32_t i = 0; i < channels; i++)
+    buffers.nonInterleaved[i] = &(buffers.channels[i][0]);
+}
+
+void
+XtiInitIOBuffers(XtIOBuffers& buffers, XtFormat const* format, size_t frames)
+{
+  XtiInitBuffers(buffers.input, format->mix.sample, format->channels.inputs, frames);
+  XtiInitBuffers(buffers.output, format->mix.sample, format->channels.outputs, frames);
+}
+
+void
 XtiCopyString(char const* source, char* buffer, int32_t* size) 
 {
   if(buffer == nullptr) return (*size = static_cast<int32_t>(strlen(source)) + 1), void();
