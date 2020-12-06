@@ -321,13 +321,6 @@ AsioDeviceList::GetCount(int32_t* count) const
   *count = _drivers.asioGetNumDev();
   return ASE_OK;
 }
-
-XtFault
-AsioDeviceList::GetDefault(XtBool output, int32_t* index) const
-{
-  if(_drivers.asioGetNumDev() > 0) *index = 0;
-  return ASE_OK;
-}
   
 XtFault 
 AsioDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
@@ -361,6 +354,14 @@ AsioDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
   XT_VERIFY_ASIO(_drivers.asioGetDriverName(index, name.data(), MAXDRVNAMELEN));
   XtiCopyString(name.c_str(), buffer, size);
   return ASE_OK;
+}
+
+XtFault
+AsioDeviceList::GetDefaultId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const
+{
+  if(_drivers.asioGetNumDev() == 0) return ASE_OK;
+  *valid = XtTrue;
+  return GetId(0, buffer, size);
 }
 
 // ---- device ----

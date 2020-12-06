@@ -20,16 +20,6 @@ XtDeviceListGetCount(XtDeviceList const* l, int32_t* count)
 }
 
 XtError XT_CALL
-XtDeviceListGetDefault(XtDeviceList const* l, XtBool output, int32_t* index)
-{
-  XT_ASSERT(l != nullptr);
-  XT_ASSERT(index != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  *index = -1;
-  return XtiCreateError(l->GetSystem(), l->GetDefault(output, index));
-}
-
-XtError XT_CALL
 XtDeviceListGetId(XtDeviceList const* l, int32_t index, char* buffer, int32_t* size)
 {
   XT_ASSERT(index >= 0);
@@ -47,4 +37,15 @@ XtDeviceListGetName(XtDeviceList const* l, char const* id, char* buffer, int32_t
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(size != nullptr && *size >= 0);
   return XtiCreateError(l->GetSystem(), l->GetName(id, buffer, size));
+}
+
+XtError XT_CALL
+XtDeviceListGetDefaultId(XtDeviceList const* l, XtBool output, XtBool* valid, char* buffer, int32_t* size)
+{
+  XT_ASSERT(l != nullptr);
+  XT_ASSERT(valid != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(size != nullptr && *size >= 0);
+  *valid = XtFalse;  
+  return XtiCreateError(l->GetSystem(), l->GetDefaultId(output, valid, buffer, size));
 }
