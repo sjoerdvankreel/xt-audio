@@ -25,6 +25,3 @@
 * disable c26451
 * drop W/L prefixes
 * test restart stream
-* public/private/protected in private interface
-* simplify ::GetSystem()
-* aggregate insidecallbackcount -> assert CAS
