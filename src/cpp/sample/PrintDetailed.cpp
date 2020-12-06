@@ -31,6 +31,7 @@ PrintDetailedMain()
       std::cout << "System " << s << ":\n";
       std::cout << "  Device count: " << list->GetCount() << "\n";
       std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";
+
       int32_t defaultInput = list->GetDefault(false);
       if(defaultInput != -1)
       {
