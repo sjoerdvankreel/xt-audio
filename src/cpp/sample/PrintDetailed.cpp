@@ -54,7 +54,7 @@ PrintDetailedMain()
         try
         {
           std::optional<Xt::Mix> mix = device->GetMix();
-          std::cout << "  Device " << id << "\n";
+          std::cout << "  Device " << id << ":\n";
           std::cout << "    Name: " << list->GetName(d) << "\n";
           std::cout << "    Input channels: " << device->GetChannelCount(false) << "\n";
           std::cout << "    Output channels: " << device->GetChannelCount(true) << "\n";
