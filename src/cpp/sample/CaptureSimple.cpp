@@ -26,11 +26,10 @@ CaptureSimpleMain()
   if(!service) return 0;  
 
   std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
-  int32_t defaultInput = list->GetDefault(false);
-  if(defaultInput == -1) return 0;
-  std::string id = list->GetId(defaultInput);
-  std::unique_ptr<Xt::Device> device = service->OpenDevice(id);
-  if (!device->SupportsFormat(Format)) return 0;
+  std::optional<std::string> id = list->GetDefaultId(false);
+  if(!id.has_value()) return 0;
+  std::unique_ptr<Xt::Device> device = service->OpenDevice(id.value());
+  if(!device->SupportsFormat(Format)) return 0;
 
   double bufferSize = device->GetBufferSize(Format).current;
   Xt::StreamParams streamParams(true, OnBuffer, nullptr);

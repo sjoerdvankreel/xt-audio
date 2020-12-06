@@ -26,10 +26,9 @@ FullDuplexMain()
   if(!service || (service->GetCapabilities() & Xt::CapabilitiesFullDuplex) == 0) return 0;
 
   std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
-  int32_t defaultOutput = list->GetDefault(true);
-  if(defaultOutput == -1) return 0;
-  std::string id = list->GetId(defaultOutput);
-  std::unique_ptr<Xt::Device> device = service->OpenDevice(id);
+  std::optional<std::string> id = list->GetDefaultId(true);
+  if(!id.has_value()) return 0;
+  std::unique_ptr<Xt::Device> device = service->OpenDevice(id.value());
 
   if(device->SupportsFormat(int44100)) format = int44100;
   else if(device->SupportsFormat(int48000)) format = int48000;

@@ -32,16 +32,14 @@ AggregateMain()
   if(!service || (service->GetCapabilities() & Xt::CapabilitiesAggregation) == 0) return 0;
   std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
 
-  int32_t defaultInput = list->GetDefault(false);
-  if(defaultInput == -1) return 0;
-  std::string inputId = list->GetId(defaultInput);
-  std::unique_ptr<Xt::Device> input = service->OpenDevice(inputId);
+  std::optional<std::string> defaultInput = list->GetDefaultId(false);
+  if(!defaultInput.has_value()) return 0;
+  std::unique_ptr<Xt::Device> input = service->OpenDevice(defaultInput.value());
   if(!input->SupportsFormat(inputFormat)) return 0;
 
-  int32_t defaultOutput = list->GetDefault(true);
-  if(defaultOutput == -1) return 0;
-  std::string outputId = list->GetId(defaultOutput);
-  std::unique_ptr<Xt::Device> output = service->OpenDevice(outputId);
+  std::optional<std::string> defaultOutput = list->GetDefaultId(true);
+  if(!defaultOutput.has_value()) return 0;
+  std::unique_ptr<Xt::Device> output = service->OpenDevice(defaultOutput.value());
   if(!output->SupportsFormat(outputFormat)) return 0;
 
   Xt::AggregateDeviceParams deviceParams[2];
