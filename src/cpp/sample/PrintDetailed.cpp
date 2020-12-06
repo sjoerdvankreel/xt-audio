@@ -32,19 +32,17 @@ PrintDetailedMain()
       std::cout << "  Device count: " << list->GetCount() << "\n";
       std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";
 
-      int32_t defaultInput = list->GetDefault(false);
-      if(defaultInput != -1)
+      std::optional<std::string> defaultInput = list->GetDefaultId(false);
+      if(defaultInput.has_value())
       {
-        std::string id = list->GetId(defaultInput);
-        std::string name = list->GetName(defaultInput);
-        std::cout << "  Default input: " << name << " (" << id << ")\n";
+        std::string name = list->GetName(defaultInput.value());
+        std::cout << "  Default input: " << name << " (" << defaultInput.value() << ")\n";
       }
-      int32_t defaultOutput = list->GetDefault(true);
-      if(defaultOutput != -1)
+      std::optional<std::string> defaultOutput = list->GetDefaultId(true);
+      if(defaultOutput.has_value())
       {
-        std::string id = list->GetId(defaultOutput);
-        std::string name = list->GetName(defaultOutput);
-        std::cout << "  Default output: " << name << " (" << id << ")\n";
+        std::string name = list->GetName(defaultOutput.value());
+        std::cout << "  Default output: " << name << " (" << defaultOutput.value() << ")\n";
       }
 
       for(int32_t d = 0; d < list->GetCount(); d++)
@@ -55,7 +53,7 @@ PrintDetailedMain()
         {
           std::optional<Xt::Mix> mix = device->GetMix();
           std::cout << "  Device " << id << ":\n";
-          std::cout << "    Name: " << list->GetName(d) << "\n";
+          std::cout << "    Name: " << list->GetName(id) << "\n";
           std::cout << "    Input channels: " << device->GetChannelCount(false) << "\n";
           std::cout << "    Output channels: " << device->GetChannelCount(true) << "\n";
           std::cout << "    Interleaved access: " << device->SupportsAccess(true) << "\n";

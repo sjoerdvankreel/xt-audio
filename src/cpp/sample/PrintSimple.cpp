@@ -13,7 +13,10 @@ PrintSimpleMain()
     std::unique_ptr<Xt::Service> service = platform->GetService(system);
     std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
     for(int32_t d = 0; d < list->GetCount(); d++)
-      std::cout << system << ": " << list->GetName(d) << "\n";
+    {
+      std::string id = list->GetId(d);
+      std::cout << system << ": " << list->GetName(id) << "\n";
+    }
   }
   return 0;
 }
