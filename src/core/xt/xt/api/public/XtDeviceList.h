@@ -17,7 +17,7 @@ XtDeviceListGetDefault(XtDeviceList const* l, XtBool output, int32_t* index);
 XT_API XtError XT_CALL
 XtDeviceListGetId(XtDeviceList const* l, int32_t index, char* buffer, int32_t* size);
 XT_API XtError XT_CALL
-XtDeviceListGetName(XtDeviceList const* l, int32_t index, char* buffer, int32_t* size);
+XtDeviceListGetName(XtDeviceList const* l, char const* id, char* buffer, int32_t* size);
 
 #ifdef __cplusplus
 }

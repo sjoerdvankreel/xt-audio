@@ -344,9 +344,20 @@ AsioDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 }
 
 XtFault
-AsioDeviceList::GetName(int32_t index, char* buffer, int32_t* size) const
+AsioDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
+  CLSID current;
+  LONG index = -1;
+  CLSID classId = XtiUtf8ToClassId(id);
   std::string name(MAXDRVNAMELEN + 1, '\0');
+  for(LONG i = 0; i < _drivers.asioGetNumDev(); i++)
+  {
+    XT_VERIFY_ASIO(_drivers.asioGetDriverCLSID(i, &current));
+    if(current != classId) continue;
+    index = i;
+    break;
+  }
+  if(index == -1) return static_cast<XtFault>(DRVERR_DEVICE_NOT_FOUND);
   XT_VERIFY_ASIO(_drivers.asioGetDriverName(index, name.data(), MAXDRVNAMELEN));
   XtiCopyString(name.c_str(), buffer, size);
   return ASE_OK;

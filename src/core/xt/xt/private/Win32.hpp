@@ -26,8 +26,12 @@ struct XtPropVariant
   XtPropVariant& operator=(XtPropVariant const&) = delete;
 };
 
+CLSID
+XtiUtf8ToClassId(char const* utf8);
 std::wstring
 XtiUtf8ToWideString(char const* utf8);
+std::string
+XtiClassIdToUtf8(CLSID const& classId);
 std::string
 XtiWideStringToUtf8(wchar_t const* wide);
 bool

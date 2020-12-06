@@ -26,12 +26,31 @@ XtiWfxChannelNames[18] =
   XT_STRINGIFY(SPEAKER_TOP_BACK_RIGHT)
 };
 
+std::string
+XtiClassIdToUtf8(CLSID const& classId)
+{
+  LPOLESTR wide;
+  XT_ASSERT(SUCCEEDED(StringFromCLSID(classId, &wide)));
+  std::string result = XtiWideStringToUtf8(wide);
+  CoTaskMemFree(wide);
+  return result;
+}
+
+CLSID
+XtiUtf8ToClassId(char const* utf8)
+{
+  CLSID result;
+  std::wstring wide = XtiUtf8ToWideString(utf8);
+  XT_ASSERT(SUCCEEDED(CLSIDFromString(wide.c_str(), &result)));
+  return result;
+}
+
 std::wstring
 XtiUtf8ToWideString(char const* utf8)
 {
   int count;
   XT_ASSERT((count = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0)) > 0);
-  std::wstring result(static_cast<size_t>(count + 1), L'\0');
+  std::wstring result(static_cast<size_t>(count) + 1, L'\0');
   XT_ASSERT(MultiByteToWideChar(CP_UTF8, 0, utf8, -1, result.data(), count) > 0);
   return result;
 }
