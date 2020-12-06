@@ -30,15 +30,6 @@ XtDeviceGetMix(XtDevice const* d, XtBool* valid, XtMix* mix)
 }
 
 XtError XT_CALL
-XtDeviceGetName(XtDevice const* d, char* buffer, int32_t* size)
-{
-  XT_ASSERT(d != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(size != nullptr && *size >= 0);
-  return XtiCreateError(d->GetSystem(), d->GetName(buffer, size));
-}
-
-XtError XT_CALL
 XtDeviceGetChannelCount(XtDevice const* d, XtBool output, int32_t* count)
 {
   XT_ASSERT(d != nullptr);

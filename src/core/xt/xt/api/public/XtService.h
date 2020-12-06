@@ -12,16 +12,10 @@ extern "C" {
 
 XT_API XtCapabilities XT_CALL 
 XtServiceGetCapabilities(XtService const* s);
-XT_API XtError XT_CALL 
-XtServiceGetDeviceCount(XtService const* s, int32_t* count);
 XT_API XtError XT_CALL
 XtServiceOpenDeviceList(XtService const* s, XtDeviceList** list);
-XT_API XtError XT_CALL 
-XtServiceOpenDevice(XtService const* s, int32_t index, XtDevice** device);
 XT_API XtError XT_CALL
-XtServiceOpenDevice2(XtService const* s, char const* id, XtDevice** device);
-XT_API XtError XT_CALL 
-XtServiceOpenDefaultDevice(XtService const* s, XtBool output, XtDevice** device);
+XtServiceOpenDevice(XtService const* s, char const* id, XtDevice** device);
 XT_API XtError XT_CALL 
 XtServiceAggregateStream(XtService const* s, XtAggregateStreamParams const* params, void* user, XtStream** stream); 
 

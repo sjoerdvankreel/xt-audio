@@ -16,8 +16,6 @@ XtDeviceShowControlPanel(XtDevice* d);
 XT_API XtError XT_CALL 
 XtDeviceGetMix(XtDevice const* d, XtBool* valid, XtMix* mix);
 XT_API XtError XT_CALL 
-XtDeviceGetName(XtDevice const* d, char* buffer, int32_t* size);
-XT_API XtError XT_CALL 
 XtDeviceGetChannelCount(XtDevice const* d, XtBool output, int32_t* count);
 XT_API XtError XT_CALL 
 XtDeviceSupportsAccess(XtDevice const* d, XtBool interleaved, XtBool* supports);
