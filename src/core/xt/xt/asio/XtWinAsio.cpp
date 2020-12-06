@@ -297,23 +297,12 @@ XtCapabilities AsioService::GetCapabilities() const {
     XtCapabilitiesChannelMask);
 }
 
-XtFault AsioService::GetDeviceCount(int32_t* count) const {
-  *count = AsioDriverList().asioGetNumDev();
-  return ASE_OK;
-}
-
-XtFault AsioService::OpenDefaultDevice(XtBool output, XtDevice** device) const  { 
-  if(AsioDriverList().asioGetNumDev() == 0)
-    return ASE_OK;
-  return OpenDevice(0, device);
-}
-
 XtFault AsioService::OpenDeviceList(XtDeviceList** list) const {
   *list = new AsioDeviceList;
   return ASE_OK;
 }
 
-XtFault AsioService::OpenDevice2(char const* id, XtDevice** device) const
+XtFault AsioService::OpenDevice(char const* id, XtDevice** device) const
 {  
   HRESULT hr;
   CLSID classId;
