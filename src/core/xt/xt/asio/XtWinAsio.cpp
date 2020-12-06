@@ -7,6 +7,7 @@
 #include <xt/api/private/Device.hpp>
 #include <xt/api/private/Stream.hpp>
 #include <xt/api/private/Platform.hpp>
+#include <xt/api/private/DeviceList.hpp>
 #include <asmjit/asmjit.h>
 #include <common/iasiodrv.h>
 #include <host/pc/asiolist.h>
@@ -31,6 +32,12 @@ typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, 
 
 struct AsioService: public XtService {
   XT_IMPLEMENT_SERVICE(ASIO);
+};
+
+struct AsioDeviceList: public XtDeviceList {
+  mutable AsioDriverList _drivers;
+  AsioDeviceList() = default;
+  XT_IMPLEMENT_DEVICE_LIST(ASIO);
 };
 
 std::unique_ptr<XtService>
@@ -303,7 +310,8 @@ XtFault AsioService::OpenDefaultDevice(XtBool output, XtDevice** device) const  
 }
 
 XtFault AsioService::OpenDeviceList(XtDeviceList** list) const {
-  return 0;
+  *list = new AsioDeviceList;
+  return ASE_OK;
 }
 
 XtFault AsioService::OpenDevice2(char const* id, XtDevice** device) const {  
@@ -325,6 +333,44 @@ XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {
     return ASE_NotPresent;
   *device = new AsioDevice(name, asio);
   return ASE_OK;
+}
+
+XtFault
+AsioDeviceList::GetCount(int32_t* count) const
+{
+  *count = _drivers.asioGetNumDev();
+  return ASE_OK;
+}
+  
+XtFault 
+AsioDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
+{  
+  HRESULT hr;
+  CLSID classId;
+  LPOLESTR wide;
+  XT_VERIFY_ASIO(_drivers.asioGetDriverCLSID(index, &classId));
+  XT_VERIFY_COM(StringFromCLSID(classId, &wide));
+  std::string utf8 = XtiWideStringToUtf8(wide);
+  CoTaskMemFree(wide);
+  XtiCopyString(utf8.c_str(), buffer, size);
+  return ASE_OK;
+}
+
+XtFault
+AsioDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
+{
+  std::string name(MAXDRVNAMELEN + 1, '\0');
+  XT_VERIFY_ASIO(_drivers.asioGetDriverName(index, &name[0], MAXDRVNAMELEN));
+  XT_VERIFY_ASIO(list.asioGetDriverCLSID(index, &classId));
+  XT_VERIFY_COM(CoCreateInstance(classId, nullptr, CLSCTX_ALL, classId, reinterpret_cast<void**>(&asio)));
+  if(!asio->init(XtPlatform::instance->_window))
+    return ASE_NotPresent;
+  *device = new AsioDevice(name, asio);
+  return ASE_OK;}
+
+XtFault
+AsioDeviceList::GetDefaultId(XtBool output, char* buffer, int32_t* size) const
+{
 }
 
 // ---- device ----
