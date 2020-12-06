@@ -17,6 +17,22 @@
 
 // ---- local ----
 
+enum class XtWasapiType
+{
+  Shared,
+  Loopback,
+  Exclusive
+};
+
+struct XtWasapiDeviceId
+{
+  std::string name;
+  XtWasapiType type;
+  std::string externalId;
+  std::wstring internalId;
+  static XtWasapiDeviceId Parse(std::string const& id);
+};
+
 struct XtEvent
 {
   HANDLE event;
@@ -46,14 +62,12 @@ struct WasapiService: public XtService
 struct WasapiDeviceList:
 public XtDeviceList
 {
-  CComPtr<IMMDeviceCollection> _inputs;
-  CComPtr<IMMDeviceCollection> _outputs;
-  CComPtr<IMMDeviceEnumerator> _enumerator;
   XT_IMPLEMENT_DEVICE_LIST(WASAPI);
+  std::vector<XtWasapiDeviceId> _ids;
+  CComPtr<IMMDeviceEnumerator> _enumerator;
   WasapiDeviceList(
-    CComPtr<IMMDeviceCollection> inputs,
-    CComPtr<IMMDeviceCollection> outputs,
-    CComPtr<IMMDeviceEnumerator> enumerator);
+   CComPtr<IMMDeviceEnumerator> enumerator,
+   std::vector<XtWasapiDeviceId> const& ids);
 };
 
 std::unique_ptr<XtService>
@@ -217,32 +231,40 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
 
 WasapiDeviceList::
 WasapiDeviceList(
-  CComPtr<IMMDeviceCollection> inputs,
-  CComPtr<IMMDeviceCollection> outputs,
-  CComPtr<IMMDeviceEnumerator> enumerator):
-_inputs(inputs),
-_outputs(outputs),
-_enumerator(enumerator) { } 
+  CComPtr<IMMDeviceEnumerator> enumerator,
+  std::vector<XtWasapiDeviceId> const& ids):
+_ids(ids),
+_enumerator(enumerator) { }
 
 XtFault
 WasapiDeviceList::GetCount(int32_t* count) const
 {
-  HRESULT hr;
-  UINT inputs, outputs;
-  XT_VERIFY_COM(_inputs->GetCount(&inputs));
-  XT_VERIFY_COM(_outputs->GetCount(&outputs));
-  *count = 2 * inputs + 3 * outputs;
+  *count = static_cast<int32_t>(_ids.size());
   return S_OK;
 }
   
 XtFault 
 WasapiDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 {  
+  XtiCopyString(_ids[index].Print().c_str(), buffer, size);
+  return S_OK;
 }
 
 XtFault
 WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
+  HRESULT hr;  
+  XtPropVariant name;
+  CComPtr<IMMDevice> device;
+  CComPtr<IPropertyStore> store;
+  XtWasapiDeviceId deviceId = XtWasapiDeviceId::Parse(id);
+  XT_VERIFY_COM(_enumerator->GetDevice(deviceId.id.c_str(), &device));
+  XT_VERIFY_COM(device->OpenPropertyStore(STGM_READ, &store));
+  XT_VERIFY_COM(store->GetValue(PKEY_Device_FriendlyName, &name.pv));
+  std::string result = XtiWideStringToUtf8(name.pv.pwszVal);
+  result.append(options.loopback? " (Loopback)": options.exclusive? " (Exclusive)": " (Shared)");
+  XtiCopyString(result.c_str(), buffer, size);
+  return S_OK;
 }
 
 XtFault
