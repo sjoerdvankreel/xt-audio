@@ -24,7 +24,6 @@ class Device final
 public:
   ~Device();
   void ShowControlPanel();
-  std::string GetName() const;
   std::optional<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
   bool SupportsAccess(bool interleaved) const;
@@ -41,16 +40,6 @@ Device::~Device()
 inline void 
 Device::ShowControlPanel() 
 { Detail::HandleError(XtDeviceShowControlPanel(_d)); }
-
-inline std::string
-Device::GetName() const 
-{ 
-  int32_t size = 0;
-  Detail::HandleError(XtDeviceGetName(_d, nullptr, &size));
-  std::vector<char> buffer(static_cast<size_t>(size));
-  Detail::HandleError(XtDeviceGetName(_d, buffer.data(), &size));
-  return std::string(buffer.data());
-}
 
 inline int32_t 
 Device::GetChannelCount(bool output) const 

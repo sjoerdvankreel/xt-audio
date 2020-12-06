@@ -8,6 +8,7 @@
 #include <xt/cpp/Structs.hpp>
 #include <xt/cpp/Forward.hpp>
 #include <xt/cpp/XtDevice.hpp>
+#include <xt/cpp/XtDeviceList.hpp>
 
 #include <memory>
 
@@ -21,10 +22,9 @@ class Service final
   XtService const* const _s;
   Service(XtService const* s): _s(s) { }
 public:
-  int32_t GetDeviceCount() const;
   Capabilities GetCapabilities() const;
-  std::unique_ptr<Device> OpenDevice(int32_t index) const;
-  std::unique_ptr<Device> OpenDefaultDevice(bool output) const;
+  std::unique_ptr<DeviceList> OpenDeviceList() const;
+  std::unique_ptr<Device> OpenDevice(std::string const& id) const;
   std::unique_ptr<Stream> AggregateStream(AggregateStreamParams const& params, void* user);
 };
 
@@ -35,28 +35,19 @@ Service::GetCapabilities() const
   return static_cast<Capabilities>(coreCapabilities); 
 }
 
-inline int32_t 
-Service::GetDeviceCount() const 
+inline std::unique_ptr<DeviceList> 
+Service::OpenDeviceList() const 
 { 
-  int32_t count; 
-  Detail::HandleError(XtServiceGetDeviceCount(_s, &count));
-  return count;
+  XtDeviceList* list; 
+  Detail::HandleError(XtServiceOpenDeviceList(_s, &list));
+  return std::unique_ptr<DeviceList>(new DeviceList(list));
 }
 
 inline std::unique_ptr<Device> 
-Service::OpenDevice(int32_t index) const 
+Service::OpenDevice(std::string const& id) const 
 { 
   XtDevice* device; 
-  Detail::HandleError(XtServiceOpenDevice(_s, index, &device));
-  return std::unique_ptr<Device>(new Device(device));
-}
-
-inline std::unique_ptr<Device> 
-Service::OpenDefaultDevice(bool output) const
-{ 
-  XtDevice* device; 
-  Detail::HandleError(XtServiceOpenDefaultDevice(_s, output != XtFalse, &device));
-  if(device == nullptr) return std::unique_ptr<Device>();
+  Detail::HandleError(XtServiceOpenDevice(_s, id.c_str(), &device));
   return std::unique_ptr<Device>(new Device(device));
 }
 
