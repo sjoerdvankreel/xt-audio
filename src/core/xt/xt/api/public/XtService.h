@@ -18,6 +18,8 @@ XT_API XtError XT_CALL
 XtServiceOpenDeviceList(XtService const* s, XtDeviceList** list);
 XT_API XtError XT_CALL 
 XtServiceOpenDevice(XtService const* s, int32_t index, XtDevice** device);
+XT_API XtError XT_CALL
+XtServiceOpenDevice2(XtService const* s, char const* id, XtDevice** device);
 XT_API XtError XT_CALL 
 XtServiceOpenDefaultDevice(XtService const* s, XtBool output, XtDevice** device);
 XT_API XtError XT_CALL 

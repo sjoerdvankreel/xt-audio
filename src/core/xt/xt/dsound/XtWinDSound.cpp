@@ -182,6 +182,10 @@ XtFault DSoundService::OpenDeviceList(XtDeviceList** list) const {
   return 0;
 }
 
+XtFault DSoundService::OpenDevice2(char const* id, XtDevice** device) const {  
+  return 0;
+}
+
 XtFault DSoundService::OpenDevice(int32_t index, XtDevice** device) const  { 
   HRESULT hr;
   std::vector<DeviceInfo> infos;

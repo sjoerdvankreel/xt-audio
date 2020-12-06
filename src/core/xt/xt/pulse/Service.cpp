@@ -8,6 +8,9 @@ PulseService::OpenDeviceList(XtDeviceList** list) const
 XtFault 
 PulseService::OpenDevice(int32_t index, XtDevice** device) const
 { return OpenDefaultDevice(index != 0, device); }
+XtFault
+PulseService::OpenDevice2(char const* id, XtDevice** device) const
+{ return 0; }
 
 XtCapabilities 
 PulseService::GetCapabilities() const

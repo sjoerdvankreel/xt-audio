@@ -230,6 +230,10 @@ XtFault JackService::OpenDeviceList(XtDeviceList** list) const {
   return 0;
 }
 
+XtFault JackService::OpenDevice2(char const* id, XtDevice** device) const {  
+  return 0;
+}
+
 XtFault JackService::OpenDevice(int32_t index, XtDevice** device) const {  
   XtJackClient client(jack_client_open(XtPlatform::instance->_id.c_str(), JackNoStartServer, nullptr));
   if(client.client == nullptr)

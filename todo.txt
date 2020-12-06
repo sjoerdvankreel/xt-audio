@@ -25,3 +25,4 @@
 * disable c26451
 * drop W/L prefixes
 * test restart stream
+* rename opendevice2

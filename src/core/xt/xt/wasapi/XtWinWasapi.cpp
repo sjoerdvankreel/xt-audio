@@ -148,6 +148,11 @@ WasapiService::OpenDeviceList(XtDeviceList** list) const {
   return 0; 
 }
 
+XtFault
+WasapiService::OpenDevice2(char const* id, XtDevice** device) const {
+  return 0; 
+}
+
 XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {  
   HRESULT hr;
   CComPtr<IMMDevice> d;
