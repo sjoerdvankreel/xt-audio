@@ -3,6 +3,7 @@
 #include <xt/api/private/Service.hpp>
 #include <xt/api/private/Device.hpp>
 #include <xt/api/private/Stream.hpp>
+#include <xt/api/private/DeviceList.hpp>
 #include <xt/private/BlockingStream.hpp>
 #define INITGUID 1
 #include <xt/private/Shared.hpp>
@@ -40,6 +41,19 @@ static const double XtWsMaxExclusiveBufferMs = 500.0;
 struct WasapiService: public XtService 
 {
   XT_IMPLEMENT_SERVICE(WASAPI);
+};
+
+struct WasapiDeviceList:
+public XtDeviceList
+{
+  CComPtr<IMMDeviceCollection> _inputs;
+  CComPtr<IMMDeviceCollection> _outputs;
+  CComPtr<IMMDeviceEnumerator> _enumerator;
+  XT_IMPLEMENT_DEVICE_LIST(WASAPI);
+  WasapiDeviceList(
+    CComPtr<IMMDeviceCollection> inputs,
+    CComPtr<IMMDeviceCollection> outputs,
+    CComPtr<IMMDeviceEnumerator> enumerator);
 };
 
 std::unique_ptr<XtService>
@@ -199,6 +213,41 @@ XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {
   }
   *device = new WasapiDevice(d, client, client3, options);
   return S_OK;
+}
+
+WasapiDeviceList::
+WasapiDeviceList(
+  CComPtr<IMMDeviceCollection> inputs,
+  CComPtr<IMMDeviceCollection> outputs,
+  CComPtr<IMMDeviceEnumerator> enumerator):
+_inputs(inputs),
+_outputs(outputs),
+_enumerator(enumerator) { } 
+
+XtFault
+WasapiDeviceList::GetCount(int32_t* count) const
+{
+  HRESULT hr;
+  UINT inputs, outputs;
+  XT_VERIFY_COM(_inputs->GetCount(&inputs));
+  XT_VERIFY_COM(_outputs->GetCount(&outputs));
+  *count = 2 * inputs + 3 * outputs;
+  return S_OK;
+}
+  
+XtFault 
+WasapiDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
+{  
+}
+
+XtFault
+WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
+{
+}
+
+XtFault
+WasapiDeviceList::GetDefaultId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const
+{
 }
 
 // ---- device ----
