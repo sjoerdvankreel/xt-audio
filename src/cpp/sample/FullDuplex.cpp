@@ -23,10 +23,14 @@ FullDuplexMain()
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
-  if(!service) return 0;
+  if(!service || (service->GetCapabilities() & Xt::CapabilitiesFullDuplex) == 0) return 0;
 
-  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
-  if(!device) return 0;
+  std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
+  int32_t defaultOutput = list->GetDefault(true);
+  if(defaultOutput == -1) return 0;
+  std::string id = list->GetId(defaultOutput);
+  std::unique_ptr<Xt::Device> device = service->OpenDevice(id);
+
   if(device->SupportsFormat(int44100)) format = int44100;
   else if(device->SupportsFormat(int48000)) format = int48000;
   else if(device->SupportsFormat(float44100)) format = float44100;

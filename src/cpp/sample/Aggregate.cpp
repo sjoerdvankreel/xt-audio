@@ -29,12 +29,20 @@ AggregateMain()
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
-  if(!service) return 0;
+  if(!service || (service->GetCapabilities() & Xt::CapabilitiesAggregation) == 0) return 0;
+  std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
 
-  std::unique_ptr<Xt::Device> input = service->OpenDefaultDevice(false);
-  if(!input || !input->SupportsFormat(inputFormat)) return 0;
-  std::unique_ptr<Xt::Device> output = service->OpenDefaultDevice(true);
-  if(!output || !output->SupportsFormat(outputFormat)) return 0;
+  int32_t defaultInput = list->GetDefault(false);
+  if(defaultInput == -1) return 0;
+  std::string inputId = list->GetId(defaultInput);
+  std::unique_ptr<Xt::Device> input = service->OpenDevice(inputId);
+  if(!input->SupportsFormat(inputFormat)) return 0;
+
+  int32_t defaultOutput = list->GetDefault(true);
+  if(defaultOutput == -1) return 0;
+  std::string outputId = list->GetId(defaultOutput);
+  std::unique_ptr<Xt::Device> output = service->OpenDevice(outputId);
+  if(!output->SupportsFormat(outputFormat)) return 0;
 
   Xt::AggregateDeviceParams deviceParams[2];
   deviceParams[0] = Xt::AggregateDeviceParams(input.get(), inputFormat.channels, 30.0);

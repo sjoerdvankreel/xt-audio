@@ -26,3 +26,5 @@
 * drop W/L prefixes
 * test restart stream
 * rename opendevice2
+* drop devicegetname from managed code
+* add caps::aggregate check to samples and gui
