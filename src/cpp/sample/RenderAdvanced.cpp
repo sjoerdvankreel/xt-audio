@@ -66,8 +66,12 @@ RenderAdvancedMain()
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if(!service) return 0;
 
-  std::unique_ptr<Xt::Device> device = service->OpenDefaultDevice(true);
-  if(!device || !device->SupportsFormat(format)) return 0;
+  std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
+  int32_t defaultOutput = list->GetDefault(true);
+  if(defaultOutput == -1) return 0;
+  std::string id = list->GetId(defaultOutput);
+  std::unique_ptr<Xt::Device> device = service->OpenDevice(id);
+  if (!device->SupportsFormat(format)) return 0;
   Xt::BufferSize size = device->GetBufferSize(format);
 
   std::cout << "Render interleaved...\n";
