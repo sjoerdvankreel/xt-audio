@@ -41,7 +41,7 @@ inline int32_t
 DeviceList::GetDefault(bool output) const
 {
   int32_t result; 
-  Detail::HandleError(XtDeviceListGetDefault(_l, &result));
+  Detail::HandleError(XtDeviceListGetDefault(_l, output, &result));
   return result;
 }
 

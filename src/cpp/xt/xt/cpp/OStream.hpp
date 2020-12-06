@@ -4,7 +4,6 @@
 /** @file */
 
 #include <xt/cpp/Core.hpp>
-#include <xt/cpp/XtDevice.hpp>
 
 #include <ostream>
 
@@ -12,9 +11,6 @@ namespace Xt {
 
 using namespace Detail;
 
-inline std::ostream& 
-operator<<(std::ostream& os, Device const& device) 
-{ return os << device.GetName(); }
 inline std::ostream& 
 operator<<(std::ostream& os, Cause cause) 
 { return os << XtPrintCauseToString(static_cast<XtCause>(cause)); }

@@ -11,8 +11,9 @@ PrintSimpleMain()
   for(Xt::System system: platform->GetSystems()) 
   {
     std::unique_ptr<Xt::Service> service = platform->GetService(system);
-    for(int32_t d = 0; d < service->GetDeviceCount(); d++)
-      std::cout << system << ": " << *service->OpenDevice(d) << "\n";
+    std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
+    for(int32_t d = 0; d < list->GetCount(); d++)
+      std::cout << system << ": " << list->GetName(d) << "\n";
   }
   return 0;
 }
