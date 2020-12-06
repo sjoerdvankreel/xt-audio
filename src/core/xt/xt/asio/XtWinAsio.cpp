@@ -46,13 +46,12 @@ XtiCreateAsioService()
 
 struct AsioDevice: public XtDevice {
   bool streamOpen;
-  const std::string name;
   const CComPtr<IASIO> asio;
   XT_IMPLEMENT_DEVICE(ASIO);
   
   ~AsioDevice() { XT_ASSERT(!streamOpen); }
-  AsioDevice(const std::string& name, CComPtr<IASIO> asio): 
-  XtDevice(), streamOpen(false), name(name), asio(asio) {}
+  AsioDevice(CComPtr<IASIO> asio): 
+  XtDevice(), streamOpen(false), asio(asio) {}
 };
 
 struct AsioStream: public XtStream {
@@ -314,24 +313,16 @@ XtFault AsioService::OpenDeviceList(XtDeviceList** list) const {
   return ASE_OK;
 }
 
-XtFault AsioService::OpenDevice2(char const* id, XtDevice** device) const {  
-  return 0;
-}
-
-XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {  
-
+XtFault AsioService::OpenDevice2(char const* id, XtDevice** device) const
+{  
   HRESULT hr;
   CLSID classId;
   CComPtr<IASIO> asio;
-  AsioDriverList list;
-  std::string name(MAXDRVNAMELEN, '\0');
-
-  XT_VERIFY_ASIO(list.asioGetDriverName(index, &name[0], MAXDRVNAMELEN));
-  XT_VERIFY_ASIO(list.asioGetDriverCLSID(index, &classId));
+  auto wideId = XtiUtf8ToWideString(id);
+  XT_VERIFY_COM(CLSIDFromString(wideId.data(), &classId));
   XT_VERIFY_COM(CoCreateInstance(classId, nullptr, CLSCTX_ALL, classId, reinterpret_cast<void**>(&asio)));
-  if(!asio->init(XtPlatform::instance->_window))
-    return ASE_NotPresent;
-  *device = new AsioDevice(name, asio);
+  if(!asio->init(XtPlatform::instance->_window)) return ASE_NotPresent;
+  *device = new AsioDevice(asio);
   return ASE_OK;
 }
 
@@ -376,11 +367,6 @@ AsioDeviceList::GetName(int32_t index, char* buffer, int32_t* size) const
 
 XtFault AsioDevice::ShowControlPanel() {
   return asio->controlPanel();
-}
-
-XtFault AsioDevice::GetName(char* buffer, int32_t* size) const {
-  XtiCopyString(this->name.c_str(), buffer, size);
-  return ASE_OK;
 }
 
 XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {

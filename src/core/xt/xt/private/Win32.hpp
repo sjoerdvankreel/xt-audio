@@ -26,6 +26,8 @@ struct XtPropVariant
   XtPropVariant& operator=(XtPropVariant const&) = delete;
 };
 
+std::wstring
+XtiUtf8ToWideString(char const* utf8);
 std::string
 XtiWideStringToUtf8(wchar_t const* wide);
 bool
