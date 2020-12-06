@@ -7,6 +7,7 @@
 #include <xt/cpp/Utility.hpp>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace Xt {
 
@@ -20,9 +21,9 @@ class DeviceList final
 public:
   ~DeviceList();
   int32_t GetCount() const;
-  int32_t GetDefault(bool output) const;
   std::string GetId(int32_t index) const;
-  std::string GetName(int32_t index) const;
+  std::string GetName(std::string const& id) const;
+  std::optional<std::string> GetDefaultId(bool output) const;
 };
 
 inline
@@ -37,14 +38,6 @@ DeviceList::GetCount() const
   return count;
 }
 
-inline int32_t
-DeviceList::GetDefault(bool output) const
-{
-  int32_t result; 
-  Detail::HandleError(XtDeviceListGetDefault(_l, output, &result));
-  return result;
-}
-
 inline std::string
 DeviceList::GetId(int32_t index) const 
 { 
@@ -56,13 +49,26 @@ DeviceList::GetId(int32_t index) const
 }
 
 inline std::string
-DeviceList::GetName(int32_t index) const 
+DeviceList::GetName(std::string const& id) const 
 { 
   int32_t size = 0;
-  Detail::HandleError(XtDeviceListGetName(_l, index, nullptr, &size));
+  Detail::HandleError(XtDeviceListGetName(_l, id.c_str(), nullptr, &size));
   std::vector<char> buffer(static_cast<size_t>(size));
-  Detail::HandleError(XtDeviceListGetName(_l, index, buffer.data(), &size));
+  Detail::HandleError(XtDeviceListGetName(_l, id.c_str(), buffer.data(), &size));
   return std::string(buffer.data());
+}
+
+inline std::optional<std::string>
+DeviceList::GetDefaultId(bool output) const
+{
+  XtBool valid;
+  int32_t size = 0;
+  Detail::HandleError(XtDeviceListGetDefaultId(_l, output, &valid, nullptr, &size));
+  if(!valid) return std::optional<std::string>(std::nullopt);
+  std::vector<char> buffer(static_cast<size_t>(size));
+  Detail::HandleError(XtDeviceListGetDefaultId(_l, output, &valid, buffer.data(), &size));
+  if(!valid) return std::optional<std::string>(std::nullopt);
+  return std::optional<std::string>(std::string(buffer.data()));
 }
 
 } // namespace Xt
