@@ -13,5 +13,6 @@
 #include <xt/api/public/XtDevice.h>
 #include <xt/api/public/XtService.h>
 #include <xt/api/public/XtPlatform.h>
+#include <xt/api/public/XtDeviceList.h>
 
 #endif /* XT_AUDIO_H */
