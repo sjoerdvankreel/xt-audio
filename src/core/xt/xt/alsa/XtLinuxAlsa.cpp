@@ -286,6 +286,10 @@ XtFault AlsaService::GetDeviceCount(int32_t* count) const {
   return 0;
 }
 
+XtFault AlsaService::OpenDeviceList(XtDeviceList** list) const {
+  return 0;
+}
+
 XtFault AlsaService::OpenDevice(int32_t index, XtDevice** device) const {  
   std::vector<AlsaDeviceInfo> infos(GetDeviceInfos());
   if(index >= static_cast<int32_t>(infos.size()))

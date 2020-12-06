@@ -2,6 +2,9 @@
 #include <xt/pulse/Shared.hpp>
 #include <pulse/pulseaudio.h>
 
+XtFault
+PulseService::OpenDeviceList(XtDeviceList** list) const 
+{ return 0; }
 XtFault 
 PulseService::OpenDevice(int32_t index, XtDevice** device) const
 { return OpenDefaultDevice(index != 0, device); }

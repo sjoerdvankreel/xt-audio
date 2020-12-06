@@ -302,6 +302,10 @@ XtFault AsioService::OpenDefaultDevice(XtBool output, XtDevice** device) const  
   return OpenDevice(0, device);
 }
 
+XtFault AsioService::OpenDeviceList(XtDeviceList** list) const {
+  return 0;
+}
+
 XtFault AsioService::OpenDevice(int32_t index, XtDevice** device) const  {  
 
   HRESULT hr;

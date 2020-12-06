@@ -226,6 +226,10 @@ XtFault JackService::GetDeviceCount(int32_t* count) const {
   return 0;
 }
 
+XtFault JackService::OpenDeviceList(XtDeviceList** list) const {
+  return 0;
+}
+
 XtFault JackService::OpenDevice(int32_t index, XtDevice** device) const {  
   XtJackClient client(jack_client_open(XtPlatform::instance->_id.c_str(), JackNoStartServer, nullptr));
   if(client.client == nullptr)

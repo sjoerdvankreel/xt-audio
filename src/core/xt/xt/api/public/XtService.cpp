@@ -10,6 +10,16 @@ XtServiceGetCapabilities(XtService const* s)
 }
 
 XtError XT_CALL
+XtServiceOpenDeviceList(XtService const* s, XtDeviceList** list)
+{ 
+  XT_ASSERT(s != nullptr);
+  XT_ASSERT(list != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  *list = nullptr;
+  return XtiCreateError(s->GetSystem(), s->OpenDeviceList(list));
+}
+
+XtError XT_CALL
 XtServiceGetDeviceCount(XtService const* s, int32_t* count)
 {
   XT_ASSERT(s != nullptr);
