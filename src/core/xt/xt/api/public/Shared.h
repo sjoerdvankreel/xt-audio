@@ -27,5 +27,6 @@ typedef struct XtDevice XtDevice;
 typedef struct XtStream XtStream;
 typedef struct XtService XtService;
 typedef struct XtPlatform XtPlatform;
+typedef struct XtDeviceList XtDeviceList;
 
 #endif // XT_API_PUBLIC_SHARED_H
