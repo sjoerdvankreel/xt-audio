@@ -1,16 +1,14 @@
 #if XT_ENABLE_PULSE
 #include <xt/pulse/Shared.hpp>
 #include <pulse/pulseaudio.h>
+#include <cstring>
 
 XtFault
-PulseService::OpenDeviceList(XtDeviceList** list) const 
-{ return 0; }
-XtFault 
-PulseService::OpenDevice(int32_t index, XtDevice** device) const
-{ return OpenDefaultDevice(index != 0, device); }
-XtFault
-PulseService::OpenDevice2(char const* id, XtDevice** device) const
-{ return 0; }
+PulseService::OpenDeviceList(XtDeviceList** list) const
+{
+  *list = new PulseDeviceList;
+  return PA_OK; 
+}
 
 XtCapabilities 
 PulseService::GetCapabilities() const
@@ -20,18 +18,11 @@ PulseService::GetCapabilities() const
 }
 
 XtFault
-PulseService::GetDeviceCount(int32_t* count) const
+PulseService::OpenDevice(char const* id, XtDevice** device) const
 {
   XtFault fault;
   XtPaSimple pa;
-  if((fault = XtiCreatePulseDefaultClient(XtTrue, &pa.pa)) != PA_OK) return fault;
-  *count = pa.pa == nullptr? 0: 2;
-  return PA_OK;
-}
-
-XtFault PulseService::OpenDefaultDevice(XtBool output, XtDevice** device) const {
-  XtFault fault;
-  XtPaSimple pa;
+  XtBool output = strcmp(id, "Output") == 0;
   if((fault = XtiCreatePulseDefaultClient(output, &pa.pa)) != PA_OK) return fault;
   *device = new PulseDevice(output);
   return PA_OK;

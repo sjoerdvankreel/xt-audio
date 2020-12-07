@@ -4,6 +4,7 @@
 #include <xt/api/private/Device.hpp>
 #include <xt/api/private/Stream.hpp>
 #include <xt/api/private/Service.hpp>
+#include <xt/api/private/DeviceList.hpp>
 #include <xt/private/BlockingStream.hpp>
 #include <xt/pulse/Private.hpp>
 #include <pulse/simple.h>
@@ -23,6 +24,12 @@ public XtDevice
   const bool _output;
   XT_IMPLEMENT_DEVICE(Pulse);
   PulseDevice(bool output);
+};
+
+struct PulseDeviceList:
+public XtDeviceList 
+{
+  XT_IMPLEMENT_DEVICE_LIST(Pulse);
 };
 
 struct PulseStream:

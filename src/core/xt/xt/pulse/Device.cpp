@@ -17,9 +17,6 @@ PulseDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 XtFault 
 PulseDevice::GetChannelCount(XtBool output, int32_t* count) const 
 { *count = _output != output? 0: PA_CHANNEL_POSITION_MAX; return PA_OK; }
-XtFault
-PulseDevice::GetName(char* buffer, int32_t* size) const
-{ XtiCopyString(_output? "Output": "Input", buffer, size); return PA_OK; }
 
 XtFault 
 PulseDevice::GetMix(XtBool* valid, XtMix* mix) const
