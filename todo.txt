@@ -28,4 +28,5 @@
 * rename opendevice2
 * drop devicegetname from managed code
 * add caps::aggregate check to samples and gui
+* add caps::controlpanel
 * wasapi do {guid}.{type} id = shared/excl/loopback
