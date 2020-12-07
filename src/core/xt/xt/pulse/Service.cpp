@@ -22,7 +22,7 @@ PulseService::OpenDevice(char const* id, XtDevice** device) const
 {
   XtFault fault;
   XtPaSimple pa;
-  XtBool output = strcmp(id, "Output") == 0;
+  XtBool output = strcmp(id, "0");
   if((fault = XtiCreatePulseDefaultClient(output, &pa.pa)) != PA_OK) return fault;
   *device = new PulseDevice(output);
   return PA_OK;
