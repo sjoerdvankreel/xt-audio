@@ -1,16 +1,5 @@
 #if XT_ENABLE_ASIO
-#include <xt/asio/Fault.hpp>
-#include <xt/private/Shared.hpp>
-#include <xt/private/Services.hpp>
-#include <xt/private/Win32.hpp>
-#include <xt/api/private/Service.hpp>
-#include <xt/api/private/Device.hpp>
-#include <xt/api/private/Stream.hpp>
-#include <xt/api/private/Platform.hpp>
-#include <xt/api/private/DeviceList.hpp>
-#include <asmjit/asmjit.h>
-#include <common/iasiodrv.h>
-#include <host/pc/asiolist.h>
+#include <xt/asio/Shared.hpp>
 #include <memory>
 #include <vector>
 #include <atomic>
@@ -30,29 +19,9 @@ typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, 
 
 // ---- forward ----
 
-struct AsioService: public XtService {
-  XT_IMPLEMENT_SERVICE(ASIO);
-};
-
-struct AsioDeviceList: public XtDeviceList {
-  mutable AsioDriverList _drivers;
-  AsioDeviceList() = default;
-  XT_IMPLEMENT_DEVICE_LIST(ASIO);
-};
-
 std::unique_ptr<XtService>
 XtiCreateAsioService()
 { return std::make_unique<AsioService>(); }
-
-struct AsioDevice: public XtDevice {
-  bool streamOpen;
-  const CComPtr<IASIO> asio;
-  XT_IMPLEMENT_DEVICE(ASIO);
-  
-  ~AsioDevice() { XT_ASSERT(!streamOpen); }
-  AsioDevice(CComPtr<IASIO> asio): 
-  XtDevice(), streamOpen(false), asio(asio) {}
-};
 
 struct AsioStream: public XtStream {
   bool issueOutputReady;
@@ -205,7 +174,7 @@ static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
   buffer.timeValid = timeValid;
   s->OnBuffer(&buffer);
   if(s->issueOutputReady)
-    s->issueOutputReady = s->device->asio->outputReady() == ASE_OK;
+    s->issueOutputReady = s->device->_asio->outputReady() == ASE_OK;
 
   XT_ASSERT(XtiCompareExchange(s->insideCallback, 1, 0));
   return nullptr; 
@@ -216,7 +185,7 @@ static void XT_ASIO_CALL BufferSwitch(void* ctx, long index, ASIOBool direct) {
   ASIOTime time = { 0 };
   AsioTimeInfo& info = time.timeInfo;
   AsioStream* stream = static_cast<AsioStream*>(ctx);
-	if(stream->device->asio->getSamplePosition(&info.samplePosition, &info.systemTime) == ASE_OK)
+	if(stream->device->_asio->getSamplePosition(&info.samplePosition, &info.systemTime) == ASE_OK)
 		info.flags = kSystemTimeValid | kSamplePositionValid;
 	BufferSwitchTimeInfo(ctx, &time, index, direct);
 }
@@ -367,7 +336,7 @@ AsioDeviceList::GetDefaultId(XtBool output, XtBool* valid, char* buffer, int32_t
 // ---- device ----
 
 XtFault AsioDevice::ShowControlPanel() {
-  return asio->controlPanel();
+  return _asio->controlPanel();
 }
 
 XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
@@ -382,14 +351,14 @@ XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
   bool typeFixed = false;
   ASIOSampleType type = -1;
   std::vector<ASIOChannelInfo> infos;
-  ASIOError error = asio->getSampleRate(&rate);
+  ASIOError error = _asio->getSampleRate(&rate);
 
   if(error == ASE_NoClock || error == ASE_NotPresent)
     return ASE_OK;
   if(error != ASE_OK)
     return error;
 
-  XT_VERIFY_ASIO(GetChannelInfos(asio, infos));
+  XT_VERIFY_ASIO(GetChannelInfos(_asio, infos));
   for(size_t i = 0; i < infos.size(); i++) {
       if(typeFixed && type != infos[i].type)
         return XT_ASE_Format;
@@ -410,7 +379,7 @@ XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
 
 XtFault AsioDevice::GetChannelCount(XtBool output, int32_t* count) const {
   long inputs, outputs;
-  XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
+  XT_VERIFY_ASIO(_asio->getChannels(&inputs, &outputs));
   *count = output? outputs: inputs;
   return ASE_OK;
 }
@@ -418,8 +387,8 @@ XtFault AsioDevice::GetChannelCount(XtBool output, int32_t* count) const {
 XtFault AsioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
   ASIOSampleRate rate;
   long min, max, preferred, granularity;
-  XT_VERIFY_ASIO(asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(asio->getBufferSize(&min, &max, &preferred, &granularity));
+  XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
+  XT_VERIFY_ASIO(_asio->getBufferSize(&min, &max, &preferred, &granularity));
   size->min = min * 1000.0 / rate;
   size->max = max * 1000.0 / rate;
   size->current = preferred * 1000.0 / rate;
@@ -429,10 +398,10 @@ XtFault AsioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) co
 XtFault AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
   long inputs, outputs;
   ASIOChannelInfo info = { 0 };
-  XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
+  XT_VERIFY_ASIO(_asio->getChannels(&inputs, &outputs));
   info.isInput = !output;
   info.channel = index;
-  XT_VERIFY_ASIO(asio->getChannelInfo(&info));
+  XT_VERIFY_ASIO(_asio->getChannelInfo(&info));
   XtiCopyString(info.name, buffer, size);
   return ASE_OK;
 }
@@ -444,9 +413,9 @@ XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) con
   long inputs, outputs;
   std::vector<ASIOChannelInfo> infos;
   
-  XT_VERIFY_ASIO(asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(GetChannelInfos(asio, infos));
-  XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
+  XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
+  XT_VERIFY_ASIO(GetChannelInfos(_asio, infos));
+  XT_VERIFY_ASIO(_asio->getChannels(&inputs, &outputs));
   
   if(!ToAsioSample(format->mix.sample, type))
     return ASE_OK;
@@ -484,10 +453,10 @@ XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
   std::vector<ASIOBufferInfo> buffers;
   long min, max, preferred, granularity;
 
-  if(streamOpen)
+  if(_streamOpen)
     return static_cast<XtFault>(DRVERR_DEVICE_ALREADY_OPEN);
-  XT_VERIFY_ASIO(asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(asio->getBufferSize(&min, &max, &preferred, &granularity));
+  XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
+  XT_VERIFY_ASIO(_asio->getBufferSize(&min, &max, &preferred, &granularity));
 
   wantedSize = params->bufferSize / 1000.0 * rate;
   if(wantedSize < min)
@@ -509,8 +478,8 @@ XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
   result->callbacks.sampleRateDidChange = &SampleRateDidChange;
   result->callbacks.bufferSwitch = JitBufferSwitch(result->runtime.get(), &BufferSwitch, result.get());
   result->callbacks.bufferSwitchTimeInfo = JitBufferSwitchTimeInfo(result->runtime.get(), &BufferSwitchTimeInfo, result.get());
-  XT_VERIFY_ASIO(asio->createBuffers(&result->buffers[0], static_cast<long>(buffers.size()), asioBufferSize, &result->callbacks));
-  streamOpen = true;
+  XT_VERIFY_ASIO(_asio->createBuffers(&result->buffers[0], static_cast<long>(buffers.size()), asioBufferSize, &result->callbacks));
+  _streamOpen = true;
   *stream = result.release();
   return ASE_OK;
 }
@@ -520,17 +489,17 @@ XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
 XtFault AsioStream::Stop() {
   if(!XtiCompareExchange(running, 1, 0)) return ASE_OK;
   while(insideCallback.load() == 1);
-  return device->asio->stop();
+  return device->_asio->stop();
 }
 
 XtFault AsioStream::Start() {
   XT_ASSERT(XtiCompareExchange(running, 0, 1));
-  return device->asio->start();
+  return device->_asio->start();
 }
 
 AsioStream::~AsioStream() { 
-  XT_ASSERT(IsAsioSuccess(device->asio->disposeBuffers())); 
-  device->streamOpen = false;
+  XT_ASSERT(IsAsioSuccess(device->_asio->disposeBuffers())); 
+  device->_streamOpen = false;
 }
 
 XtFault AsioStream::GetFrames(int32_t* frames) const {
@@ -541,8 +510,8 @@ XtFault AsioStream::GetFrames(int32_t* frames) const {
 XtFault AsioStream::GetLatency(XtLatency* latency) const {
   long input, output;
   ASIOSampleRate rate;
-  XT_VERIFY_ASIO(device->asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(device->asio->getLatencies(&input, &output));
+  XT_VERIFY_ASIO(device->_asio->getSampleRate(&rate));
+  XT_VERIFY_ASIO(device->_asio->getLatencies(&input, &output));
   latency->input = _params.format.channels.inputs == 0? 0.0: input * 1000.0 / rate;
   latency->output = _params.format.channels.outputs == 0? 0.0: output * 1000.0 / rate;
   return ASE_OK;

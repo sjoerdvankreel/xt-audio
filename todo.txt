@@ -29,4 +29,5 @@
 * drop devicegetname from managed code
 * add caps::aggregate check to samples and gui
 * wasapi do {guid}.{type} id = shared/excl/loopback
-* do not terminate on timeout, stop stream instead
+* do not terminate on timeout, stop stream instead`
+* pulse, jack: dont error out when no server is running
