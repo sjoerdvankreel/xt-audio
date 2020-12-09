@@ -6,10 +6,14 @@
 bool
 XtiIsAsioSuccess(ASIOError e)
 { return e == ASE_OK || e == ASE_SUCCESS; }
-
 std::unique_ptr<XtService>
 XtiCreateAsioService()
 { return std::make_unique<AsioService>(); }
+void XT_ASIO_CALL
+XtiAsioSampleRateDidChange(ASIOSampleRate) { }
+long XT_ASIO_CALL 
+XtiAsioMessage(long selector, long, void*, double*)
+{ return selector == kAsioResetRequest;  }
 
 XtServiceError
 XtiGetAsioError(XtFault fault)
@@ -67,14 +71,30 @@ XtiIsAsioChannelInUse(int32_t count, uint64_t mask, long channel)
   return mask != 0 && ((mask >> channel) & 1ULL) == 1ULL;
 }
 
-ASIOError
-XtiGetAsioChannelInfos(IASIO* asio, std::vector<ASIOChannelInfo>& infos)
+std::vector<ASIOBufferInfo>
+XtiAsioCreateMaskBufferInfos(ASIOBool input, uint64_t mask)
 {
-  long inputs, outputs;
-  XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
-  XT_VERIFY_ASIO(XtiGetAsioChannelInfos(asio, XtFalse, inputs, infos));
-  XT_VERIFY_ASIO(XtiGetAsioChannelInfos(asio, XtTrue, outputs, infos));
-  return ASE_OK;
+  std::vector<ASIOBufferInfo> result;
+  for(int32_t i = 0; i < 64; i++)
+    if(mask & (1ULL << i))
+      result.push_back(XtiAsioCreateBufferInfo(input, i));
+  return result;
+}
+
+std::vector<ASIOBufferInfo>
+XtiAsioCreateChannelBufferInfos(ASIOBool input, int32_t channels)
+{  
+  std::vector<ASIOBufferInfo> result;
+  for(int32_t i = 0; i < channels; i++)
+    result.push_back(XtiAsioCreateBufferInfo(input, i));
+  return result;
+}
+
+std::vector<ASIOBufferInfo>
+XtiAsioCreateBufferInfos(ASIOBool input, int32_t channels, uint64_t mask)
+{
+  if(mask != 0) return XtiAsioCreateMaskBufferInfos(input, mask);
+  return XtiAsioCreateChannelBufferInfos(input, channels);
 }
 
 char const* 
@@ -97,6 +117,25 @@ XtiGetAsioFaultText(XtFault fault)
   case DRVERR_DEVICE_ALREADY_OPEN: return XT_STRINGIFY(DRVERR_DEVICE_ALREADY_OPEN);
   default: return "Unknown fault.";
   }
+}
+
+ASIOBufferInfo
+XtiAsioCreateBufferInfo(ASIOBool input, int32_t index)
+{
+  ASIOBufferInfo result = { 0 };
+  result.isInput = input;
+  result.channelNum = index;
+  return result;
+}
+
+ASIOError
+XtiGetAsioChannelInfos(IASIO* asio, std::vector<ASIOChannelInfo>& infos)
+{
+  long inputs, outputs;
+  XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
+  XT_VERIFY_ASIO(XtiGetAsioChannelInfos(asio, XtFalse, inputs, infos));
+  XT_VERIFY_ASIO(XtiGetAsioChannelInfos(asio, XtTrue, outputs, infos));
+  return ASE_OK;
 }
 
 ASIOError

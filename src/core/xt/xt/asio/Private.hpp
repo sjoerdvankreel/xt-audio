@@ -31,12 +31,26 @@ char const*
 XtiGetAsioFaultText(XtFault fault);
 XtCause 
 XtiGetAsioFaultCause(XtFault fault);
+void XT_ASIO_CALL
+XtiAsioSampleRateDidChange(ASIOSampleRate);
+long XT_ASIO_CALL 
+XtiAsioMessage(long selector, long, void*, double*);
 bool
 XtiSampleToAsio(XtSample sample, ASIOSampleType& asio);
 bool
 XtiSampleFromAsio(ASIOSampleType asio, XtSample& sample);
 bool 
 XtiIsAsioChannelInUse(int32_t count, uint64_t mask, long channel);
+
+ASIOBufferInfo
+XtiAsioCreateBufferInfo(ASIOBool input, int32_t index);
+std::vector<ASIOBufferInfo>
+XtiAsioCreateMaskBufferInfos(ASIOBool input, uint64_t mask);
+std::vector<ASIOBufferInfo>
+XtiAsioCreateChannelBufferInfos(ASIOBool input, int32_t channels);
+std::vector<ASIOBufferInfo>
+XtiAsioCreateBufferInfos(ASIOBool input, int32_t channels, uint64_t mask);
+
 ASIOError
 XtiGetAsioChannelInfos(IASIO* asio, std::vector<ASIOChannelInfo>& infos);
 ASIOError
