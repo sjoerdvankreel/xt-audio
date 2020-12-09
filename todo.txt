@@ -34,3 +34,4 @@
 * pulse, jack: dont error out when no server is running
 * update asmjit
 * check asio streamopen behaviour
+* drop large constructors

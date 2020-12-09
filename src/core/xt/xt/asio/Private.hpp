@@ -19,11 +19,11 @@
 typedef void (XT_ASIO_CALL*
 XtAsioSdkBufferSwitch)(long, ASIOBool);
 typedef void (XT_ASIO_CALL*
-XtAsioContextBufferSwitch)(void*, long, ASIOBool);
+XtAsioContextBufferSwitch)(long, ASIOBool, void*);
 typedef ASIOTime* (XT_ASIO_CALL*
 XtAsioSdkBufferSwitchTimeInfo)(ASIOTime*, long, ASIOBool);
 typedef ASIOTime* (XT_ASIO_CALL*
-XtAsioContextBufferSwitchTimeInfo)(void*, ASIOTime*, long, ASIOBool);
+XtAsioContextBufferSwitchTimeInfo)(ASIOTime*, long, ASIOBool, void*);
 
 bool
 XtiIsAsioSuccess(ASIOError e);

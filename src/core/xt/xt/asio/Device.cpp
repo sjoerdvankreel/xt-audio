@@ -2,6 +2,9 @@
 #include <xt/asio/Shared.hpp>
 #include <xt/asio/Private.hpp>
 
+AsioDevice::
+AsioDevice(CComPtr<IASIO> asio):
+_asio(asio) { }
 XtFault
 AsioDevice::ShowControlPanel()
 { return _asio->controlPanel(); }
@@ -100,41 +103,44 @@ AsioDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 
 XtFault
 AsioDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream)
-{
-  
-  double wantedSize;
-  long asioBufferSize;
+{ 
   ASIOSampleRate rate;
-  std::vector<ASIOBufferInfo> buffers;
   long min, max, preferred, granularity;
-
-  if(_streamOpen)
-    return static_cast<XtFault>(DRVERR_DEVICE_ALREADY_OPEN);
   XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
   XT_VERIFY_ASIO(_asio->getBufferSize(&min, &max, &preferred, &granularity));
 
-  wantedSize = params->bufferSize / 1000.0 * rate;
-  if(wantedSize < min)
-    asioBufferSize = min;
-  else if(wantedSize > max)
-    asioBufferSize = max;
-  else {
-    asioBufferSize = min;
-    while(asioBufferSize < wantedSize)
-      asioBufferSize += granularity == -1? asioBufferSize: granularity;
-    if(asioBufferSize > max)
-      asioBufferSize = max;
+  long bufferSize;
+  double wantedSize = params->bufferSize / 1000.0 * rate;
+  if(wantedSize < min) bufferSize = min;
+  else if(wantedSize > max) bufferSize = max;
+  else
+  {
+    bufferSize = min;
+    while(bufferSize < wantedSize) bufferSize += granularity == -1? bufferSize: granularity;
+    if(bufferSize > max) bufferSize = max;
   }
 
-  CreateBufferInfos(buffers, ASIOTrue, params->format.channels.inputs, params->format.channels.inMask);
-  CreateBufferInfos(buffers, ASIOFalse, params->format.channels.outputs, params->format.channels.outMask);
-  auto result = std::make_unique<AsioStream>(this, params->format, asioBufferSize, buffers);
-  result->callbacks.asioMessage = &AsioMessage;
-  result->callbacks.sampleRateDidChange = &SampleRateDidChange;
-  result->callbacks.bufferSwitch = JitBufferSwitch(result->runtime.get(), &BufferSwitch, result.get());
-  result->callbacks.bufferSwitchTimeInfo = JitBufferSwitchTimeInfo(result->runtime.get(), &BufferSwitchTimeInfo, result.get());
-  XT_VERIFY_ASIO(_asio->createBuffers(&result->buffers[0], static_cast<long>(buffers.size()), asioBufferSize, &result->callbacks));
-  _streamOpen = true;
+  auto const& channels = params->format.channels;
+  auto buffers = XtiAsioCreateBufferInfos(ASIOTrue, channels.inputs, channels.inMask);
+  auto outputs = XtiAsioCreateBufferInfos(ASIOFalse, channels.outputs, channels.outMask);
+  buffers.insert(buffers.end(), outputs.begin(), outputs.end());
+
+  auto result = std::make_unique<AsioStream>();
+  result->_asio = _asio;
+  result->_running.store(0);
+  result->_buffers = buffers;
+  result->_bufferSize = bufferSize;
+  result->_insideCallback.store(0);
+  result->_issueOutputReady = true;
+  result->_runtime = std::make_unique<asmjit::JitRuntime>();
+
+  auto bufferSwitch = XtiAsioJitBufferSwitch(result->_runtime.get(), &AsioStream::BufferSwitch, result.get());
+  auto bufferSwitchTimeInfo = XtiAsioJitBufferSwitchTimeInfo(result->_runtime.get(), &AsioStream::BufferSwitchTimeInfo, result.get());
+  result->_callbacks.asioMessage = &XtiAsioMessage;
+  result->_callbacks.sampleRateDidChange = &XtiAsioSampleRateDidChange;
+  result->_callbacks.bufferSwitch = bufferSwitch;
+  result->_callbacks.bufferSwitchTimeInfo = bufferSwitchTimeInfo;
+  XT_VERIFY_ASIO(_asio->createBuffers(result->_buffers.data(), static_cast<long>(buffers.size()), bufferSize, &result->_callbacks));
   *stream = result.release();
   return ASE_OK;
 }

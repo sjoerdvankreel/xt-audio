@@ -33,7 +33,6 @@ public XtDeviceList
 struct AsioDevice:
 public XtDevice
 {
-  bool _streamOpen;
   CComPtr<IASIO> _asio;
   XT_IMPLEMENT_DEVICE(ASIO);
   AsioDevice(CComPtr<IASIO> asio);
@@ -42,9 +41,9 @@ public XtDevice
 struct AsioStream:
 public XtStream
 {
+  long _bufferSize;
   CComPtr<IASIO> _asio;
   bool _issueOutputReady;
-  long const _bufferSize;
   ASIOCallbacks _callbacks;
   std::atomic_int _running;
   std::vector<void*> _inputs;
@@ -54,6 +53,7 @@ public XtStream
   std::unique_ptr<asmjit::JitRuntime> _runtime;
 
   ~AsioStream();
+  AsioStream() = default;
   XT_IMPLEMENT_STREAM();
   XT_IMLEMENT_STREAM_SYSTEM(ASIO);
 
