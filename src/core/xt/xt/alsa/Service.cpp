@@ -9,7 +9,7 @@ XtiGetAlsaError(XtFault fault)
 {
   XtServiceError result;
   result.text = snd_strerror(fault);
-  result.cause = XtPlatform::GetPosixFaultCause(std::abs(static_cast<int>(fault)));
+  result.cause = XtiGetPosixFaultCause(std::abs(static_cast<int>(fault)));
   return result;
 }
 
