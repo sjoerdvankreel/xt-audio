@@ -13,8 +13,8 @@
   if(!XtiIsAsioSuccess(e)) \
   return XT_TRACE(#c), e; } while(0)
 
-#define XT_ASIO_CALL __cdecl
 #define XT_ASE_Format (static_cast<XtFault>(-1001))
+#define XT_ASIO_TO_UINT64(lo, hi) ((uint64_t)(lo) | ((uint64_t)(hi) << 32))
 
 typedef void (XT_ASIO_CALL*
 XtAsioSdkBufferSwitch)(long, ASIOBool);

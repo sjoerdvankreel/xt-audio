@@ -14,6 +14,8 @@
 #include <host/pc/asiolist.h>
 #include <memory>
 
+#define XT_ASIO_CALL __cdecl
+
 struct AsioService:
 public XtService 
 {
@@ -54,6 +56,11 @@ public XtStream
   ~AsioStream();
   XT_IMPLEMENT_STREAM();
   XT_IMLEMENT_STREAM_SYSTEM(ASIO);
+
+  static void XT_ASIO_CALL
+  BufferSwitch(long index, ASIOBool direct, void* ctx);
+  static ASIOTime* XT_ASIO_CALL
+  BufferSwitchTimeInfo(ASIOTime* time, long index, ASIOBool direct, void* ctx);
 };
 
 #endif // XT_ENABLE_ASIO

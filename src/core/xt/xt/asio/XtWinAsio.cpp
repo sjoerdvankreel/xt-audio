@@ -4,10 +4,6 @@
 #include <vector>
 #include <atomic>
 
-static const double XtAsioNsPerMs = 1000000.0;
-
-
-#define XT_TO_UINT64(lo, hi) ((uint64_t)(lo) | ((uint64_t)(hi) << 32))
 
 
 
@@ -58,60 +54,6 @@ static void XT_ASIO_CALL SampleRateDidChange(ASIOSampleRate) {
 
 static long XT_ASIO_CALL AsioMessage(long selector, long, void*, double*) { 
   return selector == kAsioResetRequest; 
-}
-
-static ASIOTime* XT_ASIO_CALL BufferSwitchTimeInfo(
-  void* ctx, ASIOTime* asioTime, long index, ASIOBool) {
-
-  void* input;
-  void* output;
-  double time = 0.0;
-  uint64_t position = 0;
-  XtBool timeValid = XtFalse;
-  AsioTimeInfo& info = asioTime->timeInfo;
-  AsioStream* s = static_cast<AsioStream*>(ctx);
-
-  if(s->running.load() != 1)
-    return nullptr;
-  if(!XtiCompareExchange(s->insideCallback, 0, 1))
-    return nullptr;
-
-  if(info.flags & kSamplePositionValid && info.flags & kSystemTimeValid) {
-    timeValid = XtTrue;
-    position = XT_TO_UINT64(info.samplePosition.lo, info.samplePosition.hi);
-    time = XT_TO_UINT64(info.systemTime.lo, info.systemTime.hi) / XtAsioNsPerMs;
-  }
-
-  input = s->_params.format.channels.inputs > 0? &s->inputChannels[0]: nullptr;
-  output = s->_params.format.channels.outputs > 0? &s->outputChannels[0]: nullptr;
-  for(int32_t i = 0; i < s->_params.format.channels.inputs; i++)
-    s->inputChannels[i] = s->buffers[i].buffers[index];
-  for(int32_t i = 0; i < s->_params.format.channels.outputs; i++)
-    s->outputChannels[i] = s->buffers[s->_params.format.channels.inputs + i].buffers[index];
-
-  XtBuffer buffer = { 0 };
-  buffer.input = input;
-  buffer.output = output;
-  buffer.frames = s->bufferSize;
-  buffer.time = time;
-  buffer.position = position;
-  buffer.timeValid = timeValid;
-  s->OnBuffer(&buffer);
-  if(s->issueOutputReady)
-    s->issueOutputReady = s->device->_asio->outputReady() == ASE_OK;
-
-  XT_ASSERT(XtiCompareExchange(s->insideCallback, 1, 0));
-  return nullptr; 
-}
-
-static void XT_ASIO_CALL BufferSwitch(void* ctx, long index, ASIOBool direct) {
-
-  ASIOTime time = { 0 };
-  AsioTimeInfo& info = time.timeInfo;
-  AsioStream* stream = static_cast<AsioStream*>(ctx);
-	if(stream->device->_asio->getSamplePosition(&info.samplePosition, &info.systemTime) == ASE_OK)
-		info.flags = kSystemTimeValid | kSamplePositionValid;
-	BufferSwitchTimeInfo(ctx, &time, index, direct);
 }
 
 // ---- local ----
