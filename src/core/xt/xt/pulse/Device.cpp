@@ -86,12 +86,12 @@ PulseDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, 
   } else
     pa_channel_map_init_extend(&map, spec.channels, PA_CHANNEL_MAP_DEFAULT);
   
+  auto id = XtPlatform::instance->_id.c_str();
+  auto dir = _output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   double df = params->bufferSize / 1000.0 * params->format.mix.rate;
   int32_t frames = static_cast<int32_t>(std::ceil(df));
   int32_t sampleSize = XtiGetSampleSize(params->format.mix.sample);
   int32_t frameSize = (channels.inputs + channels.outputs) * sampleSize;
-  auto id = XtPlatform::instance->_id.c_str();
-  auto dir = _output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   if((pa = pa_simple_new(nullptr, id, dir, nullptr, id, &spec, &map, nullptr, &fault)) == nullptr) return fault;
 
   auto result = std::make_unique<PulseStream>(secondary);
