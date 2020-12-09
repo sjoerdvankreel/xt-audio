@@ -15,6 +15,13 @@ long XT_ASIO_CALL
 XtiAsioMessage(long selector, long, void*, double*)
 { return selector == kAsioResetRequest;  }
 
+bool 
+XtiIsAsioChannelInUse(int32_t count, uint64_t mask, long channel)
+{
+  if(mask == 0 && channel < count) return true;
+  return mask != 0 && ((mask >> channel) & 1ULL) == 1ULL;
+}
+
 XtServiceError
 XtiGetAsioError(XtFault fault)
 {
@@ -64,13 +71,6 @@ XtiSampleFromAsio(ASIOSampleType asio, XtSample& sample)
   }
 }
 
-bool 
-XtiIsAsioChannelInUse(int32_t count, uint64_t mask, long channel)
-{
-  if(mask == 0 && channel < count) return true;
-  return mask != 0 && ((mask >> channel) & 1ULL) == 1ULL;
-}
-
 std::vector<ASIOBufferInfo>
 XtiAsioCreateMaskBufferInfos(ASIOBool input, uint64_t mask)
 {
@@ -95,28 +95,6 @@ XtiAsioCreateBufferInfos(ASIOBool input, int32_t channels, uint64_t mask)
 {
   if(mask != 0) return XtiAsioCreateMaskBufferInfos(input, mask);
   return XtiAsioCreateChannelBufferInfos(input, channels);
-}
-
-char const* 
-XtiGetAsioFaultText(XtFault fault)
-{
-  switch(fault) 
-  {
-  case ASE_OK: return XT_STRINGIFY(ASE_OK);
-  case ASE_SUCCESS: return XT_STRINGIFY(ASE_SUCCESS);
-  case ASE_NoClock: return XT_STRINGIFY(ASE_NoClock);
-  case ASE_NoMemory: return XT_STRINGIFY(ASE_NoMemory);
-  case ASE_NotPresent: return XT_STRINGIFY(ASE_NotPresent);
-  case ASE_InvalidMode: return XT_STRINGIFY(ASE_InvalidMode);
-  case ASE_HWMalfunction: return XT_STRINGIFY(ASE_HWMalfunction);
-  case ASE_SPNotAdvancing: return XT_STRINGIFY(ASE_SPNotAdvancing);
-  case ASE_InvalidParameter: return XT_STRINGIFY(ASE_InvalidParameter);
-  case XT_ASE_Format: return XT_STRINGIFY(XT_ASE_Format);
-  case DRVERR_INVALID_PARAM: return XT_STRINGIFY(DRVERR_INVALID_PARAM);
-  case DRVERR_DEVICE_NOT_FOUND: return XT_STRINGIFY(DRVERR_DEVICE_NOT_FOUND);
-  case DRVERR_DEVICE_ALREADY_OPEN: return XT_STRINGIFY(DRVERR_DEVICE_ALREADY_OPEN);
-  default: return "Unknown fault.";
-  }
 }
 
 ASIOBufferInfo
@@ -157,6 +135,28 @@ XtiGetAsioChannelInfos(IASIO* asio, XtBool output, long channels, std::vector<AS
     infos.push_back(info);
   }
   return ASE_OK;
+}
+
+char const* 
+XtiGetAsioFaultText(XtFault fault)
+{
+  switch(fault) 
+  {
+  case ASE_OK: return XT_STRINGIFY(ASE_OK);
+  case ASE_SUCCESS: return XT_STRINGIFY(ASE_SUCCESS);
+  case ASE_NoClock: return XT_STRINGIFY(ASE_NoClock);
+  case ASE_NoMemory: return XT_STRINGIFY(ASE_NoMemory);
+  case ASE_NotPresent: return XT_STRINGIFY(ASE_NotPresent);
+  case ASE_InvalidMode: return XT_STRINGIFY(ASE_InvalidMode);
+  case ASE_HWMalfunction: return XT_STRINGIFY(ASE_HWMalfunction);
+  case ASE_SPNotAdvancing: return XT_STRINGIFY(ASE_SPNotAdvancing);
+  case ASE_InvalidParameter: return XT_STRINGIFY(ASE_InvalidParameter);
+  case XT_ASE_Format: return XT_STRINGIFY(XT_ASE_Format);
+  case DRVERR_INVALID_PARAM: return XT_STRINGIFY(DRVERR_INVALID_PARAM);
+  case DRVERR_DEVICE_NOT_FOUND: return XT_STRINGIFY(DRVERR_DEVICE_NOT_FOUND);
+  case DRVERR_DEVICE_ALREADY_OPEN: return XT_STRINGIFY(DRVERR_DEVICE_ALREADY_OPEN);
+  default: return "Unknown fault.";
+  }
 }
 
 XtAsioSdkBufferSwitch

@@ -3,6 +3,10 @@
 #include <xt/private/Win32.hpp>
 #include <xt/api/private/Platform.hpp>
 
+XtFault
+AsioService::OpenDeviceList(XtDeviceList** list) const
+{ *list = new AsioDeviceList; return ASE_OK; }
+
 XtCapabilities
 AsioService::GetCapabilities() const
 {
@@ -11,13 +15,6 @@ AsioService::GetCapabilities() const
     | XtCapabilitiesFullDuplex
     | XtCapabilitiesChannelMask;
   return static_cast<XtCapabilities>(result);
-}
-
-XtFault
-AsioService::OpenDeviceList(XtDeviceList** list) const
-{
-  *list = new AsioDeviceList;
-  return ASE_OK;
 }
 
 XtFault

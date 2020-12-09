@@ -19,6 +19,28 @@ AsioDevice::GetChannelCount(XtBool output, int32_t* count) const
 }
 
 XtFault
+AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
+{
+  ASIOChannelInfo info = { 0 };
+  XT_VERIFY_ASIO(XtiGetAsioChannelInfo(_asio, output, index, info));
+  XtiCopyString(info.name, buffer, size);
+  return ASE_OK;
+}
+
+XtFault
+AsioDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
+{  
+  ASIOSampleRate rate;
+  long min, max, preferred, granularity;
+  XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
+  XT_VERIFY_ASIO(_asio->getBufferSize(&min, &max, &preferred, &granularity));
+  size->min = min * 1000.0 / rate;
+  size->max = max * 1000.0 / rate;
+  size->current = preferred * 1000.0 / rate;
+  return ASE_OK;
+}
+
+XtFault
 AsioDevice::GetMix(XtBool* valid, XtMix* mix) const
 {
   std::vector<ASIOChannelInfo> infos;
@@ -39,19 +61,6 @@ AsioDevice::GetMix(XtBool* valid, XtMix* mix) const
   *valid = XtTrue;
   mix->sample = sample;
   mix->rate = static_cast<int32_t>(rate);
-  return ASE_OK;
-}
-
-XtFault
-AsioDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
-{  
-  ASIOSampleRate rate;
-  long min, max, preferred, granularity;
-  XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(_asio->getBufferSize(&min, &max, &preferred, &granularity));
-  size->min = min * 1000.0 / rate;
-  size->max = max * 1000.0 / rate;
-  size->current = preferred * 1000.0 / rate;
   return ASE_OK;
 }
 
@@ -90,18 +99,8 @@ AsioDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 }
 
 XtFault
-AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
+AsioDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream)
 {
-  ASIOChannelInfo info = { 0 };
-  XT_VERIFY_ASIO(XtiGetAsioChannelInfo(_asio, output, index, info));
-  XtiCopyString(info.name, buffer, size);
-  return ASE_OK;
-}
-
-
-
-
-XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   double wantedSize;
   long asioBufferSize;
