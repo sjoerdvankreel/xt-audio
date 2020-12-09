@@ -33,27 +33,27 @@ XtiJackCountPorts(jack_client_t* client, XtBool output)
 }
 
 XtFault
-XtiJackCreatePorts(jack_client_t* jc, uint32_t channels, uint64_t mask, unsigned long xtFlag, unsigned long jackFlag, const char* name, std::vector<XtJackPort>& result) {
-
-  const char* type = JACK_DEFAULT_AUDIO_TYPE;
-  for(int32_t i = 0; i < channels; i++) {
+XtiJackCreatePorts(jack_client_t* jc, uint32_t channels, uint64_t mask, unsigned long flag, std::vector<XtJackPort>& result)
+{
+  char const* type = JACK_DEFAULT_AUDIO_TYPE;
+  std::string name = flag == JackPortIsInput? "inputs": "outputs";
+  for(int32_t i = 0; i < channels; i++)
+  {
     std::ostringstream oss;
-    oss << name << (i + 1);
-    unsigned long flags = xtFlag | JackPortIsTerminal;
-    jack_port_t* port = jack_port_register(client, oss.str().c_str(), type, flags, 0);
-    if(port == nullptr)
-      return ENOENT;
-    result.emplace_back(XtJackPort(client, port));
+    oss << name << i;
+    unsigned long flags = flag | JackPortIsTerminal;
+    jack_port_t* port = jack_port_register(jc, oss.str().c_str(), type, flags, 0);
+    if(port == nullptr) return ENOENT;
+    result.emplace_back(XtJackPort(jc, port));
   }
 
-  JackPtr<const char*> jackPorts(jack_get_ports(client, nullptr, type, jackFlag));
-  if(mask == 0)
-    for(int32_t i = 0; i < channels; i++)
-      result[i].connectTo = jackPorts.p[i];
-  else
-    for(int32_t i = 0, j = 0; i < 64; i++)
-      if(mask & (1ULL << i))
-        result[j++].connectTo = jackPorts.p[i];
+  unsigned long jackFlag = flag == JackPortIsInput? JackPortIsOutput: JackPortIsInput;
+  JackPtr<const char*> ports(jack_get_ports(jc, nullptr, type, jackFlag));
+  if(mask == 0) for(int32_t i = 0; i < channels; i++)
+    result[i].connectTo = ports.p[i];
+  else for(int32_t i = 0, j = 0; i < 64; i++)
+    if(mask & (1ULL << i))
+      result[j++].connectTo = jackPorts.p[i];
   return 0;
 }
 

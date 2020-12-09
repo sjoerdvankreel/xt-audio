@@ -2,11 +2,8 @@
 #define XT_JACK_PRIVATE_HPP
 #if XT_ENABLE_JACK
 #include <jack/jack.h>
-
-void
-XtiJackSilentCallback(char const*);
-void
-XtiJackErrorCallback(char const* msg);
+#include <vector>
+#include <cstdint>
 
 template <class T>
 struct XtJackPtr
@@ -59,6 +56,13 @@ struct XtJackPort
   XtJackPort& operator=(XtJackPort&& rhs) { jc = rhs.jc; port = rhs.port; connectTo = rhs.connectTo; rhs.port = nullptr; return *this; }
   XtJackPort(jack_client_t* jc, jack_port_t* port): port(port), jc(jc), connectTo(nullptr) { XT_ASSERT(jc != nullptr); XT_ASSERT(port != nullptr); }
 };
+
+void
+XtiJackSilentCallback(char const*);
+void
+XtiJackErrorCallback(char const* msg);
+XtFault
+XtiJackCreatePorts(jack_client_t* jc, uint32_t channels, uint64_t mask, unsigned long flag, std::vector<XtJackPort>& result);
 
 #endif // XT_ENABLE_JACK
 #endif // XT_JACK_PRIVATE_HPP

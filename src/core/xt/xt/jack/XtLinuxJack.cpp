@@ -149,11 +149,11 @@ XtFault JackDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
   XtJackClient streamClient(c);
   
   std::vector<XtJackPort> inputs, outputs;
-  if((fault = CreatePorts(c, params->format.channels.inputs, params->format.channels.inMask, 
-    JackPortIsInput, JackPortIsOutput, "inputs", inputs)) != 0)
+  if((fault = XtiJackCreatePorts(c, params->format.channels.inputs, params->format.channels.inMask, 
+    JackPortIsInput, inputs)) != 0)
     return fault;
-  if((fault = CreatePorts(c, params->format.channels.outputs, params->format.channels.outMask, 
-    JackPortIsOutput, JackPortIsInput, "outputs", outputs)) != 0)
+  if((fault = XtiJackCreatePorts(c, params->format.channels.outputs, params->format.channels.outMask, 
+    JackPortIsOutput, outputs)) != 0)
     return fault;
 
   sampleSize = XtiGetSampleSize(params->format.mix.sample);
