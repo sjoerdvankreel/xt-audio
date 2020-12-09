@@ -4,6 +4,7 @@
 
 #include <xt/private/Shared.hpp>
 #include <xt/asio/Shared.hpp>
+#include <vector>
 
 #define XT_VERIFY_ASIO(c)  \
   do { auto e = (c);       \
@@ -18,6 +19,18 @@ char const*
 XtiGetAsioFaultText(XtFault fault);
 XtCause 
 XtiGetAsioFaultCause(XtFault fault);
+bool
+XtiSampleToAsio(XtSample sample, ASIOSampleType& asio);
+bool
+XtiSampleFromAsio(ASIOSampleType asio, XtSample& sample);
+bool 
+XtiIsAsioChannelInUse(int32_t count, uint64_t mask, long channel);
+ASIOError
+XtiGetAsioChannelInfos(IASIO* asio, std::vector<ASIOChannelInfo>& infos);
+ASIOError
+XtiGetAsioChannelInfo(IASIO* asio, XtBool output, int32_t index, ASIOChannelInfo& info);
+ASIOError
+XtiGetAsioChannelInfos(IASIO* asio, XtBool output, long channels, std::vector<ASIOChannelInfo>& infos);
 
 #endif // XT_ENABLE_ASIO
 #endif // XT_ASIO_PRIVATE_HPP

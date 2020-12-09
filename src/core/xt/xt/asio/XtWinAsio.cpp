@@ -47,25 +47,7 @@ struct AsioStream: public XtStream {
 
 
 
-static bool ToAsioSample(XtSample sample, ASIOSampleType& asio) {
-  switch(sample) {
-  case XtSampleInt16: asio = ASIOSTInt16LSB; return true;
-  case XtSampleInt24: asio = ASIOSTInt24LSB; return true;
-  case XtSampleInt32: asio = ASIOSTInt32LSB; return true;
-  case XtSampleFloat32: asio = ASIOSTFloat32LSB; return true;
-  default: return false;
-  }
-}
 
-static bool FromAsioSample(ASIOSampleType asio, XtSample& sample) {
-  switch(asio) {
-  case ASIOSTInt16LSB: sample = XtSampleInt16; return true;
-  case ASIOSTInt24LSB: sample = XtSampleInt24; return true;
-  case ASIOSTInt32LSB: sample = XtSampleInt32; return true;
-  case ASIOSTFloat32LSB: sample = XtSampleFloat32; return true;
-  default: return false;
-  }
-}
 
 static void CreateMaskBufferInfos(
   std::vector<ASIOBufferInfo>& infos, ASIOBool input, uint64_t mask) {
@@ -97,27 +79,6 @@ static void CreateBufferInfos(
     CreateChannelBufferInfos(infos, input, channels);
   else
     CreateMaskBufferInfos(infos, input, mask);
-}
-
-static ASIOError GetChannelInfos(
-  IASIO* asio, std::vector<ASIOChannelInfo>& infos, ASIOBool input, long channels) {
-
-  for(long i = 0; i < channels; i++) {
-    ASIOChannelInfo info = { 0 };
-    info.isInput = input;
-    info.channel = i;
-    XT_VERIFY_ASIO(asio->getChannelInfo(&info));
-    infos.push_back(info);
-  }
-  return ASE_OK;
-}
-
-static ASIOError GetChannelInfos(IASIO* asio, std::vector<ASIOChannelInfo>& infos) {
-  long inputs, outputs;
-  XT_VERIFY_ASIO(asio->getChannels(&inputs, &outputs));
-  XT_VERIFY_ASIO(GetChannelInfos(asio, infos, ASIOTrue, inputs));
-  XT_VERIFY_ASIO(GetChannelInfos(asio, infos, ASIOFalse, outputs));
-  return ASE_OK;
 }
 
 // ---- local ----
@@ -254,115 +215,6 @@ static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
 
 // ---- device ----
 
-XtFault AsioDevice::ShowControlPanel() {
-  return _asio->controlPanel();
-}
-
-XtFault AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
-  *supports = !interleaved;
-  return ASE_OK;
-}
-
-XtFault AsioDevice::GetMix(XtBool* valid, XtMix* mix) const {
-
-  XtSample sample;
-  ASIOSampleRate rate;
-  bool typeFixed = false;
-  ASIOSampleType type = -1;
-  std::vector<ASIOChannelInfo> infos;
-  ASIOError error = _asio->getSampleRate(&rate);
-
-  if(error == ASE_NoClock || error == ASE_NotPresent)
-    return ASE_OK;
-  if(error != ASE_OK)
-    return error;
-
-  XT_VERIFY_ASIO(GetChannelInfos(_asio, infos));
-  for(size_t i = 0; i < infos.size(); i++) {
-      if(typeFixed && type != infos[i].type)
-        return XT_ASE_Format;
-      else if(!typeFixed) {
-        typeFixed = true;
-        type = infos[i].type;
-      }
-  }
-
-  if(!FromAsioSample(type, sample))
-    return XT_ASE_Format;
-
-  *valid = XtTrue;
-  mix->sample = sample;
-  mix->rate = static_cast<int32_t>(rate);
-  return ASE_OK;
-}
-
-XtFault AsioDevice::GetChannelCount(XtBool output, int32_t* count) const {
-  long inputs, outputs;
-  XT_VERIFY_ASIO(_asio->getChannels(&inputs, &outputs));
-  *count = output? outputs: inputs;
-  return ASE_OK;
-}
-
-XtFault AsioDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
-  ASIOSampleRate rate;
-  long min, max, preferred, granularity;
-  XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(_asio->getBufferSize(&min, &max, &preferred, &granularity));
-  size->min = min * 1000.0 / rate;
-  size->max = max * 1000.0 / rate;
-  size->current = preferred * 1000.0 / rate;
-  return ASE_OK;
-}
-
-XtFault AsioDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  long inputs, outputs;
-  ASIOChannelInfo info = { 0 };
-  XT_VERIFY_ASIO(_asio->getChannels(&inputs, &outputs));
-  info.isInput = !output;
-  info.channel = index;
-  XT_VERIFY_ASIO(_asio->getChannelInfo(&info));
-  XtiCopyString(info.name, buffer, size);
-  return ASE_OK;
-}
-
-XtFault AsioDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
-  
-  ASIOSampleType type;
-  ASIOSampleRate rate;
-  long inputs, outputs;
-  std::vector<ASIOChannelInfo> infos;
-  
-  XT_VERIFY_ASIO(_asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(GetChannelInfos(_asio, infos));
-  XT_VERIFY_ASIO(_asio->getChannels(&inputs, &outputs));
-  
-  if(!ToAsioSample(format->mix.sample, type))
-    return ASE_OK;
-  if(static_cast<int32_t>(rate) != format->mix.rate)
-    return ASE_OK;
-  if(format->channels.inputs > inputs || format->channels.outputs > outputs)
-    return ASE_OK;
-  for(int32_t i = inputs; i < 64; i++)
-    if((format->channels.inMask & (1ULL << i)) != 0)
-      return ASE_OK;
-  for(int32_t i = outputs; i < 64; i++)
-    if((format->channels.outMask & (1ULL << i)) != 0)
-      return ASE_OK;
-  
-  for(size_t i = 0; i < infos.size(); i++) {
-    if(infos[i].isInput && infos[i].type != type &&
-      (format->channels.inMask == 0 && infos[i].channel < format->channels.inputs 
-        || format->channels.inMask != 0 && (((format->channels.inMask >> infos[i].channel) & 1ULL) == 1ULL)))
-      return ASE_OK;
-    if(!infos[i].isInput && infos[i].type != type &&
-      (format->channels.outMask == 0 && infos[i].channel < format->channels.outputs 
-        || format->channels.outMask != 0 && (((format->channels.outMask >> infos[i].channel) & 1ULL) == 1ULL)))
-      return ASE_OK;
-  }
-
-  *supports = XtTrue;
-  return ASE_OK;
-}
 
 XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
