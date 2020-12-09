@@ -1,0 +1,6 @@
+#ifndef XT_JACK_PRIVATE_HPP
+#define XT_JACK_PRIVATE_HPP
+#if XT_ENABLE_JACK
+
+#endif // XT_ENABLE_JACK
+#endif // XT_JACK_PRIVATE_HPP

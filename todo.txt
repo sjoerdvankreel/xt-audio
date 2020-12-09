@@ -16,7 +16,7 @@
 * SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE (alsa grouping)
 * package zip in build script
 * cleanup cli gui
-* test selective compilation
+* test selective compilation (all combinations)
 * test compile headers as c
 * arm
 * restore x86

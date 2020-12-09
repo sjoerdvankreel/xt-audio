@@ -1,0 +1,6 @@
+#ifndef XT_JACK_SHARED_HPP
+#define XT_JACK_SHARED_HPP
+#if XT_ENABLE_JACK
+
+#endif // XT_ENABLE_JACK
+#endif // XT_JACK_SHARED_HPP
