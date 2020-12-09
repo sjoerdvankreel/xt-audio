@@ -14,8 +14,9 @@
 extern char const*
 XtiWfxChannelNames[18];
 
-#define XT_VERIFY_COM(e) \
-  do { if(FAILED(hr = (e))) return XT_TRACE(#e), hr; } while(0)
+#define XT_VERIFY_COM(e)    \
+  do { if(FAILED(hr = (e))) \
+  return XT_TRACE(#e), hr; } while(0)
 
 struct XtPropVariant
 {

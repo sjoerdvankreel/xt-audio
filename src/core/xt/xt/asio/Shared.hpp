@@ -2,17 +2,10 @@
 #define XT_ASIO_SHARED_HPP
 #if XT_ENABLE_ASIO
 
-#include <xt/asio/Fault.hpp>
-#include <xt/asio/Shared.hpp>
-#include <xt/private/Shared.hpp>
-#include <xt/private/Services.hpp>
-#include <xt/private/Win32.hpp>
-#include <xt/api/private/Service.hpp>
 #include <xt/api/private/Device.hpp>
-#include <xt/api/private/Stream.hpp>
-#include <xt/api/private/Platform.hpp>
+#include <xt/api/private/Service.hpp>
 #include <xt/api/private/DeviceList.hpp>
-#include <asmjit/asmjit.h>
+#include <atlbase.h>
 #include <common/iasiodrv.h>
 #include <host/pc/asiolist.h>
 

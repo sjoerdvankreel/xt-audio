@@ -1,14 +1,37 @@
 #if XT_ENABLE_ASIO
-#include <xt/asio/Fault.hpp>
-#include <xt/private/Services.hpp>
+#include <xt/asio/Shared.hpp>
+#include <xt/private/Win32.hpp>
+#include <xt/api/private/Platform.hpp>
 
-XtServiceError
-XtiGetAsioError(XtFault fault)
+XtCapabilities
+AsioService::GetCapabilities() const
 {
-  XtServiceError result;
-  result.text = XtiGetAsioFaultText(fault);
-  result.cause = XtiGetAsioFaultCause(fault);
-  return result;
+  auto result = XtCapabilitiesTime
+    | XtCapabilitiesLatency
+    | XtCapabilitiesFullDuplex
+    | XtCapabilitiesChannelMask;
+  return static_cast<XtCapabilities>(result);
+}
+
+XtFault
+AsioService::OpenDeviceList(XtDeviceList** list) const
+{
+  *list = new AsioDeviceList;
+  return ASE_OK;
+}
+
+XtFault
+AsioService::OpenDevice(char const* id, XtDevice** device) const
+{  
+  HRESULT hr;
+  CLSID classId;
+  CComPtr<IASIO> asio;
+  auto wideId = XtiUtf8ToWideString(id);
+  XT_VERIFY_COM(CLSIDFromString(wideId.data(), &classId));
+  XT_VERIFY_COM(CoCreateInstance(classId, nullptr, CLSCTX_ALL, classId, reinterpret_cast<void**>(&asio)));
+  if(!asio->init(XtPlatform::instance->_window)) return ASE_NotPresent;
+  *device = new AsioDevice(asio);
+  return ASE_OK;
 }
 
 #endif // XT_ENABLE_ASIO

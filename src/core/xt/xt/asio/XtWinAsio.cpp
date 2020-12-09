@@ -4,13 +4,10 @@
 #include <vector>
 #include <atomic>
 
-static bool IsAsioSuccess(ASIOError e);
 static const double XtAsioNsPerMs = 1000000.0;
 
 #define XT_ASIO_CALL __cdecl
 #define XT_TO_UINT64(lo, hi) ((uint64_t)(lo) | ((uint64_t)(hi) << 32))
-#define XT_VERIFY_ASIO(c) do { auto e = (c); \
-  if(!IsAsioSuccess(e)) return XT_TRACE(#c), e; } while(0)
 
 typedef void (XT_ASIO_CALL* SdkBufferSwitch)(long, ASIOBool);
 typedef void (XT_ASIO_CALL* ContextBufferSwitch)(void*, long, ASIOBool);
@@ -19,9 +16,7 @@ typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, 
 
 // ---- forward ----
 
-std::unique_ptr<XtService>
-XtiCreateAsioService()
-{ return std::make_unique<AsioService>(); }
+
 
 struct AsioStream: public XtStream {
   bool issueOutputReady;
@@ -50,9 +45,7 @@ struct AsioStream: public XtStream {
 
 // ---- local ----
 
-static bool IsAsioSuccess(ASIOError e) {
-  return e == ASE_OK || e == ASE_SUCCESS; 
-}
+
 
 static bool ToAsioSample(XtSample sample, ASIOSampleType& asio) {
   switch(sample) {
@@ -258,80 +251,6 @@ static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
 }
 
 // ---- service ----
-XtCapabilities AsioService::GetCapabilities() const {
-  return static_cast<XtCapabilities>(
-    XtCapabilitiesTime | 
-    XtCapabilitiesLatency | 
-    XtCapabilitiesFullDuplex | 
-    XtCapabilitiesChannelMask);
-}
-
-XtFault AsioService::OpenDeviceList(XtDeviceList** list) const {
-  *list = new AsioDeviceList;
-  return ASE_OK;
-}
-
-XtFault AsioService::OpenDevice(char const* id, XtDevice** device) const
-{  
-  HRESULT hr;
-  CLSID classId;
-  CComPtr<IASIO> asio;
-  auto wideId = XtiUtf8ToWideString(id);
-  XT_VERIFY_COM(CLSIDFromString(wideId.data(), &classId));
-  XT_VERIFY_COM(CoCreateInstance(classId, nullptr, CLSCTX_ALL, classId, reinterpret_cast<void**>(&asio)));
-  if(!asio->init(XtPlatform::instance->_window)) return ASE_NotPresent;
-  *device = new AsioDevice(asio);
-  return ASE_OK;
-}
-
-XtFault
-AsioDeviceList::GetCount(int32_t* count) const
-{
-  *count = _drivers.asioGetNumDev();
-  return ASE_OK;
-}
-  
-XtFault 
-AsioDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
-{  
-  HRESULT hr;
-  CLSID classId;
-  LPOLESTR wide;
-  XT_VERIFY_ASIO(_drivers.asioGetDriverCLSID(index, &classId));
-  XT_VERIFY_COM(StringFromCLSID(classId, &wide));
-  std::string utf8 = XtiWideStringToUtf8(wide);
-  CoTaskMemFree(wide);
-  XtiCopyString(utf8.c_str(), buffer, size);
-  return ASE_OK;
-}
-
-XtFault
-AsioDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
-{
-  CLSID current;
-  LONG index = -1;
-  CLSID classId = XtiUtf8ToClassId(id);
-  std::string name(MAXDRVNAMELEN + 1, '\0');
-  for(LONG i = 0; i < _drivers.asioGetNumDev(); i++)
-  {
-    XT_VERIFY_ASIO(_drivers.asioGetDriverCLSID(i, &current));
-    if(current != classId) continue;
-    index = i;
-    break;
-  }
-  if(index == -1) return static_cast<XtFault>(DRVERR_DEVICE_NOT_FOUND);
-  XT_VERIFY_ASIO(_drivers.asioGetDriverName(index, name.data(), MAXDRVNAMELEN));
-  XtiCopyString(name.c_str(), buffer, size);
-  return ASE_OK;
-}
-
-XtFault
-AsioDeviceList::GetDefaultId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const
-{
-  if(_drivers.asioGetNumDev() == 0) return ASE_OK;
-  *valid = XtTrue;
-  return GetId(0, buffer, size);
-}
 
 // ---- device ----
 
