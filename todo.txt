@@ -33,3 +33,6 @@
 * pulse, jack: dont error out when no server is running
 * update asmjit
 * drop large constructors
+* check const order
+* support multiple JACK servers
+* support multiple PulseAudio servers

@@ -14,24 +14,6 @@
 
 // ---- forward ----
 
-struct JackService: public XtService 
-{
-  ~JackService();
-  JackService();
-  XT_IMPLEMENT_SERVICE(JACK);
-};
-
-std::unique_ptr<XtService>
-XtiCreateJackService()
-{ return std::make_unique<JackService>(); }
-
-struct JackDevice: public XtDevice {
-  const XtJackClient client;
-  XT_IMPLEMENT_DEVICE(JACK);
-  JackDevice(XtJackClient&& c):
-  client(std::move(c)) { XT_ASSERT(client.client != nullptr); }
-};
-
 struct JackStream: public XtStream {
   const XtJackClient client;
   std::vector<XtJackPort> inputs;
@@ -51,47 +33,6 @@ struct JackStream: public XtStream {
 };
 
 // ---- local ----
-
-void JackSilentCallback(const char*) {
-}
-
-void JackErrorCallback(const char* msg) {
-  XT_TRACE(msg);
-}
-
-static int32_t CountPorts(jack_client_t* client, XtBool output) {
-  int32_t count = 0;
-  unsigned long flag = output? JackPortIsInput: JackPortIsOutput;
-  JackPtr<const char*> ports(jack_get_ports(client, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
-  while(ports.p[count] != nullptr)
-    count++;
-  return count;
-}
-
-static XtFault CreatePorts(jack_client_t* client, uint32_t channels, uint64_t mask, 
-  unsigned long xtFlag, unsigned long jackFlag, const char* name, std::vector<XtJackPort>& result) {
-
-  const char* type = JACK_DEFAULT_AUDIO_TYPE;
-  for(int32_t i = 0; i < channels; i++) {
-    std::ostringstream oss;
-    oss << name << (i + 1);
-    unsigned long flags = xtFlag | JackPortIsTerminal;
-    jack_port_t* port = jack_port_register(client, oss.str().c_str(), type, flags, 0);
-    if(port == nullptr)
-      return ENOENT;
-    result.emplace_back(XtJackPort(client, port));
-  }
-
-  JackPtr<const char*> jackPorts(jack_get_ports(client, nullptr, type, jackFlag));
-  if(mask == 0)
-    for(int32_t i = 0; i < channels; i++)
-      result[i].connectTo = jackPorts.p[i];
-  else
-    for(int32_t i = 0, j = 0; i < 64; i++)
-      if(mask & (1ULL << i))
-        result[j++].connectTo = jackPorts.p[i];
-  return 0;
-}
 
 static int XRunCallback(void* arg) {
   static_cast<JackStream*>(arg)->OnXRun();
@@ -136,57 +77,9 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
 
 // ---- service ----
 
-JackService::JackService()
-{ jack_set_error_function(&JackErrorCallback); }
-
-JackService::~JackService()
-{ jack_set_error_function(&JackSilentCallback); }
-
-XtCapabilities JackService::GetCapabilities() const {
-  return static_cast<XtCapabilities>(
-    XtCapabilitiesTime | 
-    XtCapabilitiesFullDuplex | 
-    XtCapabilitiesChannelMask | 
-    XtCapabilitiesXRunDetection);
-}
-
-XtFault JackService::GetDeviceCount(int32_t* count) const {
-  XtJackClient client(jack_client_open(XtPlatform::instance->_id.c_str(), JackNoStartServer, nullptr));
-  *count = client.client == nullptr? 0: 1;
-  return 0;
-}
-
-XtFault JackService::OpenDeviceList(XtDeviceList** list) const {
-  return 0;
-}
-
-XtFault JackService::OpenDevice2(char const* id, XtDevice** device) const {  
-  return 0;
-}
-
-XtFault JackService::OpenDevice(int32_t index, XtDevice** device) const {  
-  XtJackClient client(jack_client_open(XtPlatform::instance->_id.c_str(), JackNoStartServer, nullptr));
-  if(client.client == nullptr)
-    return ESRCH;
-  *device = new JackDevice(std::move(client));
-  return 0;
-}
-
-XtFault JackService::OpenDefaultDevice(XtBool output, XtDevice** device) const { 
-  XtJackClient client(jack_client_open(XtPlatform::instance->_id.c_str(), JackNoStartServer, nullptr));
-  if(client.client != nullptr)
-    *device = new JackDevice(std::move(client));
-  return 0;
-}
-
 // ---- device ----
 
 XtFault JackDevice::ShowControlPanel() {
-  return 0;
-}
-
-XtFault JackDevice::GetName(char* buffer, int32_t* size) const {
-  XtiCopyString("JACK", buffer, size);
   return 0;
 }
 

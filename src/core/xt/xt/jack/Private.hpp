@@ -3,6 +3,11 @@
 #if XT_ENABLE_JACK
 #include <jack/jack.h>
 
+void
+XtiJackSilentCallback(char const*);
+void
+XtiJackErrorCallback(char const* msg);
+
 template <class T>
 struct XtJackPtr
 {
@@ -16,7 +21,7 @@ struct XtJackClient
   jack_client_t* jc;
   XtJackClient(XtJackClient const&) = delete;
   XtJackClient& operator=(XtJackClient const&) = delete;
-  ~XtJackClient() { if(client != nullptr) jack_client_close(jc); }
+  ~XtJackClient() { if(jc != nullptr) jack_client_close(jc); }
   
   XtJackClient(jack_client_t* jc): jc(jc) { }
   XtJackClient(XtJackClient&& rhs): jc(rhs.jc) { rhs.jc = nullptr; }
@@ -32,7 +37,7 @@ struct XtJackConnection
   XtJackConnection& operator=(XtJackConnection&& rhs)
   { dest = rhs.dest; source = rhs.source; jc = rhs.jc; rhs.source = nullptr; return *this; }
   XtJackConnection(jack_client_t* jc, char const* source, char const* dest): dest(dest), source(source), jc(jc)
-  { XT_ASSERT(client != nullptr); XT_ASSERT(source != nullptr); XT_ASSERT(dest != nullptr); }
+  { XT_ASSERT(jc != nullptr); XT_ASSERT(source != nullptr); XT_ASSERT(dest != nullptr); }
 
   XtJackConnection(XtJackConnection const&) = delete;
   XtJackConnection& operator=(XtJackConnection const&) = delete;
@@ -52,7 +57,7 @@ struct XtJackPort
 
   XtJackPort(XtJackPort&& rhs): port(rhs.port), jc(rhs.jc), connectTo(rhs.connectTo) { rhs.port = nullptr; }
   XtJackPort& operator=(XtJackPort&& rhs) { jc = rhs.jc; port = rhs.port; connectTo = rhs.connectTo; rhs.port = nullptr; return *this; }
-  XtJackPort(jack_client_t* jc, jack_port_t* port): port(port), jc(jc), connectTo(nullptr) { XT_ASSERT(client != nullptr); XT_ASSERT(port != nullptr); }
+  XtJackPort(jack_client_t* jc, jack_port_t* port): port(port), jc(jc), connectTo(nullptr) { XT_ASSERT(jc != nullptr); XT_ASSERT(port != nullptr); }
 };
 
 #endif // XT_ENABLE_JACK
