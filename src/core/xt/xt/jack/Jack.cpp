@@ -2,6 +2,7 @@
 #include <xt/jack/Shared.hpp>
 #include <xt/jack/Private.hpp>
 #include <xt/private/Linux.hpp>
+#include <cstring>
 
 XtServiceError
 XtiGetJackError(XtFault fault)
