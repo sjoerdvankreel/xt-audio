@@ -33,3 +33,4 @@
 * do not terminate on timeout, stop stream instead`
 * pulse, jack: dont error out when no server is running
 * update asmjit
+* check asio streamopen behaviour

@@ -13,33 +13,6 @@ static const double XtAsioNsPerMs = 1000000.0;
 
 // ---- forward ----
 
-
-
-struct AsioStream: public XtStream {
-  bool issueOutputReady;
-  const long bufferSize;
-  ASIOCallbacks callbacks;
-  AsioDevice* const device;
-  std::atomic<int32_t> running;
-  std::atomic<int32_t> insideCallback;
-  std::vector<void*> inputChannels;
-  std::vector<void*> outputChannels;
-  std::vector<ASIOBufferInfo> buffers;
-  const std::unique_ptr<asmjit::JitRuntime> runtime;
-  XT_IMPLEMENT_STREAM();
-  XT_IMLEMENT_STREAM_SYSTEM(ASIO);
-
-  ~AsioStream();
-  AsioStream(AsioDevice* d, const XtFormat& format, 
-    size_t bufferSize, const std::vector<ASIOBufferInfo>& buffers):
-  XtStream(), issueOutputReady(true), 
-  bufferSize(static_cast<long>(bufferSize)), 
-  callbacks(), device(d), running(0), insideCallback(0),
-  inputChannels(static_cast<size_t>(format.channels.inputs), nullptr),
-  outputChannels(static_cast<size_t>(format.channels.outputs), nullptr),
-  buffers(buffers), runtime(std::make_unique<asmjit::JitRuntime>()) {}
-};
-
 // ---- local ----
 
 
@@ -188,36 +161,5 @@ XtFault AsioDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
 }
 
 // ---- stream ----
-
-XtFault AsioStream::Stop() {
-  if(!XtiCompareExchange(running, 1, 0)) return ASE_OK;
-  while(insideCallback.load() == 1);
-  return device->_asio->stop();
-}
-
-XtFault AsioStream::Start() {
-  XT_ASSERT(XtiCompareExchange(running, 0, 1));
-  return device->_asio->start();
-}
-
-AsioStream::~AsioStream() { 
-  XT_ASSERT(IsAsioSuccess(device->_asio->disposeBuffers())); 
-  device->_streamOpen = false;
-}
-
-XtFault AsioStream::GetFrames(int32_t* frames) const {
-  *frames = bufferSize;
-  return ASE_OK;
-}
-
-XtFault AsioStream::GetLatency(XtLatency* latency) const {
-  long input, output;
-  ASIOSampleRate rate;
-  XT_VERIFY_ASIO(device->_asio->getSampleRate(&rate));
-  XT_VERIFY_ASIO(device->_asio->getLatencies(&input, &output));
-  latency->input = _params.format.channels.inputs == 0? 0.0: input * 1000.0 / rate;
-  latency->output = _params.format.channels.outputs == 0? 0.0: output * 1000.0 / rate;
-  return ASE_OK;
-}
 
 #endif // XT_ENABLE_ASIO
