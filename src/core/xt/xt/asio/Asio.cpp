@@ -77,6 +77,28 @@ XtiGetAsioChannelInfos(IASIO* asio, std::vector<ASIOChannelInfo>& infos)
   return ASE_OK;
 }
 
+char const* 
+XtiGetAsioFaultText(XtFault fault)
+{
+  switch(fault) 
+  {
+  case ASE_OK: return XT_STRINGIFY(ASE_OK);
+  case ASE_SUCCESS: return XT_STRINGIFY(ASE_SUCCESS);
+  case ASE_NoClock: return XT_STRINGIFY(ASE_NoClock);
+  case ASE_NoMemory: return XT_STRINGIFY(ASE_NoMemory);
+  case ASE_NotPresent: return XT_STRINGIFY(ASE_NotPresent);
+  case ASE_InvalidMode: return XT_STRINGIFY(ASE_InvalidMode);
+  case ASE_HWMalfunction: return XT_STRINGIFY(ASE_HWMalfunction);
+  case ASE_SPNotAdvancing: return XT_STRINGIFY(ASE_SPNotAdvancing);
+  case ASE_InvalidParameter: return XT_STRINGIFY(ASE_InvalidParameter);
+  case XT_ASE_Format: return XT_STRINGIFY(XT_ASE_Format);
+  case DRVERR_INVALID_PARAM: return XT_STRINGIFY(DRVERR_INVALID_PARAM);
+  case DRVERR_DEVICE_NOT_FOUND: return XT_STRINGIFY(DRVERR_DEVICE_NOT_FOUND);
+  case DRVERR_DEVICE_ALREADY_OPEN: return XT_STRINGIFY(DRVERR_DEVICE_ALREADY_OPEN);
+  default: return "Unknown fault.";
+  }
+}
+
 ASIOError
 XtiGetAsioChannelInfo(IASIO* asio, XtBool output, int32_t index, ASIOChannelInfo& info)
 {
@@ -98,26 +120,66 @@ XtiGetAsioChannelInfos(IASIO* asio, XtBool output, long channels, std::vector<AS
   return ASE_OK;
 }
 
-char const* 
-XtiGetAsioFaultText(XtFault fault)
+XtAsioSdkBufferSwitch
+XtiAsioJitBufferSwitch(asmjit::JitRuntime* runtime, XtAsioContextBufferSwitch target, void* ctx)
 {
-  switch(fault) 
-  {
-  case ASE_OK: return XT_STRINGIFY(ASE_OK);
-  case ASE_SUCCESS: return XT_STRINGIFY(ASE_SUCCESS);
-  case ASE_NoClock: return XT_STRINGIFY(ASE_NoClock);
-  case ASE_NoMemory: return XT_STRINGIFY(ASE_NoMemory);
-  case ASE_NotPresent: return XT_STRINGIFY(ASE_NotPresent);
-  case ASE_InvalidMode: return XT_STRINGIFY(ASE_InvalidMode);
-  case ASE_HWMalfunction: return XT_STRINGIFY(ASE_HWMalfunction);
-  case ASE_SPNotAdvancing: return XT_STRINGIFY(ASE_SPNotAdvancing);
-  case ASE_InvalidParameter: return XT_STRINGIFY(ASE_InvalidParameter);
-  case XT_ASE_Format: return XT_STRINGIFY(XT_ASE_Format);
-  case DRVERR_INVALID_PARAM: return XT_STRINGIFY(DRVERR_INVALID_PARAM);
-  case DRVERR_DEVICE_NOT_FOUND: return XT_STRINGIFY(DRVERR_DEVICE_NOT_FOUND);
-  case DRVERR_DEVICE_ALREADY_OPEN: return XT_STRINGIFY(DRVERR_DEVICE_ALREADY_OPEN);
-  default: return "Unknown fault.";
-  }
+  using namespace asmjit;
+  CodeHolder code;
+  code.init(runtime->codeInfo());
+  x86::Compiler compiler(&code);
+  
+  auto sdkProto = FuncSignatureT<void, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncNode* function = compiler.addFunc(sdkProto);
+  x86::Gp index = compiler.newInt32("index");
+  x86::Gp directProcess = compiler.newInt32("directProcess");
+  compiler.setArg(0, index);
+  compiler.setArg(1, directProcess);
+
+  auto ctxProto = FuncSignatureT<void, void*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncCallNode* call = compiler.call(imm(target), ctxProto);
+  call->setArg(0, imm(ctx));
+  call->setArg(1, index);
+  call->setArg(2, directProcess);
+  
+  compiler.endFunc();
+  compiler.finalize();
+  XtAsioSdkBufferSwitch result;
+  XT_ASSERT(!runtime->add(&result, &code));
+  return result;
+}
+
+XtAsioSdkBufferSwitchTimeInfo
+XtiAsioJitBufferSwitchTimeInfo(asmjit::JitRuntime* runtime, XtAsioContextBufferSwitchTimeInfo target, void* ctx)
+{
+  using namespace asmjit;
+  CodeHolder code;
+  code.init(runtime->codeInfo());
+  x86::Compiler compiler(&code);
+  
+  auto sdkProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncNode* function = compiler.addFunc(sdkProto);
+  x86::Gp params = compiler.newIntPtr("params");
+  x86::Gp index = compiler.newInt32("index");
+  x86::Gp directProcess = compiler.newInt32("directProcess");
+  compiler.setArg(0, params);
+  compiler.setArg(1, index);
+  compiler.setArg(2, directProcess);
+
+  auto ctxProto = FuncSignatureT<ASIOTime*, void*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  FuncCallNode* call = compiler.call(imm(target), ctxProto);
+  call->setArg(0, imm(ctx));
+  call->setArg(1, params);
+  call->setArg(2, index);
+  call->setArg(3, directProcess);
+  x86::Gp ret = compiler.newIntPtr("ret");
+  call->setRet(0, ret);
+  compiler.ret(ret);
+
+  compiler.endFunc();
+  compiler.finalize();
+  XtAsioSdkBufferSwitchTimeInfo result;
+  XT_ASSERT(!runtime->add(&result, &code));
+  return result;
 }
 
 #endif // XT_ENABLE_ASIO

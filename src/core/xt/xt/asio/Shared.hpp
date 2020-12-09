@@ -2,6 +2,8 @@
 #define XT_ASIO_SHARED_HPP
 #if XT_ENABLE_ASIO
 
+#define NOMINMAX 1
+#include <xt/private/Shared.hpp>
 #include <xt/api/private/Device.hpp>
 #include <xt/api/private/Service.hpp>
 #include <xt/api/private/DeviceList.hpp>

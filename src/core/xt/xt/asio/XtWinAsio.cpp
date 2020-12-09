@@ -6,13 +6,10 @@
 
 static const double XtAsioNsPerMs = 1000000.0;
 
-#define XT_ASIO_CALL __cdecl
+
 #define XT_TO_UINT64(lo, hi) ((uint64_t)(lo) | ((uint64_t)(hi) << 32))
 
-typedef void (XT_ASIO_CALL* SdkBufferSwitch)(long, ASIOBool);
-typedef void (XT_ASIO_CALL* ContextBufferSwitch)(void*, long, ASIOBool);
-typedef ASIOTime* (XT_ASIO_CALL* SdkBufferSwitchTimeInfo)(ASIOTime*, long, ASIOBool);
-typedef ASIOTime* (XT_ASIO_CALL* ContextBufferSwitchTimeInfo)(void*, ASIOTime*, long, ASIOBool);
+
 
 // ---- forward ----
 
@@ -145,71 +142,6 @@ static void XT_ASIO_CALL BufferSwitch(void* ctx, long index, ASIOBool direct) {
 }
 
 // ---- local ----
-
-static SdkBufferSwitch JitBufferSwitch(
-  asmjit::JitRuntime* runtime, ContextBufferSwitch target, void* ctx) {
-
-  using namespace asmjit;
-  CodeHolder code;
-  code.init(runtime->codeInfo());
-  x86::Compiler compiler(&code);
-  
-  auto sdkProto = FuncSignatureT<void, long, ASIOBool>(CallConv::kIdHostCDecl);
-  FuncNode* function = compiler.addFunc(sdkProto);
-  x86::Gp index = compiler.newInt32("index");
-  x86::Gp directProcess = compiler.newInt32("directProcess");
-  compiler.setArg(0, index);
-  compiler.setArg(1, directProcess);
-
-  auto ctxProto = FuncSignatureT<void, void*, long, ASIOBool>(CallConv::kIdHostCDecl);
-  FuncCallNode* call = compiler.call(imm(target), ctxProto);
-  call->setArg(0, imm(ctx));
-  call->setArg(1, index);
-  call->setArg(2, directProcess);
-  
-  compiler.endFunc();
-  compiler.finalize();
-
-  SdkBufferSwitch result;
-  XT_ASSERT(!runtime->add(&result, &code));
-  return result;
-}
-
-static SdkBufferSwitchTimeInfo JitBufferSwitchTimeInfo(
-  asmjit::JitRuntime* runtime, ContextBufferSwitchTimeInfo target, void* ctx) {
-
-  using namespace asmjit;
-  CodeHolder code;
-  code.init(runtime->codeInfo());
-  x86::Compiler compiler(&code);
-  
-  auto sdkProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
-  FuncNode* function = compiler.addFunc(sdkProto);
-  x86::Gp params = compiler.newIntPtr("params");
-  x86::Gp index = compiler.newInt32("index");
-  x86::Gp directProcess = compiler.newInt32("directProcess");
-  compiler.setArg(0, params);
-  compiler.setArg(1, index);
-  compiler.setArg(2, directProcess);
-
-  auto ctxProto = FuncSignatureT<ASIOTime*, void*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
-  FuncCallNode* call = compiler.call(imm(target), ctxProto);
-  call->setArg(0, imm(ctx));
-  call->setArg(1, params);
-  call->setArg(2, index);
-  call->setArg(3, directProcess);
-
-  x86::Gp ret = compiler.newIntPtr("ret");
-  call->setRet(0, ret);
-  compiler.ret(ret);
-
-  compiler.endFunc();
-  compiler.finalize();
-
-  SdkBufferSwitchTimeInfo result;
-  XT_ASSERT(!runtime->add(&result, &code));
-  return result;
-}
 
 // ---- service ----
 
