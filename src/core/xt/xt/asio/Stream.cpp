@@ -61,9 +61,9 @@ AsioStream::BufferSwitchTimeInfo(ASIOTime* time, long index, ASIOBool direct, vo
   auto const& channels = s->_params.format.channels;
   buffer.input = channels.inputs > 0? s->_inputs.data(): nullptr;
   buffer.output = channels.outputs > 0? s->_outputs.data(): nullptr;
-  for(int32_t i = 0; i < channels.inputs; i++)
+  for(size_t i = 0; i < channels.inputs; i++)
     s->_inputs[i] = s->_buffers[i].buffers[index];
-  for(int32_t i = 0; i <channels.outputs; i++)
+  for(size_t i = 0; i < channels.outputs; i++)
     s->_outputs[i] = s->_buffers[channels.inputs + i].buffers[index];
 
   double const nsPerMs = 1000000.0;
