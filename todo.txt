@@ -24,7 +24,6 @@
 * merge fault into SERVICE
 * disable c26451
 * drop W/L prefixes
-* test restart stream
 * rename opendevice2
 * drop devicegetname from managed code
 * add caps::controlpanel
@@ -33,5 +32,4 @@
 * do not terminate on timeout, stop stream instead`
 * pulse, jack: dont error out when no server is running
 * update asmjit
-* check asio streamopen behaviour
 * drop large constructors
