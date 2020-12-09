@@ -126,20 +126,21 @@ AsioDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, v
   buffers.insert(buffers.end(), outputs.begin(), outputs.end());
 
   auto result = std::make_unique<AsioStream>();
+  result->_runtime = std::make_unique<asmjit::JitRuntime>();
+  auto bufferSwitch = XtiAsioJitBufferSwitch(result->_runtime.get(), &AsioStream::BufferSwitch, result.get());
+  auto bufferSwitchTimeInfo = XtiAsioJitBufferSwitchTimeInfo(result->_runtime.get(), &AsioStream::BufferSwitchTimeInfo, result.get());
   result->_asio = _asio;
   result->_running.store(0);
   result->_buffers = buffers;
   result->_bufferSize = bufferSize;
   result->_insideCallback.store(0);
   result->_issueOutputReady = true;
-  result->_runtime = std::make_unique<asmjit::JitRuntime>();
-
-  auto bufferSwitch = XtiAsioJitBufferSwitch(result->_runtime.get(), &AsioStream::BufferSwitch, result.get());
-  auto bufferSwitchTimeInfo = XtiAsioJitBufferSwitchTimeInfo(result->_runtime.get(), &AsioStream::BufferSwitchTimeInfo, result.get());
-  result->_callbacks.asioMessage = &XtiAsioMessage;
-  result->_callbacks.sampleRateDidChange = &XtiAsioSampleRateDidChange;
   result->_callbacks.bufferSwitch = bufferSwitch;
+  result->_callbacks.asioMessage = &XtiAsioMessage;
   result->_callbacks.bufferSwitchTimeInfo = bufferSwitchTimeInfo;
+  result->_callbacks.sampleRateDidChange = &XtiAsioSampleRateDidChange;
+  result->_inputs = std::vector<void*>(static_cast<size_t>(channels.inputs), nullptr);
+  result->_outputs = std::vector<void*>(static_cast<size_t>(channels.outputs), nullptr);
   XT_VERIFY_ASIO(_asio->createBuffers(result->_buffers.data(), static_cast<long>(buffers.size()), bufferSize, &result->_callbacks));
   *stream = result.release();
   return ASE_OK;
