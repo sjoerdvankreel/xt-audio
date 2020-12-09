@@ -37,6 +37,15 @@ PulseDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
 }
 
 XtFault 
+PulseDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
+{
+  auto pos = static_cast<pa_channel_position_t>(index);
+  auto text = pa_channel_position_to_pretty_string(pos);
+  XtiCopyString(text, buffer, size);
+  return PA_OK;
+}
+
+XtFault 
 PulseDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 {
   pa_sample_format pulse;
@@ -50,15 +59,6 @@ PulseDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
     if(format->channels.inMask & (1ULL << i) || format->channels.outMask & (1ULL << i))
       return PA_OK;
   *supports = XtTrue;
-  return PA_OK;
-}
-
-XtFault 
-PulseDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
-{
-  auto pos = static_cast<pa_channel_position_t>(index);
-  auto text = pa_channel_position_to_pretty_string(pos);
-  XtiCopyString(text, buffer, size);
   return PA_OK;
 }
 
