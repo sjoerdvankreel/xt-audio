@@ -3,6 +3,9 @@
 #include <pulse/pulseaudio.h>
 #include <utility>
 
+PulseStream::
+PulseStream(bool secondary):
+XtBlockingStream(secondary) { }
 void PulseStream::StopStream() { }
 void PulseStream::StartStream() { }
 
@@ -12,15 +15,6 @@ PulseStream::GetFrames(int32_t* frames) const
 XtFault
 PulseStream::GetLatency(XtLatency* latency) const
 { return PA_OK; }
-
-PulseStream::
-PulseStream(bool secondary, XtPaSimple&& pa, bool out, int32_t frames, int32_t frameSize):
-XtBlockingStream(secondary),
-_pa(std::move(pa)), 
-_output(out),
-_frames(frames), 
-_audio(static_cast<size_t>(frames * frameSize), 0)
-{ XT_ASSERT(_pa.pa != nullptr); }
 
 void 
 PulseStream::ProcessBuffer(bool prefill)

@@ -2,12 +2,12 @@
 #include <xt/api/private/Platform.hpp>
 #include <xt/pulse/Shared.hpp>
 #include <pulse/pulseaudio.h>
+#include <memory>
 #include <cmath>
 
 PulseDevice::
 PulseDevice(bool output): 
 _output(output) { }
-
 XtFault
 PulseDevice::ShowControlPanel()
 { return 0; }
@@ -93,7 +93,13 @@ PulseDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, 
   auto id = XtPlatform::instance->_id.c_str();
   auto dir = _output? PA_STREAM_PLAYBACK: PA_STREAM_RECORD;
   if((pa = pa_simple_new(nullptr, id, dir, nullptr, id, &spec, &map, nullptr, &fault)) == nullptr) return fault;
-  *stream = new PulseStream(secondary, XtPaSimple(pa), _output, frames, frameSize);
+
+  auto result = std::make_unique<PulseStream>(secondary);
+  result->_frames = frames;
+  result->_output = _output;
+  result->_pa = XtPaSimple(pa);
+  result->_audio = std::vector<uint8_t>(static_cast<size_t>(frames * frameSize), 0);
+  *stream = result.release();
   return PA_OK;
 }
 
