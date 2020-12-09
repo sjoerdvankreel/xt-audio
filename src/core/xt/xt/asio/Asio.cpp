@@ -174,7 +174,7 @@ XtiAsioJitBufferSwitch(asmjit::JitRuntime* runtime, XtAsioContextBufferSwitch ta
   compiler.setArg(0, index);
   compiler.setArg(1, directProcess);
 
-  auto ctxProto = FuncSignatureT<void, void*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  auto ctxProto = FuncSignatureT<void, long, ASIOBool, void*>(CallConv::kIdHostCDecl);
   FuncCallNode* call = compiler.call(imm(target), ctxProto);
   call->setArg(0, index);
   call->setArg(1, directProcess);
@@ -204,7 +204,7 @@ XtiAsioJitBufferSwitchTimeInfo(asmjit::JitRuntime* runtime, XtAsioContextBufferS
   compiler.setArg(1, index);
   compiler.setArg(2, directProcess);
 
-  auto ctxProto = FuncSignatureT<ASIOTime*, void*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  auto ctxProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool, void*>(CallConv::kIdHostCDecl);
   FuncCallNode* call = compiler.call(imm(target), ctxProto);
   call->setArg(0, params);
   call->setArg(1, index);
