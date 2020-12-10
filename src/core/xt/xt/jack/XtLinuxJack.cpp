@@ -14,66 +14,9 @@
 
 // ---- forward ----
 
-struct JackStream: public XtStream {
-  const XtJackClient client;
-  std::vector<XtJackPort> inputs;
-  std::vector<XtJackPort> outputs;
-  std::vector<void*> inputChannels;
-  std::vector<void*> outputChannels;
-  std::vector<XtJackConnection> connections;
-  XT_IMPLEMENT_STREAM();
-  XT_IMLEMENT_STREAM_SYSTEM(JACK);
 
-  JackStream(XtJackClient&& client, 
-    std::vector<XtJackPort>&& inputs, std::vector<XtJackPort>&& outputs,
-    size_t inputCount, size_t outputCount, size_t sampleSize, size_t bufferFrames):
-  client(std::move(client)), inputs(std::move(inputs)), outputs(std::move(outputs)), 
-  inputChannels(inputCount, nullptr), outputChannels(outputCount, nullptr),
-  connections() { XT_ASSERT(this->client.client != nullptr); }
-};
 
 // ---- local ----
-
-static int XRunCallback(void* arg) {
-  static_cast<JackStream*>(arg)->OnXRun();
-  return 0;
-}
-
-static int ProcessCallback(jack_nframes_t frames, void* arg) {
-  
-  void* input;
-  void* output;
-  float period;
-  double time = 0.0;
-  uint64_t position = 0;
-  XtBool timeValid = XtFalse;
-  jack_nframes_t jackPosition;
-  jack_time_t jackTime, nextTime;
-  JackStream* s = static_cast<JackStream*>(arg);
-  int32_t sampleSize = XtiGetSampleSize(s->_params.format.mix.sample);
-  XtBuffer xtBuffer = { 0 };
-
-  input = s->inputs.size() == 0? nullptr: &s->inputChannels[0];
-  output = s->outputs.size() == 0? nullptr: &s->outputChannels[0];  
-  if(jack_get_cycle_times(s->client.client, &jackPosition, &jackTime, &nextTime, &period) == 0) {
-    timeValid = XtTrue;
-    position = jackPosition;
-    time = jackTime / 1000.0;
-  }
-
-  for(int32_t i = 0; i < s->inputs.size(); i++)
-    s->inputChannels[i] = jack_port_get_buffer(s->inputs[i].port, frames);
-  for(int32_t i = 0; i < s->outputs.size(); i++)
-    s->outputChannels[i] = jack_port_get_buffer(s->outputs[i].port, frames);
-  xtBuffer.input = input;
-  xtBuffer.output = output;
-  xtBuffer.frames = frames;
-  xtBuffer.time = time;
-  xtBuffer.position = position;
-  xtBuffer.timeValid = timeValid;
-  s->OnBuffer(&xtBuffer);
-  return 0;
-}
 
 // ---- service ----
 
@@ -108,49 +51,6 @@ XtFault JackDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
   if((fault = jack_set_process_callback(c, &ProcessCallback, result.get())) != 0)
     return fault;
   *stream = result.release();
-  return 0;
-}
-
-// ---- stream ----
-
-XtFault JackStream::Stop() {
-  connections.clear();
-  return jack_deactivate(client.client);
-}
-
-XtFault JackStream::GetFrames(int32_t* frames) const {
-  *frames = jack_get_buffer_size(client.client);
-  return 0;
-}
-
-XtFault JackStream::GetLatency(XtLatency* latency) const {
-  return 0;
-}
-
-XtFault JackStream::Start() {
-  
-  XtFault fault;
-  std::vector<XtJackConnection> connections;
-  if((fault = jack_activate(client.client)) != 0)
-    return fault;
-
-  for(int32_t i = 0; i < _params.format.channels.inputs; i++) {
-    if((fault = jack_connect(client.client, 
-      inputs[i].connectTo, jack_port_name(inputs[i].port))) != 0)
-      return fault;
-    connections.emplace_back(XtJackConnection(client.client, 
-      inputs[i].connectTo, jack_port_name(inputs[i].port)));
-  }
-
-  for(int32_t i = 0; i < _params.format.channels.outputs; i++) {
-    if((fault = jack_connect(client.client, 
-      jack_port_name(outputs[i].port), outputs[i].connectTo)) != 0)
-      return fault;
-    connections.emplace_back(XtJackConnection(client.client, 
-      jack_port_name(outputs[i].port), outputs[i].connectTo));
-  }
-  
-  this->connections = std::move(connections);
   return 0;
 }
 
