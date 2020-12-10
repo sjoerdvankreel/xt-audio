@@ -1,7 +1,13 @@
 #if XT_ENABLE_JACK
 #include <xt/jack/Shared.hpp>
 #include <xt/jack/Private.hpp>
+#include <xt/api/private/Platform.hpp>
+#include <memory>
+#include <utility>
 
+JackDevice::
+JackDevice(XtJackClient&& jc):
+_jc(std::move(jc)) { }
 XtFault
 JackDevice::ShowControlPanel()
 { return 0; }
@@ -51,7 +57,7 @@ XtFault
 JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
 {
   unsigned long flag = output? JackPortIsInput: JackPortIsOutput;
-  JackPtr<const char*> ports(jack_get_ports(_jc.jc, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
+  XtJackPtr<const char*> ports(jack_get_ports(_jc.jc, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
   if(index >= XtiJackCountPorts(_jc.jc, output)) return ENODEV;
   XtiCopyString(ports.p[index], buffer, size);
   return 0;
@@ -63,19 +69,18 @@ JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, v
   XtFault fault;
   auto id = XtPlatform::instance->_id.c_str();
   jack_client_t* client = jack_client_open(id, JackNullOption, nullptr);
-  if(jc == nullptr) return ESRCH;
+  if(client == nullptr) return ESRCH;
   XtJackClient jc(client);
   
   std::vector<XtJackPort> inputs;
   std::vector<XtJackPort> outputs;
   auto const& channels = params->format.channels;
-  if((fault = XtiJackCreatePorts(c, channels.inputs, channels.inMask, JackPortIsInput, inputs)) != 0) return fault;
-  if((fault = XtiJackCreatePorts(c, channels.outputs, channels.outMask, JackPortIsOutput, outputs)) != 0) return fault;
+  if((fault = XtiJackCreatePorts(client, channels.inputs, channels.inMask, JackPortIsInput, inputs)) != 0) return fault;
+  if((fault = XtiJackCreatePorts(client, channels.outputs, channels.outMask, JackPortIsOutput, outputs)) != 0) return fault;
 
   size_t sampleSize = XtiGetSampleSize(params->format.mix.sample);
-  size_t bufferFrames = jack_get_buffer_size(streamClient.client);
-  auto result = std::make_unique<JackStream>();
-  result->_jc = std::move(jc);
+  size_t bufferFrames = jack_get_buffer_size(client);
+  auto result = std::make_unique<JackStream>(std::move(jc));
   result->_inputs = std::move(inputs);
   result->_outputs = std::move(outputs);
   result->_inputChannels = std::vector<void*>(static_cast<size_t>(channels.inputs), nullptr);

@@ -1,6 +1,7 @@
 #if XT_ENABLE_JACK
 #include <xt/jack/Shared.hpp>
 #include <xt/jack/Private.hpp>
+#include <xt/api/private/Platform.hpp>
 #include <memory>
 
 JackService::
@@ -30,11 +31,10 @@ JackService::OpenDeviceList(XtDeviceList** list) const
 XtFault
 JackService::OpenDevice(char const* id, XtDevice** device) const
 {  
-  auto id = XtPlatform::instance->_id.c_str();
-  XtJackClient jc(jack_client_open(id, JackNullOption, nullptr));
+  auto appId = XtPlatform::instance->_id.c_str();
+  XtJackClient jc(jack_client_open(appId, JackNullOption, nullptr));
   if(jc.jc == nullptr) return ESRCH;
-  auto result = std::make_unique<JackDevice>();
-  result->_jc = std::move(jc);
+  auto result = std::make_unique<JackDevice>(std::move(jc));
   *device = result.release();
   return 0;
 }

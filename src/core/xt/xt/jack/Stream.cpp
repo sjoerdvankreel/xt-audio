@@ -1,6 +1,11 @@
 #if XT_ENABLE_JACK
 #include <xt/jack/Shared.hpp>
 #include <xt/jack/Private.hpp>
+#include <utility>
+
+JackStream::
+JackStream(XtJackClient&& jc):
+_jc(std::move(jc)) { }
 
 XtFault
 JackStream::GetLatency(XtLatency* latency) const
@@ -28,15 +33,15 @@ JackStream::Start()
 
   for(int32_t i = 0; i < channels.inputs; i++)
   {
-    char const* src = inputs[i].connectTo;
-    char const* dst = jack_port_name(inputs[i].port);
+    char const* src = _inputs[i].connectTo;
+    char const* dst = jack_port_name(_inputs[i].port);
     if((fault = jack_connect(_jc.jc, src, dst)) != 0) return fault;
     connections.emplace_back(XtJackConnection(_jc.jc, src, dst));
   }
-  for(int32_t i = 0; i < _channels.outputs; i++)
+  for(int32_t i = 0; i < channels.outputs; i++)
   {
-    char const* dst = outputs[i].connectTo;
-    char const* src = jack_port_name(outputs[i].port);
+    char const* dst = _outputs[i].connectTo;
+    char const* src = jack_port_name(_outputs[i].port);
     if((fault = jack_connect(_jc.jc, src, dst)) != 0) return fault;
     connections.emplace_back(XtJackConnection(_jc.jc, src, dst));
   }  
@@ -50,8 +55,8 @@ JackStream::ProcessCallback(jack_nframes_t frames, void* arg)
   XtBuffer buffer = { 0 };
   buffer.frames = frames;
   JackStream* s = static_cast<JackStream*>(arg);
-  buffer.input = s->_inputs.empty()? nullptr: s->inputChannels.data();
-  buffer.output = s->_outputs.empty()? nullptr: s->outputChannels.data(); 
+  buffer.input = s->_inputs.empty()? nullptr: s->_inputChannels.data();
+  buffer.output = s->_outputs.empty()? nullptr: s->_outputChannels.data(); 
 
   float period;
   jack_time_t time, next;

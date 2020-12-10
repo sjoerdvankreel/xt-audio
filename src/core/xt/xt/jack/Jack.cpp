@@ -2,6 +2,8 @@
 #include <xt/jack/Shared.hpp>
 #include <xt/jack/Private.hpp>
 #include <xt/private/Linux.hpp>
+#include <memory>
+#include <sstream>
 #include <cstring>
 
 void
@@ -27,7 +29,7 @@ XtiJackCountPorts(jack_client_t* client, XtBool output)
 {
   int32_t count = 0;
   unsigned long flag = output? JackPortIsInput: JackPortIsOutput;
-  JackPtr<char const*> ports(jack_get_ports(client, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
+  XtJackPtr<char const*> ports(jack_get_ports(client, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
   while(ports.p[count] != nullptr) count++;
   return count;
 }
@@ -48,12 +50,12 @@ XtiJackCreatePorts(jack_client_t* jc, uint32_t channels, uint64_t mask, unsigned
   }
 
   unsigned long jackFlag = flag == JackPortIsInput? JackPortIsOutput: JackPortIsInput;
-  JackPtr<const char*> ports(jack_get_ports(jc, nullptr, type, jackFlag));
+  XtJackPtr<const char*> ports(jack_get_ports(jc, nullptr, type, jackFlag));
   if(mask == 0) for(int32_t i = 0; i < channels; i++)
     result[i].connectTo = ports.p[i];
   else for(int32_t i = 0, j = 0; i < 64; i++)
     if(mask & (1ULL << i))
-      result[j++].connectTo = jackPorts.p[i];
+      result[j++].connectTo = ports.p[i];
   return 0;
 }
 

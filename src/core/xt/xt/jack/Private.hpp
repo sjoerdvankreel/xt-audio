@@ -61,6 +61,8 @@ void
 XtiJackSilentCallback(char const*);
 void
 XtiJackErrorCallback(char const* msg);
+int32_t
+XtiJackCountPorts(jack_client_t* client, XtBool output);
 XtFault
 XtiJackCreatePorts(jack_client_t* jc, uint32_t channels, uint64_t mask, unsigned long flag, std::vector<XtJackPort>& result);
 
