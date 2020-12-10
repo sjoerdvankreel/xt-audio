@@ -4,19 +4,19 @@
 #include <xt/jack/Private.hpp>
 #include <jack/jack.h>
 
+struct JackDevice:
+public XtDevice
+{
+  XtJackClient _jc;
+  XT_IMPLEMENT_DEVICE(JACK);
+};
+
 struct JackService:
 public XtService 
 {
   JackService();
   ~JackService();
   XT_IMPLEMENT_SERVICE(JACK);
-};
-
-struct JackDevice:
-public XtDevice
-{
-  XtJackClient _jc;
-  XT_IMPLEMENT_DEVICE(JACK);
 };
 
 struct JackDeviceList:

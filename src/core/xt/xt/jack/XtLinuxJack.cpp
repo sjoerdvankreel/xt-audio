@@ -79,63 +79,6 @@ static int ProcessCallback(jack_nframes_t frames, void* arg) {
 
 // ---- device ----
 
-XtFault JackDevice::ShowControlPanel() {
-  return 0;
-}
-
-XtFault JackDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
-  *supports = !interleaved;
-  return 0;
-}
-
-XtFault JackDevice::GetMix(XtBool* valid, XtMix* mix) const {
-  *valid = XtTrue;
-  mix->sample = XtSampleFloat32;
-  mix->rate = jack_get_sample_rate(client.client);
-  return 0;
-}
-
-XtFault JackDevice::GetChannelCount(XtBool output, int32_t* count) const {
-  *count = CountPorts(client.client, output);
-  return 0;
-}
-
-XtFault JackDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {  
-  jack_nframes_t rate = jack_get_sample_rate(client.client);
-  size->current = jack_get_buffer_size(client.client) * 1000.0 / rate;
-  size->min = size->current;
-  size->max = size->current;
-  return 0;
-}
-
-XtFault JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  unsigned long flag = output? JackPortIsInput: JackPortIsOutput;
-  JackPtr<const char*> ports(jack_get_ports(client.client, nullptr, JACK_DEFAULT_AUDIO_TYPE, flag));
-  if(index >= CountPorts(client.client, output))
-    return ENODEV;
-  XtiCopyString(ports.p[index], buffer, size);
-  return 0;
-}
-
-XtFault JackDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
-  if(format->mix.sample != XtSampleFloat32)
-    return 0;
-  if(format->channels.inputs > CountPorts(client.client, XtFalse))
-    return 0;
-  if(format->channels.outputs > CountPorts(client.client, XtTrue))
-    return 0;
-  if(format->mix.rate != jack_get_sample_rate(client.client))
-    return 0;
-  for(int32_t i = CountPorts(client.client, XtFalse); i < 64; i++)
-    if((format->channels.inMask & (1ULL << i)) != 0)
-      return 0;
-  for(int32_t i = CountPorts(client.client, XtTrue); i < 64; i++)
-    if((format->channels.outMask & (1ULL << i)) != 0)
-      return 0;
-  *supports = XtTrue;
-  return 0;
-}
-
 XtFault JackDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
   
   XtFault fault;
