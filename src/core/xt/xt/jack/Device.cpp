@@ -57,4 +57,33 @@ JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* 
   return 0;
 }
 
+XtFault 
+JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream)
+{  
+  XtFault fault;
+  auto id = XtPlatform::instance->_id.c_str();
+  jack_client_t* client = jack_client_open(id, JackNullOption, nullptr);
+  if(jc == nullptr) return ESRCH;
+  XtJackClient jc(client);
+  
+  std::vector<XtJackPort> inputs;
+  std::vector<XtJackPort> outputs;
+  auto const& channels = params->format.channels;
+  if((fault = XtiJackCreatePorts(c, channels.inputs, channels.inMask, JackPortIsInput, inputs)) != 0) return fault;
+  if((fault = XtiJackCreatePorts(c, channels.outputs, channels.outMask, JackPortIsOutput, outputs)) != 0) return fault;
+
+  size_t sampleSize = XtiGetSampleSize(params->format.mix.sample);
+  size_t bufferFrames = jack_get_buffer_size(streamClient.client);
+  auto result = std::make_unique<JackStream>();
+  result->_jc = std::move(jc);
+  result->_inputs = std::move(inputs);
+  result->_outputs = std::move(outputs);
+  result->_inputChannels = std::vector<void*>(static_cast<size_t>(channels.inputs), nullptr);
+  result->_outputChannels = std::vector<void*>(static_cast<size_t>(channels.outputs), nullptr);
+  if((fault = jack_set_xrun_callback(client, &JackStream::XRunCallback, result.get())) != 0) return fault;
+  if((fault = jack_set_process_callback(client, &JackStream::ProcessCallback, result.get())) != 0) return fault;
+  *stream = result.release();
+  return 0;
+}
+
 #endif // XT_ENABLE_JACK
