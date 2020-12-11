@@ -32,7 +32,7 @@ XtFault
 JackService::OpenDevice(char const* id, XtDevice** device) const
 {  
   auto appId = XtPlatform::instance->_id.c_str();
-  XtJackClient jc(jack_client_open(appId, JackNullOption, nullptr));
+  XtJackClient jc(jack_client_open(appId, JackNoStartServer, nullptr));
   if(jc.jc == nullptr) return ESRCH;
   auto result = std::make_unique<JackDevice>(std::move(jc));
   *device = result.release();

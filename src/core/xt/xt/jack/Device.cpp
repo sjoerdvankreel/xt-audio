@@ -68,7 +68,7 @@ JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, v
 {  
   XtFault fault;
   auto id = XtPlatform::instance->_id.c_str();
-  jack_client_t* client = jack_client_open(id, JackNullOption, nullptr);
+  jack_client_t* client = jack_client_open(id, JackNoStartServer, nullptr);
   if(client == nullptr) return ESRCH;
   XtJackClient jc(client);
   
