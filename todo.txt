@@ -39,3 +39,5 @@
 * capabilities->serviceflags
 * add DeviceList::deviceflags -> input/output/loopback/hwdirect
 * support jack on windows
+* split wasapi service -> shared/exclusive
+* split alsa service -> rw/mmap
