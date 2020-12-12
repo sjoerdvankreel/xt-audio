@@ -4,6 +4,14 @@
 
 #include <xt/api/public/Enums.h>
 #include <xt/private/Shared.hpp>
+#include <string>
+
+struct XtDSDeviceInfo
+{
+  std::string id;
+  std::string name;
+  bool output;
+};
 
 char const* 
 XtiGetDSoundFaultText(XtFault fault);
