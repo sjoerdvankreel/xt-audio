@@ -41,3 +41,4 @@
 * support jack on windows
 * split wasapi service -> shared/exclusive
 * split alsa service -> rw/mmap
+* move getdefaultid out of device list into service
