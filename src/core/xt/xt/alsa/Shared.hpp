@@ -10,8 +10,9 @@ struct AlsaDeviceList:
 public XtDeviceList
 {
   void** const _hints;
+  size_t const _count;
   ~AlsaDeviceList();
-  AlsaDeviceList(void** hints);
+  AlsaDeviceList(void** hints, size_t count);
   XT_IMPLEMENT_DEVICE_LIST(ALSA);
 };
 

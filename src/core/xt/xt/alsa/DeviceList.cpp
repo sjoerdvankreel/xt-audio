@@ -3,18 +3,17 @@
 #include <xt/alsa/Private.hpp>
 #include <xt/private/Shared.hpp>
 
-AlsaDeviceList::
-AlsaDeviceList(void** hints):
-_hints(hints) { } 
+XtFault
+AlsaDeviceList::GetCount(int32_t* count) const
+{ *count = _count; return 0; }
 
+AlsaDeviceList::
+AlsaDeviceList(void** hints, size_t count):
+_hints(hints), _count(count) { } 
 AlsaDeviceList::
 ~AlsaDeviceList()
 { XT_ASSERT(snd_device_name_free_hint(_hints) == 0); }
 
-XtFault
-AlsaDeviceList::GetCount(int32_t* count) const
-{
-}
 
 XtFault
 AlsaDeviceList::GetDefaultId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const
@@ -27,7 +26,7 @@ AlsaDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 }
 
 XtFault
-AsioDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
+AlsaDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
 }
 

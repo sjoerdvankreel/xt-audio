@@ -36,3 +36,6 @@
 * check const order
 * support multiple JACK servers
 * support multiple PulseAudio servers
+* capabilities->serviceflags
+* add DeviceList::deviceflags -> input/output/loopback/hwdirect
+* support jack on windows
