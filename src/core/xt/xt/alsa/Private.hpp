@@ -1,0 +1,6 @@
+#ifndef XT_ALSA_PRIVATE_HPP
+#define XT_ALSA_PRIVATE_HPP
+#if XT_ENABLE_ALSA
+
+#endif // XT_ENABLE_ALSA
+#endif // XT_ALSA_PRIVATE_HPP
