@@ -4,7 +4,7 @@
 #include <xt/api/private/Platform.hpp>
 
 XtFault
-AsioService::OpenDeviceList(XtDeviceList** list) const
+AsioService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
 { *list = new AsioDeviceList; return ASE_OK; }
 
 XtCapabilities

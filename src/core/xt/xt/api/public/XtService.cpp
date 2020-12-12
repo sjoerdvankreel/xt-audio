@@ -10,16 +10,6 @@ XtServiceGetCapabilities(XtService const* s)
 }
 
 XtError XT_CALL
-XtServiceOpenDeviceList(XtService const* s, XtDeviceList** list)
-{ 
-  XT_ASSERT(s != nullptr);
-  XT_ASSERT(list != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  *list = nullptr;
-  return XtiCreateError(s->GetSystem(), s->OpenDeviceList(list));
-}
-
-XtError XT_CALL
 XtServiceOpenDevice(XtService const* s, char const* id, XtDevice** device)
 {
   XT_ASSERT(s != nullptr);
@@ -27,6 +17,17 @@ XtServiceOpenDevice(XtService const* s, char const* id, XtDevice** device)
   XT_ASSERT(XtiCalledOnMainThread());
   *device = nullptr;
   return XtiCreateError(s->GetSystem(), s->OpenDevice(id, device));
+}
+
+XtError XT_CALL
+XtServiceOpenDeviceList(XtService const* s, XtEnumFlags flags, XtDeviceList** list)
+{ 
+  XT_ASSERT(flags != 0);
+  XT_ASSERT(s != nullptr);
+  XT_ASSERT(list != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  *list = nullptr;
+  return XtiCreateError(s->GetSystem(), s->OpenDeviceList(flags, list));
 }
 
 XtError XT_CALL 

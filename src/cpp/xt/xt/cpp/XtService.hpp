@@ -23,8 +23,8 @@ class Service final
   Service(XtService const* s): _s(s) { }
 public:
   Capabilities GetCapabilities() const;
-  std::unique_ptr<DeviceList> OpenDeviceList() const;
   std::unique_ptr<Device> OpenDevice(std::string const& id) const;
+  std::unique_ptr<DeviceList> OpenDeviceList(EnumFlags flags) const;
   std::unique_ptr<Stream> AggregateStream(AggregateStreamParams const& params, void* user);
 };
 
@@ -36,10 +36,11 @@ Service::GetCapabilities() const
 }
 
 inline std::unique_ptr<DeviceList> 
-Service::OpenDeviceList() const 
+Service::OpenDeviceList(EnumFlags flags) const 
 { 
   XtDeviceList* list; 
-  Detail::HandleError(XtServiceOpenDeviceList(_s, &list));
+  auto coreFlags = static_cast<XtEnumFlags>(flags);
+  Detail::HandleError(XtServiceOpenDeviceList(_s, coreFlags, &list));
   return std::unique_ptr<DeviceList>(new DeviceList(list));
 }
 

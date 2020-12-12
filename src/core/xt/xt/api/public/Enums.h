@@ -17,6 +17,10 @@ typedef enum XtSystem {
   XtSystemALSA = 1, XtSystemASIO, XtSystemJACK, XtSystemWASAPI, XtSystemPulse, XtSystemDSound
 } XtSystem;
 
+typedef enum XtEnumFlags {
+  XtEnumInput = 0x1, XtEnumOutput = 0x2, XtEnumAll = XtEnumInput | XtEnumOutput
+} XtEnumFlags;
+
 typedef enum XtCapabilities {
   XtCapabilitiesNone = 0x0, XtCapabilitiesTime = 0x1, XtCapabilitiesLatency = 0x2, XtCapabilitiesFullDuplex = 0x4, 
   XtCapabilitiesAggregation = 0x8, XtCapabilitiesChannelMask = 0x10, XtCapabilitiesXRunDetection = 0x20
