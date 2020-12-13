@@ -17,7 +17,7 @@ namespace Xt
                     try
                     {
                         XtMix? mix = device.GetMix();
-                        Console.WriteLine("    Device " + device + ":");
+                        Console.WriteLine("    Device " + id + ":");
                         Console.WriteLine("      Input channels: " + device.GetChannelCount(false));
                         Console.WriteLine("      Output channels: " + device.GetChannelCount(true));
                         Console.WriteLine("      Interleaved access: " + device.SupportsAccess(true));
