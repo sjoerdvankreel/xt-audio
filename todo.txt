@@ -42,3 +42,4 @@
 * split wasapi service -> shared/exclusive
 * split alsa service -> rw/mmap
 * timeout after 3 buffers (see also WFSO)
+* move advanced samples to system audio
