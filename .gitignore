@@ -1,4 +1,5 @@
 dist/**
+src/java/xt/.idea/**
 build/native/**
 build/cli/.vs/**
 build/cli/xt/*.user

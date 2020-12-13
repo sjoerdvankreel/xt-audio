@@ -21,7 +21,6 @@ public final class XtDevice implements AutoCloseable {
     private static native void XtDeviceDestroy(Pointer d);
     private static native long XtDeviceShowControlPanel(Pointer d);
     private static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);
-    private static native long XtDeviceGetName(Pointer d, byte[] buffer, IntByReference size);
     private static native long XtDeviceGetBufferSize(Pointer d, XtFormat format, XtBufferSize size);
     private static native long XtDeviceGetChannelCount(Pointer d, boolean output, IntByReference count);
     private static native long XtDeviceSupportsFormat(Pointer d, XtFormat format, IntByReference supports);
@@ -34,7 +33,6 @@ public final class XtDevice implements AutoCloseable {
     XtDevice(Pointer d) { _d = d; }
 
     @Override public void close() { XtDeviceDestroy(_d); }
-    @Override public String toString() { return getName(); }
     public void showControlPanel() { handleError(XtDeviceShowControlPanel(_d)); }
 
     public XtBufferSize getBufferSize(XtFormat format) {
@@ -66,14 +64,6 @@ public final class XtDevice implements AutoCloseable {
         var valid = new IntByReference();
         handleError(XtDeviceGetMix(_d, valid, mix));
         return valid.getValue() == 0? Optional.empty(): Optional.of(mix);
-    }
-
-    public String getName() {
-        var size = new IntByReference();
-        handleError(XtDeviceGetName(_d, null, size));
-        byte[] buffer = new byte[size.getValue()];
-        handleError(XtDeviceGetName(_d, buffer, size));
-        return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
     }
 
     public String getChannelName(boolean output, int index) {
