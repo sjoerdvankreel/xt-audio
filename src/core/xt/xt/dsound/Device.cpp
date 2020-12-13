@@ -32,6 +32,7 @@ DSoundDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
   if(format->mix.rate > XtiDsMaxSampleRate) return DS_OK;
   if(_input.p == nullptr && format->channels.inputs > 0) return S_OK;
   if(_output.p == nullptr && format->channels.outputs > 0) return S_OK;
+  *supports = XtTrue;
   return S_OK;
 }
 
