@@ -18,42 +18,8 @@
 
 static const int XtDsWakeUpsPerBuffer = 8;
 
-struct XtWaitableTimer
-{
-  HANDLE timer;
-  XtWaitableTimer(XtWaitableTimer const&) = delete;
-  XtWaitableTimer& operator=(XtWaitableTimer const&) = delete;
-  ~XtWaitableTimer() { XT_ASSERT(CloseHandle(timer)); }
-  XtWaitableTimer() { XT_ASSERT((timer = CreateWaitableTimer(nullptr, FALSE, nullptr)) != nullptr) ; }
-};
 
 // ---- forward ----
-
-struct DSoundStream: public XtBlockingStream {
-  const int32_t frameSize;
-  std::vector<uint8_t> buffer;
-  uint64_t xtBytesProcessed;
-  uint64_t dsBytesProcessed;
-  int32_t previousDsPosition;
-  const int32_t bufferFrames;
-  const XtWaitableTimer timer;
-  const CComPtr<IDirectSound> output;
-  const CComPtr<IDirectSoundCapture> input;
-  const CComPtr<IDirectSoundBuffer> render;
-  const CComPtr<IDirectSoundCaptureBuffer> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM(DSound);
-
-  ~DSoundStream() {  }
-  DSoundStream(bool secondary,
-    CComPtr<IDirectSoundCapture> input, CComPtr<IDirectSound> output,
-    CComPtr<IDirectSoundCaptureBuffer> capture, CComPtr<IDirectSoundBuffer> render, 
-    int32_t bufferFrames, int32_t frameSize):
-  XtBlockingStream(secondary), frameSize(frameSize),
-  buffer(static_cast<size_t>(bufferFrames * frameSize), 0),
-  xtBytesProcessed(0), dsBytesProcessed(0),
-  previousDsPosition(0), bufferFrames(bufferFrames), timer(),
-  output(output), input(input), render(render), capture(capture) {}
-};
 
 // ---- local ----
 
@@ -89,48 +55,6 @@ static void CombineBufferParts(
 // ---- service ----
 
 // ---- device ----
-
-XtFault DSoundDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
-
-  HRESULT hr;
-  int32_t frameSize;
-  int32_t bufferFrames;
-  WAVEFORMATEXTENSIBLE wfx;
-  DSBUFFERDESC renderDesc = { 0 };
-  DSCBUFFERDESC captureDesc = { 0 };
-  CComPtr<IDirectSound> newOutput;
-  CComPtr<IDirectSoundBuffer> render;
-  CComPtr<IDirectSoundCapture> newInput;
-  CComPtr<IDirectSoundCaptureBuffer> capture;
-
-  double bufferSize = params->bufferSize;
-  XT_ASSERT(XtiFormatToWfx(params->format, wfx));
-  if(bufferSize < XtDsMinBufferMs)
-    bufferSize = XtDsMinBufferMs;
-  if(bufferSize > XtDsMaxBufferMs)
-    bufferSize = XtDsMaxBufferMs;
-  bufferFrames = static_cast<int32_t>(bufferSize / 1000.0 * params->format.mix.rate);
-  frameSize = (params->format.channels.inputs + params->format.channels.outputs) * XtiGetSampleSize(params->format.mix.sample);
-
-  if(input) {
-    captureDesc.dwSize = sizeof(DSCBUFFERDESC);
-    captureDesc.dwBufferBytes = bufferFrames * frameSize;
-    captureDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
-    XT_VERIFY_COM(DirectSoundCaptureCreate8(&guid, &newInput, nullptr));
-    XT_VERIFY_COM(newInput->CreateCaptureBuffer(&captureDesc, &capture, nullptr));
-  } else {
-    renderDesc.dwFlags = DSBCAPS_GLOBALFOCUS | DSBCAPS_TRUEPLAYPOSITION;
-    renderDesc.dwSize = sizeof(DSBUFFERDESC);
-    renderDesc.dwBufferBytes = bufferFrames * frameSize;
-    renderDesc.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(&wfx);
-    XT_VERIFY_COM(DirectSoundCreate(&guid, &newOutput, nullptr));
-    XT_VERIFY_COM(newOutput->SetCooperativeLevel(static_cast<HWND>(XtPlatform::instance->_window), DSSCL_PRIORITY));
-    XT_VERIFY_COM(newOutput->CreateSoundBuffer(&renderDesc, &render, nullptr));
-  }
-
-  *stream = new DSoundStream(secondary, newInput, newOutput, capture, render, bufferFrames, frameSize);
-  return S_OK;
-}
 
 // ---- stream ----
 

@@ -19,25 +19,20 @@ DSoundService::OpenDevice(char const* id, XtDevice** device) const
   XtFault fault;
   XtDeviceList* list;
   XtDsDeviceInfo info;  
-  CComPtr<IDirectSound> output;
-  CComPtr<IDirectSoundCapture> input;
-
   if((fault = OpenDeviceList(XtEnumFlagsAll, &list)) != DS_OK) return fault;
   std::unique_ptr<DSoundDeviceList> dsList(dynamic_cast<DSoundDeviceList*>(list));
   if((fault = dsList->GetDeviceInfo(id, &info)) != DS_OK) return fault;
-  GUID guid = XtiUtf8ToClassId(info.id.c_str());
 
+  auto result = std::make_unique<DSoundDevice>();
+  result->_id = info.id;
   if(info.output)
   { 
     auto hwnd = static_cast<HWND>(XtPlatform::instance->_window);
-    XT_VERIFY_COM(DirectSoundCreate(&guid, &output, nullptr));
-    XT_VERIFY_COM(output->SetCooperativeLevel(hwnd, DSSCL_PRIORITY));
+    XT_VERIFY_COM(DirectSoundCreate(&info.id, &result->_output, nullptr));
+    XT_VERIFY_COM(result->_output->SetCooperativeLevel(hwnd, DSSCL_PRIORITY));
   }
   else
-    XT_VERIFY_COM(DirectSoundCaptureCreate8(&guid, &input, nullptr));
-  auto result = std::make_unique<DSoundDevice>();
-  result->_input = input;
-  result->_output = output;
+    XT_VERIFY_COM(DirectSoundCaptureCreate8(&info.id, &result->_input, nullptr));
   *device = result.release();
   return DS_OK; 
 }

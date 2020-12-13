@@ -5,6 +5,7 @@
 #include <xt/api/private/Stream.hpp>
 #include <xt/api/private/Service.hpp>
 #include <xt/api/private/DeviceList.hpp>
+#include <xt/private/BlockingStream.hpp>
 #include <xt/dsound/Private.hpp>
 #include <vector>
 #include <atlbase.h>
@@ -21,8 +22,29 @@ public XtDevice
 {
   DSoundDevice() = default;
   XT_IMPLEMENT_DEVICE(DSound);
+
+  GUID _id;
   CComPtr<IDirectSound> _output;
   CComPtr<IDirectSoundCapture> _input;
+};
+
+struct DSoundStream:
+public XtBlockingStream
+{
+  int32_t _frameSize;
+  uint64_t _xtProcessed;
+  uint64_t _dsProcessed;
+  int32_t _bufferFrames;
+  XtDsWaitableTimer _timer;
+  int32_t _previousPosition;
+  std::vector<uint8_t> _audio;
+  CComPtr<IDirectSound> _output;
+  CComPtr<IDirectSoundCapture> _input;
+  CComPtr<IDirectSoundBuffer> _outputBuffer;
+  CComPtr<IDirectSoundCaptureBuffer> _inputBuffer;
+  
+  DSoundStream(bool secondary);
+  XT_IMPLEMENT_BLOCKING_STREAM(DSound);
 };
 
 struct DSoundDeviceList:
