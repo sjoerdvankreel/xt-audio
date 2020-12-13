@@ -2,6 +2,11 @@
 #include <xt/dsound/Shared.hpp>
 #include <xt/dsound/Private.hpp>
 #include <dsound.h>
+#include <memory>
+
+std::unique_ptr<XtService>
+XtiCreateDSoundService()
+{ return std::make_unique<DSoundService>(); }
 
 XtServiceError
 XtiGetDSoundError(XtFault fault)

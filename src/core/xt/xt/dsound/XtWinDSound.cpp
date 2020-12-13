@@ -32,28 +32,6 @@ struct XtWaitableTimer
 
 // ---- forward ----
 
-struct DSoundService: public XtService 
-{
-  XT_IMPLEMENT_SERVICE(DSound);
-};
-
-std::unique_ptr<XtService>
-XtiCreateDSoundService()
-{ return std::make_unique<DSoundService>(); }
-
-struct DSoundDevice: public XtDevice {
-  const GUID guid;
-  const std::string name;
-  const CComPtr<IDirectSound> output;
-  const CComPtr<IDirectSoundCapture> input;
-  XT_IMPLEMENT_DEVICE(DSound);
-
-  DSoundDevice(
-    const GUID& g, const std::string& n, 
-    CComPtr<IDirectSoundCapture> i, CComPtr<IDirectSound> o):
-  XtDevice(), guid(g), name(n), output(o), input(i) {}
-};
-
 struct DSoundStream: public XtBlockingStream {
   const int32_t frameSize;
   std::vector<uint8_t> buffer;
@@ -81,18 +59,6 @@ struct DSoundStream: public XtBlockingStream {
 };
 
 // ---- local ----
-
-struct DeviceInfo {
-  GUID guid;
-  bool output;
-  std::string name;
-};
-
-struct EnumContext {
-  bool output;
-  bool defaults;
-  std::vector<DeviceInfo>* infos;
-};
 
 static DWORD WrapAround(int32_t bytes, int32_t bufferSize) {
   return bytes >= 0? bytes: bytes + bufferSize;
@@ -123,88 +89,7 @@ static void CombineBufferParts(
     memcpy(&buffer[size1], part2, size2);
 }
 
-static BOOL CALLBACK EnumCallback(GUID* guid, const wchar_t* desc, const wchar_t*, void* ctx) {
-  DeviceInfo info;
-  EnumContext* context = static_cast<EnumContext*>(ctx);
-  if(context->defaults != (guid == nullptr))
-    return TRUE;
-
-  info.output = context->output;
-  info.name = XtiWideStringToUtf8(desc);
-  info.guid = guid == nullptr? GUID_NULL: *guid;
-  context->infos->push_back(info);
-  return TRUE;
-}
-
-static HRESULT EnumDevices(std::vector<DeviceInfo>& infos, bool defaults) {
-  HRESULT hr;
-  EnumContext context;
-  context.output = false;
-  context.infos = &infos;
-  context.defaults = defaults;
-
-  XT_VERIFY_COM(DirectSoundCaptureEnumerateW(EnumCallback, &context));
-  context.output = true;
-  XT_VERIFY_COM(DirectSoundEnumerateW(EnumCallback, &context));
-  return S_OK;
-}
-
-static HRESULT OpenDevice(const DeviceInfo& info, XtDevice** device) {  
-  HRESULT hr;
-  CComPtr<IDirectSound> output;
-  CComPtr<IDirectSoundCapture> input;
-
-  if(!info.output)
-    XT_VERIFY_COM(DirectSoundCaptureCreate8(&info.guid, &input, nullptr));
-  else {
-    XT_VERIFY_COM(DirectSoundCreate(&info.guid, &output, nullptr));
-    XT_VERIFY_COM(output->SetCooperativeLevel(static_cast<HWND>(XtPlatform::instance->_window), DSSCL_PRIORITY));
-  }
-  *device = new DSoundDevice(info.guid, info.name, input, output);
-  return S_OK;
-}
-
 // ---- service ----
-
-XtCapabilities DSoundService::GetCapabilities() const {
-  return static_cast<XtCapabilities>(XtCapabilitiesAggregation | XtCapabilitiesChannelMask);
-}
-
-XtFault DSoundService::GetDeviceCount(int32_t* count) const {
-  HRESULT hr;
-  std::vector<DeviceInfo> infos;
-  XT_VERIFY_COM(EnumDevices(infos, false));
-  *count = static_cast<int32_t>(infos.size());
-  return S_OK;
-}
-
-XtFault DSoundService::OpenDeviceList(XtDeviceList** list) const {
-  return 0;
-}
-
-XtFault DSoundService::OpenDevice2(char const* id, XtDevice** device) const {  
-  return 0;
-}
-
-XtFault DSoundService::OpenDevice(int32_t index, XtDevice** device) const  { 
-  HRESULT hr;
-  std::vector<DeviceInfo> infos;
-  XT_VERIFY_COM(EnumDevices(infos, false));
-  if(static_cast<size_t>(index) >= infos.size())
-    return DSERR_NODRIVER;
-  return ::OpenDevice(infos[index], device);
-}
-
-XtFault DSoundService::OpenDefaultDevice(XtBool output, XtDevice** device) const  {
-  HRESULT hr;
-  std::vector<DeviceInfo> infos;
-  XT_VERIFY_COM(EnumDevices(infos, true));
-  for(size_t i = 0; i < infos.size(); i++) {
-    if(infos[i].output == (output != XtFalse))
-      return ::OpenDevice(infos[i], device);
-  }
-  return S_OK;
-}
 
 // ---- device ----
 

@@ -11,7 +11,6 @@ JackService::
 ~JackService()
 { jack_set_error_function(&XtiJackSilentCallback); }
 
-
 XtFault
 JackService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
 { *list = new JackDeviceList; return 0; }

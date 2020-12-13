@@ -10,7 +10,6 @@ struct XtDSDeviceInfo
 {
   std::string id;
   std::string name;
-  bool output;
 };
 
 char const* 
