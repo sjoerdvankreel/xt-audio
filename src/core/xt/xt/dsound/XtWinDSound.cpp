@@ -16,87 +16,18 @@
 
 // ---- local ----
 
-static const int XtDsWakeUpsPerBuffer = 8;
+
 
 
 // ---- forward ----
 
 // ---- local ----
 
-static DWORD WrapAround(int32_t bytes, int32_t bufferSize) {
-  return bytes >= 0? bytes: bytes + bufferSize;
-}
-
-static bool InsideSafetyGap(DWORD read, DWORD write, DWORD lockPosition) {
-  return read < write && read <= lockPosition && lockPosition < write ||
-         read > write && (read <= lockPosition || lockPosition < write);
-}
-
-static UINT GetTimerPeriod(int32_t bufferFrames, int32_t rate) {
-  return static_cast<UINT>(bufferFrames * 1000.0 / rate / XtDsWakeUpsPerBuffer);
-}
-
-static void SplitBufferParts(
-  std::vector<uint8_t>& buffer, void* part1, DWORD size1, void* part2, DWORD size2) {
-
-  memcpy(part1, &buffer[0], size1);
-  if(size2 != 0)
-    memcpy(part2, &buffer[size1], size2);
-}
-
-static void CombineBufferParts(
-  std::vector<uint8_t>& buffer, void* part1, DWORD size1, void* part2, DWORD size2) {
-
-  memcpy(&buffer[0], part1, size1);
-  if(size2 != 0)
-    memcpy(&buffer[size1], part2, size2);
-}
-
 // ---- service ----
 
 // ---- device ----
 
 // ---- stream ----
-
-XtFault DSoundStream::GetFrames(int32_t* frames) const {
-  *frames = bufferFrames;
-  return S_OK;
-}
-
-XtFault DSoundStream::GetLatency(XtLatency* latency) const {
-  return S_OK;
-}
-
-void DSoundStream::StopStream() {
-  if(capture)
-    XT_ASSERT(SUCCEEDED(capture->Stop()));
-  else
-    XT_ASSERT(SUCCEEDED(render->Stop()));
-  if(!_secondary) {
-    XT_ASSERT(CancelWaitableTimer(timer.timer));
-    XT_ASSERT(timeEndPeriod(GetTimerPeriod(bufferFrames, _params.format.mix.rate) / 2) == TIMERR_NOERROR);
-    XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
-  }
-  xtBytesProcessed = 0;
-  dsBytesProcessed = 0;
-  previousDsPosition = 0;
-}
-
-void DSoundStream::StartStream() {
-  LARGE_INTEGER due;
-  due.QuadPart = -1;
-  UINT timerPeriod = GetTimerPeriod(bufferFrames, _params.format.mix.rate);
-  long lTimerPeriod = timerPeriod;
-  if(!_secondary) {
-    XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL));
-    XT_ASSERT(timeBeginPeriod(timerPeriod / 2) == TIMERR_NOERROR);
-    XT_ASSERT(SetWaitableTimer(timer.timer, &due, lTimerPeriod, nullptr, nullptr, TRUE));
-  }
-  if(capture)
-    XT_ASSERT(SUCCEEDED(capture->Start(DSCBSTART_LOOPING)));
-  else
-    XT_ASSERT(SUCCEEDED(render->Play(0, 0, DSBPLAY_LOOPING)));
-}
 
 void DSoundStream::ProcessBuffer(bool prefill) {
   
