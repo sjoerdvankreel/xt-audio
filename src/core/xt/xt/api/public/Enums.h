@@ -18,7 +18,7 @@ typedef enum XtSystem {
 } XtSystem;
 
 typedef enum XtEnumFlags {
-  XtEnumInput = 0x1, XtEnumOutput = 0x2, XtEnumAll = XtEnumInput | XtEnumOutput
+  XtEnumFlagsInput = 0x1, XtEnumFlagsOutput = 0x2, XtEnumFlagsAll = XtEnumFlagsInput | XtEnumFlagsOutput
 } XtEnumFlags;
 
 typedef enum XtCapabilities {
