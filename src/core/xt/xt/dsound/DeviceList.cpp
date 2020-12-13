@@ -29,7 +29,7 @@ XtFault
 DSoundDeviceList::GetDeviceInfo(char const* id, XtDsDeviceInfo* device) const
 {
   for(size_t i = 0; i < _devices.size(); i++)
-    if(XtiClassIdToUtf8(_devices[i].id) == id) return *device = _devices[i], DS_OK;
+    if(!strcmp(XtiClassIdToUtf8(_devices[i].id).c_str(), id)) return *device = _devices[i], DS_OK;
   return DSERR_NODRIVER;
 }
 
@@ -41,6 +41,7 @@ DSoundDeviceList::EnumCallback(GUID* id, wchar_t const* name, wchar_t const*, vo
   auto devices = static_cast<std::vector<XtDsDeviceInfo>*>(ctx);
   device.id = *id;
   device.name = XtiWideStringToUtf8(name);
+  devices->push_back(device);
   return TRUE;
 }
 

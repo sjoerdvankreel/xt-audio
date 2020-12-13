@@ -16,6 +16,7 @@ XtFault
 DSoundDevice::GetChannelCount(XtBool output, int32_t* count) const
 {
   if(output && _output == nullptr) return S_OK;
+  if(!output && _input == nullptr) return S_OK;
   *count = sizeof(XtiWfxChannelNames) / sizeof(char const*);
   return S_OK;
 }
