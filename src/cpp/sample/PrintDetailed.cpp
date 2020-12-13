@@ -25,7 +25,7 @@ PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)
       std::cout << "      Output channels: " << device->GetChannelCount(true) << "\n";
       std::cout << "      Interleaved access: " << device->SupportsAccess(true) << "\n";
       std::cout << "      Non-interleaved access: " << device->SupportsAccess(false) << "\n";
-      if(mix) std::cout << "    Current mix: " << mix->rate << " " << mix->sample << "\n";
+      if(mix) std::cout << "      Current mix: " << mix->rate << " " << mix->sample << "\n";
     } catch(Xt::Exception const& e)
     { std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; }
   }
