@@ -7,7 +7,6 @@
 #include <xt/cpp/Utility.hpp>
 #include <string>
 #include <vector>
-#include <optional>
 
 namespace Xt {
 
@@ -23,7 +22,6 @@ public:
   int32_t GetCount() const;
   std::string GetId(int32_t index) const;
   std::string GetName(std::string const& id) const;
-  std::optional<std::string> GetDefaultId(bool output) const;
 };
 
 inline
@@ -56,19 +54,6 @@ DeviceList::GetName(std::string const& id) const
   std::vector<char> buffer(static_cast<size_t>(size));
   Detail::HandleError(XtDeviceListGetName(_l, id.c_str(), buffer.data(), &size));
   return std::string(buffer.data());
-}
-
-inline std::optional<std::string>
-DeviceList::GetDefaultId(bool output) const
-{
-  XtBool valid;
-  int32_t size = 0;
-  Detail::HandleError(XtDeviceListGetDefaultId(_l, output, &valid, nullptr, &size));
-  if(!valid) return std::optional<std::string>(std::nullopt);
-  std::vector<char> buffer(static_cast<size_t>(size));
-  Detail::HandleError(XtDeviceListGetDefaultId(_l, output, &valid, buffer.data(), &size));
-  if(!valid) return std::optional<std::string>(std::nullopt);
-  return std::optional<std::string>(std::string(buffer.data()));
 }
 
 } // namespace Xt

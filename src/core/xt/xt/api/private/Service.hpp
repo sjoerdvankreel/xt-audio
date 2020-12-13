@@ -10,11 +10,12 @@
 #include <xt/private/Shared.hpp>
 #include <cstdint>
 
-#define XT_IMPLEMENT_SERVICE(s)                                         \
-  XtCapabilities GetCapabilities() const override;                      \
-  XtSystem GetSystem() const override { return XtSystem##s; }           \
-  XtFault OpenDevice(char const* id, XtDevice** device) const override; \
-  XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const override;
+#define XT_IMPLEMENT_SERVICE(s)                                                  \
+  XtCapabilities GetCapabilities() const override;                               \
+  XtSystem GetSystem() const override { return XtSystem##s; }                    \
+  XtFault OpenDevice(char const* id, XtDevice** device) const override;          \
+  XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const override; \
+  XtFault GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const override;
 
 struct XtService 
 {
@@ -24,6 +25,7 @@ struct XtService
   virtual XtFault OpenDevice(char const* id, XtDevice** device) const = 0;
   virtual XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const = 0;
   XtFault AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const;
+  virtual XtFault GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const = 0;
 };
 
 #endif // XT_API_PRIVATE_SERVICE_HPP

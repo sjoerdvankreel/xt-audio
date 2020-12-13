@@ -18,6 +18,15 @@ AsioService::GetCapabilities() const
 }
 
 XtFault
+AsioService::GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const
+{
+  AsioDeviceList list;
+  if(list._drivers.asioGetNumDev() == 0) return ASE_OK;
+  *valid = XtTrue;
+  return list.GetId(0, buffer, size);
+}
+
+XtFault
 AsioService::OpenDevice(char const* id, XtDevice** device) const
 {  
   HRESULT hr;

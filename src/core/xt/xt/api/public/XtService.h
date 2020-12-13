@@ -16,6 +16,8 @@ XT_API XtError XT_CALL
 XtServiceOpenDevice(XtService const* s, char const* id, XtDevice** device);
 XT_API XtError XT_CALL
 XtServiceOpenDeviceList(XtService const* s, XtEnumFlags flags, XtDeviceList** list);
+XT_API XtError XT_CALL
+XtServiceGetDefaultDeviceId(XtService const* l, XtBool output, XtBool* valid, char* buffer, int32_t* size);
 XT_API XtError XT_CALL 
 XtServiceAggregateStream(XtService const* s, XtAggregateStreamParams const* params, void* user, XtStream** stream); 
 

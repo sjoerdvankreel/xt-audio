@@ -30,6 +30,17 @@ XtServiceOpenDeviceList(XtService const* s, XtEnumFlags flags, XtDeviceList** li
   return XtiCreateError(s->GetSystem(), s->OpenDeviceList(flags, list));
 }
 
+XtError XT_CALL
+XtServiceGetDefaultDeviceId(XtService const* s, XtBool output, XtBool* valid, char* buffer, int32_t* size)
+{
+  XT_ASSERT(s != nullptr);
+  XT_ASSERT(valid != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(size != nullptr && *size >= 0);
+  *valid = XtFalse;  
+  return XtiCreateError(s->GetSystem(), s->GetDefaultDeviceId(output, valid, buffer, size));
+}
+
 XtError XT_CALL 
 XtServiceAggregateStream(XtService const* s, XtAggregateStreamParams const* params, void* user, XtStream** stream)
 {

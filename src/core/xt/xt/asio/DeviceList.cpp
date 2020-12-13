@@ -9,14 +9,6 @@ AsioDeviceList::GetCount(int32_t* count) const
   *count = _drivers.asioGetNumDev();
   return ASE_OK;
 }
-
-XtFault
-AsioDeviceList::GetDefaultId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const
-{
-  if(_drivers.asioGetNumDev() == 0) return ASE_OK;
-  *valid = XtTrue;
-  return GetId(0, buffer, size);
-}
   
 XtFault 
 AsioDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const

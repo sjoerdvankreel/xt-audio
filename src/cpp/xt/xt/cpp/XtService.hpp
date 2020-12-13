@@ -11,6 +11,7 @@
 #include <xt/cpp/XtDeviceList.hpp>
 
 #include <memory>
+#include <optional>
 
 namespace Xt {
 
@@ -22,8 +23,9 @@ class Service final
   XtService const* const _s;
   Service(XtService const* s): _s(s) { }
 public:
-  Capabilities GetCapabilities() const;
+  Capabilities GetCapabilities() const;  
   std::unique_ptr<Device> OpenDevice(std::string const& id) const;
+  std::optional<std::string> GetDefaultDeviceId(bool output) const;
   std::unique_ptr<DeviceList> OpenDeviceList(EnumFlags flags) const;
   std::unique_ptr<Stream> AggregateStream(AggregateStreamParams const& params, void* user);
 };
@@ -50,6 +52,19 @@ Service::OpenDevice(std::string const& id) const
   XtDevice* device; 
   Detail::HandleError(XtServiceOpenDevice(_s, id.c_str(), &device));
   return std::unique_ptr<Device>(new Device(device));
+}
+
+inline std::optional<std::string>
+Service::GetDefaultDeviceId(bool output) const
+{
+  XtBool valid;
+  int32_t size = 0;
+  Detail::HandleError(XtServiceGetDefaultId(_s, output, &valid, nullptr, &size));
+  if(!valid) return std::optional<std::string>(std::nullopt);
+  std::vector<char> buffer(static_cast<size_t>(size));
+  Detail::HandleError(XtServiceGetDefaultId(_s, output, &valid, buffer.data(), &size));
+  if(!valid) return std::optional<std::string>(std::nullopt);
+  return std::optional<std::string>(std::string(buffer.data()));
 }
 
 inline std::unique_ptr<Stream> 

@@ -38,14 +38,3 @@ XtDeviceListGetName(XtDeviceList const* l, char const* id, char* buffer, int32_t
   XT_ASSERT(size != nullptr && *size >= 0);
   return XtiCreateError(l->GetSystem(), l->GetName(id, buffer, size));
 }
-
-XtError XT_CALL
-XtDeviceListGetDefaultId(XtDeviceList const* l, XtBool output, XtBool* valid, char* buffer, int32_t* size)
-{
-  XT_ASSERT(l != nullptr);
-  XT_ASSERT(valid != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(size != nullptr && *size >= 0);
-  *valid = XtFalse;  
-  return XtiCreateError(l->GetSystem(), l->GetDefaultId(output, valid, buffer, size));
-}
