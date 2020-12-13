@@ -21,15 +21,9 @@ public XtService
 struct PulseDevice: 
 public XtDevice
 {
-  const bool _output;
+  bool const _output;
   XT_IMPLEMENT_DEVICE(Pulse);
   PulseDevice(bool output);
-};
-
-struct PulseDeviceList:
-public XtDeviceList 
-{
-  XT_IMPLEMENT_DEVICE_LIST(Pulse);
 };
 
 struct PulseStream:
@@ -42,6 +36,15 @@ public XtBlockingStream
   
   PulseStream(bool secondary);
   XT_IMPLEMENT_BLOCKING_STREAM(Pulse);
+};
+
+struct PulseDeviceList:
+public XtDeviceList 
+{
+  bool const _input;
+  bool const _output;
+  XT_IMPLEMENT_DEVICE_LIST(Pulse);
+  PulseDeviceList(bool input, bool output);
 };
 
 #endif // XT_ENABLE_PULSE
