@@ -30,14 +30,13 @@ AggregateMain()
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if(!service || (service->GetCapabilities() & Xt::CapabilitiesAggregation) == 0) return 0;
-  std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
 
-  std::optional<std::string> defaultInput = list->GetDefaultId(false);
+  std::optional<std::string> defaultInput = service->GetDefaultDeviceId(false);
   if(!defaultInput.has_value()) return 0;
   std::unique_ptr<Xt::Device> input = service->OpenDevice(defaultInput.value());
   if(!input->SupportsFormat(inputFormat)) return 0;
 
-  std::optional<std::string> defaultOutput = list->GetDefaultId(true);
+  std::optional<std::string> defaultOutput = service->GetDefaultDeviceId(true);
   if(!defaultOutput.has_value()) return 0;
   std::unique_ptr<Xt::Device> output = service->OpenDevice(defaultOutput.value());
   if(!output->SupportsFormat(outputFormat)) return 0;

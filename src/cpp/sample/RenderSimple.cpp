@@ -35,8 +35,7 @@ RenderSimpleMain()
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if (!service) return 0;
 
-  std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
-  std::optional<std::string> id = list->GetDefaultId(true);
+  std::optional<std::string> id = service->GetDefaultDeviceId(true);
   if(!id.has_value()) return 0;
   std::unique_ptr<Xt::Device> device = service->OpenDevice(id.value());
   if(!device->SupportsFormat(Format)) return 0;

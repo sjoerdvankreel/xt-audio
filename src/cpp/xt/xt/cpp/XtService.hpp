@@ -59,10 +59,10 @@ Service::GetDefaultDeviceId(bool output) const
 {
   XtBool valid;
   int32_t size = 0;
-  Detail::HandleError(XtServiceGetDefaultId(_s, output, &valid, nullptr, &size));
+  Detail::HandleError(XtServiceGetDefaultDeviceId(_s, output, &valid, nullptr, &size));
   if(!valid) return std::optional<std::string>(std::nullopt);
   std::vector<char> buffer(static_cast<size_t>(size));
-  Detail::HandleError(XtServiceGetDefaultId(_s, output, &valid, buffer.data(), &size));
+  Detail::HandleError(XtServiceGetDefaultDeviceId(_s, output, &valid, buffer.data(), &size));
   if(!valid) return std::optional<std::string>(std::nullopt);
   return std::optional<std::string>(std::string(buffer.data()));
 }

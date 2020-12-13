@@ -11,7 +11,7 @@ PrintSimpleMain()
   for(Xt::System system: platform->GetSystems()) 
   {
     std::unique_ptr<Xt::Service> service = platform->GetService(system);
-    std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
+    std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList(Xt::EnumAll);
     for(int32_t d = 0; d < list->GetCount(); d++)
     {
       std::string id = list->GetId(d);

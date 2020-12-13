@@ -27,18 +27,18 @@ PrintDetailedMain()
     for(Xt::System s: platform->GetSystems()) 
     {
       std::unique_ptr<Xt::Service> service = platform->GetService(s);
-      std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList();
+      std::unique_ptr<Xt::DeviceList> list = service->OpenDeviceList(Xt::EnumAll);
       std::cout << "System " << s << ":\n";
       std::cout << "  Device count: " << list->GetCount() << "\n";
       std::cout << "  Capabilities: " << service->GetCapabilities() << "\n";
 
-      std::optional<std::string> defaultInput = list->GetDefaultId(false);
+      std::optional<std::string> defaultInput = service->GetDefaultDeviceId(false);
       if(defaultInput.has_value())
       {
         std::string name = list->GetName(defaultInput.value());
         std::cout << "  Default input: " << name << " (" << defaultInput.value() << ")\n";
       }
-      std::optional<std::string> defaultOutput = list->GetDefaultId(true);
+      std::optional<std::string> defaultOutput = service->GetDefaultDeviceId(true);
       if(defaultOutput.has_value())
       {
         std::string name = list->GetName(defaultOutput.value());
