@@ -1,5 +1,6 @@
 #include <xt/api/public/XtDevice.h>
 #include <xt/api/private/Device.hpp>
+#include <xt/api/private/Platform.hpp>
 #include <xt/private/Shared.hpp>
 #include <cstring>
 
@@ -15,6 +16,7 @@ XtDeviceShowControlPanel(XtDevice* d)
 {
   XT_ASSERT(d != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT(XtPlatform::instance->
   return XtiCreateError(d->GetSystem(), d->ShowControlPanel());
 }
 

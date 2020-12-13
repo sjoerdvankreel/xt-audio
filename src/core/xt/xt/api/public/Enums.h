@@ -23,7 +23,7 @@ typedef enum XtEnumFlags {
 
 typedef enum XtCapabilities {
   XtCapabilitiesNone = 0x0, XtCapabilitiesTime = 0x1, XtCapabilitiesLatency = 0x2, XtCapabilitiesFullDuplex = 0x4, 
-  XtCapabilitiesAggregation = 0x8, XtCapabilitiesChannelMask = 0x10, XtCapabilitiesXRunDetection = 0x20
+  XtCapabilitiesAggregation = 0x8, XtCapabilitiesChannelMask = 0x10, XtCapabilitiesControlPanel = 0x20, XtCapabilitiesXRunDetection = 0x40
 } XtCapabilities;
 
 #endif // XT_API_PUBLIC_ENUMS_H

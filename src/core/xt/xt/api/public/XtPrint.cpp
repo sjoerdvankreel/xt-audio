@@ -71,6 +71,8 @@ XtPrintCapabilitiesToString(XtCapabilities capabilities)
   if((capabilities & XtCapabilitiesLatency) != 0) result += "Latency, ";
   if((capabilities & XtCapabilitiesFullDuplex) != 0) result += "FullDuplex, ";
   if((capabilities & XtCapabilitiesChannelMask) != 0) result += "ChannelMask, ";
+  if((capabilities & XtCapabilitiesAggregation) != 0) result += "Aggregation, ";
+  if((capabilities & XtCapabilitiesControlPanel) != 0) result += "ControlPanel, ";
   if((capabilities & XtCapabilitiesXRunDetection) != 0) result += "XRunDetection, ";
   std::memcpy(buffer, result.data(), result.size() - 2);
   buffer[result.size() - 2] = '\0';

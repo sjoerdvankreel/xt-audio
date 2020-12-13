@@ -13,7 +13,8 @@ AsioService::GetCapabilities() const
   auto result = XtCapabilitiesTime
     | XtCapabilitiesLatency
     | XtCapabilitiesFullDuplex
-    | XtCapabilitiesChannelMask;
+    | XtCapabilitiesChannelMask
+    | XtCapabilitiesControlPanel;
   return static_cast<XtCapabilities>(result);
 }
 
