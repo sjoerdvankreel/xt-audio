@@ -26,7 +26,7 @@ public class PrintDetailed {
             String id = list.getId(d);
             try(XtDevice device = service.openDevice(id)) {
                 Optional<XtMix> mix = device.getMix();
-                System.out.println("    Device " + device + ":");
+                System.out.println("    Device " + id + ":");
                 System.out.println("      Input channels: " + device.getChannelCount(false));
                 System.out.println("      Output channels: " + device.getChannelCount(true));
                 System.out.println("      Interleaved access: " + device.supportsAccess(true));
