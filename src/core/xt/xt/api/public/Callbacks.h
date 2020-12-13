@@ -2,13 +2,16 @@
 #define XT_API_PUBLIC_CALLBACKS_H
 
 #include <xt/api/public/Shared.h>
-#include <cstdint>
+#include <stdint.h>
+
+typedef struct XtBuffer XtBuffer;
+typedef struct XtLocation XtLocation;
 
 typedef void (XT_CALLBACK
 *XtOnXRun)(int32_t index, void* user);
 typedef void (XT_CALLBACK
-*XtOnError)(struct XtLocation const* location, char const* message);
+*XtOnError)(XtLocation const* location, char const* message);
 typedef void (XT_CALLBACK
-*XtOnBuffer)(XtStream const* stream, struct XtBuffer const* buffer, void* user);
+*XtOnBuffer)(XtStream const* stream, XtBuffer const* buffer, void* user);
 
 #endif // XT_API_PUBLIC_CALLBACKS_H

@@ -3,7 +3,7 @@
 
 #include <xt/api/public/Shared.h>
 #include <xt/api/public/Structs.h>
-#include <cstdint>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

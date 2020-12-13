@@ -2,7 +2,7 @@
 #define XT_API_PUBLIC_DEVICE_LIST_H
 
 #include <xt/api/public/Shared.h>
-#include <cstdint>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
