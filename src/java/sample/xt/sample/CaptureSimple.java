@@ -43,8 +43,10 @@ public class CaptureSimple {
             XtService service = platform.getService(system);
             if(service == null) return;
 
-            try(XtDevice device = service.openDefaultDevice(false)) {
-                if(device == null || !device.supportsFormat(FORMAT)) return;
+            String defaultInput = service.getDefaultDeviceId(false);
+            if(defaultInput == null) return;
+            try(XtDevice device = service.openDevice(defaultInput)) {
+                if(!device.supportsFormat(FORMAT)) return;
 
                 XtBufferSize size = device.getBufferSize(FORMAT);
                 streamParams = new XtStreamParams(true, CaptureSimple::onBuffer, null);

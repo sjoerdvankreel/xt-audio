@@ -43,10 +43,14 @@ public class Aggregate {
             XtService service = platform.getService(system);
             if(service == null) return;
 
-            try(XtDevice input = service.openDefaultDevice(false);
-                XtDevice output = service.openDefaultDevice(true)) {
-                if(input == null || !input.supportsFormat(inputFormat)) return;
-                if(output == null || !output.supportsFormat(outputFormat)) return;
+            String defaultInput = service.getDefaultDeviceId(false);
+            String defaultOutput = service.getDefaultDeviceId(true);
+            if(defaultInput == null || defaultOutput == null) return;
+
+            try(XtDevice input = service.openDevice(defaultInput);
+                XtDevice output = service.openDevice(defaultOutput)) {
+                if(!input.supportsFormat(inputFormat)) return;
+                if(!output.supportsFormat(outputFormat)) return;
 
                 XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
                 deviceParams[0] = new XtAggregateDeviceParams(input, inputFormat.channels, 30.0);

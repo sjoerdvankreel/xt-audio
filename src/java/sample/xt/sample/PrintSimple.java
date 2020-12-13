@@ -1,8 +1,10 @@
 package xt.sample;
 
+import java.util.EnumSet;
+import xt.audio.Enums.XtEnumFlags;
 import xt.audio.Enums.XtSystem;
 import xt.audio.XtAudio;
-import xt.audio.XtDevice;
+import xt.audio.XtDeviceList;
 import xt.audio.XtPlatform;
 import xt.audio.XtService;
 
@@ -12,10 +14,12 @@ public class PrintSimple {
         try(XtPlatform platform = XtAudio.init(null, null, null)) {
             for(XtSystem system: platform.getSystems()) {
                 XtService service = platform.getService(system);
-                for(int d = 0; d < service.getDeviceCount(); d++)
-                    try(XtDevice device = service.openDevice(d)) {
-                        System.out.println(system + ": " + device);
+                try(XtDeviceList list = service.openDeviceList(EnumSet.of(XtEnumFlags.ALL))) {
+                    for(int d = 0; d < list.getCount(); d++) {
+                        String id = list.getId(d);
+                        System.out.println(system + ": " + list.getName(id));
                     }
+                }
             }
         }
     }

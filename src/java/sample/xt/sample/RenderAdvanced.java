@@ -93,9 +93,11 @@ public class RenderAdvanced {
             XtService service = platform.getService(system);
             if(service == null) return;
 
+            String defaultOutput = service.getDefaultDeviceId(true);
+            if(defaultOutput == null) return;
             XtFormat format = new XtFormat(MIX, new XtChannels(0, 0, 2, 0));
-            try(XtDevice device = service.openDefaultDevice(true)) {
-                if(device == null || !device.supportsFormat(format)) return;
+            try(XtDevice device = service.openDevice(defaultOutput)) {
+                if(!device.supportsFormat(format)) return;
                 XtBufferSize size = device.getBufferSize(format);
 
                 System.out.println("Render interleaved, safe buffers...");

@@ -20,7 +20,7 @@ public final class XtService {
 
     static { Native.register(Utility.LIBRARY); }
     private static native int XtServiceGetCapabilities(Pointer s);
-    private static native long XtServiceOpenDevice(Pointer s, int index, PointerByReference device);
+    private static native long XtServiceOpenDevice(Pointer s, String id, PointerByReference device);
     private static native long XtServiceOpenDeviceList(Pointer s, int flags, PointerByReference list);
     private static native long XtServiceAggregateStream(Pointer s, AggregateStreamParams params, Pointer user, PointerByReference stream);
     private static native long XtServiceGetDefaultDeviceId(Pointer s, boolean output, IntByReference valid, byte[] buffer, IntByReference size);
@@ -37,9 +37,9 @@ public final class XtService {
     private final Pointer _s;
     XtService(Pointer s) { _s = s; }
 
-    public XtDevice openDevice(int index) {
+    public XtDevice openDevice(String id) {
         var d = new PointerByReference();
-        handleError(XtServiceOpenDevice(_s, index, d));
+        handleError(XtServiceOpenDevice(_s, id, d));
         return new XtDevice(d.getValue());
     }
 
@@ -54,7 +54,7 @@ public final class XtService {
         return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
     }
 
-    public XtDeviceList OpenDeviceList(EnumSet<XtEnumFlags> flags)
+    public XtDeviceList openDeviceList(EnumSet<XtEnumFlags> flags)
     {
         int flag = 0;
         for(XtEnumFlags f: flags) flag |= f._flag;

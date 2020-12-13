@@ -48,8 +48,10 @@ public class RenderSimple {
             XtService service = platform.getService(system);
             if(service == null) return;
 
-            try(XtDevice device = service.openDefaultDevice(true)) {
-                if(device == null || !device.supportsFormat(FORMAT)) return;
+            String defaultOutput = service.getDefaultDeviceId(true);
+            if(defaultOutput == null) return;
+            try(XtDevice device = service.openDevice(defaultOutput)) {
+                if(!device.supportsFormat(FORMAT)) return;
 
                 XtBufferSize size = device.getBufferSize(FORMAT);
                 streamParams = new XtStreamParams(true, RenderSimple::onBuffer, null);

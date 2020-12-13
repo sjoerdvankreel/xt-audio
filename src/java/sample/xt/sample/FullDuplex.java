@@ -40,8 +40,9 @@ public class FullDuplex {
             XtService service = platform.getService(system);
             if(service == null) return;
 
-            try(XtDevice device = service.openDefaultDevice(true)) {
-                if(device == null) return;
+            String defaultOutput = service.getDefaultDeviceId(true);
+            if(defaultOutput == null) return;
+            try(XtDevice device = service.openDevice(defaultOutput)) {
                 if(device.supportsFormat(int44100)) format = int44100;
                 else if(device.supportsFormat(int48000)) format = int48000;
                 else if(device.supportsFormat(float44100)) format = float44100;
