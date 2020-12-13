@@ -5,32 +5,39 @@
 
 XtFault
 DSoundDeviceList::GetCount(int32_t* count) const
-{ *count = static_cast<int32_t>(_inputs.size() + _outputs.size()); return DS_OK; }
+{ *count = static_cast<int32_t>(_devices.size()); return DS_OK; }
 
 XtFault 
 DSoundDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 { 
-  if(index < _inputs.size()) XtiCopyString(_inputs[index].id.c_str(), buffer, size);
-  else XtiCopyString(_outputs[index - _inputs.size()].id.c_str(), buffer, size);
+  XtiCopyString(_devices[index].id.c_str(), buffer, size);
   return DS_OK;
 }
 
 XtFault
 DSoundDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
-  for(size_t i = 0; i < _inputs.size(); i++)
-    if(_inputs[i].id == id) XtiCopyString(_inputs[i].id.c_str(), buffer, size);
-  for(size_t i = 0; i < _outputs.size(); i++)
-    if(_outputs[i].id == id) XtiCopyString(_outputs[i].id.c_str(), buffer, size);
+  XtFault fault;
+  XtDsDeviceInfo info;
+  if((fault = GetDeviceInfo(id, &info)) != DS_OK) return fault;
+  XtiCopyString(info.id.c_str(), buffer, size);
   return DS_OK;
+}
+
+XtFault
+DSoundDeviceList::GetDeviceInfo(char const* id, XtDsDeviceInfo* device) const
+{
+  for(size_t i = 0; i < _devices.size(); i++)
+    if(_devices[i].id == id) return *device = _devices[i], DS_OK;
+  return DSERR_NODRIVER;
 }
 
 BOOL CALLBACK
 DSoundDeviceList::EnumCallback(GUID* id, wchar_t const* name, wchar_t const*, void* ctx)
 {
-  XtDSDeviceInfo device;
+  XtDsDeviceInfo device;
   if(id == nullptr) return TRUE;
-  auto devices = static_cast<std::vector<XtDSDeviceInfo>*>(ctx);
+  auto devices = static_cast<std::vector<XtDsDeviceInfo>*>(ctx);
   device.id = XtiClassIdToUtf8(*id);
   device.name = XtiWideStringToUtf8(name);
   return TRUE;

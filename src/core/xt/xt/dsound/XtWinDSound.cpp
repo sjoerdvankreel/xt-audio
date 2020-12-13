@@ -17,9 +17,6 @@
 // ---- local ----
 
 static const int XtDsWakeUpsPerBuffer = 8;
-static const double XtDsMinBufferMs = 100.0;
-static const double XtDsMaxBufferMs = 5000.0;
-static const double XtDsDefaultBufferMs = 500.0;
 
 struct XtWaitableTimer
 {
@@ -92,88 +89,6 @@ static void CombineBufferParts(
 // ---- service ----
 
 // ---- device ----
-
-XtFault DSoundDevice::ShowControlPanel() {
-  return S_OK;
-}
-
-XtFault DSoundDevice::GetName(char* buffer, int32_t* size) const {
-  XtiCopyString(this->name.c_str(), buffer, size);
-  return S_OK;
-}
-
-XtFault DSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const {
-  *supports = interleaved;
-  return S_OK;
-}
-
-XtFault DSoundDevice::GetBufferSize(const XtFormat* format, XtBufferSize* size) const {
-  size->min = XtDsMinBufferMs;
-  size->max = XtDsMaxBufferMs;
-  size->current = XtDsDefaultBufferMs;
-  return S_OK;
-}
-
-XtFault DSoundDevice::SupportsFormat(const XtFormat* format, XtBool* supports) const {
-  *supports = format->channels.inputs > 0 != !input 
-           && format->channels.outputs > 0 != !output 
-           && format->mix.rate >= 8000 
-           && format->mix.rate <= 192000;
-  return S_OK;
-}
-
-XtFault DSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const {
-  XtiCopyString(XtiWfxChannelNames[index], buffer, size);
-  return S_OK;
-}
-
-XtFault DSoundDevice::GetChannelCount(XtBool output, int32_t* count) const {
-  *count = (output != XtFalse) == !this->output? 0:  sizeof(XtiWfxChannelNames) / sizeof(const char*);
-  return S_OK;
-}
-
-XtFault DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const {
-
-  UINT count;
-  HRESULT hr;
-  GUID deviceId;
-  XtFormat format;
-  CComPtr<IMMDeviceCollection> devices;
-  CComPtr<IMMDeviceEnumerator> enumerator;
-
-  GUID thisId = guid;
-  if(thisId == GUID_NULL)
-    if(!output)
-      XT_VERIFY_COM(GetDeviceID(&DSDEVID_DefaultCapture, &thisId));
-    else
-      XT_VERIFY_COM(GetDeviceID(&DSDEVID_DefaultPlayback, &thisId));
-  XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
-  XT_VERIFY_COM(enumerator->EnumAudioEndpoints(eAll, DEVICE_STATE_ACTIVE, &devices));
-  XT_VERIFY_COM(devices->GetCount(&count));  
-
-  for(UINT i = 0; i < count; i++) {    
-    CComPtr<IMMDevice> device;
-    CComPtr<IAudioClient> client;
-    CComPtr<IPropertyStore> store;
-    CComHeapPtr<WAVEFORMATEX> wfx;
-    XtPropVariant currentIdString;
-    XT_VERIFY_COM(devices->Item(i, &device));
-    XT_VERIFY_COM(device->OpenPropertyStore(STGM_READ, &store));
-    XT_VERIFY_COM(store->GetValue(PKEY_AudioEndpoint_GUID, &currentIdString.pv));
-    XT_VERIFY_COM(CLSIDFromString(currentIdString.pv.pwszVal, &deviceId));
-    if(deviceId == thisId) {
-      XT_VERIFY_COM(device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client)));
-      XT_VERIFY_COM(client->GetMixFormat(&wfx));
-      if(!XtiWfxToFormat(*wfx, !input, format))
-        return DSERR_BADFORMAT;
-      *valid = XtTrue;
-      mix->rate = format.mix.rate;
-      mix->sample = format.mix.sample;
-      return S_OK;
-    }
-  }
-  return S_OK;
-}
 
 XtFault DSoundDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
 

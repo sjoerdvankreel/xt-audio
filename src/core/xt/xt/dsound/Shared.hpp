@@ -7,6 +7,7 @@
 #include <xt/api/private/DeviceList.hpp>
 #include <xt/dsound/Private.hpp>
 #include <vector>
+#include <atlbase.h>
 #include <dsound.h>
 
 struct DSoundService:
@@ -20,7 +21,6 @@ public XtDevice
 {
   DSoundDevice() = default;
   XT_IMPLEMENT_DEVICE(DSound);
-
   CComPtr<IDirectSound> _output;
   CComPtr<IDirectSoundCapture> _input;
 };
@@ -30,9 +30,10 @@ public XtDeviceList
 {
   DSoundDeviceList() = default;
   XT_IMPLEMENT_DEVICE_LIST(DSound);
-  std::vector<XtDSDeviceInfo> _inputs;
-  std::vector<XtDSDeviceInfo> _outputs;
-
+  std::vector<XtDsDeviceInfo> _devices;
+  
+  XtFault
+  GetDeviceInfo(char const* id, XtDsDeviceInfo* device) const;
   static BOOL CALLBACK
   EnumCallback(GUID* id, wchar_t const* name, wchar_t const*, void* ctx);
 };
