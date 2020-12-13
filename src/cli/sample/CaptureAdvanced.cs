@@ -86,8 +86,10 @@ namespace Xt
             XtService service = platform.GetService(system);
             if (service == null) return;
 
-            using XtDevice device = service.OpenDefaultDevice(false);
-            if (device?.SupportsFormat(Format) != true) return;
+            string defaultInput = service.GetDefaultDeviceId(false);
+            if(defaultInput == null) return;
+            using XtDevice device = service.OpenDevice(defaultInput);
+            if (!device.SupportsFormat(Format)) return;
             XtBufferSize size = device.GetBufferSize(Format);
 
             Console.WriteLine("Capture interleaved, safe buffers...");

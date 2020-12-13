@@ -37,8 +37,10 @@ namespace Xt
             XtService service = platform.GetService(system);
             if (service == null) return;
 
-            using XtDevice device = service.OpenDefaultDevice(true);
-            if (device?.SupportsFormat(Format) != true) return;
+            string defaultOutput = service.GetDefaultDeviceId(true);
+            if(defaultOutput == null) return;
+            using XtDevice device = service.OpenDevice(defaultOutput);
+            if (!device.SupportsFormat(Format)) return;
 
             XtBufferSize size = device.GetBufferSize(Format);
             streamParams = new XtStreamParams(true, OnBuffer, null);

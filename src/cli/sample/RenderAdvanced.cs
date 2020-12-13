@@ -87,8 +87,10 @@ namespace Xt
             if (service == null) return;
 
             XtFormat format = new XtFormat(Mix, new XtChannels(0, 0, 2, 0));
-            using XtDevice device = service.OpenDefaultDevice(true);
-            if (device?.SupportsFormat(format) != true) return;
+            string defaultOutput = service.GetDefaultDeviceId(true);
+            if(defaultOutput == null) return;
+            using XtDevice device = service.OpenDevice(defaultOutput);
+            if (!device.SupportsFormat(format)) return;
             XtBufferSize size = device.GetBufferSize(format);
 
             Console.WriteLine("Render interleaved, safe buffers...");

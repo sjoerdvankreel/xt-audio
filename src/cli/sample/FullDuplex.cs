@@ -28,8 +28,9 @@ namespace Xt
             XtService service = platform.GetService(system);
             if (service == null) return;
 
-            using XtDevice device = service.OpenDefaultDevice(true);
-            if (device == null) return;
+            string defaultId = service.GetDefaultDeviceId(true);
+            if(defaultId == null) return;
+            using XtDevice device = service.OpenDevice(defaultId);
             if (device.SupportsFormat(int44100)) format = int44100;
             else if (device.SupportsFormat(int48000)) format = int48000;
             else if (device.SupportsFormat(float44100)) format = float44100;

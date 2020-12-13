@@ -31,10 +31,15 @@ namespace Xt
             XtService service = platform.GetService(system);
             if (service == null) return;
 
-            using XtDevice input = service.OpenDefaultDevice(false);
-            using XtDevice output = service.OpenDefaultDevice(true);
-            if (input?.SupportsFormat(inputFormat) != true) return;
-            if (output?.SupportsFormat(outputFormat) != true) return;
+            string defaultInput = service.GetDefaultDeviceId(false);
+            if(defaultInput == null) return;
+            using XtDevice input = service.OpenDevice(defaultInput);
+            if (!input.SupportsFormat(inputFormat)) return;
+
+            string defaultOutput = service.GetDefaultDeviceId(true);
+            if(defaultOutput == null) return;
+            using XtDevice output = service.OpenDevice(defaultOutput);
+            if (!output.SupportsFormat(outputFormat)) return;
 
             XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
             deviceParams[0] = new XtAggregateDeviceParams(input, in inputFormat.channels, 30.0);
