@@ -1,5 +1,6 @@
 package xt.sample;
 
+import xt.audio.Enums.XtCapabilities;
 import xt.audio.Enums.XtSample;
 import xt.audio.Enums.XtSetup;
 import xt.audio.Enums.XtSystem;
@@ -41,7 +42,7 @@ public class Aggregate {
         try(XtPlatform platform = XtAudio.init(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
             XtService service = platform.getService(system);
-            if(service == null) return;
+            if(service == null || !service.getCapabilities().contains(XtCapabilities.AGGREGATION)) return;
 
             String defaultInput = service.getDefaultDeviceId(false);
             String defaultOutput = service.getDefaultDeviceId(true);

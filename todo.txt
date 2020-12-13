@@ -1,5 +1,4 @@
 * Figure out JACK support on Ubuntu 20.
-* Query device info without opening the device.
 * Better document service/list/device/stream lifetime (what needs to be alive when).
 * Overall code cleanup
 * Check TODOS
@@ -9,7 +8,6 @@
 * major testing
 * fix doxygen typedef errors
 * move doxygen to own file
-* caller allocated array of device infos
 * move all docs to own file
 * explain no io in callback
 * fix javadoc warnings
@@ -21,18 +19,12 @@
 * arm
 * restore x86
 * skip alsa devices that fail snd_pcm_hw_params_any or use try_open
-* merge fault into SERVICE
 * disable c26451
-* drop W/L prefixes
-* rename opendevice2
-* drop devicegetname from managed code
 * add caps::controlpanel
-* add caps::aggregate check to samples and gui
+* add caps::aggregate check to gui
 * wasapi do {guid}.{type} id = shared/excl/loopback
-* do not terminate on timeout, stop stream instead`
-* pulse, jack: dont error out when no server is running
+* do not terminate on timeout, stop stream instead
 * update asmjit
-* drop large constructors
 * check const order
 * support multiple JACK servers
 * support multiple PulseAudio servers
