@@ -3,14 +3,16 @@
     class DeviceView
     {
         internal XtDevice device;
+        internal string id;
+        internal string name;
         internal bool defaultInput;
         internal bool defaultOutput;
-        internal int index;
 
         public override string ToString()
         {
             bool isDefault = defaultInput || defaultOutput;
-            return device == null ? "[None]" : (isDefault ? "Default: " : (index + ": ")) + device.ToString();
+            var @default = isDefault ? "(Default) " : "";
+            return @default + name + " (" + id + ")";
         }
     }
 }
