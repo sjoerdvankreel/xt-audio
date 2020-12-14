@@ -12,15 +12,6 @@ XtDeviceDestroy(XtDevice* d)
 }
 
 XtError XT_CALL
-XtDeviceShowControlPanel(XtDevice* d) 
-{
-  XT_ASSERT(d != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT(XtPlatform::instance->
-  return XtiCreateError(d->GetSystem(), d->ShowControlPanel());
-}
-
-XtError XT_CALL
 XtDeviceGetMix(XtDevice const* d, XtBool* valid, XtMix* mix)
 {
   XT_ASSERT(d != nullptr);
@@ -93,4 +84,13 @@ XtDeviceGetChannelName(XtDevice const* d, XtBool output, int32_t index, char* bu
   XT_ASSERT(XtiCalledOnMainThread());  
   XT_ASSERT(size != nullptr && *size >= 0);
   return XtiCreateError(d->GetSystem(), d->GetChannelName(output, index, buffer, size));
+}
+
+XtError XT_CALL
+XtDeviceShowControlPanel(XtDevice* d) 
+{
+  XT_ASSERT(d != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  XT_ASSERT((XtPlatform::instance->GetService(d->GetSystem())->GetCapabilities() & XtCapabilitiesControlPanel) != 0);
+  return XtiCreateError(d->GetSystem(), d->ShowControlPanel());
 }

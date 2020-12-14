@@ -13,7 +13,10 @@ struct XtPlatform
   ~XtPlatform();
   XtPlatform() = default;
   XtPlatform(void* window);
+
   static inline XtPlatform* instance = nullptr;
+  XtService const* GetService(XtSystem system) const;
+  void GetSystems(XtSystem* buffer, int32_t* size) const;
 
   void* _window;
   bool _ownWindow;

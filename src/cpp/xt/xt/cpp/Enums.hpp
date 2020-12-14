@@ -12,7 +12,7 @@ enum class System { ALSA = 1, ASIO, JACK, WASAPI, Pulse, DSound };
 
 enum EnumFlags { EnumFlagsInput = 0x1, EnumFlagsOutput = 0x2, EnumFlagsAll = EnumFlagsInput | EnumFlagsOutput };
 enum Capabilities { CapabilitiesNone = 0x0, CapabilitiesTime = 0x1, CapabilitiesLatency = 0x2, CapabilitiesFullDuplex = 0x4, 
-  CapabilitiesAggregation = 0x8, CapabilitiesChannelMask = 0x10, CapabilitiesXRunDetection = 0x20 };
+  CapabilitiesAggregation = 0x8, CapabilitiesChannelMask = 0x10, CapabilitiesControlPanel = 0x20, CapabilitiesXRunDetection = 0x40 };
 
 } // namespace Xt
 #endif // XT_CPP_ENUMS_HPP
