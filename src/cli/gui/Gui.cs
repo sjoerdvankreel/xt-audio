@@ -20,8 +20,16 @@ namespace Xt
             11025, 22050, 44100, 48000, 96000, 192000, 384000
         };
 
-        private static readonly List<StreamType> StreamTypes
-            = Enum.GetValues(typeof(StreamType)).Cast<StreamType>().ToList();
+        private static List<StreamType> GetStreamTypes(XtService service)
+        {
+            var result = new List<StreamType>();
+            result.Add(StreamType.Capture);
+            result.Add(StreamType.Render);
+            if ((service.GetCapabilities() & XtCapabilities.FullDuplex) != 0) result.Add(StreamType.Duplex);
+            if ((service.GetCapabilities() & XtCapabilities.Aggregation) != 0) result.Add(StreamType.Aggregate);
+            result.Add(StreamType.Latency);
+            return result;
+        }
 
         [STAThread]
         public static void Main(string[] args)
@@ -154,8 +162,6 @@ namespace Xt
             sample.SelectedItem = XtSample.Int16;
             channelCount.DataSource = ChannelCounts;
             channelCount.SelectedItem = 2;
-            streamType.DataSource = StreamTypes;
-            streamType.SelectedItem = StreamType.Render;
             system.DataSource = platform.GetSystems();
         }
 
@@ -164,6 +170,8 @@ namespace Xt
             XtService s = platform.GetService((XtSystem)(system.SelectedItem));
             inputDevice.DataSource = null;
             outputDevice.DataSource = null;
+            streamType.DataSource = GetStreamTypes(s);
+            streamType.SelectedItem = StreamType.Render;
             ClearDevices();
 
             string defaultInputId = s.GetDefaultDeviceId(false);
@@ -214,8 +222,8 @@ namespace Xt
             capabilities.Text = s.GetCapabilities().ToString();
             defaultInput.Text = defaultInputId == null ? "null" : list.GetName(defaultInputId);
             defaultOutput.Text = defaultOutputId == null ? "null" : list.GetName(defaultOutputId);
-            inputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.ASIO;
-            outputControlPanel.Enabled = ((XtSystem)system.SelectedItem) == XtSystem.ASIO;
+            inputControlPanel.Enabled = (s.GetCapabilities() & XtCapabilities.ControlPanel) != 0;
+            outputControlPanel.Enabled = (s.GetCapabilities() & XtCapabilities.ControlPanel) != 0;
         }
 
         private void FormatOrDeviceChanged()

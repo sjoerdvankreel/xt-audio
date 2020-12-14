@@ -19,7 +19,6 @@
 * restore x86
 * skip alsa devices that fail snd_pcm_hw_params_any or use try_open
 * disable c26451
-* add caps::controlpanel
 * wasapi do {guid}.{type} id = shared/excl/loopback
 * do not terminate on timeout, stop stream instead
 * update asmjit
@@ -32,4 +31,3 @@
 * split wasapi service -> shared/exclusive
 * split alsa service -> rw/mmap
 * timeout after 3 buffers (see also WFSO)
-* move advanced samples to system audio

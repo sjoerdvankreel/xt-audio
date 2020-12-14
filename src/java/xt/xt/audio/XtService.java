@@ -54,8 +54,7 @@ public final class XtService {
         return new String(buffer, 0, size.getValue() - 1, Charset.forName("UTF-8"));
     }
 
-    public XtDeviceList openDeviceList(EnumSet<XtEnumFlags> flags)
-    {
+    public XtDeviceList openDeviceList(EnumSet<XtEnumFlags> flags) {
         int flag = 0;
         for(XtEnumFlags f: flags) flag |= f._flag;
         PointerByReference list = new PointerByReference();
@@ -65,12 +64,9 @@ public final class XtService {
     public EnumSet<XtCapabilities> getCapabilities() {
         var result = EnumSet.noneOf(XtCapabilities.class);
         var flags = XtServiceGetCapabilities(_s);
-        if((flags & XtCapabilities.TIME._flag) != 0) result.add(XtCapabilities.TIME);
-        if((flags & XtCapabilities.LATENCY._flag) != 0) result.add(XtCapabilities.LATENCY);
-        if((flags & XtCapabilities.FULL_DUPLEX._flag) != 0) result.add(XtCapabilities.FULL_DUPLEX);
-        if((flags & XtCapabilities.AGGREGATION._flag) != 0) result.add(XtCapabilities.AGGREGATION);
-        if((flags & XtCapabilities.CHANNEL_MASK._flag) != 0) result.add(XtCapabilities.CHANNEL_MASK);
-        if((flags & XtCapabilities.XRUN_DETECTION._flag) != 0) result.add(XtCapabilities.XRUN_DETECTION);
+        for(XtCapabilities caps: XtCapabilities.values())
+            if((flags & caps._flag) != 0)
+                result.add(caps);
         return result;
     }
 
