@@ -30,7 +30,7 @@ XtiGetServiceError(XtSystem system, XtFault fault);
 void
 XtiTrace(XtLocation const& location, char const* msg);
 void
-XtiAssert(XtLocation const& location, char const* expr);
+XtiAssert(XtLocation const& location, char const* msg);
 void
 XtiCopyString(char const* source, char* buffer, int32_t* size);
 inline bool

@@ -474,9 +474,9 @@ XtFault WasapiDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool se
 // ---- stream ----
 
 void WasapiStream::StopStream() {
-  XT_ASSERT(SUCCEEDED(client->Stop()));
+  XT_ASSERT_COM(client->Stop());
   if(loopback)
-    XT_ASSERT(SUCCEEDED(loopback->Stop()));
+    XT_ASSERT_COM(loopback->Stop());
   if(!_secondary) {
     XT_ASSERT(AvRevertMmThreadCharacteristics(mmcssHandle));
     mmcssHandle = nullptr;
@@ -489,9 +489,9 @@ void WasapiStream::StartStream() {
     const wchar_t* mmcssTaskName = options.exclusive? L"Pro Audio": L"Audio";
     XT_ASSERT((mmcssHandle = AvSetMmThreadCharacteristicsW(mmcssTaskName, &taskIndex)) != nullptr);
   }
-  XT_ASSERT(SUCCEEDED(client->Start()));
+  XT_ASSERT_COM(client->Start());
   if(loopback)
-    XT_ASSERT(SUCCEEDED(loopback->Start()));
+    XT_ASSERT_COM(loopback->Start());
 }
 
 XtFault WasapiStream::GetFrames(int32_t* frames) const {

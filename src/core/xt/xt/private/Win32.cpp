@@ -2,6 +2,7 @@
 #include <xt/api/public/XtAudio.h>
 #include <xt/private/Win32.hpp>
 #include <xt/private/Shared.hpp>
+#include <sstream>
 
 char const*
 XtiWfxChannelNames[18] =
@@ -30,7 +31,7 @@ std::string
 XtiClassIdToUtf8(CLSID const& classId)
 {
   LPOLESTR wide;
-  XT_ASSERT(SUCCEEDED(StringFromCLSID(classId, &wide)));
+  XT_ASSERT_COM(StringFromCLSID(classId, &wide));
   std::string result = XtiWideStringToUtf8(wide);
   CoTaskMemFree(wide);
   return result;
@@ -41,8 +42,16 @@ XtiUtf8ToClassId(char const* utf8)
 {
   CLSID result;
   std::wstring wide = XtiUtf8ToWideString(utf8);
-  XT_ASSERT(SUCCEEDED(CLSIDFromString(wide.c_str(), &result)));
+  XT_ASSERT_COM(CLSIDFromString(wide.c_str(), &result));
   return result;
+}
+
+void
+XtiAssertCom(XtLocation const& location, char const* expr, HRESULT hr)
+{
+  std::ostringstream msg;
+  msg << expr << ": HRESULT 0x" << std::hex << hr;
+  XtiAssert(location, msg.str().c_str());
 }
 
 std::wstring

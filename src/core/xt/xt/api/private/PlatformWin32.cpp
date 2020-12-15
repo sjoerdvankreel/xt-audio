@@ -1,6 +1,6 @@
-#include <xt/api/private/Platform.hpp>
 #ifdef _WIN32
-#include <Windows.h>
+#include <xt/api/private/Platform.hpp>
+#include <xt/private/Win32.hpp>
 
 void XtPlatform
 ::EndThread() { CoUninitialize(); }
@@ -8,6 +8,9 @@ void XtPlatform::
 RevertThreadPriority(int32_t policy, int32_t previous) { }
 void XtPlatform::
 RaiseThreadPriority(int32_t* policy, int32_t* previous) { }
+void 
+XtPlatform::BeginThread() 
+{ XT_ASSERT_COM(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)); }
 
 XtPlatform::
 ~XtPlatform()
@@ -26,13 +29,6 @@ XtPlatform::SetupToSystem(XtSetup setup)
   case XtSetupConsumerAudio: return XtSystemDSound;
   default: XT_ASSERT(false); return static_cast<XtSystem>(0);
   }
-}
-
-void 
-XtPlatform::BeginThread() 
-{ 
-  auto hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
-  XT_ASSERT(SUCCEEDED(hr)); 
 }
 
 XtPlatform::XtPlatform(void* window):

@@ -16,8 +16,8 @@ DSoundStream::GetLatency(XtLatency* latency) const
 void
 DSoundStream::StopStream()
 {
-  if(_inputBuffer) XT_ASSERT(SUCCEEDED(_inputBuffer->Stop()));
-  else XT_ASSERT(SUCCEEDED(_outputBuffer->Stop()));
+  if(_inputBuffer) XT_ASSERT_COM(_inputBuffer->Stop());
+  else XT_ASSERT_COM(_outputBuffer->Stop());
   if(!_secondary)
   {
     UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
@@ -43,8 +43,8 @@ DSoundStream::StartStream()
     XT_ASSERT(SetWaitableTimer(_timer.timer, &due, period, nullptr, nullptr, TRUE));
   }
   memset(_audio.data(), 0, _audio.size());
-  if(_inputBuffer) XT_ASSERT(SUCCEEDED(_inputBuffer->Start(DSCBSTART_LOOPING)));
-  else XT_ASSERT(SUCCEEDED(_outputBuffer->Play(0, 0, DSBPLAY_LOOPING)));
+  if(_inputBuffer) XT_ASSERT_COM(_inputBuffer->Start(DSCBSTART_LOOPING));
+  else XT_ASSERT_COM(_outputBuffer->Play(0, 0, DSBPLAY_LOOPING));
 }
 
 void 

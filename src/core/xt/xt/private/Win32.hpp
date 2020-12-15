@@ -18,6 +18,11 @@ XtiWfxChannelNames[18];
   do { if(FAILED(hr = (e))) \
   return XT_TRACE(#e), hr; } while(0)
 
+#define XT_ASSERT_COM(e)  \
+  do { HRESULT hr_;       \
+    if(FAILED(hr_ = (e))) \
+    XtiAssertCom(XT_LOCATION, #e, hr_); } while(0)
+
 struct XtPropVariant
 {
   PROPVARIANT pv;
@@ -37,6 +42,8 @@ std::string
 XtiWideStringToUtf8(wchar_t const* wide);
 bool
 XtiFormatToWfx(XtFormat const& format, WAVEFORMATEXTENSIBLE& wfx);
+void
+XtiAssertCom(XtLocation const& location, char const* expr, HRESULT hr);
 bool
 XtiWfxToFormat(WAVEFORMATEX const& wfx, XtBool output, XtFormat& format);
 
