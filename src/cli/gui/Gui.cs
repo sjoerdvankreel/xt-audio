@@ -186,6 +186,7 @@ namespace Xt
                 view.device = s.OpenDevice(id);
                 view.defaultInput = id == defaultInputId;
                 inputViews.Add(view);
+                deviceViews.Add(view);
             }
 
             var outputList = s.OpenDeviceList(XtEnumFlags.Output);
@@ -201,6 +202,7 @@ namespace Xt
                 view.device = s.OpenDevice(id);
                 view.defaultOutput = id == defaultInputId;
                 outputViews.Add(view);
+                deviceViews.Add(view);
             }
 
             inputDevice.DataSource = new List<DeviceView>(inputViews);
