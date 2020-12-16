@@ -315,10 +315,12 @@ namespace Xt
 
         void OnRunning(XtStream stream, bool running, object user)
         {
+            bool evt = running;
+            bool newState = stream.IsRunning();
             BeginInvoke(new Action(() => 
             {
-                string evt = running ? "Started" : "Stopped";
-                AddMessage(() => "Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
+                string evtDesc = running ? "Started" : "Stopped";
+                AddMessage(() => "Stream event: " + evtDesc + ", new state: " + newState + ".");
                 stop.Enabled = running;
                 panel.Enabled = !running;
                 start.Enabled = !running;
