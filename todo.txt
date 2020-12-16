@@ -31,3 +31,6 @@
 * split wasapi service -> shared/exclusive
 * split alsa service -> rw/mmap
 * timeout after 3 buffers (see also WFSO)
+* dont timeout on stopped
+* do assert_com like for linux
+* rename to blockingloop
