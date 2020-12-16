@@ -33,12 +33,11 @@ XtBlockingStream::Start()
   return 0;
 }
 
-XtFault
-XtBlockingStream::Stop() 
+void
+XtBlockingStream::Stop()
 {
   XT_ASSERT(!_secondary);
   SendControl(State::Stopping);
-  return 0;
 }
 
 void 

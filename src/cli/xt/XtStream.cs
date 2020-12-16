@@ -8,7 +8,7 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public sealed class XtStream : IDisposable
     {
-        [DllImport("xt-core")] static extern ulong XtStreamStop(IntPtr s);
+        [DllImport("xt-core")] static extern void XtStreamStop(IntPtr s);
         [DllImport("xt-core")] static extern ulong XtStreamStart(IntPtr s);
         [DllImport("xt-core")] static extern void XtStreamDestroy(IntPtr s);
         [DllImport("xt-core")] static extern int XtStreamIsRunning(IntPtr s);
@@ -36,8 +36,8 @@ namespace Xt
             _onNativeRunning = OnRunning;
         }
 
+        public void Stop() => XtStreamStop(_s);
         public void Dispose() => XtStreamDestroy(_s);
-        public void Stop() => HandleError(XtStreamStop(_s));
         public void Start() => HandleError(XtStreamStart(_s));
         public bool IsRunning() => XtStreamIsRunning(_s) != 0;
         public unsafe XtFormat GetFormat() => *XtStreamGetFormat(_s);

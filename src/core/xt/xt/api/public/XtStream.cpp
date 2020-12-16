@@ -3,6 +3,14 @@
 #include <xt/private/Shared.hpp>
 #include <cstring>
 
+void XT_CALL 
+XtStreamStop(XtStream* s) 
+{
+  XT_ASSERT(s != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  s->Stop();
+}
+
 XtFormat const* XT_CALL 
 XtStreamGetFormat(XtStream const* s) 
 {
@@ -22,14 +30,6 @@ XtStreamIsRunning(XtStream const* s)
 {
   XT_ASSERT(s != nullptr);
   return s->IsRunning();
-}
-
-XtError XT_CALL 
-XtStreamStop(XtStream* s) 
-{
-  XT_ASSERT(s != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());
-  return XtiCreateError(s->GetSystem(), s->Stop());
 }
 
 XtError XT_CALL 

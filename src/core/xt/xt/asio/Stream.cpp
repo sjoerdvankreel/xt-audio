@@ -13,6 +13,15 @@ XtBool
 AsioStream::IsRunning() const
 { return _running.load() != 0; }
 
+void
+AsioStream::Stop()
+{
+  if(!XtiCompareExchange(_running, 1, 0)) return;
+  while(_insideCallback.load() == 1);
+  XT_TRACE_IF(_asio->stop() != ASE_OK);
+  OnRunning(XtFalse);
+}
+
 XtFault
 AsioStream::Start()
 {
@@ -25,16 +34,6 @@ AsioStream::Start()
   }
   OnRunning(XtTrue);
   return ASE_OK;
-}
-
-XtFault
-AsioStream::Stop()
-{
-  if(!XtiCompareExchange(_running, 1, 0)) return ASE_OK;
-  while(_insideCallback.load() == 1);
-  XtFault fault = _asio->stop();
-  OnRunning(XtFalse);
-  return fault;
 }
 
 XtFault

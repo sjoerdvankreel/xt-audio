@@ -6,7 +6,7 @@
 #include <xt/private/Shared.hpp>
 
 #define XT_IMPLEMENT_STREAM()                        \
-  XtFault Stop() override;                           \
+  void Stop() override;                              \
   XtFault Start() override;                          \
   XtBool IsRunning() const override;                 \
   XtFault GetFrames(int32_t* frames) const override; \
@@ -28,7 +28,7 @@ struct XtStream
   void OnBuffer(XtBuffer const* buffer);
 
   virtual ~XtStream() {};
-  virtual XtFault Stop() = 0;
+  virtual void Stop() = 0;
   virtual XtFault Start() = 0;
   virtual XtBool IsRunning() const = 0;
   virtual XtSystem GetSystem() const = 0;

@@ -9,7 +9,7 @@
 #include <condition_variable>
 
 #define XT_IMPLEMENT_BLOCKING_STREAM(s)                  \
-  XtFault StopStream() override;                         \
+  void StopStream() override;                            \
   XtFault StartStream() override;                        \
   XtFault ProcessBuffer(bool prefill) override;          \
   XtFault GetFrames(int32_t* frames) const override;     \
@@ -38,14 +38,14 @@ public XtStream
   ~XtBlockingStream();
   XtBlockingStream(bool secondary);
 
-  virtual XtFault Stop() override final;
+  virtual void StopStream() = 0;
+  virtual XtFault StartStream() = 0;  
+  virtual XtFault ProcessBuffer(bool prefill) = 0;
+
+  virtual void Stop() override final;
   virtual XtFault Start() override final;
   virtual void OnXRun() const override final;
   virtual XtBool IsRunning() const override final;
-
-  virtual XtFault StopStream() = 0;
-  virtual XtFault StartStream() = 0;  
-  virtual XtFault ProcessBuffer(bool prefill) = 0;
 
   void SendControl(State from);
   void ReceiveControl(State state);

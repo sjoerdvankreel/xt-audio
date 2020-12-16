@@ -13,12 +13,11 @@ XtFault
 DSoundStream::GetLatency(XtLatency* latency) const
 { return S_OK; }
 
-XtFault
+void
 DSoundStream::StopStream()
 {
-  HRESULT hr;
-  if(_inputBuffer) hr = _inputBuffer->Stop();
-  else hr = _outputBuffer->Stop();
+  if(_inputBuffer) XT_TRACE_IF(FAILED(_inputBuffer->Stop()));
+  else XT_TRACE_IF(FAILED(_outputBuffer->Stop()));
   if(!_secondary)
   {
     UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
@@ -29,7 +28,6 @@ DSoundStream::StopStream()
   _xtProcessed = 0;
   _dsProcessed = 0;
   _previousPosition = 0;
-  return hr;
 }
 
 XtFault

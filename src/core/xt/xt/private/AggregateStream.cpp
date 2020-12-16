@@ -11,18 +11,15 @@ XtFault
 XtAggregateStream::GetFrames(int32_t* frames) const
 { return *frames = _frames, 0; }
 
-XtFault
+void
 XtAggregateStream::Stop()
 {
-  XtFault fault = 0;
-  XtFault result = 0;
-  if(!XtiCompareExchange(_running, 1, 0)) return 0;
+  if(!XtiCompareExchange(_running, 1, 0)) return;
   while(_insideCallback.load() != 0);
-  if((fault = _streams[_masterIndex]->Stop()) != 0) result = fault;
+  _streams[_masterIndex]->Stop();
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
-      if((fault = _streams[i]->StopStream()) != 0) result = fault;
-  return result;
+      _streams[i]->StopStream();
 }
 
 XtFault

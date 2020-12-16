@@ -42,15 +42,15 @@ public:
   Detail::ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
 };
 
+inline void
+Stream::Stop() 
+{ XtStreamStop(_s); }
 inline
 Stream::~Stream() 
 { XtStreamDestroy(_s); }
 inline bool
 Stream::IsRunning() const
 { return XtStreamIsRunning(_s); }
-inline void
-Stream::Stop() 
-{ Detail::HandleError(XtStreamStop(_s)); }
 inline void
 Stream::Start() 
 { Detail::HandleError(XtStreamStart(_s)); }

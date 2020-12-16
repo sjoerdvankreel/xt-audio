@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-XT_API XtError XT_CALL 
+XT_API void XT_CALL 
 XtStreamStop(XtStream* s);
 XT_API XtError XT_CALL 
 XtStreamStart(XtStream* s);
