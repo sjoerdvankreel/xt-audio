@@ -10,9 +10,9 @@ namespace Xt
         private Array interleavedBuffer;
         private readonly FileStream stream;
 
-        internal CaptureCallback(bool interleaved, bool raw, Action<Func<string>> onError,
+        internal CaptureCallback(bool interleaved, bool raw, 
             Action<Func<string>> onMessage, FileStream stream) :
-            base(interleaved, raw, "Capture", onError, onMessage)
+            base(interleaved, raw, "Capture", onMessage)
         {
             this.stream = stream;
         }

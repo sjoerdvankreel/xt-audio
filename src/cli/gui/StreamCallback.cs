@@ -8,14 +8,12 @@ namespace Xt
 		readonly bool raw;
 		readonly bool interleaved;
 		protected string name;
-		protected readonly Action<Func<string>> onError;
 		protected readonly Action<Func<string>> onMessage;
 
-		internal StreamCallback(bool interleaved, bool raw, string name, Action<Func<string>> onError, Action<Func<string>> onMessage)
+		internal StreamCallback(bool interleaved, bool raw, string name,Action<Func<string>> onMessage)
 		{
 			this.raw = raw;
 			this.name = name;
-			this.onError = onError;
 			this.onMessage = onMessage;
 			this.interleaved = interleaved;
 		}
@@ -30,13 +28,6 @@ namespace Xt
 
 		internal void OnCallback(XtStream stream, in XtBuffer buffer, object user)
 		{
-			ulong error = buffer.error;
-			if (error != 0)
-			{
-				onError(() => "Stream callback error: " + XtAudio.GetErrorInfo(error));
-				return;
-			}
-
 			XtFormat format = stream.GetFormat();
 			XtSafeBuffer safe = XtSafeBuffer.Get(stream);
 			if(raw)

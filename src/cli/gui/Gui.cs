@@ -82,12 +82,6 @@ namespace Xt
             AddMessage(() => string.Format("{0}: {1}", loc, message));
         }
 
-        private void OnStreamError(Func<string> error)
-        {
-            AddMessage(error);
-            BeginInvoke(new Action(() => Stop()));
-        }
-
         private void OnShowInputPanel(object sender, EventArgs e)
         {
             if (inputDevice.SelectedItem != null)
@@ -317,17 +311,25 @@ namespace Xt
                 _safeBuffer.Dispose();
                 _safeBuffer = null;
             }
+        }
 
-            stop.Enabled = false;
-            panel.Enabled = true;
-            start.Enabled = true;
-            streamRaw.Enabled = true;
-            bufferSize.Enabled = true;
-            streamType.Enabled = true;
-            outputMaster.Enabled = true;
-            secondaryInput.Enabled = true;
-            secondaryOutput.Enabled = true;
-            streamInterleaved.Enabled = true;
+        void OnRunning(XtStream stream, bool running, object user)
+        {
+            BeginInvoke(new Action(() => 
+            {
+                string evt = running ? "Started" : "Stopped";
+                AddMessage(() => "Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
+                stop.Enabled = running;
+                panel.Enabled = !running;
+                start.Enabled = !running;
+                streamRaw.Enabled = !running;
+                bufferSize.Enabled = !running;
+                streamType.Enabled = !running;
+                outputMaster.Enabled = !running;
+                secondaryInput.Enabled = !running;
+                secondaryOutput.Enabled = !running;
+                streamInterleaved.Enabled = !running;
+            }));
         }
 
         private void OnStart(object sender, EventArgs ea)
@@ -406,22 +408,11 @@ namespace Xt
                 for (int c = 0; c < outputChannels.SelectedItems.Count; c++)
                     outputFormat.channels.outMask |= (1UL << ((ChannelView)outputChannels.SelectedItems[c]).index);
 
-                stop.Enabled = true;
-                panel.Enabled = false;
-                start.Enabled = false;
-                streamRaw.Enabled = false;
-                bufferSize.Enabled = false;
-                streamType.Enabled = false;
-                outputMaster.Enabled = false;
-                secondaryInput.Enabled = false;
-                secondaryOutput.Enabled = false;
-                streamInterleaved.Enabled = false;
-
                 if (type == StreamType.Capture)
                 {
                     captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
-                    CaptureCallback callback = new CaptureCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage, captureFile);
-                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun);
+                    CaptureCallback callback = new CaptureCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage, captureFile);
+                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in inputFormat, bufferSize.Value);
                     inputStream = inputDevice.OpenStream(in deviceParams, "capture-user-data");
                     callback.Init(inputStream.GetFormat(), inputStream.GetFrames());
@@ -429,8 +420,8 @@ namespace Xt
                     inputStream.Start();
                 } else if (type == StreamType.Render)
                 {
-                    RenderCallback callback = new RenderCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage);
-                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun);
+                    RenderCallback callback = new RenderCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in outputFormat, bufferSize.Value);
                     outputStream = outputDevice.OpenStream(in deviceParams, "render-user-data");
                     _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
@@ -440,8 +431,8 @@ namespace Xt
                     XtFormat duplexFormat = inputFormat;
                     duplexFormat.channels.outputs = outputFormat.channels.outputs;
                     duplexFormat.channels.outMask = outputFormat.channels.outMask;
-                    FullDuplexCallback callback = new FullDuplexCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage);
-                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun);
+                    FullDuplexCallback callback = new FullDuplexCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, bufferSize.Value);
                     outputStream = outputDevice.OpenStream(in deviceParams, "duplex-user-data");
                     _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
@@ -462,8 +453,8 @@ namespace Xt
                         secondaryInputDevice != null ? secondaryInputDevice :
                         outputDevice != null ? outputDevice : secondaryOutputDevice);
 
-                    AggregateCallback streamCallback = new AggregateCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage);
-                    var streamParams = new XtStreamParams(streamInterleaved.Checked, streamCallback.OnCallback, onXRun);
+                    AggregateCallback streamCallback = new AggregateCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    var streamParams = new XtStreamParams(streamInterleaved.Checked, streamCallback.OnCallback, onXRun, OnRunning);
                     var aggregateParams = new XtAggregateStreamParams(in streamParams, devices.ToArray(), devices.Count, outputFormat.mix, master);
                     outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "aggregate-user-data");
                     streamCallback.Init(outputStream.GetFrames());
@@ -474,8 +465,8 @@ namespace Xt
                     XtFormat duplexFormat = inputFormat;
                     duplexFormat.channels.outputs = outputFormat.channels.outputs;
                     duplexFormat.channels.outMask = outputFormat.channels.outMask;
-                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage);
-                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun);
+                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, bufferSize.Value);
                     outputStream = outputDevice.OpenStream(in deviceParams, "latency-user-data");
                     _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
@@ -486,8 +477,8 @@ namespace Xt
                     XtAggregateDeviceParams[] devices = new XtAggregateDeviceParams[2];
                     devices[0] = new XtAggregateDeviceParams(inputDevice, new XtChannels(inputFormat.channels.inputs, inputFormat.channels.inMask, 0, 0), bufferSize.Value);
                     devices[1] = new XtAggregateDeviceParams(outputDevice, new XtChannels(0, 0, outputFormat.channels.outputs, outputFormat.channels.outMask), bufferSize.Value);
-                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamRaw.Checked, OnStreamError, AddMessage);
-                    XtStreamParams streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun);
+                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    XtStreamParams streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     XtAggregateStreamParams aggregateParams = new XtAggregateStreamParams(in streamParams, devices, 2, in outputFormat.mix, master);
                     outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "latency-user-data");
                     _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);

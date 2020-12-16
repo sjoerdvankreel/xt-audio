@@ -7,8 +7,8 @@ namespace Xt
         private double phase;
         private static readonly double Frequency = 440.0;
 
-        internal RenderCallback(bool interleaved, bool raw, Action<Func<string>> onError, Action<Func<string>> onMessage) :
-            base(interleaved, raw, "Render", onError, onMessage)
+        internal RenderCallback(bool interleaved, bool raw, Action<Func<string>> onMessage) :
+            base(interleaved, raw, "Render",  onMessage)
         {
         }
 

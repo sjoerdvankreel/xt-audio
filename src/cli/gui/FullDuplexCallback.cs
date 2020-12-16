@@ -4,8 +4,8 @@ namespace Xt
 {
     class FullDuplexCallback : StreamCallback
     {
-        internal FullDuplexCallback(bool interleaved, bool raw, Action<Func<string>> onError, Action<Func<string>> onMessage) :
-            base(interleaved, raw, "FullDuplex", onError, onMessage)
+        internal FullDuplexCallback(bool interleaved, bool raw, Action<Func<string>> onMessage) :
+            base(interleaved, raw, "FullDuplex", onMessage)
         {
         }
 
