@@ -9,6 +9,13 @@ XtStream::OnXRun() const
 }
 
 void
+XtStream::OnRunning(XtBool running) const
+{
+  auto onRunning = _params.stream.onRunning;
+  if(onRunning != nullptr) onRunning(this, running, _user);
+}
+
+void
 XtStream::OnBuffer(XtBuffer const* buffer)
 {
   XtBuffer converted = *buffer;
@@ -25,11 +32,7 @@ XtStream::OnBuffer(XtBuffer const* buffer)
   auto nonInterleavedBufferIn = static_cast<const void* const*>(buffer->input);   
   int32_t size = XtiGetSampleSize(_params.format.mix.sample);
 
-  if(buffer->error != 0)
-  {
-    onBuffer(this, buffer, _user);
-    return;
-  } else if(!_emulated) 
+  if(!_emulated) 
   {
     converted.input = haveInput? buffer->input: nullptr;
     converted.output = haveOutput? buffer->output: nullptr;

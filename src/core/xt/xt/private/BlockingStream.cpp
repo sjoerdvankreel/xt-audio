@@ -4,61 +4,40 @@
 #include <xt/private/Shared.hpp>
 #include <thread>
 
+XtBool
+XtBlockingStream::IsRunning() const
+{ return _state.load() == State::Started; }
+
 XtBlockingStream::
 XtBlockingStream(bool secondary):
-_index(-1), _aggregated(false), _lock(), _secondary(secondary),
-_state(State::Stopped), _control(), _respond()
+_index(-1), _aggregated(false), _received(false), _lock(),
+_secondary(secondary), _state(State::Stopped), _control(), _respond()
 {
   if(secondary) return;
-  std::thread t(OnBlockingBuffer, this);
+  std::thread t(RunBlockingStream, this);
   t.detach();
-}
-
-void
-XtBlockingStream::RequestStop()
-{
-  StopStream();
-  if(_secondary) return;
-  std::unique_lock guard(_lock);
-  _state = State::Stopped;
-  guard.unlock();
-  _respond.notify_one();
 }
 
 XtBlockingStream::
 ~XtBlockingStream() 
 { 
   if(_secondary) return;
-  SendControl(State::Closing, State::Closed); 
-}
-
-void
-XtBlockingStream::ReceiveControl(State state)
-{
-  std::unique_lock guard(_lock);
-  _state = state;
-  guard.unlock();
-  _respond.notify_one();
+  SendControl(State::Closing); 
 }
 
 XtFault
 XtBlockingStream::Start() 
 {
-  if(_secondary)
-  {
-    ProcessBuffer(true);
-    StartStream();
-    return 0;
-  }
-  SendControl(State::Starting, State::Started);
+  XT_ASSERT(!_secondary);
+  SendControl(State::Starting);
   return 0;
 }
 
 XtFault
 XtBlockingStream::Stop() 
 {
-  if(_secondary) StopStream();
-  else SendControl(State::Stopping, State::Stopped);
+  XT_ASSERT(!_secondary);
+  SendControl(State::Stopping);
   return 0;
 }
 
@@ -73,31 +52,32 @@ XtBlockingStream::OnXRun() const
 }
 
 void
-XtBlockingStream::SendControl(State from, State to)
+XtBlockingStream::SendControl(State from)
 {
   std::unique_lock guard(_lock);
-  if(_state == to) return;
   _state = from;
+  _received = false;
   _control.notify_one();
-  auto pred = [this, to] { return _state == to; };
+  auto pred = [this] { return _received; };
   auto timeout = std::chrono::milliseconds(WaitTimeoutMs);
   XT_ASSERT(_respond.wait_for(guard, timeout, pred));
 }
 
-bool
-XtBlockingStream::VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr)
+void
+XtBlockingStream::ReceiveControl(State state)
 {
-  if(fault == 0) return true;
-  XtBuffer buffer = { 0 };
-  RequestStop();
-  XtiTrace(location, expr);
-  buffer.error = XtiCreateError(GetSystem(), fault);
-  OnBuffer(&buffer);
-  return false;
-}
+  std::unique_lock guard(_lock);
+  auto previous = _state.load();
+  _state = state;
+  _received = true;
+  guard.unlock();
+  _respond.notify_one();  
+  if(state == State::Started && previous != State::Started) OnRunning(XtTrue);
+  if(state != State::Started && previous == State::Started) OnRunning(XtFalse);
+}   
 
 void
-XtBlockingStream::OnBlockingBuffer(XtBlockingStream* stream)
+XtBlockingStream::RunBlockingStream(XtBlockingStream* stream)
 {  
   State state;
   int32_t threadPolicy;
@@ -107,9 +87,6 @@ XtBlockingStream::OnBlockingBuffer(XtBlockingStream* stream)
   while((state = stream->_state.load()) != State::Closed)
     switch(state)
     {
-    case State::Started:
-      stream->ProcessBuffer(false);
-      break;
     case State::Closing:
       stream->ReceiveControl(State::Closed);
       break;
@@ -117,17 +94,24 @@ XtBlockingStream::OnBlockingBuffer(XtBlockingStream* stream)
       stream->StopStream();
       stream->ReceiveControl(State::Stopped);
       break;
+    case State::Started:
+      if(stream->ProcessBuffer(false) != 0)
+      {
+        stream->StopStream();
+        stream->ReceiveControl(State::Stopped);
+      }
+      break;
     case State::Starting:
-      stream->ProcessBuffer(true);
-      stream->StartStream();
-      stream->ReceiveControl(State::Started);
+      if(stream->ProcessBuffer(true) != 0 || stream->StartStream() != 0)
+        stream->ReceiveControl(State::Stopped);
+      else
+        stream->ReceiveControl(State::Started);
       break;
     case State::Stopped:
       {
-      auto timeout = std::chrono::milliseconds(WaitTimeoutMs);
       auto pred = [stream] { return stream->_state != State::Stopped; };
       std::unique_lock guard(stream->_lock);
-      XT_ASSERT(stream->_control.wait_for(guard, timeout, pred));
+      stream->_control.wait(guard, pred);
       break;
       }
     default:

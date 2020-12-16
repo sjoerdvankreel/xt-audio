@@ -17,6 +17,13 @@ XtStreamDestroy(XtStream* s)
   delete s;
 }
 
+XtBool XT_CALL
+XtStreamIsRunning(XtStream const* s)
+{
+  XT_ASSERT(s != nullptr);
+  return s->IsRunning();
+}
+
 XtError XT_CALL 
 XtStreamStop(XtStream* s) 
 {

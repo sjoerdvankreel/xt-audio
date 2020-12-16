@@ -1,10 +1,12 @@
 #include <xt/private/AggregateStream.hpp>
 #include <xt/private/Shared.hpp>
 
+XtBool
+XtAggregateStream::IsRunning() const
+{ return _running.load() != 0; }
 XtSystem
 XtAggregateStream::GetSystem() const
 { return _system; }
-
 XtFault
 XtAggregateStream::GetFrames(int32_t* frames) const
 { return *frames = _frames, 0; }
@@ -19,7 +21,7 @@ XtAggregateStream::Stop()
   if((fault = _streams[_masterIndex]->Stop()) != 0) result = fault;
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
-      if((fault = _streams[i]->Stop()) != 0) result = fault;
+      if((fault = _streams[i]->StopStream()) != 0) result = fault;
   return result;
 }
 
@@ -35,7 +37,10 @@ XtAggregateStream::Start()
   }
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
-      if((fault = _streams[i]->Start()) != 0) result = fault;
+    {
+      if((fault = _streams[i]->ProcessBuffer(true)) != 0) result = fault;
+      if((fault = _streams[i]->StartStream()) != 0) result = fault;
+    }
   if((fault = _streams[_masterIndex]->Start()) != 0) result = fault;
   if(fault != 0)
   {
@@ -82,14 +87,6 @@ XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer,
   XtBool interleaved = aggregate->_params.stream.interleaved;
   auto sampleSize = XtiGetSampleSize(aggregate->_params.format.mix.sample);
 
-  if(buffer->error != 0) 
-  {
-    for(int32_t i = 0; i < aggregate->_streams.size(); i++)
-      if(i != static_cast<size_t>(index))
-        aggregate->_streams[i]->RequestStop();
-    aggregate->_params.stream.onBuffer(aggregate, buffer, aggregate->_user);
-    return;
-  }
   if(aggregate->_running.load() != 1)
   {
     XtiZeroBuffer(buffer->output, interleaved, 0, channels->outputs, buffer->frames, sampleSize);
@@ -134,7 +131,7 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
       aggregate->_streams[i]->ProcessBuffer(false);
 
   OnSlaveBuffer(stream, buffer, user);
-  if(buffer->error != 0 || aggregate->_running.load() != 1)
+  if(aggregate->_running.load() != 1)
   {
     XT_ASSERT(XtiCompareExchange(aggregate->_insideCallback, 1, 0));
     return;

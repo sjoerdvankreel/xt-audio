@@ -12,8 +12,11 @@ typedef uint32_t XtFault;
 
 #define XT_STRINGIFY(s) #s
 #define XT_LOCATION {__FILE__,  __func__, __LINE__}
+
 #define XT_TRACE(m) XtiTrace(XT_LOCATION, m)
 #define XT_ASSERT(c) ((c) || (XtiAssert(XT_LOCATION, #c), 0))
+#define XT_TRACE_IF(c) ((c) || (XtiTrace(XT_LOCATION, #c), 0))
+#define XT_VERIFY(e, f) do { auto e_ = (e); if(!(e)) { XT_TRACE(#e); return f; } } while(0)
 
 bool
 XtiCalledOnMainThread();

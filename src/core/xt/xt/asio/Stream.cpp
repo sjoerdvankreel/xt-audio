@@ -9,6 +9,10 @@ AsioStream::
 ~AsioStream()
 { XT_ASSERT(XtiIsAsioSuccess(_asio->disposeBuffers())); }
 
+XtBool
+AsioStream::IsRunning() const
+{ return _running.load() != 0; }
+
 XtFault
 AsioStream::Start()
 {

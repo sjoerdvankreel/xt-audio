@@ -8,13 +8,10 @@
 #include <cstdint>
 #include <condition_variable>
 
-#define XT_VERIFY_ON_BUFFER(expr) \
-  VerifyOnBuffer(XT_LOCATION, (expr), #expr)
-
 #define XT_IMPLEMENT_BLOCKING_STREAM(s)                  \
-  void StopStream() override;                            \
-  void StartStream() override;                           \
-  void ProcessBuffer(bool prefill) override;             \
+  XtFault StopStream() override;                         \
+  XtFault StartStream() override;                        \
+  XtFault ProcessBuffer(bool prefill) override;          \
   XtFault GetFrames(int32_t* frames) const override;     \
   XtFault GetLatency(XtLatency* latency) const override; \
   XtSystem GetSystem() const override { return XtSystem##s; }
@@ -29,6 +26,7 @@ public XtStream
   };
 
   int32_t _index;
+  bool _received;
   bool _aggregated;
   std::mutex _lock;
   bool const _secondary;
@@ -43,16 +41,15 @@ public XtStream
   virtual XtFault Stop() override final;
   virtual XtFault Start() override final;
   virtual void OnXRun() const override final;
+  virtual XtBool IsRunning() const override final;
 
-  virtual void StopStream() = 0;
-  virtual void StartStream() = 0;  
-  virtual void ProcessBuffer(bool prefill) = 0;
-  static void OnBlockingBuffer(XtBlockingStream* stream);
+  virtual XtFault StopStream() = 0;
+  virtual XtFault StartStream() = 0;  
+  virtual XtFault ProcessBuffer(bool prefill) = 0;
 
-  void RequestStop();
+  void SendControl(State from);
   void ReceiveControl(State state);
-  void SendControl(State from, State to);
-  bool VerifyOnBuffer(XtLocation const& location, XtFault fault, char const* expr);
+  static void RunBlockingStream(XtBlockingStream* stream);
 };
 
 #endif // XT_PRIVATE_BLOCKING_STREAM_HPP

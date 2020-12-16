@@ -18,7 +18,6 @@ typedef struct XtBuffer
   void* output;
   double time;
   uint64_t position;
-  XtError error;
   int32_t frames;
   XtBool timeValid;
 } XtBuffer;
@@ -89,6 +88,7 @@ typedef struct XtStreamParams
   XtBool interleaved;
   XtOnBuffer onBuffer;
   XtOnXRun onXRun;
+  XtOnRunning onRunning;
 } XtStreamParams;
 
 typedef struct XtDeviceStreamParams 
