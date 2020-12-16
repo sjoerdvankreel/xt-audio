@@ -18,16 +18,16 @@ class Stream final
 {
   XtStream* _s;
   void* const _user;
-  OnXRun const _onXRun;
-  OnBuffer const _onBuffer;
+  StreamParams const _params;
 
-  Stream(OnBuffer onBuffer, OnXRun onXRun, void* user):
-  _s(nullptr), _user(user), _onXRun(onXRun), _onBuffer(onBuffer) { }
+  Stream(StreamParams const& params, void* user):
+  _s(nullptr), _params(params), _user(user) { }
 
 public:
   ~Stream();
   void Stop();
   void Start();
+  bool IsRunning() const;
   int32_t GetFrames() const;
   Latency GetLatency() const;
   Format const& GetFormat() const;
@@ -37,17 +37,20 @@ public:
   friend void XT_CALLBACK 
   Detail::ForwardOnXRun(int32_t index, void* user);
   friend void XT_CALLBACK 
+  Detail::ForwardOnRunning(XtStream const* coreStream, XtBool running, void* user);
+  friend void XT_CALLBACK 
   Detail::ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
 };
 
 inline
 Stream::~Stream() 
 { XtStreamDestroy(_s); }
-
+inline bool
+Stream::IsRunning() const
+{ return XtStreamIsRunning(_s); }
 inline void
 Stream::Stop() 
 { Detail::HandleError(XtStreamStop(_s)); }
-
 inline void
 Stream::Start() 
 { Detail::HandleError(XtStreamStart(_s)); }

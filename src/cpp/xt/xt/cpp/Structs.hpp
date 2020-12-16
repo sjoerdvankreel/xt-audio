@@ -17,7 +17,6 @@ struct Buffer final
   void* output;
   double time;
   uint64_t position;
-  uint64_t error;
   int32_t frames;
   bool timeValid;
 };
@@ -103,9 +102,10 @@ struct StreamParams final
   bool interleaved;
   OnBuffer onBuffer;
   OnXRun onXRun;
+  OnRunning onRunning;
   StreamParams() = default;
-  StreamParams(bool interleaved, OnBuffer onBuffer, OnXRun onXRun):
-  interleaved(interleaved), onBuffer(onBuffer), onXRun(onXRun) {}
+  StreamParams(bool interleaved, OnBuffer onBuffer, OnXRun onXRun, OnRunning onRunning):
+  interleaved(interleaved), onBuffer(onBuffer), onXRun(onXRun), onRunning(onRunning) {}
 };
 
 struct DeviceStreamParams final 

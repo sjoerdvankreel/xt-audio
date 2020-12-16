@@ -106,7 +106,8 @@ Device::OpenStream(DeviceStreamParams const& params, void* user)
   coreParams.stream.interleaved = params.stream.interleaved;
   coreParams.format = *reinterpret_cast<XtFormat const*>(&params.format);
   coreParams.stream.onXRun = params.stream.onXRun == nullptr? nullptr: &Detail::ForwardOnXRun;
-  std::unique_ptr<Stream> result(new Stream(params.stream.onBuffer, params.stream.onXRun, user));
+  coreParams.stream.onRunning = params.stream.onRunning == nullptr? nullptr: &Detail::ForwardOnRunning;
+  std::unique_ptr<Stream> result(new Stream(params.stream, user));
   Detail::HandleError(XtDeviceOpenStream(_d, &coreParams, result.get(), &stream));
   result->_s = stream;
   return result;
