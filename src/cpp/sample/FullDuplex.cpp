@@ -20,7 +20,7 @@ static void
 OnRunning(Xt::Stream const& stream, bool running, void* user)
 { 
   char const* evt = running? "Started": "Stopped";
-  std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << "\n"; 
+  std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << ".\n"; 
 }
 
 int 
