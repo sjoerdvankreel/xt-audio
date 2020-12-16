@@ -10,6 +10,13 @@ static void
 OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
+static void
+OnRunning(Xt::Stream const& stream, bool running, void* user)
+{ 
+  char const* evt = running? "Started": "Stopped";
+  std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << "\n"; 
+}
+
 static void 
 OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
@@ -44,7 +51,7 @@ AggregateMain()
   Xt::AggregateDeviceParams deviceParams[2];
   deviceParams[0] = Xt::AggregateDeviceParams(input.get(), inputFormat.channels, 30.0);
   deviceParams[1] = Xt::AggregateDeviceParams(output.get(), outputFormat.channels, 30.0);
-  Xt::StreamParams streamParams(true, OnBuffer, OnXRun);
+  Xt::StreamParams streamParams(true, OnBuffer, OnXRun, OnRunning);
   Xt::AggregateStreamParams aggregateParams(streamParams, deviceParams, 2, mix, output.get());
   std::unique_ptr<Xt::Stream> stream = service->AggregateStream(aggregateParams, nullptr);
   stream->Start();

@@ -13,6 +13,13 @@ static void
 OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
+static void
+OnRunning(Xt::Stream const& stream, bool running, void* user)
+{ 
+  char const* evt = running? "Started": "Stopped";
+  std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << "\n"; 
+}
+
 static void 
 RunStream(Xt::Stream* stream)
 {
@@ -63,14 +70,14 @@ CaptureAdvancedMain()
   Xt::BufferSize size = device->GetBufferSize(Format);
 
   std::cout << "Capture interleaved...\n";
-  Xt::StreamParams streamParams(true, OnInterleavedBuffer, OnXRun);
+  Xt::StreamParams streamParams(true, OnInterleavedBuffer, OnXRun, OnRunning);
   Xt::DeviceStreamParams deviceParams(streamParams, Format, size.current);
   std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &interleaved);
   RunStream(stream.get());
 
   std::cout << "Capture non-interleaved...\n";
-  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun);
+  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun, OnRunning);
   deviceParams = Xt::DeviceStreamParams(streamParams, Format, size.current);
   std::ofstream nonInterleaved("xt-audio-non-interleaved.raw", std::ios::out | std::ios::binary);
   stream = device->OpenStream(deviceParams, &nonInterleaved);

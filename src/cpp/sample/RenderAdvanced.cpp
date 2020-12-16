@@ -15,6 +15,13 @@ static void
 OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
+static void
+OnRunning(Xt::Stream const& stream, bool running, void* user)
+{ 
+  char const* evt = running? "Started": "Stopped";
+  std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << "\n"; 
+}
+
 static void 
 RunStream(Xt::Stream* stream)
 {
@@ -73,27 +80,27 @@ RenderAdvancedMain()
   Xt::BufferSize size = device->GetBufferSize(format);
 
   std::cout << "Render interleaved...\n";
-  Xt::StreamParams streamParams(true, OnInterleavedBuffer, OnXRun);
+  Xt::StreamParams streamParams(true, OnInterleavedBuffer, OnXRun, OnRunning);
   Xt::DeviceStreamParams deviceParams(streamParams, format, size.current);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render non-interleaved...\n";
-  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun);
+  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun, OnRunning);
   deviceParams = Xt::DeviceStreamParams(streamParams, format, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render interleaved (channel 0)...\n";
   Xt::Format sendTo0(Mix, Xt::Channels(0, 0, 1, 1ULL << 0));
-  streamParams = Xt::StreamParams(true, OnInterleavedBuffer, OnXRun);
+  streamParams = Xt::StreamParams(true, OnInterleavedBuffer, OnXRun, OnRunning);
   deviceParams = Xt::DeviceStreamParams(streamParams, sendTo0, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());
 
   std::cout << "Render non-interleaved (channel 1)...\n";
   Xt::Format sendTo1(Mix, Xt::Channels(0, 0, 1, 1ULL << 1));
-  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun);
+  streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun, OnRunning);
   deviceParams = Xt::DeviceStreamParams(streamParams, sendTo1, size.current);
   stream = device->OpenStream(deviceParams, nullptr);
   RunStream(stream.get());

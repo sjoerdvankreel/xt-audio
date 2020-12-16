@@ -41,7 +41,7 @@ RenderSimpleMain()
   if(!device->SupportsFormat(Format)) return 0;
 
   double bufferSize = device->GetBufferSize(Format).current;
-  Xt::StreamParams streamParams(true, OnBuffer, nullptr);
+  Xt::StreamParams streamParams(true, OnBuffer, nullptr, nullptr);
   Xt::DeviceStreamParams deviceParams(streamParams, Format, bufferSize);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   stream->Start();

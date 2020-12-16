@@ -3,12 +3,24 @@
 #include <thread>
 #include <chrono>
 #include <cstring>
+#include <iostream>
+
+static void 
+OnXRun(int32_t index, void* user) 
+{ std::cout << "XRun on device " << index << ".\n"; }
 
 static void 
 OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   int32_t bytes = buffer.frames * 2 * 4;
   std::memcpy(buffer.output, buffer.input, bytes);
+}
+
+static void
+OnRunning(Xt::Stream const& stream, bool running, void* user)
+{ 
+  char const* evt = running? "Started": "Stopped";
+  std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << "\n"; 
 }
 
 int 
@@ -36,7 +48,7 @@ FullDuplexMain()
   else return 0;
 
   double bufferSize = device->GetBufferSize(format).current;
-  Xt::StreamParams streamParams(true, OnBuffer, nullptr);
+  Xt::StreamParams streamParams(true, OnBuffer, OnXRun, OnRunning);
   Xt::DeviceStreamParams deviceParams(streamParams, format, bufferSize);
   std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, nullptr);
   stream->Start();
