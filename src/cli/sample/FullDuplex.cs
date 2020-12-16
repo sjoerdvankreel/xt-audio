@@ -5,6 +5,16 @@ namespace Xt
 {
     public class FullDuplex
     {
+        static void OnXRun(int index, object user)
+        => Console.WriteLine("XRun on device " + index + ".");
+
+        static void
+        OnRunning(XtStream stream, bool running, object user)
+        {
+            string evt = running ? "Started" : "Stopped";
+            Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
+        }
+
         static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
@@ -38,7 +48,7 @@ namespace Xt
             else return;
 
             XtBufferSize size = device.GetBufferSize(format);
-            streamParams = new XtStreamParams(true, OnBuffer, null);
+            streamParams = new XtStreamParams(true, OnBuffer, OnXRun, OnRunning);
             deviceParams = new XtDeviceStreamParams(in streamParams, in format, size.current);
             using XtStream stream = device.OpenStream(in deviceParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);

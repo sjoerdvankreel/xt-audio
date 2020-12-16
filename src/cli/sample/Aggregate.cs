@@ -8,6 +8,13 @@ namespace Xt
         static void OnXRun(int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
+        static void
+        OnRunning(XtStream stream, bool running, object user)
+        {
+            string evt = running ? "Started" : "Stopped";
+            Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
+        }
+
         static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
@@ -32,19 +39,19 @@ namespace Xt
             if (service == null || (service.GetCapabilities() & XtCapabilities.Aggregation) == 0) return;
 
             string defaultInput = service.GetDefaultDeviceId(false);
-            if(defaultInput == null) return;
+            if (defaultInput == null) return;
             using XtDevice input = service.OpenDevice(defaultInput);
             if (!input.SupportsFormat(inputFormat)) return;
 
             string defaultOutput = service.GetDefaultDeviceId(true);
-            if(defaultOutput == null) return;
+            if (defaultOutput == null) return;
             using XtDevice output = service.OpenDevice(defaultOutput);
             if (!output.SupportsFormat(outputFormat)) return;
 
             XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
             deviceParams[0] = new XtAggregateDeviceParams(input, in inputFormat.channels, 30.0);
             deviceParams[1] = new XtAggregateDeviceParams(output, in outputFormat.channels, 30.0);
-            XtStreamParams streamParams = new XtStreamParams(true, OnBuffer, OnXRun);
+            XtStreamParams streamParams = new XtStreamParams(true, OnBuffer, OnXRun, OnRunning);
             aggregateParams = new XtAggregateStreamParams(in streamParams, deviceParams, 2, mix, output);
             using XtStream stream = service.AggregateStream(in aggregateParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);

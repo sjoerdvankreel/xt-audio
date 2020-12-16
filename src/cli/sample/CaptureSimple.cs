@@ -37,7 +37,7 @@ namespace Xt
             if (!device.SupportsFormat(Format)) return;
 
             XtBufferSize size = device.GetBufferSize(Format);
-            streamParams = new XtStreamParams(true, OnBuffer, null);
+            streamParams = new XtStreamParams(true, OnBuffer, null, null);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using var recording = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
             using XtStream stream = device.OpenStream(in deviceParams, recording);

@@ -43,7 +43,7 @@ namespace Xt
             if (!device.SupportsFormat(Format)) return;
 
             XtBufferSize size = device.GetBufferSize(Format);
-            streamParams = new XtStreamParams(true, OnBuffer, null);
+            streamParams = new XtStreamParams(true, OnBuffer, null, null);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using XtStream stream = device.OpenStream(in deviceParams, null);
             using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
