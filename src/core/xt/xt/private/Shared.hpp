@@ -48,6 +48,10 @@ XtiZeroBuffer(void* buffer, XtBool interleaved, int32_t posFrames, int32_t chann
 void 
 XtiWeave(void* dst, void const* src, XtBool interleaved, int32_t dstChans, int32_t srcChans, int32_t dstChan, int32_t srcChan, int32_t frames, int32_t sampleSize);
 
+template <class Rollback>
+inline XtGuard<Rollback> XtiGuard(Rollback rollback)
+{ return XtGuard<Rollback>(rollback); };
+
 bool
 XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired)
 { return value.compare_exchange_strong(expected, desired); }
