@@ -17,7 +17,14 @@ XtFault
 AsioStream::Start()
 {
   XT_ASSERT(XtiCompareExchange(_running, 0, 1));
-  return _asio->start();
+  XtFault fault = _asio->start();
+  if(fault != ASE_OK)
+  {
+    XT_ASSERT(XtiCompareExchange(_running, 1, 0));
+    return fault;
+  }
+  OnRunning(XtTrue);
+  return ASE_OK;
 }
 
 XtFault
@@ -25,7 +32,9 @@ AsioStream::Stop()
 {
   if(!XtiCompareExchange(_running, 1, 0)) return ASE_OK;
   while(_insideCallback.load() == 1);
-  return _asio->stop();
+  XtFault fault = _asio->stop();
+  OnRunning(XtFalse);
+  return fault;
 }
 
 XtFault
