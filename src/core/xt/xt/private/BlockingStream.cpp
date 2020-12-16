@@ -67,13 +67,12 @@ void
 XtBlockingStream::ReceiveControl(State state)
 {
   std::unique_lock guard(_lock);
-  auto previous = _state.load();
   _state = state;
   _received = true;
   guard.unlock();
   _respond.notify_one();  
-  if(state == State::Started && previous != State::Started) OnRunning(XtTrue);
-  if(state != State::Started && previous == State::Started) OnRunning(XtFalse);
+  if(state == State::Started) OnRunning(XtTrue);
+  if(state == State::Stopped) OnRunning(XtFalse);
 }   
 
 void
