@@ -6,7 +6,7 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     delegate void OnXRun(int index, IntPtr user);
     [SuppressUnmanagedCodeSecurity]
-    delegate void OnRunning(IntPtr stream, bool running, IntPtr user);
+    delegate void OnRunning(IntPtr stream, int running, IntPtr user);
     [SuppressUnmanagedCodeSecurity]
     delegate void OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user);
     [SuppressUnmanagedCodeSecurity]

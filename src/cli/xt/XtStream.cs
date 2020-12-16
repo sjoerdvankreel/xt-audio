@@ -11,7 +11,7 @@ namespace Xt
         [DllImport("xt-core")] static extern ulong XtStreamStop(IntPtr s);
         [DllImport("xt-core")] static extern ulong XtStreamStart(IntPtr s);
         [DllImport("xt-core")] static extern void XtStreamDestroy(IntPtr s);
-        [DllImport("xt-core")] static extern bool XtStreamIsRunning(IntPtr s);
+        [DllImport("xt-core")] static extern int XtStreamIsRunning(IntPtr s);
         [DllImport("xt-core")] static extern unsafe XtFormat* XtStreamGetFormat(IntPtr s);
         [DllImport("xt-core")] static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
         [DllImport("xt-core")] static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
@@ -37,9 +37,9 @@ namespace Xt
         }
 
         public void Dispose() => XtStreamDestroy(_s);
-        public bool IsRunning() => XtStreamIsRunning(_s);
         public void Stop() => HandleError(XtStreamStop(_s));
         public void Start() => HandleError(XtStreamStart(_s));
+        public bool IsRunning() => XtStreamIsRunning(_s) != 0;
         public unsafe XtFormat GetFormat() => *XtStreamGetFormat(_s);
         public int GetFrames() => HandleError(XtStreamGetFrames(_s, out var r), r);
         public XtLatency GetLatency() => HandleError(XtStreamGetLatency(_s, out var r), r);
@@ -50,7 +50,7 @@ namespace Xt
         internal OnRunning OnNativeRunning() => _onNativeRunning;
 
         void OnXRun(int index, IntPtr user) => _onXRun(index, _user);
-        void OnRunning(IntPtr stream, bool running, IntPtr user) => _onRunning(this, running, _user);
+        void OnRunning(IntPtr stream, int running, IntPtr user) => _onRunning(this, running != 0, _user);
         void OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user) => _onBuffer(this, in buffer, _user);
     }
 }
