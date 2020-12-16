@@ -145,7 +145,8 @@ namespace Xt
         {
             base.OnShown(e);
             var libraryVersion = XtAudio.GetVersion();
-            log = new StreamWriter("xt-audio.log");
+            string guid = Guid.NewGuid().ToString();
+            log = new StreamWriter($"xt-audio.{guid}.log");
 
             Text = $"XT-Audio {libraryVersion.major}.{libraryVersion.minor}";
             platform = XtAudio.Init("XT-Gui", Handle, OnError);
