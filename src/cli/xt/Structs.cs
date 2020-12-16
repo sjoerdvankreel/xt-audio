@@ -26,6 +26,7 @@ namespace Xt
         public int interleaved;
         public OnBuffer onBuffer;
         public OnXRun onXRun;
+        public OnRunning onRunning;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -67,7 +68,6 @@ namespace Xt
         public IntPtr output;
         public double time;
         public ulong position;
-        public ulong error;
         public int frames;
         int _timeValid;
         public bool timeValid => _timeValid != 0;
@@ -164,8 +164,9 @@ namespace Xt
         public bool interleaved;
         public XtOnBuffer onBuffer;
         public XtOnXRun onXRun;
-        public XtStreamParams(bool interleaved, XtOnBuffer onBuffer, XtOnXRun onXRun)
-        => (this.interleaved, this.onBuffer, this.onXRun) = (interleaved, onBuffer, onXRun);
+        public XtOnRunning onRunning;
+        public XtStreamParams(bool interleaved, XtOnBuffer onBuffer, XtOnXRun onXRun, XtOnRunning onRunning)
+        => (this.interleaved, this.onBuffer, this.onXRun, this.onRunning) = (interleaved, onBuffer, onXRun, onRunning);
     }
 
     public struct XtAggregateStreamParams

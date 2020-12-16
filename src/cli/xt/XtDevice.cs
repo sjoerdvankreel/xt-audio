@@ -42,13 +42,14 @@ namespace Xt
 
         public XtStream OpenStream(in XtDeviceStreamParams @params, object user)
         {
-            var result = new XtStream(@params.stream.onBuffer, @params.stream.onXRun, user);
+            var result = new XtStream(@params.stream.onBuffer, @params.stream.onXRun, @params.stream.onRunning, user);
             var native = new DeviceStreamParams();
             native.format = @params.format;
             native.bufferSize = @params.bufferSize;
             native.stream.onBuffer = result.OnNativeBuffer();
             native.stream.interleaved = @params.stream.interleaved ? 1 : 0;
             native.stream.onXRun = @params.stream.onXRun == null ? null : result.OnNativeXRun();
+            native.stream.onRunning = @params.stream.onRunning == null ? null : result.OnNativeRunning();
             result.Init(HandleError(XtDeviceOpenStream(_d, @native, IntPtr.Zero, out var r), r));
             return result;
         }

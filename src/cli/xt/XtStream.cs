@@ -19,16 +19,20 @@ namespace Xt
         readonly object _user;
         readonly XtOnXRun _onXRun;
         readonly XtOnBuffer _onBuffer;
+        readonly XtOnRunning _onRunning;
         readonly OnXRun _onNativeXRun;
         readonly OnBuffer _onNativeBuffer;
+        readonly OnRunning _onNativeRunning;
 
-        internal XtStream(XtOnBuffer onBuffer, XtOnXRun onXRun, object user)
+        internal XtStream(XtOnBuffer onBuffer, XtOnXRun onXRun, XtOnRunning onRunning, object user)
         {
             _user = user;
             _onXRun = onXRun;
             _onBuffer = onBuffer;
+            _onRunning = onRunning;
             _onNativeXRun = OnXRun;
             _onNativeBuffer = OnBuffer;
+            _onNativeRunning = OnRunning;
         }
 
         public void Dispose() => XtStreamDestroy(_s);
@@ -41,7 +45,10 @@ namespace Xt
         internal void Init(IntPtr s) => _s = s;
         internal OnXRun OnNativeXRun() => _onNativeXRun;
         internal OnBuffer OnNativeBuffer() => _onNativeBuffer;
+        internal OnRunning OnNativeRunning() => _onNativeRunning;
+
         void OnXRun(int index, IntPtr user) => _onXRun(index, _user);
+        void OnRunning(IntPtr stream, bool running, IntPtr user) => _onRunning(this, running, _user);
         void OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user) => _onBuffer(this, in buffer, _user);
     }
 }
