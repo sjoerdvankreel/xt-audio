@@ -73,7 +73,7 @@ XtAggregateStream::GetLatency(XtLatency* latency) const
   return 0;
 }
 
-void XT_CALLBACK 
+uint32_t XT_CALLBACK 
 XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer, void* user)
 {
   auto ctx = static_cast<XtAggregateContext*>(user);
@@ -87,7 +87,7 @@ XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer,
   if(aggregate->_running.load() != 1)
   {
     XtiZeroBuffer(buffer->output, interleaved, 0, channels->outputs, buffer->frames, sampleSize);
-    return;
+    return 0;
   }
   if(buffer->input != nullptr)
   { 
@@ -107,9 +107,10 @@ XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer,
         onXRun(-1, aggregate->_user);
     }
   }
+  return 0;
 }
 
-void XT_CALLBACK 
+uint32_t XT_CALLBACK 
 XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer, void* user)
 {
   auto ctx = static_cast<XtAggregateContext*>(user);
@@ -131,7 +132,7 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
   if(aggregate->_running.load() != 1)
   {
     XT_ASSERT(XtiCompareExchange(aggregate->_insideCallback, 1, 0));
-    return;
+    return 0;
   }
 
   int32_t totalChannels = 0;
@@ -189,4 +190,5 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
   }
 
   XT_ASSERT(XtiCompareExchange(aggregate->_insideCallback, 1, 0));
+  return 0;
 }

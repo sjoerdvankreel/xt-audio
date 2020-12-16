@@ -40,7 +40,7 @@ namespace Xt
             return channels * frames * size;
         }
 
-        static void OnInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var output = (FileStream)user;
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
@@ -48,17 +48,19 @@ namespace Xt
             safe.Lock(in buffer);
             output.Write((byte[])safe.GetInput(), 0, bytes);
             safe.Unlock(in buffer);
+            return 0;
         }
 
-        static void OnInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var ctx = (Context)user;
             int bytes = GetBufferSize(Channels.inputs, buffer.frames);
             Marshal.Copy(buffer.input, ctx.intermediate, 0, bytes);
             ctx.recording.Write(ctx.intermediate, 0, bytes);
+            return 0;
         }
 
-        static void OnNonInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnNonInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var output = (FileStream)user;
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
@@ -68,9 +70,10 @@ namespace Xt
                 for (int c = 0; c < Channels.inputs; c++)
                     output.Write(((byte[][])safe.GetInput())[c], f * size, size);
             safe.Unlock(in buffer);
+            return 0;
         }
 
-        static unsafe void OnNonInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static unsafe int OnNonInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var ctx = (Context)user;
             int size = XtAudio.GetSampleAttributes(Mix.sample).size;
@@ -81,6 +84,7 @@ namespace Xt
                     Marshal.Copy(source, ctx.intermediate, 0, size);
                     ctx.recording.Write(ctx.intermediate, 0, size);
                 }
+            return 0;
         }
 
         public static void Main()

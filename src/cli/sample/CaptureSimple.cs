@@ -10,7 +10,7 @@ namespace Xt
         static readonly XtChannels Channels = new XtChannels(1, 0, 0, 0);
         static readonly XtFormat Format = new XtFormat(Mix, Channels);
 
-        static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var output = (FileStream)user;
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
@@ -19,6 +19,7 @@ namespace Xt
             int size = XtAudio.GetSampleAttributes(Mix.sample).size;
             if (buffer.frames > 0) output.Write(input, 0, buffer.frames * size);
             safe.Unlock(buffer);
+            return 0;
         }
 
         public static void Main()

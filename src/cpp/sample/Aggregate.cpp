@@ -17,13 +17,14 @@ OnRunning(Xt::Stream const& stream, bool running, void* user)
   std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << ".\n"; 
 }
 
-static void 
+static uint32_t 
 OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   Xt::Format const& format = stream.GetFormat();
   Xt::Attributes attrs = Xt::Audio::GetSampleAttributes(format.mix.sample);
   int32_t bytes = buffer.frames * format.channels.inputs * attrs.size;
   std::memcpy(buffer.output, buffer.input, bytes);
+  return 0;
 }
 
 int 

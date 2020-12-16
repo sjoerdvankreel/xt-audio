@@ -38,7 +38,7 @@ public:
   Detail::ForwardOnXRun(int32_t index, void* user);
   friend void XT_CALLBACK 
   Detail::ForwardOnRunning(XtStream const* coreStream, XtBool running, void* user);
-  friend void XT_CALLBACK 
+  friend uint32_t XT_CALLBACK 
   Detail::ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
 };
 

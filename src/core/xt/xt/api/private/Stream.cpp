@@ -15,11 +15,12 @@ XtStream::OnRunning(XtBool running) const
   if(onRunning != nullptr) onRunning(this, running, _user);
 }
 
-void
+uint32_t
 XtStream::OnBuffer(XtBuffer const* buffer)
 {
   XtBuffer converted = *buffer;
   auto onBuffer = _params.stream.onBuffer;
+  uint32_t result = static_cast<uint32_t>(-1);
   int32_t inputs = _params.format.channels.inputs;
   int32_t outputs = _params.format.channels.outputs;
   auto interleavedIn = _buffers.input.interleaved.data();
@@ -36,20 +37,21 @@ XtStream::OnBuffer(XtBuffer const* buffer)
   {
     converted.input = haveInput? buffer->input: nullptr;
     converted.output = haveOutput? buffer->output: nullptr;
-    onBuffer(this, &converted, _user);
+    result = onBuffer(this, &converted, _user);
   } else if(!_params.stream.interleaved) 
   {
     converted.input = haveInput? nonInterleavedIn: nullptr;
     converted.output = haveOutput? nonInterleavedOut: nullptr;
     if(haveInput) XtiDeinterleave(nonInterleavedIn, buffer->input, buffer->frames, inputs, size);
-    onBuffer(this, &converted, _user);
+    result = onBuffer(this, &converted, _user);
     if(haveOutput) XtiInterleave(buffer->output, nonInterleavedOut, buffer->frames, outputs, size);
   } else
   {
     converted.input = haveInput? interleavedIn: nullptr;
     converted.output = haveOutput? interleavedOut: nullptr;
     if(haveInput) XtiInterleave(interleavedIn, nonInterleavedBufferIn, buffer->frames, inputs, size);
-    onBuffer(this, &converted, _user);
+    result = onBuffer(this, &converted, _user);
     if(haveOutput) XtiDeinterleave(nonInterleavedBufferOut, interleavedOut, buffer->frames, outputs, size);
   }
+  return result;
 }

@@ -14,7 +14,7 @@ typedef void (*
 OnRunning)(class Stream const& stream, bool running, void* user);
 typedef void (*
 OnError)(struct Location const& location, std::string const& message);
-typedef void (*
+typedef uint32_t (*
 OnBuffer)(class Stream const& stream, struct Buffer const& buffer, void* user);
 
 } // namespace Xt

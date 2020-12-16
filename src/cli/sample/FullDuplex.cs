@@ -15,12 +15,13 @@ namespace Xt
             Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
         }
 
-        static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             safe.Lock(in buffer);
             Buffer.BlockCopy(safe.GetInput(), 0, safe.GetOutput(), 0, buffer.frames * 2 * 4);
             safe.Unlock(in buffer);
+            return 0;
         }
 
         public static void Main()

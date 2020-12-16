@@ -9,11 +9,12 @@ static void
 OnXRun(int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
-static void 
+static uint32_t 
 OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   int32_t bytes = buffer.frames * 2 * 4;
   std::memcpy(buffer.output, buffer.input, bytes);
+  return 0;
 }
 
 static void

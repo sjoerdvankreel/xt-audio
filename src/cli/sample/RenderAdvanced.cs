@@ -33,7 +33,7 @@ namespace Xt
             stream.Stop();
         }
 
-        static void OnInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             int channels = stream.GetFormat().channels.outputs;
@@ -45,9 +45,10 @@ namespace Xt
                 for (int c = 0; c < channels; c++) output[f * channels + c] = sample;
             }
             safe.Unlock(buffer);
+            return 0;
         }
 
-        static unsafe void OnInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static unsafe int OnInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             int channels = stream.GetFormat().channels.outputs;
             int size = XtAudio.GetSampleAttributes(Mix.sample).size;
@@ -56,9 +57,10 @@ namespace Xt
                 float sample = NextSample();
                 for (int c = 0; c < channels; c++) ((float*)buffer.output)[f * channels + c] = sample;
             }
+            return 0;
         }
 
-        static void OnNonInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnNonInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             int channels = stream.GetFormat().channels.outputs;
@@ -70,9 +72,10 @@ namespace Xt
                 for (int c = 0; c < channels; c++) output[c][f] = sample;
             }
             safe.Unlock(buffer);
+            return 0;
         }
 
-        static unsafe void OnNonInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static unsafe int OnNonInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             int channels = stream.GetFormat().channels.outputs;
             int size = XtAudio.GetSampleAttributes(Mix.sample).size;
@@ -81,6 +84,7 @@ namespace Xt
                 float sample = NextSample();
                 for (int c = 0; c < channels; c++) ((float**)buffer.output)[c][f] = sample;
             }
+            return 0;
         }
 
         public static void Main()

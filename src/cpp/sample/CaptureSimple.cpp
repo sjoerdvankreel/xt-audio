@@ -8,13 +8,14 @@ static Xt::Channels const Channels(1, 0, 0, 0);
 static Xt::Mix const Mix(44100, Xt::Sample::Int24);
 static Xt::Format const Format(Mix, Channels);
 
-static void 
+static uint32_t 
 OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   auto os = static_cast<std::ofstream*>(user);
   char const* input = static_cast<char const*>(buffer.input);
   int32_t bytes = Xt::Audio::GetSampleAttributes(Mix.sample).size * buffer.frames;
   os->write(input, bytes);
+  return 0;
 }
 
 int 

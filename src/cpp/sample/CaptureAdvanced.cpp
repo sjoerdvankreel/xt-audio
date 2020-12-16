@@ -35,16 +35,17 @@ GetBufferSize(int32_t channels, int32_t frames)
   return channels * frames * size;
 }
 
-static void 
+static uint32_t 
 OnInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   auto output = static_cast<std::ofstream*>(user);
   auto input = static_cast<char const*>(buffer.input);
   int32_t bytes = GetBufferSize(Channels.inputs, buffer.frames);
   output->write(input, bytes);
+  return 0;
 }
 
-static void 
+static uint32_t 
 OnNonInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   auto output = static_cast<std::ofstream*>(user);  
@@ -53,6 +54,7 @@ OnNonInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void*
   for(int32_t f = 0; f < buffer.frames; f++)
     for(int32_t c = 0; c < Channels.inputs; c++)
       output->write(&input[c][f * size], size);
+  return 0;
 }
 
 int 

@@ -13,7 +13,7 @@ inline void XT_CALLBACK
 ForwardOnError(XtLocation const* location, char const* message);
 inline void XT_CALLBACK 
 ForwardOnRunning(XtStream const* coreStream, XtBool running, void* user);
-inline void XT_CALLBACK 
+inline uint32_t XT_CALLBACK 
 ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
 
 } // namespace Xt::Detail

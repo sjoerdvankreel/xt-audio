@@ -29,9 +29,9 @@ public XtStream
   XtAggregateStream() = default;
   XtSystem GetSystem() const override;
 
-  static void XT_CALLBACK
+  static uint32_t XT_CALLBACK
   OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
-  static void XT_CALLBACK
+  static uint32_t XT_CALLBACK
   OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
 };
 

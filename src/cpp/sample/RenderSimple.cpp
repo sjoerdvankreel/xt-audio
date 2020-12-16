@@ -20,11 +20,12 @@ NextSample()
   return sinf(2.0f * _phase * static_cast<float>(M_PI));
 }
 
-static void 
+static uint32_t 
 OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user)
 {
   float* output = static_cast<float*>(buffer.output);
   for (int32_t f = 0; f < buffer.frames; f++) output[f] = NextSample();
+  return 0;
 }
 
 int 

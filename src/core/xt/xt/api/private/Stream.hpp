@@ -25,7 +25,7 @@ struct XtStream
   XtStream() = default;
   virtual void OnXRun() const;
   void OnRunning(XtBool running) const;
-  void OnBuffer(XtBuffer const* buffer);
+  uint32_t OnBuffer(XtBuffer const* buffer);
 
   virtual ~XtStream() {};
   virtual void Stop() = 0;

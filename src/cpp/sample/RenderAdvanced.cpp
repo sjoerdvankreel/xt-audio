@@ -38,7 +38,7 @@ NextSample()
   return sinf(2.0f * _phase * static_cast<float>(M_PI));
 }
 
-static void 
+static uint32_t 
 OnInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user)
 {
   float* output = static_cast<float*>(buffer.output);
@@ -49,9 +49,10 @@ OnInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* us
     float sample = NextSample();
     for (int32_t c = 0; c < channels; c++) output[f * channels + c] = sample;
   }
+  return 0;
 }
 
-static void 
+static uint32_t 
 OnNonInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
   float** output = static_cast<float**>(buffer.output);
@@ -62,6 +63,7 @@ OnNonInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void*
     float sample = NextSample();
     for(int32_t c = 0; c < channels; c++) output[c][f] = sample;
   }
+  return 0;
 }
 
 int 

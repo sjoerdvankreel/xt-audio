@@ -13,7 +13,7 @@ typedef void (XT_CALLBACK
 *XtOnError)(XtLocation const* location, char const* message);
 typedef void (XT_CALLBACK
 *XtOnRunning)(XtStream const* stream, XtBool running, void* user);
-typedef void (XT_CALLBACK
+typedef uint32_t (XT_CALLBACK
 *XtOnBuffer)(XtStream const* stream, XtBuffer const* buffer, void* user);
 
 #endif // XT_API_PUBLIC_CALLBACKS_H

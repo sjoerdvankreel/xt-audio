@@ -18,13 +18,14 @@ namespace Xt
             return (float)Math.Sin(2.0 * _phase * Math.PI);
         }
 
-        static void OnBuffer(XtStream stream, in XtBuffer buffer, object user)
+        static int OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             XtSafeBuffer safe = XtSafeBuffer.Get(stream);
             safe.Lock(in buffer);
             float[] output = (float[])safe.GetOutput();
             for (int f = 0; f < buffer.frames; f++) output[f] = NextSample();
             safe.Unlock(in buffer);
+            return 0;
         }
 
         public static void Main()

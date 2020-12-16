@@ -26,7 +26,7 @@ namespace Xt
 			onMessage.Invoke(message);
 		}
 
-		internal void OnCallback(XtStream stream, in XtBuffer buffer, object user)
+		internal int OnCallback(XtStream stream, in XtBuffer buffer, object user)
 		{
 			XtFormat format = stream.GetFormat();
 			XtSafeBuffer safe = XtSafeBuffer.Get(stream);
@@ -40,7 +40,7 @@ namespace Xt
 			}
 			processed += buffer.frames;
 			if (processed < format.mix.rate * 3)
-				return;
+				return 0;
 
 			processed = 0;
 			XtLatency latency = stream.GetLatency();
@@ -49,6 +49,7 @@ namespace Xt
 			XtBuffer bufferLocal = buffer;
 			OnMessage(() => string.Format(formatString, Environment.NewLine, name, latency.input,
 				latency.output, stream.GetFrames(), bufferLocal.frames, bufferLocal.time, bufferLocal.position, bufferLocal.timeValid, user));
+			return 0;
 		}
 	}
 }
