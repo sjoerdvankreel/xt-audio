@@ -23,7 +23,7 @@ struct XtStream
   XtDeviceStreamParams _params;
 
   XtStream() = default;
-  virtual void OnXRun() const;
+  void OnXRun(int32_t index) const;
   void OnRunning(XtBool running) const;
   uint32_t OnBuffer(XtBuffer const* buffer);
 

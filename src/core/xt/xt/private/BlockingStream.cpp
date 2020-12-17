@@ -40,16 +40,6 @@ XtBlockingStream::Stop()
   SendControl(State::Stopping);
 }
 
-void 
-XtBlockingStream::OnXRun() const
-{
-  auto xRun = _params.stream.onXRun;
-  if(xRun == nullptr) return;
-  if(!_aggregated) return xRun(-1, _user), void();
-  auto context = static_cast<XtAggregateContext*>(_user);
-  xRun(_index, context->stream->_user);
-}
-
 void
 XtBlockingStream::SendControl(State from)
 {

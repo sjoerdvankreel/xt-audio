@@ -94,7 +94,7 @@ XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer,
     XtRingBuffer* inputRing = &aggregate->_rings[index].input;
     int32_t written = inputRing->Write(buffer->input, buffer->frames);
     if(written < buffer->frames && onXRun != nullptr)
-      onXRun(-1, aggregate->_user);
+      onXRun(aggregate, index, aggregate->_user);
   }
   if(buffer->output != nullptr)
   { 
@@ -104,7 +104,7 @@ XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer,
     {
       XtiZeroBuffer(buffer->output, interleaved, read, channels->outputs, buffer->frames - read, sampleSize);
       if(onXRun != nullptr)
-        onXRun(-1, aggregate->_user);
+        onXRun(aggregate, index, aggregate->_user);
     }
   }
   return 0;
@@ -153,7 +153,7 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
       if(read < buffer->frames)
       {
         XtiZeroBuffer(ringInput, interleaved, read, thisIns, buffer->frames - read, sampleSize);
-        if(onXRun != nullptr) onXRun(-1, aggregate->_user);
+        if(onXRun != nullptr) onXRun(aggregate, index, aggregate->_user);
       }
       for(int32_t c = 0; c < thisIns; c++)
         XtiWeave(appInput, ringInput, interleaved, allIns, thisIns, totalChannels + c, c, buffer->frames, sampleSize);
@@ -185,7 +185,7 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
       totalChannels += thisOuts;
       int32_t written = ring->Write(ringOutput, buffer->frames);
       if(written < buffer->frames && onXRun != nullptr)
-        onXRun(-1, aggregate->_user);
+        onXRun(aggregate, index, aggregate->_user);
     }
   }
 

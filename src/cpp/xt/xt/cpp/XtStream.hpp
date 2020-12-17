@@ -35,7 +35,7 @@ public:
   friend class Device;
   friend class Service;
   friend void XT_CALLBACK 
-  Detail::ForwardOnXRun(int32_t index, void* user);
+  Detail::ForwardOnXRun(XtStream const* coreStream, int32_t index, void* user);
   friend void XT_CALLBACK 
   Detail::ForwardOnRunning(XtStream const* coreStream, XtBool running, void* user);
   friend uint32_t XT_CALLBACK 

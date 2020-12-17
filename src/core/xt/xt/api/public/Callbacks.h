@@ -8,9 +8,9 @@ typedef struct XtBuffer XtBuffer;
 typedef struct XtLocation XtLocation;
 
 typedef void (XT_CALLBACK
-*XtOnXRun)(int32_t index, void* user);
-typedef void (XT_CALLBACK
 *XtOnError)(XtLocation const* location, char const* message);
+typedef void (XT_CALLBACK
+*XtOnXRun)(XtStream const* stream, int32_t index, void* user);
 typedef void (XT_CALLBACK
 *XtOnRunning)(XtStream const* stream, XtBool running, void* user);
 typedef uint32_t (XT_CALLBACK

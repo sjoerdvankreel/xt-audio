@@ -2,10 +2,10 @@
 #include <xt/private/Shared.hpp>
 
 void
-XtStream::OnXRun() const
+XtStream::OnXRun(int32_t index) const
 {
-  auto xRun = _params.stream.onXRun;
-  if(xRun != nullptr) xRun(-1, _user);
+  auto onXRun = _params.stream.onXRun;
+  if(onXRun != nullptr) onXRun(this, index, _user);
 }
 
 void

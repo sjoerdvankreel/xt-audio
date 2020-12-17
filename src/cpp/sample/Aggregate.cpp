@@ -7,7 +7,7 @@
 #include <iostream>
 
 static void 
-OnXRun(int32_t index, void* user) 
+OnXRun(Xt::Stream const& stream, int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
 static void

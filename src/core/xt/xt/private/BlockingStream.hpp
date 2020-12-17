@@ -44,7 +44,6 @@ public XtStream
 
   virtual void Stop() override final;
   virtual XtFault Start() override final;
-  virtual void OnXRun() const override final;
   virtual XtBool IsRunning() const override final;
 
   void SendControl(State from);

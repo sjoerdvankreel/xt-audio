@@ -10,7 +10,7 @@ static Xt::Mix const Mix(44100, Xt::Sample::Int24);
 static Xt::Format const Format(Mix, Channels);
 
 static void 
-OnXRun(int32_t index, void* user) 
+OnXRun(Xt::Stream const& stream, int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
 
 static void

@@ -13,9 +13,6 @@ inline OnError _onError = nullptr;
 inline void 
 HandleError(XtError error) 
 { if(error != 0) throw Exception(error); }
-inline void XT_CALLBACK 
-ForwardOnXRun(int32_t index, void* user) 
-{ static_cast<Stream*>(user)->_params.onXRun(index, static_cast<Stream*>(user)->_user); }
 
 inline void XT_CALLBACK 
 ForwardOnError(XtLocation const* location, char const* message) 
@@ -26,6 +23,13 @@ ForwardOnError(XtLocation const* location, char const* message)
   loc.file = location->file;
   loc.func = location->func;
   _onError(loc, message); 
+}
+
+inline void XT_CALLBACK 
+ForwardOnXRun(XtStream const* coreStream, int32_t index, void* user) 
+{
+  auto stream = static_cast<Stream*>(user);
+  stream->_params.onXRun(*stream, index, stream->_user); 
 }
 
 inline void XT_CALLBACK 
