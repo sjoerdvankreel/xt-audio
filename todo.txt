@@ -35,3 +35,4 @@
 * do assert_com like for linux
 * rename to blockingloop
 * restructure aggregate, onxrun, make aggregate blocking
+* blockingstream is not a stream. use blockingstreamadapter instead, dont derive blockingstream from stream
