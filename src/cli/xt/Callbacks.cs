@@ -4,7 +4,7 @@ using System.Security;
 namespace Xt
 {
     [SuppressUnmanagedCodeSecurity]
-    delegate void OnXRun(int index, IntPtr user);
+    delegate void OnXRun(IntPtr stream, int index, IntPtr user);
     [SuppressUnmanagedCodeSecurity]
     delegate void OnRunning(IntPtr stream, int running, IntPtr user);
     [SuppressUnmanagedCodeSecurity]
@@ -12,7 +12,7 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public delegate void XtOnError(in XtLocation location, string message);
 
-    public delegate void XtOnXRun(int index, object user);
+    public delegate void XtOnXRun(XtStream stream, int index, object user);
     public delegate void XtOnRunning(XtStream stream, bool running, object user);
     public delegate int XtOnBuffer(XtStream stream, in XtBuffer buffer, object user);
 }

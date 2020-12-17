@@ -49,7 +49,7 @@ namespace Xt
         internal OnBuffer OnNativeBuffer() => _onNativeBuffer;
         internal OnRunning OnNativeRunning() => _onNativeRunning;
 
-        void OnXRun(int index, IntPtr user) => _onXRun(index, _user);
+        void OnXRun(IntPtr stream, int index, IntPtr user) => _onXRun(this, index, _user);
         void OnRunning(IntPtr stream, int running, IntPtr user) => _onRunning(this, running != 0, _user);
         int OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user) => _onBuffer(this, in buffer, _user);
     }

@@ -5,7 +5,7 @@ namespace Xt
 {
     public class Aggregate
     {
-        static void OnXRun(int index, object user)
+        static void OnXRun(XtStream stream, int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
         static void

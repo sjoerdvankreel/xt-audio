@@ -17,7 +17,7 @@ namespace Xt
         static readonly XtChannels Channels = new XtChannels(2, 0, 0, 0);
         static readonly XtFormat Format = new XtFormat(Mix, Channels);
 
-        static void OnXRun(int index, object user)
+        static void OnXRun(XtStream stream, int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
         static void

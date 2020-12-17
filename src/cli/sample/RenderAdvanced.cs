@@ -16,7 +16,7 @@ namespace Xt
             return (float)Math.Sin(2.0 * _phase * Math.PI);
         }
 
-        static void OnXRun(int index, object user)
+        static void OnXRun(XtStream stream, int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
         static void
