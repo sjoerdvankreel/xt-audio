@@ -2,10 +2,6 @@
 #include <xt/dsound/Shared.hpp>
 #include <xt/dsound/Private.hpp>
 
-DSoundStream::
-DSoundStream(bool secondary):
-XtBlockingStream(secondary), _timer() { }
-
 XtFault
 DSoundStream::GetFrames(int32_t* frames) const 
 { *frames = _bufferFrames; return S_OK; }
@@ -14,48 +10,60 @@ DSoundStream::GetLatency(XtLatency* latency) const
 { return S_OK; }
 
 void
-DSoundStream::StopStream()
+DSoundStream::StopSlaveBuffer()
 {
   if(_inputBuffer) XT_TRACE_IF(FAILED(_inputBuffer->Stop()));
   else XT_TRACE_IF(FAILED(_outputBuffer->Stop()));
-  if(!_secondary)
-  {
-    UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
-    XT_TRACE_IF(!CancelWaitableTimer(_timer.timer));
-    XT_TRACE_IF(timeEndPeriod(period / 2) != TIMERR_NOERROR);
-    XT_TRACE_IF(!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
-  }
   _xtProcessed = 0;
   _dsProcessed = 0;
   _previousPosition = 0;
 }
 
 XtFault
-DSoundStream::StartStream()
+DSoundStream::StartSlaveBuffer()
 {
   HRESULT hr;
-  UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
-  auto waitGuard = XtiGuard([this] { XT_ASSERT(CancelWaitableTimer(_timer.timer)); } );
-  auto timerGuard = XtiGuard([period] { XT_ASSERT(timeEndPeriod(period / 2) == TIMERR_NOERROR); });
-  auto prioGuard = XtiGuard([] { XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL)); });
-  if(!_secondary)
-  {
-    LARGE_INTEGER due;
-    due.QuadPart = -1;
-    XT_VERIFY(timeBeginPeriod(period / 2) == TIMERR_NOERROR, DSERR_GENERIC);
-    timerGuard.Enable();
-    XT_VERIFY(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL), DSERR_GENERIC);
-    prioGuard.Enable();
-    XT_VERIFY(SetWaitableTimer(_timer.timer, &due, period, nullptr, nullptr, TRUE), DSERR_GENERIC);
-    waitGuard.Enable();
-  }
   memset(_audio.data(), 0, _audio.size());
   if(_inputBuffer) XT_VERIFY_COM(_inputBuffer->Start(DSCBSTART_LOOPING));
   else XT_VERIFY_COM(_outputBuffer->Play(0, 0, DSBPLAY_LOOPING));
-  waitGuard.Commit();
-  prioGuard.Commit();
-  timerGuard.Commit();
   return DS_OK;
+}
+
+void
+DSoundStream::StopMasterBuffer()
+{
+  UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
+  XT_TRACE_IF(!CancelWaitableTimer(_timer.timer));
+  XT_TRACE_IF(timeEndPeriod(period / 2) != TIMERR_NOERROR);
+  XT_TRACE_IF(!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
+}
+
+XtFault
+DSoundStream::BlockMasterBuffer()
+{
+  DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / _params.format.mix.rate);
+  XT_VERIFY(WaitForSingleObject(_timer.timer, bufferMillis) == WAIT_OBJECT_0, DSERR_GENERIC);
+}
+
+XtFault
+DSoundStream::StartMasterBuffer()
+{
+  LARGE_INTEGER due;
+  due.QuadPart = -1;
+  UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
+  XT_VERIFY(timeBeginPeriod(period / 2) == TIMERR_NOERROR, DSERR_GENERIC);
+  auto timeGuard = XtiGuard([this] { XT_ASSERT(CancelWaitableTimer(_timer.timer)); } );
+  XT_VERIFY(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL), DSERR_GENERIC);
+  auto prioGuard = XtiGuard([] { XT_ASSERT(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL)); });
+  XT_VERIFY(SetWaitableTimer(_timer.timer, &due, period, nullptr, nullptr, TRUE), DSERR_GENERIC);
+  timeGuard.Commit();
+  prioGuard.Commit();
+}
+
+XtFault
+DSoundStream::PrefillOutputBuffer()
+{
+// this seems not right
 }
 
 XtFault 
@@ -66,12 +74,6 @@ DSoundStream::ProcessBuffer(bool prefill)
   void* audio2;
   DWORD size1, size2, read, write;
   DWORD bufferBytes = static_cast<DWORD>(_audio.size());
-
-  if(!prefill && !_secondary)
-  {
-    DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / _params.format.mix.rate);
-    XT_VERIFY(WaitForSingleObject(_timer.timer, bufferMillis) == WAIT_OBJECT_0, DSERR_GENERIC);
-  }
   
   XtBuffer buffer = { 0 };
   if(prefill && _outputBuffer)

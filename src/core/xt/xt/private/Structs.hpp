@@ -38,16 +38,13 @@ struct XtAtomicInt
 template <class Rollback>
 struct XtGuard
 {
-  bool enabled;
   bool committed;
   Rollback rollback;
 
-  void Enable() { enabled = true; }
   void Commit() { committed = true; }
-
-  ~XtGuard() { if(enabled && !committed) rollback(); }
-  XtGuard(Rollback rb): enabled(false), committed(false), rollback(rb) { }
-  XtGuard(XtGuard&& g): enabled(g.enabled), committed(g.committed), rollback(g.rollback) { g.enabled = false; }
+  ~XtGuard() { if(!committed) rollback(); }
+  XtGuard(Rollback rb): committed(false), rollback(rb) { }
+  XtGuard(XtGuard&& g): committed(g.committed), rollback(g.rollback) { g.committed = true; }
 };
 
 #endif // XT_PRIVATE_STRUCTS_HPP

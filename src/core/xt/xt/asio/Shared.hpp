@@ -56,7 +56,7 @@ public XtStream
   AsioStream() = default;
   XT_IMPLEMENT_STREAM();
   XT_IMPLEMENT_STREAM_BASE();
-  XT_IMLEMENT_STREAM_BASE_SYSTEM(ASIO);
+  XT_IMPLEMENT_STREAM_BASE_SYSTEM(ASIO);
 
   static void XT_ASIO_CALL
   BufferSwitch(long index, ASIOBool direct, void* ctx);

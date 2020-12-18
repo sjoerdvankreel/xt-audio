@@ -43,8 +43,10 @@ public XtBlockingStream
   CComPtr<IDirectSoundBuffer> _outputBuffer;
   CComPtr<IDirectSoundCaptureBuffer> _inputBuffer;
   
-  DSoundStream(bool secondary);
-  XT_IMPLEMENT_BLOCKING_STREAM(DSound);
+  DSoundStream() = default;
+  XT_IMPLEMENT_STREAM_BASE();
+  XT_IMPLEMENT_BLOCKING_STREAM();
+  XT_IMPLEMENT_STREAM_BASE_SYSTEM(DSound);
 };
 
 struct DSoundDeviceList:
