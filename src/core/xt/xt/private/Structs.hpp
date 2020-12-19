@@ -8,6 +8,7 @@
 
 struct XtBlockingParams 
 {
+  int index;
   XtFormat format;
   double bufferSize;
   XtBool interleaved;
