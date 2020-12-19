@@ -54,22 +54,28 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
   }
 
   result->_frames *= 2;
-  XT_ASSERT(masterFound);
-  XtiInitIOBuffers(result->_weave, &format, result->_frames);
+  XT_ASSERT(masterFound);  
   for(int32_t i = 0; i < params->count; i++)
   {
     XtIORingBuffers thisRings;
-    thisRings.input = XtRingBuffer(interleaved, result->_frames, params->devices[i].channels.inputs, attrs.size);
-    thisRings.output = XtRingBuffer(interleaved, result->_frames, params->devices[i].channels.outputs, attrs.size);
+    auto const& channels = params->devices[i].channels;
+    thisRings.input = XtRingBuffer(interleaved, result->_frames, channels.inputs, attrs.size);
+    thisRings.output = XtRingBuffer(interleaved, result->_frames, channels.outputs, attrs.size);
     result->_rings.push_back(thisRings);
   }
 
-  *stream = new XtBlockingAdapter(result.release());
-  (*stream)->_user = user;
-  (*stream)->_emulated = false;
-  (*stream)->_params.bufferSize = 0.0;
-  (*stream)->_params.format = format;
-  (*stream)->_params.stream = params->stream;
-  XtiInitIOBuffers((*stream)->_buffers, &format, result->_frames);
+  auto frames = result->_frames;
+  XtiInitIOBuffers(result->_weave, &format, result->_frames);
+  auto adapter = std::make_unique<XtBlockingAdapter>(result.release());
+  for(int32_t i = 0; i < params->count; i++)
+    static_cast<XtAggregateStream*>(adapter->_stream.get())->_streams[i]->_adapter = adapter.get();
+
+  adapter->_user = user;
+  adapter->_emulated = false;
+  adapter->_params.bufferSize = 0.0;
+  adapter->_params.format = format;
+  adapter->_params.stream = params->stream;
+  XtiInitIOBuffers(adapter->_buffers, &format, frames);
+  *stream = adapter.release();
   return 0;
 }

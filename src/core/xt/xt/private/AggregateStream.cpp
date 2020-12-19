@@ -79,6 +79,12 @@ XtAggregateStream::GetLatency(XtLatency* latency) const
   return 0;
 }
 
+XtFault 
+XtAggregateStream::ProcessBuffer()
+{
+  return 0;  
+}
+
 uint32_t XT_CALLBACK 
 XtAggregateStream::OnBuffer(XtStream const* stream, XtBuffer const* buffer, void* user)
 {
