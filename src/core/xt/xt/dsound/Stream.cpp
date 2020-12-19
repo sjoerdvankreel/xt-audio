@@ -32,7 +32,8 @@ DSoundStream::StartSlaveBuffer()
 void
 DSoundStream::StopMasterBuffer()
 {
-  UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
+  auto rate = _adapter->_params.format.mix.rate;
+  UINT period = XtiDsGetTimerPeriod(_bufferFrames, rate);
   XT_TRACE_IF(!CancelWaitableTimer(_timer.timer));
   XT_TRACE_IF(timeEndPeriod(period / 2) != TIMERR_NOERROR);
   XT_TRACE_IF(!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL));
@@ -41,7 +42,8 @@ DSoundStream::StopMasterBuffer()
 XtFault
 DSoundStream::BlockMasterBuffer()
 {
-  DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / _params.format.mix.rate);
+  auto rate = _adapter->_params.format.mix.rate;
+  DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / rate);
   XT_VERIFY(WaitForSingleObject(_timer.timer, bufferMillis) == WAIT_OBJECT_0, DSERR_GENERIC);
   return DS_OK;
 }
@@ -51,7 +53,8 @@ DSoundStream::StartMasterBuffer()
 {
   LARGE_INTEGER due;
   due.QuadPart = -1;
-  UINT period = XtiDsGetTimerPeriod(_bufferFrames, _params.format.mix.rate);
+  auto rate = _adapter->_params.format.mix.rate;
+  UINT period = XtiDsGetTimerPeriod(_bufferFrames, rate);
   XT_VERIFY(timeBeginPeriod(period / 2) == TIMERR_NOERROR, DSERR_GENERIC);
   auto timeGuard = XtiGuard([this] { XT_ASSERT(CancelWaitableTimer(_timer.timer)); } );
   XT_VERIFY(SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL), DSERR_GENERIC);
@@ -78,12 +81,12 @@ DSoundStream::PrefillOutputBuffer()
   {
     buffer.output = audio1;
     buffer.frames = _bufferFrames;
-    OnBuffer(&buffer);
+    _adapter->OnBuffer(&buffer);
   } else
   {
     buffer.output = _audio.data();
     buffer.frames = _bufferFrames;
-    OnBuffer(&buffer);
+    _adapter->OnBuffer(&buffer);
     XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
   }
   XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));
@@ -121,7 +124,7 @@ DSoundStream::ProcessBuffer()
     {
       buffer.input = audio1;
       buffer.frames = available / _frameSize;
-      OnBuffer(&buffer);
+      _adapter->OnBuffer(&buffer);
       XT_VERIFY_COM(_inputBuffer->Unlock(audio1, size1, audio2, size2));
     } else
     {
@@ -129,7 +132,7 @@ DSoundStream::ProcessBuffer()
       XT_VERIFY_COM(_inputBuffer->Unlock(audio1, size1, audio2, size2));
       buffer.input = _audio.data();
       buffer.frames = available / _frameSize;
-      OnBuffer(&buffer);
+      _adapter->OnBuffer(&buffer);
     }
     _xtProcessed += available;
     return DS_OK;
@@ -153,11 +156,11 @@ DSoundStream::ProcessBuffer()
   {
     buffer.output = audio1;
     buffer.frames = available / _frameSize;
-    OnBuffer(&buffer);
+    _adapter->OnBuffer(&buffer);
   } else {
     buffer.output = _audio.data();
     buffer.frames = available / _frameSize;
-    OnBuffer(&buffer);
+    _adapter->OnBuffer(&buffer);
     XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
   }
   XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));

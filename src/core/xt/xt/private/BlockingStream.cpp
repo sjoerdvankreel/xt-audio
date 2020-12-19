@@ -1,8 +1,5 @@
 #include <xt/private/BlockingStream.hpp>
-
-XtStream const*
-XtBlockingStream::GetStream() const
-{ return _stream; }
+#include <xt/api/private/Stream.hpp>
 
 void
 XtBlockingStream::StopBuffer()

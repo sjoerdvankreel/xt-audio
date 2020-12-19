@@ -17,9 +17,12 @@
 struct XtBlockingStream:
 public XtStreamBase
 {
-  XtStream const* _stream;
+  XtStream* _adapter;
   ~XtBlockingStream() { };
   XtBlockingStream() = default;
+
+  void StopBuffer();
+  XtFault StartBuffer();
 
   virtual void StopSlaveBuffer() = 0;
   virtual void StopMasterBuffer() = 0;
@@ -28,10 +31,6 @@ public XtStreamBase
   virtual XtFault StartMasterBuffer() = 0;  
   virtual XtFault BlockMasterBuffer() = 0;
   virtual XtFault PrefillOutputBuffer() = 0;
-
-  void StopBuffer();
-  XtFault StartBuffer();
-  XtStream const* GetStream() const override final;
 };
 
 #endif // XT_PRIVATE_BLOCKING_STREAM_HPP

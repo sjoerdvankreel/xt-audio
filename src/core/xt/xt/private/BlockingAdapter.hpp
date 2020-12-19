@@ -27,12 +27,11 @@ public XtStream
   std::unique_ptr<XtBlockingStream> _stream;
   static inline int const WaitTimeoutMs = 10000;
 
-  XtBlockingAdapter(); 
-  ~XtBlockingAdapter();
   XT_IMPLEMENT_STREAM();
   XT_IMPLEMENT_STREAM_BASE();
   XtSystem GetSystem() const override final;
-  XtStream const* GetStream() const override final;
+  ~XtBlockingAdapter();
+  XtBlockingAdapter(std::unique_ptr<XtBlockingStream>&& stream); 
   
   void SendControl(State from);
   void ReceiveControl(State state);

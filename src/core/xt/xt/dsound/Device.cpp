@@ -88,10 +88,7 @@ DSoundDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtS
     XT_VERIFY_COM(result->_output->SetCooperativeLevel(hwnd, DSSCL_PRIORITY));
     XT_VERIFY_COM(result->_output->CreateSoundBuffer(&renderDesc, &result->_outputBuffer, nullptr));
   }
-  auto adapter = std::make_unique<XtBlockingAdapter>();
-  adapter->_stream = std::move(result);
-  adapter->_stream->_stream = adapter.get();
-  *stream = adapter.release();
+  *stream = new XtBlockingAdapter(std::move(result));
   return DS_OK;
 }
 

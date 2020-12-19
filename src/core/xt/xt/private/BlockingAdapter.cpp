@@ -12,9 +12,6 @@ XtBlockingAdapter::Stop()
 XtSystem
 XtBlockingAdapter::GetSystem() const
 { return _stream->GetSystem(); }
-XtStream const*
-XtBlockingAdapter::GetStream() const
-{ return _stream->GetStream(); }
 XtFault
 XtBlockingAdapter::Start() 
 { SendControl(State::Starting); return 0; }
@@ -29,10 +26,11 @@ XtBlockingAdapter::GetLatency(XtLatency* latency) const
 { return _stream->GetLatency(latency); }
 
 XtBlockingAdapter::
-XtBlockingAdapter():
+XtBlockingAdapter(std::unique_ptr<XtBlockingStream>&& stream):
 _received(false), _lock(), _state(State::Stopped), 
-_control(), _respond(), _stream()
+_control(), _respond(), _stream(std::move(stream))
 {
+  _stream->_adapter = this;
   std::thread t(RunBlockingStream, this);
   t.detach();
 }

@@ -7,18 +7,24 @@
   void Stop() override;       \
   XtFault Start() override;   \
   XtBool IsRunning() const override;
-#define XT_IMPLEMENT_STREAM_SELF() \
-  XtStream const* GetStream() const override { return this; }
 
 struct XtStream:
 public XtStreamBase
 {
+  void* _user;
+  bool _emulated;
+  XtIOBuffers _buffers;
+  XtDeviceStreamParams _params;
+
   XtStream() = default;
-  void OnRunning(XtBool running) const;
 
   virtual void Stop() = 0;
   virtual XtFault Start() = 0;
   virtual XtBool IsRunning() const = 0;
+
+  void OnXRun(int32_t index) const;
+  void OnRunning(XtBool running) const;
+  uint32_t OnBuffer(XtBuffer const* buffer);
 };
 
 #endif // XT_API_PRIVATE_STREAM_HPP
