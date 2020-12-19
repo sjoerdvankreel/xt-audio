@@ -85,12 +85,6 @@ XtAggregateStream::ProcessBuffer()
   return 0;  
 }
 
-void
-XtAggregateStream::OnXRun(int32_t index) const
-{
-  throw 0;
-}
-
 uint32_t
 XtAggregateStream::OnBuffer(XtBuffer const* buffer)
 {

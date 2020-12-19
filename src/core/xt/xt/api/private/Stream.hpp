@@ -16,13 +16,14 @@ public XtStreamBase
   XtIOBuffers _buffers;
   XtDeviceStreamParams _params;
 
-  XtStream() = default;
-  XT_IMPLEMENT_STREAM_BASE_CALLBACKS();
-
   virtual void Stop() = 0;
   virtual XtFault Start() = 0;
   virtual XtBool IsRunning() const = 0;
   void OnRunning(XtBool running) const;
+
+  XtStream() = default;  
+  void OnXRun(int32_t index) const override final;
+  uint32_t OnBuffer(XtBuffer const* buffer) override final;
 };
 
 #endif // XT_API_PRIVATE_STREAM_HPP

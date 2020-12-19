@@ -19,13 +19,9 @@ public XtStreamBase
 {
   XtStream* _runner;
   XtBlockingParams _params;
-  XT_IMPLEMENT_STREAM_BASE_CALLBACKS();
 
   ~XtBlockingStream() { };
   XtBlockingStream() = default;
-
-  void StopBuffer();
-  XtFault StartBuffer();
 
   virtual void StopSlaveBuffer() = 0;
   virtual void StopMasterBuffer() = 0;
@@ -34,6 +30,11 @@ public XtStreamBase
   virtual XtFault StartMasterBuffer() = 0;  
   virtual XtFault BlockMasterBuffer() = 0;
   virtual XtFault PrefillOutputBuffer() = 0;
+
+  void StopBuffer();
+  XtFault StartBuffer();
+  void OnXRun(int32_t index) const override final;
+  uint32_t OnBuffer(XtBuffer const* buffer) override;
 };
 
 #endif // XT_PRIVATE_BLOCKING_STREAM_HPP
