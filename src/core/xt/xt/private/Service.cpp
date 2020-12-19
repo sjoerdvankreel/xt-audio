@@ -6,7 +6,7 @@
 #include <xt/private/Service.hpp>
 #include <xt/blocking/Stream.hpp>
 #include <xt/blocking/Device.hpp>
-#include <xt/blocking/Adapter.hpp>
+#include <xt/blocking/Runner.hpp>
 #include <xt/aggregate/Stream.hpp>
 
 #include <memory>
@@ -68,13 +68,13 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
 
   auto frames = result->_frames;
   XtiInitIOBuffers(result->_weave, &format, result->_frames);
-  auto adapter = std::make_unique<XtBlockingAdapter>(result.release());
-  adapter->_user = user;
-  adapter->_emulated = false;
-  adapter->_params.bufferSize = 0.0;
-  adapter->_params.format = format;
-  adapter->_params.stream = params->stream;
-  XtiInitIOBuffers(adapter->_buffers, &format, frames);
-  *stream = adapter.release();
+  auto runner = std::make_unique<XtBlockingRunner>(result.release());
+  runner->_user = user;
+  runner->_emulated = false;
+  runner->_params.bufferSize = 0.0;
+  runner->_params.format = format;
+  runner->_params.stream = params->stream;
+  XtiInitIOBuffers(runner->_buffers, &format, frames);
+  *stream = runner.release();
   return 0;
 }

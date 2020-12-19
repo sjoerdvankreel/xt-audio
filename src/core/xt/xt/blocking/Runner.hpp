@@ -1,5 +1,5 @@
-#ifndef XT_BLOCKING_ADAPTER_HPP
-#define XT_BLOCKING_ADAPTER_HPP
+#ifndef XT_BLOCKING_RUNNER_HPP
+#define XT_BLOCKING_RUNNER_HPP
 
 #include <xt/shared/Shared.hpp>
 #include <xt/private/Stream.hpp>
@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <condition_variable>
 
-struct XtBlockingAdapter:
+struct XtBlockingRunner:
 public XtStream
 {
   enum class State 
@@ -31,12 +31,12 @@ public XtStream
   XT_IMPLEMENT_STREAM();
   XT_IMPLEMENT_STREAM_BASE();
   XtSystem GetSystem() const override final;
-  ~XtBlockingAdapter();
-  XtBlockingAdapter(XtBlockingStream* stream);
+  ~XtBlockingRunner();
+  XtBlockingRunner(XtBlockingStream* stream);
   
   void SendControl(State from);
   void ReceiveControl(State state);
-  static void RunBlockingStream(XtBlockingAdapter* adapter);
+  static void RunBlockingStream(XtBlockingRunner* runner);
 };
 
-#endif // XT_BLOCKING_ADAPTER_HPP
+#endif // XT_BLOCKING_RUNNER_HPP

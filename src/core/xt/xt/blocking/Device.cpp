@@ -1,5 +1,5 @@
 #include <xt/blocking/Device.hpp>
-#include <xt/blocking/Adapter.hpp>
+#include <xt/blocking/Runner.hpp>
 
 XtFault 
 XtBlockingDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** stream)
@@ -13,6 +13,6 @@ XtBlockingDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** 
   blockingParams.interleaved = params->stream.interleaved;
   if((fault = OpenBlockingStream(&blockingParams, &blockingStream)) != 0) return fault;  
   blockingStream->_params = blockingParams;
-  *stream = new XtBlockingAdapter(blockingStream);
+  *stream = new XtBlockingRunner(blockingStream);
   return 0;
 }
