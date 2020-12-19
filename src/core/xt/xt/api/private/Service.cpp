@@ -41,7 +41,6 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
 
     XtBlockingStream* thisStream;
     XtBlockingParams thisParams = { 0 };
-    thisParams.index = i;
     thisParams.format = thisFormat;
     thisParams.bufferSize = device.bufferSize;
     thisParams.interleaved = params->stream.interleaved;
@@ -68,6 +67,9 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
   auto frames = result->_frames;
   XtiInitIOBuffers(result->_weave, &format, result->_frames);
   auto adapter = std::make_unique<XtBlockingAdapter>(result.release());
+  for(int32_t i = 0; i < params->count; i++)
+    static_cast<XtAggregateStream*>(adapter->_stream.get())->_streams[i]->_adapter = adapter.get();
+
   adapter->_user = user;
   adapter->_emulated = false;
   adapter->_params.bufferSize = 0.0;

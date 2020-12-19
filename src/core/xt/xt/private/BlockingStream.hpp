@@ -17,7 +17,7 @@
 struct XtBlockingStream:
 public XtStreamBase
 {
-  XtBlockingParams _params;
+  XtStream* _adapter;
   ~XtBlockingStream() { };
   XtBlockingStream() = default;
 

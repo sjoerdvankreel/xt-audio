@@ -32,7 +32,7 @@ DSoundStream::StartSlaveBuffer()
 void
 DSoundStream::StopMasterBuffer()
 {
-  auto rate = _params.format.mix.rate;
+  auto rate = _adapter->_params.format.mix.rate;
   UINT period = XtiDsGetTimerPeriod(_bufferFrames, rate);
   XT_TRACE_IF(!CancelWaitableTimer(_timer.timer));
   XT_TRACE_IF(timeEndPeriod(period / 2) != TIMERR_NOERROR);
@@ -42,7 +42,7 @@ DSoundStream::StopMasterBuffer()
 XtFault
 DSoundStream::BlockMasterBuffer()
 {
-  auto rate = _params.format.mix.rate;
+  auto rate = _adapter->_params.format.mix.rate;
   DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / rate);
   XT_VERIFY(WaitForSingleObject(_timer.timer, bufferMillis) == WAIT_OBJECT_0, DSERR_GENERIC);
   return DS_OK;
@@ -53,7 +53,7 @@ DSoundStream::StartMasterBuffer()
 {
   LARGE_INTEGER due;
   due.QuadPart = -1;
-  auto rate = _params.format.mix.rate;
+  auto rate = _adapter->_params.format.mix.rate;
   UINT period = XtiDsGetTimerPeriod(_bufferFrames, rate);
   XT_VERIFY(timeBeginPeriod(period / 2) == TIMERR_NOERROR, DSERR_GENERIC);
   auto timeGuard = XtiGuard([this] { XT_ASSERT(CancelWaitableTimer(_timer.timer)); } );
