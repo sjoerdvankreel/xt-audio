@@ -1,3 +1,4 @@
+#if 0
 #ifndef XT_PRIVATE_AGGREGATE_STREAM_HPP
 #define XT_PRIVATE_AGGREGATE_STREAM_HPP
 
@@ -36,3 +37,4 @@ public XtStream
 };
 
 #endif // XT_PRIVATE_AGGREGATE_STREAM_HPP
+#endif

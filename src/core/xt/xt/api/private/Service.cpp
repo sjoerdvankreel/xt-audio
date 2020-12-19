@@ -11,6 +11,8 @@
 XtFault
 XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const
 {
+  return 0;
+#if 0
   XtFault fault;
   bool masterFound = false;
   bool interleaved = params->stream.interleaved != XtFalse;
@@ -85,4 +87,5 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
 
   *stream = result.release();
   return 0;
+#endif
 }

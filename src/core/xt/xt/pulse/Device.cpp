@@ -63,7 +63,7 @@ PulseDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 }
 
 XtFault 
-PulseDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream)
+PulseDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStream** stream)
 {
   pa_simple* pa;
   int fault = PA_OK;
@@ -94,7 +94,7 @@ PulseDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, 
   int32_t frameSize = (channels.inputs + channels.outputs) * sampleSize;
   if((pa = pa_simple_new(nullptr, id, dir, nullptr, id, &spec, &map, nullptr, &fault)) == nullptr) return fault;
 
-  auto result = std::make_unique<PulseStream>(secondary);
+  auto result = std::make_unique<PulseStream>();
   result->_frames = frames;
   result->_output = _output;
   result->_pa = XtPaSimple(pa);

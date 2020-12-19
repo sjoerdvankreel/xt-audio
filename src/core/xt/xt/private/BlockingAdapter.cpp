@@ -9,6 +9,12 @@ XtBlockingAdapter::
 void
 XtBlockingAdapter::Stop()
 { SendControl(State::Stopping); }
+XtSystem
+XtBlockingAdapter::GetSystem() const
+{ return _stream->GetSystem(); }
+XtStream const*
+XtBlockingAdapter::GetStream() const
+{ return _stream->GetStream(); }
 XtFault
 XtBlockingAdapter::Start() 
 { SendControl(State::Starting); return 0; }

@@ -3,9 +3,6 @@
 #include <pulse/pulseaudio.h>
 #include <utility>
 
-PulseStream::
-PulseStream(bool secondary):
-XtBlockingStream(secondary) { }
 void PulseStream::StopStream() { }
 void PulseStream::StartStream() { }
 

@@ -64,7 +64,7 @@ JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* 
 }
 
 XtFault 
-JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream)
+JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStream** stream)
 {  
   XtFault fault;
   auto id = XtPlatform::instance->_id.c_str();

@@ -73,7 +73,7 @@ XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, 
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(params->bufferSize > 0.0);
   XT_ASSERT(params->stream.onBuffer != nullptr);
-  return d->OpenStream(params, false, user, stream);
+  return d->OpenStream(params, user, stream);
 }
 
 XtError XT_CALL

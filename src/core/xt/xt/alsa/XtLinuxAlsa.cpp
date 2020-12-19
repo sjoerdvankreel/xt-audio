@@ -108,9 +108,9 @@ struct AlsaStream: public XtBlockingStream {
   XT_IMPLEMENT_BLOCKING_STREAM(ALSA);
 
   ~AlsaStream() { }
-  AlsaStream(bool secondary, AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
+  AlsaStream(AlsaPcm&& p, bool output, bool mmap, bool alsaInterleaved, 
              int32_t bufferFrames, int32_t channels, int32_t sampleSize):
-  XtBlockingStream(secondary),
+  XtBlockingStream(),
   mmap(mmap), 
   output(output),
   pcm(std::move(p)), 
@@ -413,7 +413,7 @@ XtFault AlsaDevice::SupportsAccess(snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams
   return 0;
 }
 
-XtFault AlsaDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault AlsaDevice::OpenStreamCore(const XtDeviceStreamParams* params, void* user, XtStream** stream) {
   
   XtFault fault;
   snd_pcm_t* pcm;
@@ -452,7 +452,7 @@ XtFault AlsaDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool seco
 
   sampleSize = XtiGetSampleSize(params->format.mix.sample);
   channels = params->format.channels.inputs + params->format.channels.outputs;
-  *stream = new AlsaStream(secondary, std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
+  *stream = new AlsaStream(std::move(alsaPcm), info.output, info.mmap, alsaInterleaved, realBuffer, channels, sampleSize);
   return 0;
 }
 

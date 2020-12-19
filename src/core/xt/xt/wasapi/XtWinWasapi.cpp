@@ -85,10 +85,10 @@ struct WasapiStream: public XtBlockingStream {
   XT_IMPLEMENT_BLOCKING_STREAM(WASAPI);
 
   ~WasapiStream() {  }
-  WasapiStream(bool secondary, UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
+  WasapiStream(UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
     CComPtr<IAudioClient> client, CComPtr<IAudioClient> loopback, CComPtr<IAudioCaptureClient> capture,
     CComPtr<IAudioRenderClient> render, const Options& options):
-  XtBlockingStream(secondary), mmcssHandle(), bufferFrames(bufferFrames),
+  XtBlockingStream(), mmcssHandle(), bufferFrames(bufferFrames),
   options(options), streamEvent(), clock(clock), clock2(clock2), 
   client(client), loopback(loopback), render(render), capture(capture) {}
 
@@ -356,7 +356,7 @@ XtFault WasapiDevice::SupportsFormat(const XtFormat* format, XtBool* supports) c
   return S_OK;
 }
 
-XtFault WasapiDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool secondary, void* user, XtStream** stream) {
+XtFault WasapiDevice::OpenStreamCore(const XtDeviceStreamParams* params, void* user, XtStream** stream) {
 
   HRESULT hr;
   DWORD flags;
@@ -462,7 +462,7 @@ XtFault WasapiDevice::OpenStreamCore(const XtDeviceStreamParams* params, bool se
       XT_VERIFY_COM(loopbackClient3->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, bufferFrames, pWfx, nullptr));
     }
   }
-  result = std::make_unique<WasapiStream>(secondary, bufferFrames, clock, clock2, streamClient, loopbackClient, capture, render, this->options);
+  result = std::make_unique<WasapiStream>(bufferFrames, clock, clock2, streamClient, loopbackClient, capture, render, this->options);
   if(this->options.loopback)
     XT_VERIFY_COM(loopbackClient->SetEventHandle(result->streamEvent.event));
   else

@@ -1,3 +1,4 @@
+#if 0
 #include <xt/private/AggregateStream.hpp>
 #include <xt/private/Shared.hpp>
 
@@ -192,3 +193,4 @@ XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer
   XT_ASSERT(XtiCompareExchange(aggregate->_insideCallback, 1, 0));
   return 0;
 }
+#endif

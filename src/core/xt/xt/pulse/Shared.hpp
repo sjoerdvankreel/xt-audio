@@ -34,7 +34,7 @@ public XtBlockingStream
   int32_t _frames;
   std::vector<uint8_t> _audio;
   
-  PulseStream(bool secondary);
+  PulseStream() = default;
   XT_IMPLEMENT_BLOCKING_STREAM(Pulse);
 };
 

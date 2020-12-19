@@ -1,8 +1,9 @@
 #if XT_ENABLE_DSOUND
 #include <xt/dsound/Shared.hpp>
 #include <xt/dsound/Private.hpp>
-#include <xt/api/private/Platform.hpp>
 #include <xt/private/Win32.hpp>
+#include <xt/api/private/Platform.hpp>
+#include <xt/private/BlockingAdapter.hpp>
 #include <memory>
 
 XtFault 
@@ -14,6 +15,9 @@ DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const
 XtFault
 DSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 { *supports = interleaved; return DS_OK; }
+XtFault
+DSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
+{ XtiCopyString(XtiWfxChannelNames[index], buffer, size); return DS_OK; }
 
 XtFault
 DSoundDevice::GetChannelCount(XtBool output, int32_t* count) const
@@ -45,14 +49,7 @@ DSoundDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
 }
 
 XtFault
-DSoundDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
-{
-  XtiCopyString(XtiWfxChannelNames[index], buffer, size);
-  return DS_OK;
-}
-
-XtFault
-DSoundDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary, void* user, XtStream** stream)
+DSoundDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStream** stream)
 {
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;
@@ -62,7 +59,7 @@ DSoundDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary,
   double bufferSize = params->bufferSize;
   auto const& channels = params->format.channels;
   XT_ASSERT(XtiFormatToWfx(params->format, wfx));
-  auto result = std::make_unique<DSoundStream>(secondary);
+  auto result = std::make_unique<DSoundStream>();
   if(bufferSize < XtiDsMinBufferMs) bufferSize = XtiDsMinBufferMs;
   if(bufferSize > XtiDsMaxBufferMs) bufferSize = XtiDsMaxBufferMs;
 
@@ -91,7 +88,10 @@ DSoundDevice::OpenStreamCore(XtDeviceStreamParams const* params, bool secondary,
     XT_VERIFY_COM(result->_output->SetCooperativeLevel(hwnd, DSSCL_PRIORITY));
     XT_VERIFY_COM(result->_output->CreateSoundBuffer(&renderDesc, &result->_outputBuffer, nullptr));
   }
-  *stream = result.release();
+  auto adapter = std::make_unique<XtBlockingAdapter>();
+  adapter->_stream = std::move(result);
+  adapter->_stream->_stream = adapter.get();
+  *stream = adapter.release();
   return DS_OK;
 }
 
