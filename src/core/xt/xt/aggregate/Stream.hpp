@@ -11,7 +11,8 @@ struct XtAggregateStream:
 public XtBlockingStream
 {
   int32_t _frames;
-  XtIOBuffers _weave;
+  XtIOBuffers _weave;  
+  XtIOBuffers _buffers;
   int32_t _masterIndex;
   std::vector<XtChannels> _channels;
   std::vector<XtIORingBuffers> _rings;

@@ -82,5 +82,65 @@ XtAggregateStream::GetLatency(XtLatency* latency) const
 XtFault 
 XtAggregateStream::ProcessBuffer()
 {
-  return 0;  
+  auto& wi = _weave.input;
+  auto& bi = _buffers.input;
+  int32_t totalChannels = 0;
+  bool interleaved = _params.interleaved;
+  auto sampleSize = XtiGetSampleSize(_params.format.mix.sample);
+
+  for(size_t i = 0; i < _streams.size(); i++)
+    if(i != _masterIndex)
+      _streams[i]->ProcessBuffer();
+  _streams[_masterIndex]->ProcessBuffer();
+
+  void* appInput = interleaved? static_cast<void*>(bi.interleaved.data()): bi.nonInterleaved.data();
+  void* ringInput = interleaved? static_cast<void*>(wi.interleaved.data()): wi.nonInterleaved.data();
+  for(size_t i = 0; i < _streams.size(); i++)
+  {
+    XtRingBuffer* ring = &_rings[i].input;
+    XtBlockingStream const* str = _streams[i].get();
+    XtFormat const* fmt = &_streams[i]->_params.format;
+    int32_t thisIns = fmt->channels.inputs;
+    if(thisIns > 0)
+    {
+      int32_t read = ring->Read(ringInput, buffer->frames);
+      int32_t allIns = _params.format.channels.inputs;
+      if(read < buffer->frames)
+      {
+        XtiZeroBuffer(ringInput, interleaved, read, thisIns, buffer->frames - read, sampleSize);
+        OnXRun(i);
+      }
+      for(int32_t c = 0; c < thisIns; c++)
+        XtiWeave(appInput, ringInput, interleaved, allIns, thisIns, totalChannels + c, c, buffer->frames, sampleSize);
+      totalChannels += thisIns;
+    }
+  }
+
+  auto& wo = _weave.output;
+  auto& bo = _buffers.output; 
+  void* appOutput = interleaved? static_cast<void*>(bo.interleaved.data()): bo.nonInterleaved.data();
+  void* ringOutput = interleaved? static_cast<void*>(wo.interleaved.data()): wo.nonInterleaved.data();
+  XtBuffer appBuffer = *buffer;
+  appBuffer.input = appInput;
+  appBuffer.output = appOutput;
+  OnBuffer(-1, &appBuffer);
+
+  totalChannels = 0;
+  for(size_t i = 0; i < _streams.size(); i++)
+  {
+    XtRingBuffer* ring = &_rings[i].output;
+    XtBlockingStream const* str = _streams[i].get();
+    XtFormat const* fmt = &_streams[i]->_params.format;
+    int32_t thisOuts = fmt->channels.outputs;
+    if(thisOuts > 0)
+    {
+      int32_t allOuts = _params.format.channels.outputs;
+      for(int32_t c = 0; c < thisOuts; c++)
+        XtiWeave(ringOutput, appOutput, interleaved, thisOuts, allOuts, c, totalChannels + c, buffer->frames, sampleSize);
+      totalChannels += thisOuts;
+      int32_t written = ring->Write(ringOutput, buffer->frames);
+      if(written < buffer->frames) OnXRun(i);
+    }
+  }
+  return 0;
 }
