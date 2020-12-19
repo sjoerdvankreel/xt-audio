@@ -6,6 +6,9 @@
 #include <xt/private/Structs.hpp>
 #include <xt/private/Shared.hpp>
 
+#define XT_IMPLEMENT_STREAM_BASE_CALLBACKS() \
+  void OnXRun(int32_t index) const override; \
+  uint32_t OnBuffer(XtBuffer const* buffer) override;
 #define XT_IMPLEMENT_STREAM_BASE()                         \
   XtFault GetFrames(int32_t* frames) const override final; \
   XtFault GetLatency(XtLatency* latency) const override final 
@@ -18,7 +21,9 @@ struct XtStreamBase
   virtual ~XtStreamBase() { };
 
   virtual XtSystem GetSystem() const = 0;
+  virtual void OnXRun(int32_t index) const = 0;
   virtual XtFault GetFrames(int32_t* frames) const = 0;
+  virtual uint32_t OnBuffer(XtBuffer const* buffer) = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
 };
 

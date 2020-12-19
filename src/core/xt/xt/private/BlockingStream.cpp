@@ -2,6 +2,13 @@
 #include <xt/api/private/Stream.hpp>
 
 void
+XtBlockingStream::OnXRun(int32_t index) const
+{ _runner->OnXRun(index); }
+uint32_t
+XtBlockingStream::OnBuffer(XtBuffer const* buffer)
+{ return _runner->OnBuffer(buffer); }
+
+void
 XtBlockingStream::StopBuffer()
 {
   StopSlaveBuffer();

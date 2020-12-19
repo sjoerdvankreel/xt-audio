@@ -30,6 +30,7 @@ XtBlockingAdapter(XtBlockingStream* stream):
 _received(false), _lock(), _state(State::Stopped), 
 _control(), _respond(), _stream(stream)
 {
+  stream->_runner = this;
   std::thread t(RunBlockingStream, this);
   t.detach();
 }

@@ -17,7 +17,10 @@
 struct XtBlockingStream:
 public XtStreamBase
 {
+  XtStream* _runner;
   XtBlockingParams _params;
+  XT_IMPLEMENT_STREAM_BASE_CALLBACKS();
+
   ~XtBlockingStream() { };
   XtBlockingStream() = default;
 

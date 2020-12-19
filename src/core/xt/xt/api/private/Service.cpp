@@ -41,6 +41,7 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
 
     XtBlockingStream* thisStream;
     XtBlockingParams thisParams = { 0 };
+    thisParams.index = i;
     thisParams.format = thisFormat;
     thisParams.bufferSize = device.bufferSize;
     thisParams.interleaved = params->stream.interleaved;

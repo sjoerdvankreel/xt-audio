@@ -85,8 +85,14 @@ XtAggregateStream::ProcessBuffer()
   return 0;  
 }
 
-uint32_t XT_CALLBACK 
-XtAggregateStream::OnBuffer(XtStream const* stream, XtBuffer const* buffer, void* user)
+void
+XtAggregateStream::OnXRun(int32_t index) const
 {
-  return 0;
+  throw 0;
+}
+
+uint32_t
+XtAggregateStream::OnBuffer(XtBuffer const* buffer)
+{
+  throw 0;
 }

@@ -2,17 +2,17 @@
 #include <xt/private/Shared.hpp>
 
 void
-XtStream::OnRunning(XtBool running) const
-{
-  auto onRunning = _params.stream.onRunning;
-  if(onRunning != nullptr) onRunning(this, running, _user);
-}
-
-void
 XtStream::OnXRun(int32_t index) const
 {
   auto onXRun = _params.stream.onXRun;
   if(onXRun != nullptr) onXRun(this, index, _user);
+}
+
+void
+XtStream::OnRunning(XtBool running) const
+{
+  auto onRunning = _params.stream.onRunning;
+  if(onRunning != nullptr) onRunning(this, running, _user);
 }
 
 uint32_t
