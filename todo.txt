@@ -38,3 +38,5 @@
 * blockingstream is not a stream. use blockingstreamadapter instead, dont derive blockingstream from stream
 * check xtiguard impl
 * revert onbuffer return value
+* fix header order and outlining
+* adapter->runner

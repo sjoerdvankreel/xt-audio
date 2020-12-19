@@ -1,0 +1,28 @@
+#ifndef XT_AGGREGATE_STREAM_HPP
+#define XT_AGGREGATE_STREAM_HPP
+
+#include <xt/blocking/Stream.hpp>
+#include <xt/aggregate/RingBuffer.hpp>
+
+#include <vector>
+#include <memory>
+
+struct XtAggregateStream: 
+public XtBlockingStream
+{
+  int32_t _frames;
+  XtIOBuffers _weave;
+  int32_t _masterIndex;
+  std::vector<XtChannels> _channels;
+  std::vector<XtIORingBuffers> _rings;
+  std::vector<std::unique_ptr<XtBlockingStream>> _streams;
+
+  XtAggregateStream() = default;
+  XtSystem GetSystem() const override;
+
+  XT_IMPLEMENT_STREAM_BASE();
+  XT_IMPLEMENT_BLOCKING_STREAM();
+  uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) override final;
+};
+
+#endif // XT_AGGREGATE_STREAM_HPP

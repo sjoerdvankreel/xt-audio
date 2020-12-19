@@ -3,16 +3,17 @@
 
 /** @file */
 
-#include <xt/api/public/Enums.h>
-#include <xt/api/public/Shared.h>
-#include <xt/api/public/Structs.h>
-#include <xt/api/public/Callbacks.h>
-#include <xt/api/public/XtPrint.h>
-#include <xt/api/public/XtAudio.h>
-#include <xt/api/public/XtStream.h>
-#include <xt/api/public/XtDevice.h>
-#include <xt/api/public/XtService.h>
-#include <xt/api/public/XtPlatform.h>
-#include <xt/api/public/XtDeviceList.h>
+#include <xt/api/Enums.h>
+#include <xt/api/Shared.h>
+#include <xt/api/Structs.h>
+#include <xt/api/Callbacks.h>
+
+#include <xt/api/XtPrint.h>
+#include <xt/api/XtAudio.h>
+#include <xt/api/XtStream.h>
+#include <xt/api/XtDevice.h>
+#include <xt/api/XtService.h>
+#include <xt/api/XtPlatform.h>
+#include <xt/api/XtDeviceList.h>
 
 #endif /* XT_AUDIO_H */
