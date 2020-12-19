@@ -5,8 +5,12 @@ XtFault
 XtBlockingDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** stream)
 {
   XtFault fault;
-  XtBlockingStream* blocking = nullptr;
-  if((fault = OpenBlockingStream(params, &blocking)) != 0) return fault;  
-  *stream = new XtBlockingAdapter(blocking);
+  XtBlockingParams blockingParams = { 0 };
+  XtBlockingStream* blockingStream = nullptr;
+  blockingParams.format = params->format;
+  blockingParams.bufferSize = params->bufferSize;
+  blockingParams.interleaved = params->stream.interleaved;
+  if((fault = OpenBlockingStream(&blockingParams, &blockingStream)) != 0) return fault;  
+  *stream = new XtBlockingAdapter(blockingStream);
   return 0;
 }

@@ -1,4 +1,3 @@
-#if 0
 #include <xt/private/AggregateStream.hpp>
 #include <xt/api/private/Stream.hpp>
 #include <xt/private/Shared.hpp>
@@ -19,13 +18,6 @@ XtFault
 XtAggregateStream::BlockMasterBuffer()
 { return _streams[_masterIndex]->StartMasterBuffer(); }
 
-XtFault
-XtAggregateStream::PrefillOutputBuffer()
-{
-  for(size_t i = 0; i < _streams.size(); i++)
-      _streams[i]->PrefillOutputBuffer();
-}
-
 void
 XtAggregateStream::StopSlaveBuffer()
 {
@@ -33,6 +25,15 @@ XtAggregateStream::StopSlaveBuffer()
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
       _streams[i]->StopSlaveBuffer();
+}
+
+XtFault
+XtAggregateStream::PrefillOutputBuffer()
+{
+  XtFault fault;
+  for(size_t i = 0; i < _streams.size(); i++)
+    if((fault = _streams[i]->PrefillOutputBuffer()) != 0) return fault;
+  return 0;
 }
 
 XtFault
@@ -79,14 +80,7 @@ XtAggregateStream::GetLatency(XtLatency* latency) const
 }
 
 uint32_t XT_CALLBACK 
-XtAggregateStream::OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer, void* user)
+XtAggregateStream::OnBuffer(XtStream const* stream, XtBuffer const* buffer, void* user)
 {
   return 0;
 }
-
-uint32_t XT_CALLBACK 
-XtAggregateStream::OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer, void* user)
-{
-  return 0;
-}
-#endif

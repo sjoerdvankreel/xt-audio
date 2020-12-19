@@ -1,4 +1,3 @@
-#if 0
 #ifndef XT_PRIVATE_AGGREGATE_STREAM_HPP
 #define XT_PRIVATE_AGGREGATE_STREAM_HPP
 
@@ -24,10 +23,7 @@ public XtBlockingStream
   XtSystem GetSystem() const override;
 
   static uint32_t XT_CALLBACK
-  OnSlaveBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
-  static uint32_t XT_CALLBACK
-  OnMasterBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
+  OnBuffer(XtStream const* stream, XtBuffer const* buffer, void* user);
 };
 
 #endif // XT_PRIVATE_AGGREGATE_STREAM_HPP
-#endif

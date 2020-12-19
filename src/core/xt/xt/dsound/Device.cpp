@@ -49,7 +49,7 @@ DSoundDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
 }
 
 XtFault
-DSoundDevice::OpenBlockingStream(XtDeviceStreamParams const* params, XtBlockingStream** stream)
+DSoundDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream)
 {
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;

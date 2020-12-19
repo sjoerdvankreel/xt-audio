@@ -1,9 +1,17 @@
 #ifndef XT_PRIVATE_STRUCTS_HPP
 #define XT_PRIVATE_STRUCTS_HPP
 
+#include <xt/api/public/Structs.h>
 #include <vector>
 #include <atomic>
 #include <cstdint>
+
+struct XtBlockingParams 
+{
+  XtFormat format;
+  double bufferSize;
+  XtBool interleaved;
+};
 
 struct XtBuffers
 {
