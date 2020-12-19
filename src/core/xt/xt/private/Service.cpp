@@ -6,7 +6,7 @@
 #include <xt/private/Service.hpp>
 #include <xt/blocking/Stream.hpp>
 #include <xt/blocking/Device.hpp>
-#include <xt/blocking/Runner.hpp>
+#include <xt/aggregate/Runner.hpp>
 #include <xt/aggregate/Stream.hpp>
 
 #include <memory>
@@ -48,6 +48,7 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
     thisParams.interleaved = params->stream.interleaved;
     auto thisDevice = &dynamic_cast<XtBlockingDevice&>(*device.device);
     if((fault = thisDevice->OpenBlockingStream(&thisParams, &thisStream) != 0)) return fault;
+    thisStream->_params = thisParams;
 
     int32_t thisFrames;
     result->_streams.push_back(std::unique_ptr<XtBlockingStream>(thisStream));
@@ -67,8 +68,12 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
   }
 
   auto frames = result->_frames;
+  XtAggregateStream* aggregate = result.get();
   XtiInitIOBuffers(result->_weave, &format, result->_frames);
-  auto runner = std::make_unique<XtBlockingRunner>(result.release());
+  auto runner = std::make_unique<XtAggregateRunner>(result.release());
+  for(size_t i = 0; i < aggregate->_streams.size(); i++)
+    aggregate->_streams[i]->_runner = runner.get();
+
   runner->_user = user;
   runner->_emulated = false;
   runner->_params.bufferSize = 0.0;

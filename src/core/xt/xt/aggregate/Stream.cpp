@@ -16,7 +16,7 @@ XtAggregateStream::StartMasterBuffer()
 { return _streams[_masterIndex]->StartMasterBuffer(); }
 XtFault
 XtAggregateStream::BlockMasterBuffer()
-{ return _streams[_masterIndex]->StartMasterBuffer(); }
+{ return _streams[_masterIndex]->BlockMasterBuffer(); }
 
 void
 XtAggregateStream::StopSlaveBuffer()
@@ -83,10 +83,4 @@ XtFault
 XtAggregateStream::ProcessBuffer()
 {
   return 0;  
-}
-
-uint32_t
-XtAggregateStream::OnBuffer(int32_t index, XtBuffer const* buffer)
-{
-  throw 0;
 }

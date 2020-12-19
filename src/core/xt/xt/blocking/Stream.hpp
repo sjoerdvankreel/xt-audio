@@ -34,7 +34,7 @@ public XtStreamBase
   void StopBuffer();
   XtFault StartBuffer();
   void OnXRun(int32_t index) const override final;
-  uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) override;
+  uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) override final;
 };
 
 #endif // XT_BLOCKING_STREAM_HPP

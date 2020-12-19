@@ -23,7 +23,7 @@ public XtStreamBase
   XtStream() = default;  
   void OnRunning(XtBool running) const;
   void OnXRun(int32_t index) const override final;
-  uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) override final;
+  uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) override;
 };
 
 #endif // XT_PRIVATE_STREAM_HPP

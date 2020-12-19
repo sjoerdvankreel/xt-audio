@@ -20,7 +20,6 @@
 * skip alsa devices that fail snd_pcm_hw_params_any or use try_open
 * disable c26451
 * wasapi do {guid}.{type} id = shared/excl/loopback
-* do not terminate on timeout, stop stream instead
 * update asmjit
 * check const order
 * support multiple JACK servers
@@ -31,12 +30,7 @@
 * split wasapi service -> shared/exclusive
 * split alsa service -> rw/mmap
 * timeout after 3 buffers (see also WFSO)
-* dont timeout on stopped
 * do assert_com like for linux
-* rename to blockingloop
-* restructure aggregate, onxrun, make aggregate blocking
-* blockingstream is not a stream. use blockingstreamadapter instead, dont derive blockingstream from stream
 * check xtiguard impl
 * revert onbuffer return value
 * fix header order and outlining
-* adapter->runner
