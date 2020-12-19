@@ -11,6 +11,7 @@ XtBlockingDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** 
   blockingParams.bufferSize = params->bufferSize;
   blockingParams.interleaved = params->stream.interleaved;
   if((fault = OpenBlockingStream(&blockingParams, &blockingStream)) != 0) return fault;  
+  blockingStream->_params = blockingParams;
   *stream = new XtBlockingAdapter(blockingStream);
   return 0;
 }

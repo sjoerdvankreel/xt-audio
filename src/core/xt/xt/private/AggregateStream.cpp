@@ -60,7 +60,7 @@ XtAggregateStream::GetLatency(XtLatency* latency) const
 {
   XtFault fault;
   XtLatency local = { 0 };
-  auto invRate = 1000.0 / _adapter->_params.format.mix.rate;
+  auto invRate = 1000.0 / _params.format.mix.rate;
   for(size_t i = 0; i < _streams.size(); i++)
   {
     if((fault = _streams[i]->GetLatency(&local)) != 0) return fault;
