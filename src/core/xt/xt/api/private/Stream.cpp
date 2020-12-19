@@ -16,7 +16,7 @@ XtStream::OnRunning(XtBool running) const
 }
 
 uint32_t
-XtStream::OnBuffer(XtBuffer const* buffer)
+XtStream::OnBuffer(int32_t index, XtBuffer const* buffer)
 {
   XtBuffer converted = *buffer;
   auto onBuffer = _params.stream.onBuffer;

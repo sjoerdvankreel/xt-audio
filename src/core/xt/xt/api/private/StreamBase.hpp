@@ -20,8 +20,8 @@ struct XtStreamBase
   virtual XtSystem GetSystem() const = 0;
   virtual void OnXRun(int32_t index) const = 0;
   virtual XtFault GetFrames(int32_t* frames) const = 0;
-  virtual uint32_t OnBuffer(XtBuffer const* buffer) = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
+  virtual uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) = 0;
 };
 
 #endif // XT_API_PRIVATE_STREAM_BASE_HPP

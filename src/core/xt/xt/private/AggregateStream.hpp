@@ -21,7 +21,7 @@ public XtBlockingStream
 
   XT_IMPLEMENT_STREAM_BASE();
   XT_IMPLEMENT_BLOCKING_STREAM();
-  uint32_t OnBuffer(XtBuffer const* buffer) override final;
+  uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) override final;
 };
 
 #endif // XT_PRIVATE_AGGREGATE_STREAM_HPP
