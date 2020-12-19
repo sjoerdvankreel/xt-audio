@@ -6,7 +6,9 @@
 #define XT_IMPLEMENT_STREAM() \
   void Stop() override;       \
   XtFault Start() override;   \
-  XtBool IsRunning() const override;         
+  XtBool IsRunning() const override;
+#define XT_IMPLEMENT_STREAM_SELF() \
+  XtStream const* GetStream() const override { return this; }
 
 struct XtStream:
 public XtStreamBase

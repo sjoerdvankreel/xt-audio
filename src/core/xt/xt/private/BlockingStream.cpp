@@ -1,111 +1,23 @@
-#include <xt/api/private/Platform.hpp>
 #include <xt/private/BlockingStream.hpp>
-#include <xt/private/AggregateStream.hpp>
-#include <xt/private/Shared.hpp>
-#include <thread>
 
-XtBool
-XtBlockingStream::IsRunning() const
-{ return _state.load() == State::Started; }
+XtStream const*
+XtBlockingStream::GetStream() const
+{ return _stream; }
 
-XtBlockingStream::
-XtBlockingStream(bool secondary):
-_index(-1), _aggregated(false), _received(false), _lock(),
-_secondary(secondary), _state(State::Stopped), _control(), _respond()
+void
+XtBlockingStream::StopBuffer()
 {
-  if(secondary) return;
-  std::thread t(RunBlockingStream, this);
-  t.detach();
-}
-
-XtBlockingStream::
-~XtBlockingStream() 
-{ 
-  if(_secondary) return;
-  SendControl(State::Closing); 
+  StopSlaveBuffer();
+  StopMasterBuffer();
 }
 
 XtFault
-XtBlockingStream::Start() 
+XtBlockingStream::StartBuffer()
 {
-  XT_ASSERT(!_secondary);
-  SendControl(State::Starting);
+  XtFault fault;
+  if((fault = StartMasterBuffer()) != 0) return fault;
+  auto masterGuard = XtiGuard([this] { StopMasterBuffer(); });
+  if((fault = StartSlaveBuffer()) != 0) return fault;
+  masterGuard.Commit();
   return 0;
-}
-
-void
-XtBlockingStream::Stop()
-{
-  XT_ASSERT(!_secondary);
-  SendControl(State::Stopping);
-}
-
-void
-XtBlockingStream::SendControl(State from)
-{
-  std::unique_lock guard(_lock);
-  _state = from;
-  _received = false;
-  _control.notify_one();
-  auto pred = [this] { return _received; };
-  auto timeout = std::chrono::milliseconds(WaitTimeoutMs);
-  XT_ASSERT(_respond.wait_for(guard, timeout, pred));
-}
-
-void
-XtBlockingStream::ReceiveControl(State state)
-{
-  std::unique_lock guard(_lock);
-  _state = state;
-  _received = true;
-  guard.unlock();
-  _respond.notify_one();  
-  if(state == State::Started) OnRunning(XtTrue);
-  if(state == State::Stopped) OnRunning(XtFalse);
-}   
-
-void
-XtBlockingStream::RunBlockingStream(XtBlockingStream* stream)
-{  
-  State state;
-  int32_t threadPolicy;
-  int32_t prevThreadPrio;
-  XtPlatform::BeginThread();
-  XtPlatform::RaiseThreadPriority(&threadPolicy, &prevThreadPrio);
-  while((state = stream->_state.load()) != State::Closed)
-    switch(state)
-    {
-    case State::Closing:
-      stream->ReceiveControl(State::Closed);
-      break;
-    case State::Stopping:
-      stream->StopStream();
-      stream->ReceiveControl(State::Stopped);
-      break;
-    case State::Started:
-      if(stream->ProcessBuffer(false) != 0)
-      {
-        stream->StopStream();
-        stream->ReceiveControl(State::Stopped);
-      }
-      break;
-    case State::Starting:
-      if(stream->ProcessBuffer(true) != 0 || stream->StartStream() != 0)
-        stream->ReceiveControl(State::Stopped);
-      else
-        stream->ReceiveControl(State::Started);
-      break;
-    case State::Stopped:
-      {
-      auto pred = [stream] { return stream->_state != State::Stopped; };
-      std::unique_lock guard(stream->_lock);
-      stream->_control.wait(guard, pred);
-      break;
-      }
-    default:
-      XT_ASSERT(false);
-      break;
-    }  
-  XtPlatform::RevertThreadPriority(threadPolicy, prevThreadPrio);
-  XtPlatform::EndThread();
 }

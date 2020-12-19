@@ -1,6 +1,7 @@
 #ifndef XT_PRIVATE_BLOCKING_STREAM_HPP
 #define XT_PRIVATE_BLOCKING_STREAM_HPP
 
+#include <xt/api/public/XtStream.h>
 #include <xt/api/private/StreamBase.hpp>
 #include <xt/private/Shared.hpp>
 
@@ -16,6 +17,7 @@
 struct XtBlockingStream:
 public XtStreamBase
 {
+  XtStream const* _stream;
   ~XtBlockingStream() { };
   XtBlockingStream() = default;
 
@@ -26,6 +28,10 @@ public XtStreamBase
   virtual XtFault StartMasterBuffer() = 0;  
   virtual XtFault BlockMasterBuffer() = 0;
   virtual XtFault PrefillOutputBuffer() = 0;
+
+  void StopBuffer();
+  XtFault StartBuffer();
+  XtStream const* GetStream() const override final;
 };
 
 #endif // XT_PRIVATE_BLOCKING_STREAM_HPP

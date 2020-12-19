@@ -55,6 +55,7 @@ public XtStream
   ~AsioStream();
   AsioStream() = default;
   XT_IMPLEMENT_STREAM();
+  XT_IMPLEMENT_STREAM_SELF();
   XT_IMPLEMENT_STREAM_BASE();
   XT_IMPLEMENT_STREAM_BASE_SYSTEM(ASIO);
 

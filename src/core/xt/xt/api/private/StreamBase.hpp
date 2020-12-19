@@ -16,7 +16,6 @@ struct XtStreamBase
 {
   void* _user;
   bool _emulated;
-  XtStream* _stream;
   XtIOBuffers _buffers;
   XtDeviceStreamParams _params;
 
@@ -26,6 +25,7 @@ struct XtStreamBase
 
   virtual ~XtStreamBase() { };
   virtual XtSystem GetSystem() const = 0;
+  virtual XtStream const* GetStream() const = 0;
   virtual XtFault GetFrames(int32_t* frames) const = 0;
   virtual XtFault GetLatency(XtLatency* latency) const = 0;
 };
