@@ -102,7 +102,7 @@ AsioDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 }
 
 XtFault
-AsioDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStream** stream)
+AsioDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** stream)
 { 
   ASIOSampleRate rate;
   long min, max, preferred, granularity;

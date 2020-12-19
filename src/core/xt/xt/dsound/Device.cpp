@@ -49,7 +49,7 @@ DSoundDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
 }
 
 XtFault
-DSoundDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStream** stream)
+DSoundDevice::OpenBlockingStream(XtDeviceStreamParams const* params, XtBlockingStream** stream)
 {
   HRESULT hr;
   WAVEFORMATEXTENSIBLE wfx;
@@ -88,7 +88,7 @@ DSoundDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtS
     XT_VERIFY_COM(result->_output->SetCooperativeLevel(hwnd, DSSCL_PRIORITY));
     XT_VERIFY_COM(result->_output->CreateSoundBuffer(&renderDesc, &result->_outputBuffer, nullptr));
   }
-  *stream = new XtBlockingAdapter(std::move(result));
+  *stream = result.release();
   return DS_OK;
 }
 

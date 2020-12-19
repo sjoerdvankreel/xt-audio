@@ -5,14 +5,14 @@
 #include <xt/api/private/StreamBase.hpp>
 #include <xt/private/Shared.hpp>
 
-#define XT_IMPLEMENT_BLOCKING_STREAM()  \
-  void StopSlaveBuffer() override;      \
-  void StopMasterBuffer() override;     \
-  XtFault ProcessBuffer() override;     \
-  XtFault StartSlaveBuffer() override;  \
-  XtFault StartMasterBuffer() override; \
-  XtFault BlockMasterBuffer() override; \
-  XtFault PrefillOutputBuffer() override; 
+#define XT_IMPLEMENT_BLOCKING_STREAM()        \
+  void StopSlaveBuffer() override final;      \
+  void StopMasterBuffer() override final;     \
+  XtFault ProcessBuffer() override final;     \
+  XtFault StartSlaveBuffer() override final;  \
+  XtFault StartMasterBuffer() override final; \
+  XtFault BlockMasterBuffer() override final; \
+  XtFault PrefillOutputBuffer() override final 
 
 struct XtBlockingStream:
 public XtStreamBase

@@ -6,6 +6,7 @@
 #include <xt/api/private/Service.hpp>
 #include <xt/api/private/DeviceList.hpp>
 #include <xt/private/BlockingStream.hpp>
+#include <xt/private/BlockingDevice.hpp>
 #include <xt/dsound/Private.hpp>
 #include <vector>
 #include <atlbase.h>
@@ -18,10 +19,11 @@ public XtService
 };
 
 struct DSoundDevice:
-public XtDevice
+public XtBlockingDevice
 {
   DSoundDevice() = default;
   XT_IMPLEMENT_DEVICE(DSound);
+  XT_IMPLEMENT_DEVICE_BLOCKING();
 
   GUID _id;
   CComPtr<IDirectSound> _output;

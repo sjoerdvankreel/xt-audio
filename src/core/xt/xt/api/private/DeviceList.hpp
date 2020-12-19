@@ -5,11 +5,11 @@
 #include <xt/api/public/Shared.h>
 #include <xt/private/Shared.hpp>
 
-#define XT_IMPLEMENT_DEVICE_LIST(s)                                         \
-  XtFault GetCount(int32_t* count) const override;                          \
-  XtSystem GetSystem() const override { return XtSystem##s; }               \
-  XtFault GetId(int32_t index, char* buffer, int32_t* size) const override; \
-  XtFault GetName(char const* id, char* buffer, int32_t* size) const override;
+#define XT_IMPLEMENT_DEVICE_LIST(s)                                               \
+  XtFault GetCount(int32_t* count) const override final;                          \
+  XtSystem GetSystem() const override final { return XtSystem##s; }               \
+  XtFault GetId(int32_t index, char* buffer, int32_t* size) const override final; \
+  XtFault GetName(char const* id, char* buffer, int32_t* size) const override final
 
 struct XtDeviceList
 {

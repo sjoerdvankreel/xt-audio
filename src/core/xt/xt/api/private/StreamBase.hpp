@@ -6,11 +6,11 @@
 #include <xt/private/Structs.hpp>
 #include <xt/private/Shared.hpp>
 
-#define XT_IMPLEMENT_STREAM_BASE()                   \
-  XtFault GetFrames(int32_t* frames) const override; \
-  XtFault GetLatency(XtLatency* latency) const override; 
+#define XT_IMPLEMENT_STREAM_BASE()                         \
+  XtFault GetFrames(int32_t* frames) const override final; \
+  XtFault GetLatency(XtLatency* latency) const override final 
 #define XT_IMPLEMENT_STREAM_BASE_SYSTEM(s) \
-  XtSystem GetSystem() const override { return XtSystem##s; }
+  XtSystem GetSystem() const override final { return XtSystem##s; }
 
 struct XtStreamBase
 {

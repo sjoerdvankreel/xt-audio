@@ -26,9 +26,9 @@ XtBlockingAdapter::GetLatency(XtLatency* latency) const
 { return _stream->GetLatency(latency); }
 
 XtBlockingAdapter::
-XtBlockingAdapter(std::unique_ptr<XtBlockingStream>&& stream):
+XtBlockingAdapter(XtBlockingStream* stream):
 _received(false), _lock(), _state(State::Stopped), 
-_control(), _respond(), _stream(std::move(stream))
+_control(), _respond(), _stream(stream)
 {
   _stream->_adapter = this;
   std::thread t(RunBlockingStream, this);
@@ -77,8 +77,8 @@ XtBlockingAdapter::RunBlockingStream(XtBlockingAdapter* adapter)
       adapter->_stream->StopBuffer();
       adapter->ReceiveControl(State::Stopped);
       break;
-    case State::Started:
-      if(adapter->_stream->ProcessBuffer() != 0)
+    case State::Started:      
+      if(adapter->_stream->BlockMasterBuffer() != 0 || adapter->_stream->ProcessBuffer() != 0)
       {
         adapter->_stream->StopBuffer();
         adapter->ReceiveControl(State::Stopped);

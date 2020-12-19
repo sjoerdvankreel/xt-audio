@@ -19,33 +19,22 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
   auto attrs = XtAudioGetSampleAttributes(params->mix.sample);  
   std::unique_ptr<XtAggregateStream> result(new XtAggregateStream); 
 
+  XtFormat format = { 0 };
+  format.mix = params->mix;
   result->_frames = 0;
-  result->_user = user;
   result->_masterIndex = -1;
-  result->_emulated = false;
-  result->_running.store(0);
-  result->_system = GetSystem();
-  result->_insideCallback.store(0);
-  result->_params.stream = params->stream;
-  result->_params.format.mix = params->mix;
-  result->_contexts.reserve(params->count);
-  memset(&result->_params.format.channels, 0, sizeof(XtChannels));
 
   for(int32_t i = 0; i < params->count; i++)
   {
-    XtAggregateContext thisContext;
     auto const& device = params->devices[i];
-    thisContext.index = i;
-    thisContext.stream = result.get();
-    result->_contexts.push_back(thisContext);
     result->_channels.push_back(device.channels);
 
     XtFormat thisFormat = { 0 };
     thisFormat.mix = params->mix;
     thisFormat.channels = device.channels;
     bool isMaster = params->master == device.device;
-    result->_params.format.channels.inputs += device.channels.inputs;
-    result->_params.format.channels.outputs += device.channels.outputs;
+    format.channels.inputs += device.channels.inputs;
+    format.channels.outputs += device.channels.outputs;
     masterFound |= isMaster;
 
     XtOnBuffer onThisBuffer = XtAggregateStream::OnSlaveBuffer;

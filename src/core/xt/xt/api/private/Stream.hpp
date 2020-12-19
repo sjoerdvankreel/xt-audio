@@ -3,10 +3,10 @@
 
 #include <xt/api/private/StreamBase.hpp>
 
-#define XT_IMPLEMENT_STREAM() \
-  void Stop() override;       \
-  XtFault Start() override;   \
-  XtBool IsRunning() const override;
+#define XT_IMPLEMENT_STREAM()     \
+  void Stop() override final;     \
+  XtFault Start() override final; \
+  XtBool IsRunning() const override final
 
 struct XtStream:
 public XtStreamBase

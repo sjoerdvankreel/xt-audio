@@ -2,31 +2,24 @@
 #ifndef XT_PRIVATE_AGGREGATE_STREAM_HPP
 #define XT_PRIVATE_AGGREGATE_STREAM_HPP
 
-#include <xt/api/public/Structs.h>
-#include <xt/api/private/Stream.hpp>
-#include <xt/private/Structs.hpp>
-#include <xt/private/RingBuffer.hpp>
 #include <xt/private/BlockingStream.hpp>
-#include <cstdint>
+#include <xt/private/RingBuffer.hpp>
 #include <vector>
-#include <atomic>
 #include <memory>
 
 struct XtAggregateStream: 
-public XtStream
+public XtBlockingStream
 {
   int32_t _frames;
-  XtSystem _system;
   XtIOBuffers _weave;
   int32_t _masterIndex;
-  std::atomic<int32_t> _running;
   std::vector<XtChannels> _channels;
-  std::vector<XtIORingBuffers> _rings; 
-  std::atomic<int32_t> _insideCallback;
-  std::vector<XtAggregateContext> _contexts;
+  std::vector<XtIORingBuffers> _rings;
   std::vector<std::unique_ptr<XtBlockingStream>> _streams;
 
-  XT_IMPLEMENT_STREAM();
+  XT_IMPLEMENT_STREAM_BASE();
+  XT_IMPLEMENT_BLOCKING_STREAM();
+  
   XtAggregateStream() = default;
   XtSystem GetSystem() const override;
 

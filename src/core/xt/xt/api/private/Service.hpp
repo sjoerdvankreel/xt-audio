@@ -10,12 +10,12 @@
 #include <xt/private/Shared.hpp>
 #include <cstdint>
 
-#define XT_IMPLEMENT_SERVICE(s)                                                  \
-  XtCapabilities GetCapabilities() const override;                               \
-  XtSystem GetSystem() const override { return XtSystem##s; }                    \
-  XtFault OpenDevice(char const* id, XtDevice** device) const override;          \
-  XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const override; \
-  XtFault GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const override;
+#define XT_IMPLEMENT_SERVICE(s)                                                        \
+  XtCapabilities GetCapabilities() const override final;                               \
+  XtSystem GetSystem() const override final { return XtSystem##s; }                    \
+  XtFault OpenDevice(char const* id, XtDevice** device) const override final;          \
+  XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const override final; \
+  XtFault GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const override final
 
 struct XtService 
 {

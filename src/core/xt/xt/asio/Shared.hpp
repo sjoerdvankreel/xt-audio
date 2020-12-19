@@ -35,6 +35,7 @@ public XtDevice
 {
   CComPtr<IASIO> _asio;
   XT_IMPLEMENT_DEVICE(ASIO);
+  XT_IMPLEMENT_DEVICE_STREAM();
   AsioDevice(CComPtr<IASIO> asio);
 };
 

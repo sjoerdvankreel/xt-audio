@@ -31,7 +31,7 @@ public XtStream
   XT_IMPLEMENT_STREAM_BASE();
   XtSystem GetSystem() const override final;
   ~XtBlockingAdapter();
-  XtBlockingAdapter(std::unique_ptr<XtBlockingStream>&& stream); 
+  XtBlockingAdapter(XtBlockingStream* stream);
   
   void SendControl(State from);
   void ReceiveControl(State state);

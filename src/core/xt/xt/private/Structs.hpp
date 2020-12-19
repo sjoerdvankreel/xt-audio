@@ -18,12 +18,6 @@ struct XtIOBuffers
   XtBuffers output;
 };
 
-struct XtAggregateContext
-{
-  int32_t index;
-  struct XtAggregateStream* stream;
-};
-
 struct XtAtomicInt
 {
   std::atomic_int v;
