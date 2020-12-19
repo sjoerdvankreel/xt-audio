@@ -1,6 +1,7 @@
 #ifndef XT_API_PRIVATE_STREAM_BASE_HPP
 #define XT_API_PRIVATE_STREAM_BASE_HPP
 
+#include <xt/api/public/Shared.h>
 #include <xt/api/public/Structs.h>
 #include <xt/private/Structs.hpp>
 #include <xt/private/Shared.hpp>
@@ -15,10 +16,14 @@ struct XtStreamBase
 {
   void* _user;
   bool _emulated;
+  XtStream* _stream;
   XtIOBuffers _buffers;
   XtDeviceStreamParams _params;
 
   XtStreamBase() = default;
+  void OnXRun(int32_t index) const;
+  uint32_t OnBuffer(XtBuffer const* buffer);
+
   virtual ~XtStreamBase() { };
   virtual XtSystem GetSystem() const = 0;
   virtual XtFault GetFrames(int32_t* frames) const = 0;

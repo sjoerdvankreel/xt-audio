@@ -12,9 +12,7 @@ struct XtStream:
 public XtStreamBase
 {
   XtStream() = default;
-  void OnXRun(int32_t index) const;
   void OnRunning(XtBool running) const;
-  uint32_t OnBuffer(XtBuffer const* buffer);
 
   virtual void Stop() = 0;
   virtual XtFault Start() = 0;

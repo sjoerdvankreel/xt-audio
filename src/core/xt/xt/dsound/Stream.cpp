@@ -43,6 +43,7 @@ DSoundStream::BlockMasterBuffer()
 {
   DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / _params.format.mix.rate);
   XT_VERIFY(WaitForSingleObject(_timer.timer, bufferMillis) == WAIT_OBJECT_0, DSERR_GENERIC);
+  return DS_OK;
 }
 
 XtFault
@@ -58,47 +59,49 @@ DSoundStream::StartMasterBuffer()
   XT_VERIFY(SetWaitableTimer(_timer.timer, &due, period, nullptr, nullptr, TRUE), DSERR_GENERIC);
   timeGuard.Commit();
   prioGuard.Commit();
+  return DS_OK;
 }
 
 XtFault
 DSoundStream::PrefillOutputBuffer()
 {
-// this seems not right
-}
+  HRESULT hr;
+  void* audio1;
+  void* audio2;
+  DWORD size1, size2;
+  XtBuffer buffer = { 0 };
+  DWORD bufferBytes = static_cast<DWORD>(_audio.size());
+
+  if(!_outputBuffer) return DS_OK;
+  XT_VERIFY_COM(_outputBuffer->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0));
+  if(size2 == 0)
+  {
+    buffer.output = audio1;
+    buffer.frames = _bufferFrames;
+    OnBuffer(&buffer);
+  } else
+  {
+    buffer.output = _audio.data();
+    buffer.frames = _bufferFrames;
+    OnBuffer(&buffer);
+    XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
+  }
+  XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));
+  _xtProcessed += bufferBytes;
+  return DS_OK;
+}  
 
 XtFault 
-DSoundStream::ProcessBuffer(bool prefill)
+DSoundStream::ProcessBuffer()
 {  
   HRESULT hr;
   void* audio1;
   void* audio2;
+  XtBuffer buffer = { 0 };
   DWORD size1, size2, read, write;
   DWORD bufferBytes = static_cast<DWORD>(_audio.size());
-  
-  XtBuffer buffer = { 0 };
-  if(prefill && _outputBuffer)
-  {
-    XT_VERIFY_COM(_outputBuffer->Lock(0, bufferBytes, &audio1, &size1, &audio2, &size2, 0));
-    if(size2 == 0)
-    {
-      buffer.input = nullptr;
-      buffer.output = audio1;
-      buffer.frames = _bufferFrames;
-      OnBuffer(&buffer);
-    } else
-    {
-      buffer.input = nullptr;
-      buffer.output = _audio.data();
-      buffer.frames = _bufferFrames;
-      OnBuffer(&buffer);
-      XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
-    }
-    XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));
-    _xtProcessed += bufferBytes;
-    return DS_OK;
-  }
 
-  if(_inputBuffer && !prefill)
+  if(_inputBuffer)
   {
     XT_VERIFY_COM(_inputBuffer->GetCurrentPosition(&write, &read));
     int32_t gap = XtiDsWrapAround(write - read, bufferBytes);
@@ -117,7 +120,6 @@ DSoundStream::ProcessBuffer(bool prefill)
     if(size2 == 0)
     {
       buffer.input = audio1;
-      buffer.output = nullptr;
       buffer.frames = available / _frameSize;
       OnBuffer(&buffer);
       XT_VERIFY_COM(_inputBuffer->Unlock(audio1, size1, audio2, size2));
@@ -125,7 +127,6 @@ DSoundStream::ProcessBuffer(bool prefill)
     {
       XtiDsCombineBufferParts(_audio, audio1, size1, audio2, size2);
       XT_VERIFY_COM(_inputBuffer->Unlock(audio1, size1, audio2, size2));
-      buffer.output = nullptr;
       buffer.input = _audio.data();
       buffer.frames = available / _frameSize;
       OnBuffer(&buffer);
@@ -134,40 +135,33 @@ DSoundStream::ProcessBuffer(bool prefill)
     return DS_OK;
   }
 
-  if(_outputBuffer && !prefill)
+  XT_VERIFY_COM(_outputBuffer->GetCurrentPosition(&read, &write));
+  int32_t gap = XtiDsWrapAround(write - read, bufferBytes);
+  _dsProcessed += XtiDsWrapAround(read - _previousPosition, bufferBytes);
+  DWORD lockPosition = _xtProcessed % bufferBytes;
+  int32_t available = static_cast<int32_t>(bufferBytes - gap - (_xtProcessed - _dsProcessed));
+  _previousPosition = read;
+  if(available <= 0) return DS_OK;
+  if(XtiDsInsideSafetyGap(read, write, lockPosition)) 
   {
-    XT_VERIFY_COM(_outputBuffer->GetCurrentPosition(&read, &write));
-    int32_t gap = XtiDsWrapAround(write - read, bufferBytes);
-    _dsProcessed += XtiDsWrapAround(read - _previousPosition, bufferBytes);
-    DWORD lockPosition = _xtProcessed % bufferBytes;
-    int32_t available = static_cast<int32_t>(bufferBytes - gap - (_xtProcessed - _dsProcessed));
-    _previousPosition = read;
-    if(available <= 0) return DS_OK;
-    if(XtiDsInsideSafetyGap(read, write, lockPosition)) 
-    {
-      XT_VERIFY_COM(DSERR_BUFFERLOST);
-      return DS_OK;
-    }
-
-    XT_VERIFY_COM(_outputBuffer->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0));
-    if(size2 == 0)
-    {
-      buffer.input = nullptr;
-      buffer.output = audio1;
-      buffer.frames = available / _frameSize;
-      OnBuffer(&buffer);
-    } else {
-      buffer.input = nullptr;
-      buffer.output = _audio.data();
-      buffer.frames = available / _frameSize;
-      OnBuffer(&buffer);
-      XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
-    }
-    XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));
-    _xtProcessed += available;
+    XT_VERIFY_COM(DSERR_BUFFERLOST);
     return DS_OK;
   }
 
+  XT_VERIFY_COM(_outputBuffer->Lock(lockPosition, available, &audio1, &size1, &audio2, &size2, 0));
+  if(size2 == 0)
+  {
+    buffer.output = audio1;
+    buffer.frames = available / _frameSize;
+    OnBuffer(&buffer);
+  } else {
+    buffer.output = _audio.data();
+    buffer.frames = available / _frameSize;
+    OnBuffer(&buffer);
+    XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
+  }
+  XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));
+  _xtProcessed += available;
   return DS_OK;
 }
 
