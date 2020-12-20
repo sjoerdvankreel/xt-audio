@@ -10,6 +10,9 @@ public XtBlockingRunner
 {
   XtAggregateStream* const _stream;
   XtAggregateRunner(XtAggregateStream* stream);
+
+  uint32_t OnSlaveBuffer(int32_t index, XtBuffer const* buffer);
+  uint32_t OnMasterBuffer(int32_t index, XtBuffer const* buffer);
   uint32_t OnBuffer(int32_t index, XtBuffer const* buffer) override final;
 };
 

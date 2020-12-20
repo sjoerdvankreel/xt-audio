@@ -68,6 +68,10 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
   }
 
   auto frames = result->_frames;
+  result->_params.index = -1;
+  result->_params.format = format;
+  result->_params.bufferSize = 0.0;
+  result->_params.interleaved = params->stream.interleaved;
   XtAggregateStream* aggregate = result.get();
   XtiInitIOBuffers(result->_weave, &format, result->_frames);
   auto runner = std::make_unique<XtAggregateRunner>(result.release());

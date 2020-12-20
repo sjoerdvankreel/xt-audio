@@ -34,3 +34,4 @@
 * check xtiguard impl
 * revert onbuffer return value
 * fix header order and outlining
+* check aggregate interleaved emulation
