@@ -4,14 +4,14 @@ XtAggregateRunner::
 XtAggregateRunner(XtAggregateStream* stream):
 _stream(stream), XtBlockingRunner(stream) { }
 
-uint32_t
+XtFault
 XtAggregateRunner::OnBuffer(int32_t index, XtBuffer const* buffer)
 {
   if(index == _stream->_masterIndex) return OnMasterBuffer(index, buffer);
   return OnSlaveBuffer(index, buffer);
 }
 
-uint32_t
+XtFault
 XtAggregateRunner::OnSlaveBuffer(int32_t index, XtBuffer const* buffer)
 {
   XtBool interleaved = _params.stream.interleaved;
@@ -37,7 +37,7 @@ XtAggregateRunner::OnSlaveBuffer(int32_t index, XtBuffer const* buffer)
   return 0;
 }
 
-uint32_t
+XtFault
 XtAggregateRunner::OnMasterBuffer(int32_t index, XtBuffer const* buffer)
 {
   XtFault fault;

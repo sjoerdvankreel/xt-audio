@@ -4,7 +4,7 @@
 void
 XtBlockingStream::OnXRun(int32_t index) const
 { _runner->OnXRun(index); }
-uint32_t
+XtFault
 XtBlockingStream::OnBuffer(int32_t index, XtBuffer const* buffer)
 { return _runner->OnBuffer(index, buffer); }
 

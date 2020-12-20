@@ -15,12 +15,12 @@ XtStream::OnRunning(XtBool running) const
   if(onRunning != nullptr) onRunning(this, running, _user);
 }
 
-uint32_t
+XtFault
 XtStream::OnBuffer(int32_t index, XtBuffer const* buffer)
 {
   XtBuffer converted = *buffer;
   auto onBuffer = _params.stream.onBuffer;
-  uint32_t result = static_cast<uint32_t>(-1);
+  XtFault result = static_cast<XtFault>(-1);
   int32_t inputs = _params.format.channels.inputs;
   int32_t outputs = _params.format.channels.outputs;
   auto interleavedIn = _buffers.input.interleaved.data();
