@@ -168,8 +168,13 @@ namespace Xt
             streamType.SelectedItem = StreamType.Render;
             ClearDevices();
 
-            var inputList = s.OpenDeviceList(XtEnumFlags.Input);
             var inputViews = new List<DeviceView>();
+            var noInput = new DeviceView();
+            noInput.name = "[None]";
+            noInput.id = "None";
+            inputViews.Add(noInput);
+
+            var inputList = s.OpenDeviceList(XtEnumFlags.Input);
             var defaultInputId = s.GetDefaultDeviceId(false);
             for (int i = 0; i < inputList.GetCount(); i++)
             {
@@ -184,8 +189,13 @@ namespace Xt
                 deviceViews.Add(view);
             }
 
-            var outputList = s.OpenDeviceList(XtEnumFlags.Output);
             var outputViews = new List<DeviceView>();
+            var noOutput = new DeviceView();
+            noOutput.name = "[None]";
+            noOutput.id = "None";
+            outputViews.Add(noOutput);
+
+            var outputList = s.OpenDeviceList(XtEnumFlags.Output);
             var defaultOutputId = s.GetDefaultDeviceId(true);
             for (int i = 0; i < outputList.GetCount(); i++)
             {
@@ -205,9 +215,11 @@ namespace Xt
             secondaryInput.DataSource = new List<DeviceView>(inputViews);
             secondaryOutput.DataSource = new List<DeviceView>(outputViews);
 
+            inputDevice.SelectedIndex = inputViews.Count == 1 ? 0 : 1;
+            outputDevice.SelectedIndex = outputViews.Count == 1 ? 0 : 1;
             capabilities.Text = s.GetCapabilities().ToString();
-            defaultInput.Text = defaultInputId == null ? "null" : inputList.GetName(defaultInputId);
-            defaultOutput.Text = defaultOutputId == null ? "null" : outputList.GetName(defaultOutputId);
+            defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
+            defaultOutput.Text = defaultOutputId == null ? "[None]" : outputList.GetName(defaultOutputId);
             inputControlPanel.Enabled = (s.GetCapabilities() & XtCapabilities.ControlPanel) != 0;
             outputControlPanel.Enabled = (s.GetCapabilities() & XtCapabilities.ControlPanel) != 0;
         }
@@ -318,8 +330,7 @@ namespace Xt
         {
             bool evt = running;
             bool newState = stream.IsRunning();
-            BeginInvoke(new Action(() => 
-            {
+            BeginInvoke(new Action(() => {
                 string evtDesc = running ? "Started" : "Stopped";
                 AddMessage(() => "Stream event: " + evtDesc + ", new state: " + newState + ".");
                 stop.Enabled = running;

@@ -44,7 +44,8 @@ DSoundService::GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, in
   HRESULT hr;
   if(output) hr = GetDeviceID(&DSDEVID_DefaultPlayback, &id);
   else hr = GetDeviceID(&DSDEVID_DefaultCapture, &id);
-  if(FAILED(hr)) return DSERR_NODRIVER;
+  if(hr == DSERR_NODRIVER) return DS_OK;
+  if(FAILED(hr)) return hr;
   *valid = XtTrue;
   std::string result = XtiClassIdToUtf8(id);
   XtiCopyString(result.c_str(), buffer, size);
