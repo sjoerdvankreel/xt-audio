@@ -30,7 +30,7 @@ XtStream::OnBuffer(int32_t index, XtBuffer const* buffer)
   bool haveInput = buffer->input != nullptr && buffer->frames > 0;
   bool haveOutput = buffer->output != nullptr && buffer->frames > 0;
   auto nonInterleavedBufferOut = static_cast<void**>(buffer->output);
-  auto nonInterleavedBufferIn = static_cast<const void* const*>(buffer->input);   
+  auto nonInterleavedBufferIn = static_cast<void const* const*>(buffer->input);   
   int32_t size = XtiGetSampleSize(_params.format.mix.sample);
 
   if(!_emulated) 
