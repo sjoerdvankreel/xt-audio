@@ -60,4 +60,49 @@ bool
 XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired)
 { return value.compare_exchange_strong(expected, desired); }
 
+template <class OnEmulatedBuffer>
+XtFault
+XtiOnBuffer(XtOnBufferParams* params, OnEmulatedBuffer onEmulated)
+{
+  XtBuffer converted = *params->buffer;
+  XtIOBuffers* buffers = params->buffers;
+  XtBuffer const* buffer = params->buffer;
+  XtFault result = static_cast<XtFault>(-1);
+  XtChannels const* channels = &params->format->channels;
+
+  int32_t inputs = channels->inputs;
+  int32_t outputs = channels->outputs;
+  int32_t size = XtiGetSampleSize(params->format->mix.sample);
+  auto interleavedIn = buffers->input.interleaved.data();
+  auto interleavedOut = buffers->output.interleaved.data();
+  auto nonInterleavedIn = buffers->input.nonInterleaved.data();
+  auto nonInterleavedOut = buffers->output.nonInterleaved.data();
+  bool haveInput = buffer->input != nullptr && buffer->frames > 0;
+  bool haveOutput = buffer->output != nullptr && buffer->frames > 0;
+  auto nonInterleavedBufferOut = static_cast<void**>(buffer->output);
+  auto nonInterleavedBufferIn = static_cast<void const* const*>(buffer->input);
+
+  if(!params->emulated) 
+  {
+    converted.input = haveInput? buffer->input: nullptr;
+    converted.output = haveOutput? buffer->output: nullptr;
+    result = onEmulated(&converted);
+  } else if(!params->interleaved) 
+  {
+    converted.input = haveInput? nonInterleavedIn: nullptr;
+    converted.output = haveOutput? nonInterleavedOut: nullptr;
+    if(haveInput) XtiDeinterleave(nonInterleavedIn, buffer->input, buffer->frames, inputs, size);
+    result = onEmulated(&converted);
+    if(haveOutput) XtiInterleave(buffer->output, nonInterleavedOut, buffer->frames, outputs, size);
+  } else
+  {
+    converted.input = haveInput? interleavedIn: nullptr;
+    converted.output = haveOutput? interleavedOut: nullptr;
+    if(haveInput) XtiInterleave(interleavedIn, nonInterleavedBufferIn, buffer->frames, inputs, size);
+    result = onEmulated(&converted);
+    if(haveOutput) XtiDeinterleave(nonInterleavedBufferOut, interleavedOut, buffer->frames, outputs, size);
+  }
+  return result;
+}
+
 #endif // XT_SHARED_SHARED_HPP

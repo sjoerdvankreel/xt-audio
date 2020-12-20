@@ -39,6 +39,11 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
     format.channels.outputs += device.channels.outputs;
     masterFound |= isMaster;
     if(isMaster) result->_masterIndex = i;
+  
+    XtBool thisSupports;
+    auto thisDevice = &dynamic_cast<XtBlockingDevice&>(*device.device);
+    if((fault = thisDevice->SupportsAccess(interleaved, &thisSupports)) != 0) return fault;
+    result->_emulated.push_back(!thisSupports);
 
     XtBlockingStream* thisStream;
     XtBlockingParams thisParams = { 0 };
@@ -46,11 +51,11 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
     thisParams.format = thisFormat;
     thisParams.bufferSize = device.bufferSize;
     thisParams.interleaved = params->stream.interleaved;
-    auto thisDevice = &dynamic_cast<XtBlockingDevice&>(*device.device);
     if((fault = thisDevice->OpenBlockingStream(&thisParams, &thisStream) != 0)) return fault;
     thisStream->_params = thisParams;
 
     int32_t thisFrames;
+    result->_buffers.push_back(XtIOBuffers());
     result->_streams.push_back(std::unique_ptr<XtBlockingStream>(thisStream));
     if((fault = thisStream->GetFrames(&thisFrames)) != 0) return fault;
     result->_frames = thisFrames > result->_frames? thisFrames: result->_frames;
@@ -65,6 +70,7 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
     thisRings.input = XtRingBuffer(interleaved, result->_frames, channels.inputs, attrs.size);
     thisRings.output = XtRingBuffer(interleaved, result->_frames, channels.outputs, attrs.size);
     result->_rings.push_back(thisRings);
+    XtiInitIOBuffers(result->_buffers[i], &result->_streams[i]->_params.format, result->_frames);
   }
 
   auto frames = result->_frames;

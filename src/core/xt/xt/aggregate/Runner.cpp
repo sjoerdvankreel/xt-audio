@@ -7,8 +7,18 @@ _stream(stream), XtBlockingRunner(stream) { }
 XtFault
 XtAggregateRunner::OnBuffer(int32_t index, XtBuffer const* buffer)
 {
-  if(index == _stream->_masterIndex) return OnMasterBuffer(index, buffer);
-  return OnSlaveBuffer(index, buffer);
+  XtOnBufferParams params = { 0 };
+  params.index = index;
+  params.buffer = buffer;
+  params.buffers = &_stream->_buffers[index];
+  params.emulated = _stream->_emulated[index];
+  params.interleaved = _params.stream.interleaved;
+  params.format = &_stream->_streams[index]->_params.format;
+  if(index == _stream->_masterIndex)
+    return XtiOnBuffer(&params, [this, index](XtBuffer const* converted) {
+      return OnMasterBuffer(index, converted); });
+  return XtiOnBuffer(&params, [this, index](XtBuffer const* converted) { 
+    return OnSlaveBuffer(index, converted); });
 }
 
 XtFault
@@ -49,7 +59,6 @@ XtAggregateRunner::OnMasterBuffer(int32_t index, XtBuffer const* buffer)
 
   for(size_t i = 0; i < _stream->_streams.size(); i++)
     if(i != _stream->_masterIndex)
-      // todo (de) interleave
       if((fault = _stream->_streams[i]->ProcessBuffer()) != 0) return fault;
   OnSlaveBuffer(index, buffer);
 

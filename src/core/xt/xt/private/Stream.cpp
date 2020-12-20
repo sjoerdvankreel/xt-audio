@@ -18,40 +18,13 @@ XtStream::OnRunning(XtBool running) const
 XtFault
 XtStream::OnBuffer(int32_t index, XtBuffer const* buffer)
 {
-  XtBuffer converted = *buffer;
-  auto onBuffer = _params.stream.onBuffer;
-  XtFault result = static_cast<XtFault>(-1);
-  int32_t inputs = _params.format.channels.inputs;
-  int32_t outputs = _params.format.channels.outputs;
-  auto interleavedIn = _buffers.input.interleaved.data();
-  auto interleavedOut = _buffers.output.interleaved.data();
-  auto nonInterleavedIn = _buffers.input.nonInterleaved.data();
-  auto nonInterleavedOut = _buffers.output.nonInterleaved.data();
-  bool haveInput = buffer->input != nullptr && buffer->frames > 0;
-  bool haveOutput = buffer->output != nullptr && buffer->frames > 0;
-  auto nonInterleavedBufferOut = static_cast<void**>(buffer->output);
-  auto nonInterleavedBufferIn = static_cast<void const* const*>(buffer->input);   
-  int32_t size = XtiGetSampleSize(_params.format.mix.sample);
-
-  if(!_emulated) 
-  {
-    converted.input = haveInput? buffer->input: nullptr;
-    converted.output = haveOutput? buffer->output: nullptr;
-    result = onBuffer(this, &converted, _user);
-  } else if(!_params.stream.interleaved) 
-  {
-    converted.input = haveInput? nonInterleavedIn: nullptr;
-    converted.output = haveOutput? nonInterleavedOut: nullptr;
-    if(haveInput) XtiDeinterleave(nonInterleavedIn, buffer->input, buffer->frames, inputs, size);
-    result = onBuffer(this, &converted, _user);
-    if(haveOutput) XtiInterleave(buffer->output, nonInterleavedOut, buffer->frames, outputs, size);
-  } else
-  {
-    converted.input = haveInput? interleavedIn: nullptr;
-    converted.output = haveOutput? interleavedOut: nullptr;
-    if(haveInput) XtiInterleave(interleavedIn, nonInterleavedBufferIn, buffer->frames, inputs, size);
-    result = onBuffer(this, &converted, _user);
-    if(haveOutput) XtiDeinterleave(nonInterleavedBufferOut, interleavedOut, buffer->frames, outputs, size);
-  }
-  return result;
+  XtOnBufferParams params = { 0 };
+  params.index = index;
+  params.buffer = buffer;
+  params.buffers = &_buffers;
+  params.emulated = _emulated;
+  params.format = &_params.format;
+  params.interleaved = _params.stream.interleaved;
+  return XtiOnBuffer(&params, [this](XtBuffer const* converted) { 
+    return _params.stream.onBuffer(this, converted, _user); });
 }

@@ -13,6 +13,8 @@ public XtBlockingStream
   int32_t _frames;
   XtIOBuffers _weave;  
   int32_t _masterIndex;
+  std::vector<XtBool> _emulated;
+  std::vector<XtIOBuffers> _buffers;
   std::vector<XtChannels> _channels;
   std::vector<XtIORingBuffers> _rings;
   std::vector<std::unique_ptr<XtBlockingStream>> _streams;

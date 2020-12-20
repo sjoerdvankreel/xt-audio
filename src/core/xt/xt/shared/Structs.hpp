@@ -28,6 +28,16 @@ struct XtIOBuffers
   XtBuffers output;
 };
 
+struct XtOnBufferParams
+{
+  int32_t index;
+  bool emulated;
+  bool interleaved;
+  XtIOBuffers* buffers;
+  XtFormat const* format;
+  XtBuffer const* buffer;
+};
+
 struct XtAtomicInt
 {
   std::atomic_int v;
