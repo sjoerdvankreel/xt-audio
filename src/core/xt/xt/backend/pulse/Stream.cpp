@@ -8,14 +8,25 @@ void
 PulseStream::StopSlaveBuffer() { }
 void
 PulseStream::StopMasterBuffer() { }
+
 XtFault
-PulseStream::StartSlaveBuffer() { return PA_OK; }
+PulseStream::StartSlaveBuffer()
+{ return PA_OK; }
 XtFault
-PulseStream::BlockMasterBuffer() { return PA_OK; }
+PulseStream::BlockMasterBuffer() 
+{ return PA_OK; }
 XtFault
-PulseStream::StartMasterBuffer() { return PA_OK; }
+PulseStream::StartMasterBuffer()
+ { return PA_OK; }
 XtFault
-PulseStream::PrefillOutputBuffer() { return PA_OK; }
+PulseStream::PrefillOutputBuffer() 
+{ return PA_OK; }
+XtFault
+PulseStream::GetFrames(int32_t* frames) const
+{ *frames = _frames; return PA_OK; }
+XtFault
+PulseStream::GetLatency(XtLatency* latency) const
+{ return PA_OK; }
 
 XtFault 
 PulseStream::ProcessBuffer()
