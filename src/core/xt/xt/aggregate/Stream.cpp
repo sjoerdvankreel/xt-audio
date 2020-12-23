@@ -3,7 +3,7 @@
 #include <xt/aggregate/Stream.hpp>
 
 void*
-XtAggregateStream::GetHandle()
+XtAggregateStream::GetHandle() const
 { return _streams[_masterIndex]->GetHandle(); }
 XtSystem
 XtAggregateStream::GetSystem() const

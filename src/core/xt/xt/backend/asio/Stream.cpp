@@ -7,7 +7,7 @@ AsioStream::
 { XT_ASSERT(XtiIsAsioSuccess(_asio->disposeBuffers())); }
 
 void*
-AsioStream::GetHandle()
+AsioStream::GetHandle() const
 { return _asio.p; }
 XtBool
 AsioStream::IsRunning() const

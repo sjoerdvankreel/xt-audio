@@ -6,15 +6,15 @@
 XtBlockingRunner::
 ~XtBlockingRunner() 
 { SendControl(State::Closing); }
-void*
-XtBlockingRunner::GetHandle()
-{ return _stream->GetHandle(); }
 void
 XtBlockingRunner::Stop()
 { SendControl(State::Stopping); }
 XtSystem
 XtBlockingRunner::GetSystem() const
 { return _stream->GetSystem(); }
+void*
+XtBlockingRunner::GetHandle() const
+{ return _stream->GetHandle(); }
 XtFault
 XtBlockingRunner::Start() 
 { SendControl(State::Starting); return 0; }

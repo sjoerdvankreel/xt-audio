@@ -12,7 +12,7 @@ XtFault
 DSoundDevice::GetMix(XtBool* valid, XtMix* mix) const
 { return DS_OK; }
 void*
-DSoundDevice::GetHandle()
+DSoundDevice::GetHandle() const
 { return _input.p != nullptr? _input.p: static_cast<void*>(_output.p); }
 XtFault
 DSoundDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const

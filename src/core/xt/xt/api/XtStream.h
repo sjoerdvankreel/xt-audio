@@ -17,7 +17,7 @@ XtStreamStart(XtStream* s);
 XT_API void XT_CALL 
 XtStreamDestroy(XtStream* s);
 XT_API void* XT_CALL
-XtStreamGetHandle(XtStream* s);
+XtStreamGetHandle(XtStream const* s);
 XT_API XtBool XT_CALL
 XtStreamIsRunning(XtStream const* s);
 XT_API const XtFormat* XT_CALL 

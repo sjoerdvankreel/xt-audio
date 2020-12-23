@@ -7,7 +7,7 @@ AsioDevice(CComPtr<IASIO> asio):
 _asio(asio) { }
 
 void*
-AsioDevice::GetHandle()
+AsioDevice::GetHandle() const
 { return _asio.p; }
 XtFault
 AsioDevice::ShowControlPanel()

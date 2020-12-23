@@ -23,8 +23,8 @@ class Device final
   Device(XtDevice* d): _d(d) { }
 public:
   ~Device();
-  void* GetHandle();
   void ShowControlPanel();
+  void* GetHandle() const;
   std::optional<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
   bool SupportsAccess(bool interleaved) const;
@@ -38,7 +38,7 @@ inline
 Device::~Device()
 { XtDeviceDestroy(_d); }
 inline void*
-Device::GetHandle() 
+Device::GetHandle() const
 { return XtDeviceGetHandle(_d); }
 inline void 
 Device::ShowControlPanel() 

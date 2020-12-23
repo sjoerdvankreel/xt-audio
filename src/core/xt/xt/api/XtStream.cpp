@@ -4,8 +4,15 @@
 
 #include <cstring>
 
+void XT_CALL 
+XtStreamDestroy(XtStream* s) 
+{ 
+  XT_ASSERT(XtiCalledOnMainThread());
+  delete s;
+}
+
 void* XT_CALL
-XtStreamGetHandle(XtStream* s)
+XtStreamGetHandle(XtStream const* s)
 {
   XT_ASSERT(s != nullptr);
   return s->GetHandle();
@@ -24,13 +31,6 @@ XtStreamGetFormat(XtStream const* s)
 {
   XT_ASSERT(s != nullptr);
   return &s->_params.format;
-}
-
-void XT_CALL 
-XtStreamDestroy(XtStream* s) 
-{ 
-  XT_ASSERT(XtiCalledOnMainThread());
-  delete s;
 }
 
 XtBool XT_CALL
