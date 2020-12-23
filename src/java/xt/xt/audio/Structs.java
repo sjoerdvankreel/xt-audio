@@ -137,12 +137,11 @@ public interface Structs {
         public Pointer output;
         public double time;
         public long position;
-        public long error;
         public int frames;
         public boolean timeValid;
         public static class ByValue extends XtBuffer implements Structure.ByValue {}
         @Override protected List getFieldOrder() {
-            return Arrays.asList("input", "output", "time", "position", "error", "frames", "timeValid");
+            return Arrays.asList("input", "output", "time", "position", "frames", "timeValid");
         }
     }
 
