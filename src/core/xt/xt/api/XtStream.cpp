@@ -19,6 +19,13 @@ XtStreamGetFormat(XtStream const* s)
   return &s->_params.format;
 }
 
+void* XT_CALL
+XtStreamGetBackendHandle(XtStream* s)
+{
+  XT_ASSERT(s != nullptr);
+  return s->GetBackendHandle();
+}
+
 void XT_CALL 
 XtStreamDestroy(XtStream* s) 
 { 

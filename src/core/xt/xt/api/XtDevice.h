@@ -12,6 +12,8 @@ extern "C" {
 
 XT_API void XT_CALL 
 XtDeviceDestroy(XtDevice* d);
+XT_API void* XT_CALL
+XtDeviceGetBackendHandle(XtDevice* d);
 XT_API XtError XT_CALL 
 XtDeviceShowControlPanel(XtDevice* d);
 XT_API XtError XT_CALL 

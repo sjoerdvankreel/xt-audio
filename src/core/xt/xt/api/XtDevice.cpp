@@ -12,6 +12,13 @@ XtDeviceDestroy(XtDevice* d)
   delete d;
 }
 
+void* XT_CALL
+XtDeviceGetBackendHandle(XtDevice* d)
+{
+  XT_ASSERT(d != nullptr);
+  return d->GetBackendHandle();
+}
+
 XtError XT_CALL
 XtDeviceGetMix(XtDevice const* d, XtBool* valid, XtMix* mix)
 {

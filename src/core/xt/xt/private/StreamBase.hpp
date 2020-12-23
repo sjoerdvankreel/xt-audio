@@ -7,6 +7,7 @@
 #include <xt/shared/Structs.hpp>
 
 #define XT_IMPLEMENT_STREAM_BASE()                         \
+  void* GetBackendHandle() override final;                 \
   XtFault GetFrames(int32_t* frames) const override final; \
   XtFault GetLatency(XtLatency* latency) const override final 
 #define XT_IMPLEMENT_STREAM_BASE_SYSTEM(s) \
@@ -17,6 +18,7 @@ struct XtStreamBase
   XtStreamBase() = default;
   virtual ~XtStreamBase() { };
 
+  virtual void* GetBackendHandle() = 0;
   virtual XtSystem GetSystem() const = 0;
   virtual void OnXRun(int32_t index) const = 0;
   virtual XtFault GetFrames(int32_t* frames) const = 0;
