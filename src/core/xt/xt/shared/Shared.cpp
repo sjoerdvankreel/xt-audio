@@ -134,9 +134,9 @@ XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channel
 XtFault
 XtiSupportsFormat(XtDevice const* device, XtFormat const* format)
 {
-  XtFault fault;
+  XtError error;
   XtBool supports;
-  if((fault = XtDeviceSupportsFormat(device, format, &supports)) != 0) return fault;
+  if((error = XtDeviceSupportsFormat(device, format, &supports)) != 0) return XtiGetErrorFault(error);
   if(!supports) return XtPlatform::instance->GetService(device->GetSystem())->GetFormatFault();
   return 0;
 }
