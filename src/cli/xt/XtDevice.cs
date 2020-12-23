@@ -10,6 +10,7 @@ namespace Xt
     public sealed class XtDevice : IDisposable
     {
         [DllImport("xt-core")] static extern void XtDeviceDestroy(IntPtr d);
+        [DllImport("xt-core")] static extern IntPtr XtDeviceGetHandle(IntPtr d);
         [DllImport("xt-core")] static extern ulong XtDeviceShowControlPanel(IntPtr d);
         [DllImport("xt-core")] static extern ulong XtDeviceGetMix(IntPtr d, out bool valid, out XtMix mix);
         [DllImport("xt-core")] static extern ulong XtDeviceGetChannelCount(IntPtr d, bool output, out int count);
@@ -24,6 +25,7 @@ namespace Xt
         internal XtDevice(IntPtr d) => _d = d;
 
         public void Dispose() => XtDeviceDestroy(_d);
+        public IntPtr GetHandle() => XtDeviceGetHandle(_d);
         public void ShowControlPanel() => HandleError(XtDeviceShowControlPanel(_d));
         public XtMix? GetMix() => HandleError(XtDeviceGetMix(_d, out var v, out var r)) && v ? r : (XtMix?)null;
         public int GetChannelCount(bool output) => HandleError(XtDeviceGetChannelCount(_d, output, out var r), r);

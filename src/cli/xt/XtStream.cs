@@ -12,6 +12,7 @@ namespace Xt
         [DllImport("xt-core")] static extern ulong XtStreamStart(IntPtr s);
         [DllImport("xt-core")] static extern void XtStreamDestroy(IntPtr s);
         [DllImport("xt-core")] static extern int XtStreamIsRunning(IntPtr s);
+        [DllImport("xt-core")] static extern IntPtr XtStreamGetHandle(IntPtr s);
         [DllImport("xt-core")] static extern unsafe XtFormat* XtStreamGetFormat(IntPtr s);
         [DllImport("xt-core")] static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
         [DllImport("xt-core")] static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
@@ -34,6 +35,7 @@ namespace Xt
 
         public void Stop() => XtStreamStop(_s);
         public void Dispose() => XtStreamDestroy(_s);
+        public IntPtr GetHandle() => XtStreamGetHandle(_s);
         public void Start() => HandleError(XtStreamStart(_s));
         public bool IsRunning() => XtStreamIsRunning(_s) != 0;
         public unsafe XtFormat GetFormat() => *XtStreamGetFormat(_s);
