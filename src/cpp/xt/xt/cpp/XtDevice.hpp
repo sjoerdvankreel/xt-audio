@@ -23,6 +23,7 @@ class Device final
   Device(XtDevice* d): _d(d) { }
 public:
   ~Device();
+  void* GetHandle();
   void ShowControlPanel();
   std::optional<Mix> GetMix() const;
   int32_t GetChannelCount(bool output) const;
@@ -36,7 +37,9 @@ public:
 inline
 Device::~Device()
 { XtDeviceDestroy(_d); }
-
+inline void*
+Device::GetHandle() 
+{ return XtDeviceGetHandle(_d); }
 inline void 
 Device::ShowControlPanel() 
 { Detail::HandleError(XtDeviceShowControlPanel(_d)); }

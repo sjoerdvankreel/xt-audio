@@ -27,6 +27,7 @@ public:
   ~Stream();
   void Stop();
   void Start();
+  void* GetHandle();
   bool IsRunning() const;
   int32_t GetFrames() const;
   Latency GetLatency() const;
@@ -48,6 +49,9 @@ Stream::Stop()
 inline
 Stream::~Stream() 
 { XtStreamDestroy(_s); }
+inline void*
+Stream::GetHandle() 
+{ return XtStreamGetHandle(_s); }
 inline bool
 Stream::IsRunning() const
 { return XtStreamIsRunning(_s); }
