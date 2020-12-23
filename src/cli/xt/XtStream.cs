@@ -18,19 +18,15 @@ namespace Xt
 
         IntPtr _s;
         readonly object _user;
-        readonly XtOnXRun _onXRun;
-        readonly XtOnBuffer _onBuffer;
-        readonly XtOnRunning _onRunning;
+        readonly XtStreamParams _params;
         readonly OnXRun _onNativeXRun;
         readonly OnBuffer _onNativeBuffer;
         readonly OnRunning _onNativeRunning;
 
-        internal XtStream(XtOnBuffer onBuffer, XtOnXRun onXRun, XtOnRunning onRunning, object user)
+        internal XtStream(in XtStreamParams @params, object user)
         {
             _user = user;
-            _onXRun = onXRun;
-            _onBuffer = onBuffer;
-            _onRunning = onRunning;
+            _params = @params;
             _onNativeXRun = OnXRun;
             _onNativeBuffer = OnBuffer;
             _onNativeRunning = OnRunning;
@@ -49,8 +45,8 @@ namespace Xt
         internal OnBuffer OnNativeBuffer() => _onNativeBuffer;
         internal OnRunning OnNativeRunning() => _onNativeRunning;
 
-        void OnXRun(IntPtr stream, int index, IntPtr user) => _onXRun(this, index, _user);
-        int OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user) => _onBuffer(this, in buffer, _user);
-        void OnRunning(IntPtr stream, int running, ulong error, IntPtr user) => _onRunning(this, running != 0, error, _user);
+        void OnXRun(IntPtr stream, int index, IntPtr user) => _params.onXRun(this, index, _user);
+        int OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user) => _params.onBuffer(this, in buffer, _user);
+        void OnRunning(IntPtr stream, int running, ulong error, IntPtr user) => _params.onRunning(this, running != 0, error, _user);
     }
 }

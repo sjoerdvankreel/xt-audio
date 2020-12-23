@@ -51,7 +51,7 @@ namespace Xt
 
         public unsafe XtStream AggregateStream(in XtAggregateStreamParams @params, object user)
         {
-            var result = new XtStream(@params.stream.onBuffer, @params.stream.onXRun, @params.stream.onRunning, user);
+            var result = new XtStream(in @params.stream, user);
             var native = new AggregateStreamParams();
             var devices = @params.devices.Select(ToNative).ToArray();
             fixed (AggregateDeviceParams* devs = devices)

@@ -42,7 +42,7 @@ namespace Xt
 
         public XtStream OpenStream(in XtDeviceStreamParams @params, object user)
         {
-            var result = new XtStream(@params.stream.onBuffer, @params.stream.onXRun, @params.stream.onRunning, user);
+            var result = new XtStream(in @params.stream, user);
             var native = new DeviceStreamParams();
             native.format = @params.format;
             native.bufferSize = @params.bufferSize;
