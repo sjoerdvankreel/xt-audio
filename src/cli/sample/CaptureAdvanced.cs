@@ -21,10 +21,11 @@ namespace Xt
         => Console.WriteLine("XRun on device " + index + ".");
 
         static void
-        OnRunning(XtStream stream, bool running, object user)
+        OnRunning(XtStream stream, bool running, ulong error, object user)
         {
             string evt = running ? "Started" : "Stopped";
-            Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
+            Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");            
+            if(error != 0) Console.WriteLine(XtAudio.GetErrorInfo(error).ToString());
         }
 
         static void RunStream(XtStream stream)

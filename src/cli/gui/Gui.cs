@@ -326,7 +326,7 @@ namespace Xt
             }
         }
 
-        void OnRunning(XtStream stream, bool running, object user)
+        void OnRunning(XtStream stream, bool running, ulong error, object user)
         {
             bool evt = running;
             bool newState = stream.IsRunning();
