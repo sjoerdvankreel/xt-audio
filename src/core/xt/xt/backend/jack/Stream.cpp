@@ -11,6 +11,9 @@ _jc(std::move(jc)) { }
 XtBool
 JackStream::IsRunning() const
 { return _running.load() != 0; }
+void
+JackStream::ShutdownCallback(void* arg)
+{ static_cast<JackStream*>(arg)->Stop(); }
 XtFault
 JackStream::GetLatency(XtLatency* latency) const
 { return 0; }
@@ -39,6 +42,7 @@ JackStream::Start()
   
   XT_ASSERT(XtiCompareExchange(_running, 0, 1));
   auto guard = XtiGuard([this] { XtiCompareExchange(_running, 1, 0); });
+  jack_on_shutdown(_jc.jc, &JackStream::ShutdownCallback, this);
   if((fault = jack_activate(_jc.jc)) != 0) return fault;
 
   for(int32_t i = 0; i < channels.inputs; i++)

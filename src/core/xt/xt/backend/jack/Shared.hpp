@@ -52,6 +52,8 @@ public XtStream
 
   static int 
   XRunCallback(void* arg);
+  static void
+  ShutdownCallback(void* arg);
   static int 
   ProcessCallback(jack_nframes_t frames, void* arg);
 };
