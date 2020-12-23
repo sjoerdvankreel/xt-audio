@@ -1,16 +1,9 @@
 * Figure out JACK support on Ubuntu 20.
 * Better document service/list/device/stream lifetime (what needs to be alive when).
-* Overall code cleanup
-* Check TODOS
 * fix compiler warnings
-* merge private implementation stuff
-* check docs
-* major testing
-* fix doxygen typedef errors
 * move doxygen to own file
 * explain no io in callback
 * fix javadoc warnings
-* SYSTEM_WASAPI_EXCLUSIVE/SETUP_SYSTEM_EXCLUSIVE (alsa grouping)
 * package zip in build script
 * cleanup cli gui
 * test selective compilation (all combinations)
@@ -21,17 +14,14 @@
 * update asmjit
 * capabilities->serviceflags
 * add DeviceList::deviceflags -> input/output/loopback/hwdirect
-* support jack on windows
 * split wasapi service -> shared/exclusive
 * split alsa service -> rw/mmap
-* timeout after 3 buffers (see also WFSO)
 * do assert_com like for linux
 * check aggregate 2+2
-* fix jack shutdown
 * do expose backing handles
 
 ** LATER
-* support jack on windows
 * arm
+* support jack on windows
 * support multiple JACK servers
 * support multiple PulseAudio servers
