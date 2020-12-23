@@ -11,10 +11,11 @@ OnXRun(Xt::Stream const& stream, int32_t index, void* user)
 { std::cout << "XRun on device " << index << ".\n"; }
 
 static void
-OnRunning(Xt::Stream const& stream, bool running, void* user)
+OnRunning(Xt::Stream const& stream, bool running, uint64_t error, void* user)
 { 
   char const* evt = running? "Started": "Stopped";
   std::cout << "Stream event: " << evt << ", new state: " << stream.IsRunning() << ".\n"; 
+  if(error != 0) std::cout << Xt::Audio::GetErrorInfo(error) << ".\n";
 }
 
 static uint32_t 

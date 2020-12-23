@@ -21,8 +21,8 @@ public XtStreamBase
   virtual XtBool IsRunning() const = 0;
 
   XtStream() = default;  
-  void OnRunning(XtBool running) const;
   void OnXRun(int32_t index) const override final;
+  void OnRunning(XtBool running, XtFault fault) const;
   XtFault OnBuffer(int32_t index, XtBuffer const* buffer) override;
 };
 

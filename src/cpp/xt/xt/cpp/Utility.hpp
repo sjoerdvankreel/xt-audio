@@ -32,13 +32,6 @@ ForwardOnXRun(XtStream const* coreStream, int32_t index, void* user)
   stream->_params.onXRun(*stream, index, stream->_user); 
 }
 
-inline void XT_CALLBACK 
-ForwardOnRunning(XtStream const* coreStream, XtBool running, void* user)
-{  
-  auto stream = static_cast<Stream*>(user);
-  stream->_params.onRunning(*stream, running != 0, stream->_user);
-}
-
 inline uint32_t XT_CALLBACK 
 ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user)
 {
@@ -51,6 +44,13 @@ ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* us
   buffer.position = coreBuffer->position;
   buffer.timeValid = coreBuffer->timeValid != XtFalse;
   return stream->_params.onBuffer(*stream, buffer, stream->_user);
+}
+
+inline void XT_CALLBACK 
+ForwardOnRunning(XtStream const* coreStream, XtBool running, uint64_t error, void* user)
+{  
+  auto stream = static_cast<Stream*>(user);
+  stream->_params.onRunning(*stream, running != 0, error, stream->_user);
 }
 
 } // namespace Xt::Detail

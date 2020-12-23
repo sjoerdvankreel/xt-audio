@@ -36,15 +36,15 @@ _control(), _respond(), _stream(stream)
 }
 
 void
-XtBlockingRunner::ReceiveControl(State state)
+XtBlockingRunner::ReceiveControl(State state, XtFault fault)
 {
   std::unique_lock guard(_lock);
   _state = state;
   _received = true;
   guard.unlock();
   _respond.notify_one();  
-  if(state == State::Started) OnRunning(XtTrue);
-  if(state == State::Stopped) OnRunning(XtFalse);
+  if(state == State::Started) OnRunning(XtTrue, 0);
+  if(state == State::Stopped) OnRunning(XtFalse, fault);
 }   
 
 void
@@ -63,6 +63,7 @@ void
 XtBlockingRunner::RunBlockingStream(XtBlockingRunner* runner)
 {  
   State state;
+  XtFault fault;
   int32_t threadPolicy;
   int32_t prevThreadPrio;
   XtPlatform::BeginThread();
@@ -71,24 +72,26 @@ XtBlockingRunner::RunBlockingStream(XtBlockingRunner* runner)
     switch(state)
     {
     case State::Closing:
-      runner->ReceiveControl(State::Closed);
+      runner->ReceiveControl(State::Closed, 0);
       break;
     case State::Stopping:
       runner->_stream->StopBuffer();
-      runner->ReceiveControl(State::Stopped);
+      runner->ReceiveControl(State::Stopped, 0);
       break;
     case State::Started:      
-      if(runner->_stream->BlockMasterBuffer() != 0 || runner->_stream->ProcessBuffer() != 0)
+      if(((fault = runner->_stream->BlockMasterBuffer()) != 0) ||
+         ((fault = runner->_stream->ProcessBuffer()) != 0))
       {
         runner->_stream->StopBuffer();
-        runner->ReceiveControl(State::Stopped);
+        runner->ReceiveControl(State::Stopped, fault);
       }
       break;
     case State::Starting:
-      if(runner->_stream->PrefillOutputBuffer() != 0 || runner->_stream->StartBuffer() != 0)
-        runner->ReceiveControl(State::Stopped);
+      if(((fault = runner->_stream->PrefillOutputBuffer()) != 0) ||
+         ((fault = runner->_stream->StartBuffer()) != 0))
+        runner->ReceiveControl(State::Stopped, fault);
       else
-        runner->ReceiveControl(State::Started);
+        runner->ReceiveControl(State::Started, 0);
       break;
     case State::Stopped:
       {

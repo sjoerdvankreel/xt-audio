@@ -35,7 +35,7 @@ public XtStream
   XtBlockingRunner(XtBlockingStream* stream);
   
   void SendControl(State from);
-  void ReceiveControl(State state);
+  void ReceiveControl(State state, XtFault fault);
   static void RunBlockingStream(XtBlockingRunner* runner);
 };
 
