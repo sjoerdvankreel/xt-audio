@@ -178,15 +178,21 @@ namespace Xt
             var defaultInputId = s.GetDefaultDeviceId(false);
             for (int i = 0; i < inputList.GetCount(); i++)
             {
-                var id = inputList.GetId(i);
-                var name = inputList.GetName(id);
-                var view = new DeviceView();
-                view.id = id;
-                view.name = name;
-                view.device = s.OpenDevice(id);
-                view.defaultInput = id == defaultInputId;
-                inputViews.Add(view);
-                deviceViews.Add(view);
+                try
+                {
+                    var id = inputList.GetId(i);
+                    var name = inputList.GetName(id);
+                    var view = new DeviceView();
+                    view.id = id;
+                    view.name = name;
+                    view.device = s.OpenDevice(id);
+                    view.defaultInput = id == defaultInputId;
+                    inputViews.Add(view);
+                    deviceViews.Add(view);
+                } catch (XtException e)
+                {
+                    AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
+                }
             }
 
             var outputViews = new List<DeviceView>();
@@ -199,15 +205,21 @@ namespace Xt
             var defaultOutputId = s.GetDefaultDeviceId(true);
             for (int i = 0; i < outputList.GetCount(); i++)
             {
-                var id = outputList.GetId(i);
-                var name = outputList.GetName(id);
-                var view = new DeviceView();
-                view.id = id;
-                view.name = name;
-                view.device = s.OpenDevice(id);
-                view.defaultOutput = id == defaultInputId;
-                outputViews.Add(view);
-                deviceViews.Add(view);
+                try
+                {
+                    var id = outputList.GetId(i);
+                    var name = outputList.GetName(id);
+                    var view = new DeviceView();
+                    view.id = id;
+                    view.name = name;
+                    view.device = s.OpenDevice(id);
+                    view.defaultOutput = id == defaultInputId;
+                    outputViews.Add(view);
+                    deviceViews.Add(view);
+                } catch (XtException e)
+                {
+                    AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
+                }
             }
 
             inputDevice.DataSource = new List<DeviceView>(inputViews);
