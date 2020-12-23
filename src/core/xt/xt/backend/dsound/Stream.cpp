@@ -109,6 +109,11 @@ DSoundStream::ProcessBuffer()
     XT_VERIFY_COM(_inputBuffer->GetCurrentPosition(&write, &read));
     int32_t gap = XtiDsWrapAround(write - read, bufferBytes);
     _dsProcessed += XtiDsWrapAround(write - _previousPosition, bufferBytes);
+    if(_xtProcessed > _dsProcessed)
+    {
+      OnXRun(_params.index);
+      _xtProcessed = _dsProcessed;
+    }
     DWORD lockPosition = _xtProcessed % bufferBytes;
     int32_t available = static_cast<int32_t>(_dsProcessed - _xtProcessed - gap);
     _previousPosition = write;
@@ -141,6 +146,11 @@ DSoundStream::ProcessBuffer()
   XT_VERIFY_COM(_outputBuffer->GetCurrentPosition(&read, &write));
   int32_t gap = XtiDsWrapAround(write - read, bufferBytes);
   _dsProcessed += XtiDsWrapAround(read - _previousPosition, bufferBytes);
+  if(_dsProcessed > _xtProcessed)
+  {
+    OnXRun(_params.index);
+    _xtProcessed = _dsProcessed;
+  }
   DWORD lockPosition = _xtProcessed % bufferBytes;
   int32_t available = static_cast<int32_t>(bufferBytes - gap - (_xtProcessed - _dsProcessed));
   _previousPosition = read;
