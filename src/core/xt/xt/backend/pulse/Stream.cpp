@@ -9,6 +9,9 @@ PulseStream::StopSlaveBuffer() { }
 void
 PulseStream::StopMasterBuffer() { }
 
+void*
+PulseStream::GetHandle() const
+{ return _pa.pa; }
 XtFault
 PulseStream::StartSlaveBuffer()
 { return PA_OK; }

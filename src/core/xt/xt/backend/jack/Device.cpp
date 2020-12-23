@@ -9,6 +9,10 @@
 JackDevice::
 JackDevice(XtJackClient&& jc):
 _jc(std::move(jc)) { }
+
+void*
+JackDevice::GetHandle() const
+{ return _jc.jc; }
 XtFault
 JackDevice::ShowControlPanel()
 { return 0; }

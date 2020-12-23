@@ -10,6 +10,10 @@
 PulseDevice::
 PulseDevice(bool output): 
 _output(output) { }
+
+void*
+PulseDevice::GetHandle() const
+{ return nullptr; }
 XtFault
 PulseDevice::ShowControlPanel()
 { return 0; }

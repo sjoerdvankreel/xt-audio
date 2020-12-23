@@ -8,6 +8,9 @@ JackStream::
 JackStream(XtJackClient&& jc):
 _jc(std::move(jc)) { }
 
+void*
+JackStream::GetHandle() const
+{ return _jc.jc; }
 XtBool
 JackStream::IsRunning() const
 { return _running.load() != 0; }
