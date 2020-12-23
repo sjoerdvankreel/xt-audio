@@ -1,9 +1,13 @@
 #if XT_ENABLE_JACK
-#include <xt/jack/Shared.hpp>
-#include <xt/jack/Private.hpp>
-#include <xt/api/private/Platform.hpp>
+#include <xt/private/Platform.hpp>
+#include <xt/backend/jack/Shared.hpp>
+#include <xt/backend/jack/Private.hpp>
+
 #include <memory>
 
+XtFault
+JackService::GetFormatFault() const
+{ return EINVAL; }
 JackService::
 JackService()
 { jack_set_error_function(&XtiJackErrorCallback); }

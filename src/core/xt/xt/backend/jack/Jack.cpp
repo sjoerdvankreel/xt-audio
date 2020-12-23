@@ -1,7 +1,8 @@
 #if XT_ENABLE_JACK
-#include <xt/jack/Shared.hpp>
-#include <xt/jack/Private.hpp>
-#include <xt/private/Linux.hpp>
+#include <xt/shared/Linux.hpp>
+#include <xt/backend/jack/Shared.hpp>
+#include <xt/backend/jack/Private.hpp>
+
 #include <memory>
 #include <sstream>
 #include <cstring>

@@ -1,21 +1,13 @@
 #if XT_ENABLE_PULSE
-#include <xt/pulse/Shared.hpp>
-#include <xt/private/Services.hpp>
-#include <xt/api/private/Platform.hpp>
+#include <xt/shared/Services.hpp>
+#include <xt/private/Platform.hpp>
+#include <xt/backend/pulse/Shared.hpp>
+
 #include <pulse/pulseaudio.h>
 
 std::unique_ptr<XtService>
 XtiCreatePulseService()
 { return std::make_unique<PulseService>(); }
-
-XtServiceError
-XtiGetPulseError(XtFault fault)
-{
-  XtServiceError result;
-  result.text = pa_strerror(fault);
-  result.cause = XtiGetPulseFaultCause(fault);
-  return result;
-}
 
 pa_sample_format
 XtiSampleToPulse(XtSample sample)
@@ -35,7 +27,8 @@ XtCause
 XtiGetPulseFaultCause(XtFault fault)
 { 
   switch(fault) 
-  {
+  {  
+  case XT_PA_ERR_FORMAT: return XtCauseFormat;
   case PA_ERR_BUSY:
   case PA_ERR_EXIST:
   case PA_ERR_KILLED:
@@ -47,6 +40,15 @@ XtiGetPulseFaultCause(XtFault fault)
   case PA_ERR_CONNECTIONTERMINATED: return XtCauseService;
   default: return XtCauseUnknown;
   }
+}
+
+XtServiceError
+XtiGetPulseError(XtFault fault)
+{
+  XtServiceError result;
+  result.cause = XtiGetPulseFaultCause(fault);
+  result.text = fault == XT_PA_ERR_FORMAT? "XT_PA_ERR_FORMAT": pa_strerror(fault);
+  return result;
 }
 
 int

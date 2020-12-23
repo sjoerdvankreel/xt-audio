@@ -1,6 +1,6 @@
 #if XT_ENABLE_JACK
-#include <xt/jack/Shared.hpp>
-#include <xt/jack/Private.hpp>
+#include <xt/backend/jack/Shared.hpp>
+#include <xt/backend/jack/Private.hpp>
 
 XtFault
 JackDeviceList::GetCount(int32_t* count) const

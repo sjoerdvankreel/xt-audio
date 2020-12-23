@@ -1,7 +1,8 @@
 #if XT_ENABLE_JACK
-#include <xt/jack/Shared.hpp>
-#include <xt/jack/Private.hpp>
-#include <xt/api/private/Platform.hpp>
+#include <xt/private/Platform.hpp>
+#include <xt/backend/jack/Shared.hpp>
+#include <xt/backend/jack/Private.hpp>
+
 #include <memory>
 #include <utility>
 
@@ -64,7 +65,7 @@ JackDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* 
 }
 
 XtFault 
-JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStream** stream)
+JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** stream)
 {  
   XtFault fault;
   auto id = XtPlatform::instance->_id.c_str();
@@ -81,6 +82,8 @@ JackDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStr
   size_t sampleSize = XtiGetSampleSize(params->format.mix.sample);
   size_t bufferFrames = jack_get_buffer_size(client);
   auto result = std::make_unique<JackStream>(std::move(jc));
+  result->_running.store(0);
+  result->_insideCallback.store(0);
   result->_inputs = std::move(inputs);
   result->_outputs = std::move(outputs);
   result->_inputChannels = std::vector<void*>(static_cast<size_t>(channels.inputs), nullptr);

@@ -1,7 +1,11 @@
 #if XT_ENABLE_PULSE
-#include <xt/pulse/Shared.hpp>
+#include <xt/backend/pulse/Shared.hpp>
 #include <pulse/pulseaudio.h>
 #include <cstring>
+
+XtFault
+PulseService::GetFormatFault() const
+{ return XT_PA_ERR_FORMAT; }
 
 XtCapabilities 
 PulseService::GetCapabilities() const

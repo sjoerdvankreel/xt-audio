@@ -1,6 +1,8 @@
 #if XT_ENABLE_PULSE
-#include <xt/api/private/Platform.hpp>
-#include <xt/pulse/Shared.hpp>
+#include <xt/blocking/Device.hpp>
+#include <xt/private/Platform.hpp>
+#include <xt/backend/pulse/Shared.hpp>
+
 #include <pulse/pulseaudio.h>
 #include <memory>
 #include <cmath>
@@ -63,7 +65,7 @@ PulseDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 }
 
 XtFault 
-PulseDevice::OpenStreamCore(XtDeviceStreamParams const* params, void* user, XtStream** stream)
+PulseDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream)
 {
   pa_simple* pa;
   int fault = PA_OK;

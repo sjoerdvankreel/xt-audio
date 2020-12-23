@@ -1,6 +1,7 @@
 #if XT_ENABLE_PULSE
-#include <xt/pulse/Shared.hpp>
-#include <xt/private/Shared.hpp>
+#include <xt/shared/Shared.hpp>
+#include <xt/backend/pulse/Shared.hpp>
+
 #include <pulse/pulseaudio.h>
 #include <cstring>
 

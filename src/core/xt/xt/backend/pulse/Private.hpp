@@ -20,6 +20,8 @@ XtiPaMaxBufferSize = 2000.0;
 inline double const
 XtiPaDefaultBufferSize = 80.0;
 
+inline XtFault const
+XT_PA_ERR_FORMAT = PA_ERR_MAX + 1;
 inline XtSample const
 XtiPaDefaultSample = XtSampleInt16;
 
