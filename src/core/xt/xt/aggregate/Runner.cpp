@@ -60,7 +60,7 @@ XtAggregateRunner::OnMasterBuffer(int32_t index, XtBuffer const* buffer)
   for(size_t i = 0; i < _stream->_streams.size(); i++)
     if(i != _stream->_masterIndex)
       if((fault = _stream->_streams[i]->ProcessBuffer()) != 0) return fault;
-  OnSlaveBuffer(index, buffer);
+  if((fault = OnSlaveBuffer(index, buffer)) != 0) return fault;
 
   int32_t totalChannels = 0;
   auto& wi = _stream->_weave.input;
@@ -95,7 +95,7 @@ XtAggregateRunner::OnMasterBuffer(int32_t index, XtBuffer const* buffer)
   XtBuffer appBuffer = *buffer;
   appBuffer.input = appInput;
   appBuffer.output = appOutput;
-  _params.stream.onBuffer(this, &appBuffer, _user);
+  if((fault = _params.stream.onBuffer(this, &appBuffer, _user)) != 0) return fault;
 
   totalChannels = 0;
   for(size_t i = 0; i < _stream->_streams.size(); i++)

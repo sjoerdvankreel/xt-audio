@@ -87,7 +87,7 @@ AsioStream::BufferSwitchTimeInfo(ASIOTime* time, long index, ASIOBool direct, vo
     buffer.position = XT_ASIO_TO_UINT64(info.samplePosition.lo, info.samplePosition.hi);
   }
 
-  s->OnBuffer(-1, &buffer);
+  XT_ASSERT(s->OnBuffer(-1, &buffer) == 0);
   if(s->_issueOutputReady)
     s->_issueOutputReady = s->_asio->outputReady() == ASE_OK;
   XT_ASSERT(XtiCompareExchange(s->_insideCallback, 1, 0));

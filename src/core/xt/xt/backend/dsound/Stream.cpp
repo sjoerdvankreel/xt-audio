@@ -81,12 +81,12 @@ DSoundStream::PrefillOutputBuffer()
   {
     buffer.output = audio1;
     buffer.frames = _bufferFrames;
-    OnBuffer(_params.index, &buffer);
+    XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
   } else
   {
     buffer.output = _audio.data();
     buffer.frames = _bufferFrames;
-    OnBuffer(_params.index, &buffer);
+    XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
     XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
   }
   XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));
@@ -124,7 +124,7 @@ DSoundStream::ProcessBuffer()
     {
       buffer.input = audio1;
       buffer.frames = available / _frameSize;
-      OnBuffer(_params.index, &buffer);
+      XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
       XT_VERIFY_COM(_inputBuffer->Unlock(audio1, size1, audio2, size2));
     } else
     {
@@ -132,7 +132,7 @@ DSoundStream::ProcessBuffer()
       XT_VERIFY_COM(_inputBuffer->Unlock(audio1, size1, audio2, size2));
       buffer.input = _audio.data();
       buffer.frames = available / _frameSize;
-      OnBuffer(_params.index, &buffer);
+      XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
     }
     _xtProcessed += available;
     return DS_OK;
@@ -156,11 +156,11 @@ DSoundStream::ProcessBuffer()
   {
     buffer.output = audio1;
     buffer.frames = available / _frameSize;
-    OnBuffer(_params.index, &buffer);
+    XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
   } else {
     buffer.output = _audio.data();
     buffer.frames = available / _frameSize;
-    OnBuffer(_params.index, &buffer);
+    XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
     XtiDsSplitBufferParts(_audio, audio1, size1, audio2, size2);
   }
   XT_VERIFY_COM(_outputBuffer->Unlock(audio1, size1, audio2, size2));

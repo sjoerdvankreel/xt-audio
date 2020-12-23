@@ -333,6 +333,7 @@ namespace Xt
             BeginInvoke(new Action(() => {
                 string evtDesc = running ? "Started" : "Stopped";
                 AddMessage(() => "Stream event: " + evtDesc + ", new state: " + newState + ".");
+                if (error != 0) AddMessage(() => XtAudio.GetErrorInfo(error).ToString());
                 stop.Enabled = running;
                 panel.Enabled = !running;
                 start.Enabled = !running;
