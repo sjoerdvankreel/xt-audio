@@ -502,7 +502,7 @@ namespace Xt
             } catch (XtException e)
             {
                 Stop();
-                MessageBox.Show(this, e.ToString(), "Failed to start stream.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, XtAudio.GetErrorInfo(e.GetError()).ToString(), "Failed to start stream.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

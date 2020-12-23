@@ -136,7 +136,7 @@ XtiSupportsFormat(XtDevice const* device, XtFormat const* format)
 {
   XtFault fault;
   XtBool supports;
-  if((fault = device->SupportsFormat(format, &supports)) != 0) return fault;
+  if((fault = XtDeviceSupportsFormat(device, format, &supports)) != 0) return fault;
   if(!supports) return XtPlatform::instance->GetService(device->GetSystem())->GetFormatFault();
   return 0;
 }
