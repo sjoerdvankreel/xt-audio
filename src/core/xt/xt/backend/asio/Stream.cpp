@@ -2,15 +2,19 @@
 #include <xt/backend/asio/Shared.hpp>
 #include <xt/backend/asio/Private.hpp>
 
+AsioStream::
+~AsioStream()
+{ XT_ASSERT(XtiIsAsioSuccess(_asio->disposeBuffers())); }
+
+void*
+AsioStream::GetHandle()
+{ return _asio.p; }
 XtBool
 AsioStream::IsRunning() const
 { return _running.load() != 0; }
 XtFault
 AsioStream::GetFrames(int32_t* frames) const
 { *frames = _bufferSize; return ASE_OK; }
-AsioStream::
-~AsioStream()
-{ XT_ASSERT(XtiIsAsioSuccess(_asio->disposeBuffers())); }
 
 void
 AsioStream::Stop()

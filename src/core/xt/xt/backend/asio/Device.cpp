@@ -5,6 +5,10 @@
 AsioDevice::
 AsioDevice(CComPtr<IASIO> asio):
 _asio(asio) { }
+
+void*
+AsioDevice::GetHandle()
+{ return _asio.p; }
 XtFault
 AsioDevice::ShowControlPanel()
 { return _asio->controlPanel(); }

@@ -5,18 +5,18 @@
 
 #include <cstring>
 
+void* XT_CALL
+XtDeviceGetHandle(XtDevice* d)
+{
+  XT_ASSERT(d != nullptr);
+  return d->GetHandle();
+}
+
 void XT_CALL
 XtDeviceDestroy(XtDevice* d) 
 {
   XT_ASSERT(XtiCalledOnMainThread());
   delete d;
-}
-
-void* XT_CALL
-XtDeviceGetBackendHandle(XtDevice* d)
-{
-  XT_ASSERT(d != nullptr);
-  return d->GetBackendHandle();
 }
 
 XtError XT_CALL

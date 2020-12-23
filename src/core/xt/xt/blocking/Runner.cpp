@@ -6,6 +6,9 @@
 XtBlockingRunner::
 ~XtBlockingRunner() 
 { SendControl(State::Closing); }
+void*
+XtBlockingRunner::GetHandle()
+{ return _stream->GetHandle(); }
 void
 XtBlockingRunner::Stop()
 { SendControl(State::Stopping); }

@@ -16,12 +16,12 @@ XT_API XtError XT_CALL
 XtStreamStart(XtStream* s);
 XT_API void XT_CALL 
 XtStreamDestroy(XtStream* s);
+XT_API void* XT_CALL
+XtStreamGetHandle(XtStream* s);
 XT_API XtBool XT_CALL
 XtStreamIsRunning(XtStream const* s);
 XT_API const XtFormat* XT_CALL 
 XtStreamGetFormat(XtStream const* s);
-XT_API void* XT_CALL
-XtStreamGetBackendHandle(XtStream* s);
 XT_API XtError XT_CALL 
 XtStreamGetFrames(XtStream const* s, int32_t* frames);
 XT_API XtError XT_CALL 

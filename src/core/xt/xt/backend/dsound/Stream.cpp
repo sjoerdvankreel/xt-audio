@@ -8,6 +8,9 @@ DSoundStream::GetFrames(int32_t* frames) const
 XtFault
 DSoundStream::GetLatency(XtLatency* latency) const
 { return S_OK; }
+void*
+DSoundStream::GetHandle()
+{ return _inputBuffer.p != nullptr? _inputBuffer.p: static_cast<void*>(_outputBuffer.p); }
 
 void
 DSoundStream::StopSlaveBuffer()

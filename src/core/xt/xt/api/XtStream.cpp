@@ -4,6 +4,13 @@
 
 #include <cstring>
 
+void* XT_CALL
+XtStreamGetHandle(XtStream* s)
+{
+  XT_ASSERT(s != nullptr);
+  return s->GetHandle();
+}
+
 void XT_CALL 
 XtStreamStop(XtStream* s) 
 {
@@ -17,13 +24,6 @@ XtStreamGetFormat(XtStream const* s)
 {
   XT_ASSERT(s != nullptr);
   return &s->_params.format;
-}
-
-void* XT_CALL
-XtStreamGetBackendHandle(XtStream* s)
-{
-  XT_ASSERT(s != nullptr);
-  return s->GetBackendHandle();
 }
 
 void XT_CALL 

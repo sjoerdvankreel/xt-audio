@@ -7,7 +7,7 @@
 #include <xt/shared/Shared.hpp>
 
 #define XT_IMPLEMENT_DEVICE(s)                                                            \
-  void* GetBackendHandle() override final;                                                \
+  void* GetHandle() override final;                                                       \
   XtFault ShowControlPanel() override final;                                              \
   XtFault GetMix(XtBool* valid, XtMix* mix) const override final;                         \
   XtSystem GetSystem() const override final { return XtSystem##s; }                       \
@@ -24,7 +24,7 @@ struct XtDevice
   virtual ~XtDevice() {};
   XtFault OpenStream(XtDeviceStreamParams const* params, void* user, XtStream** stream);
 
-  virtual void* GetBackendHandle() = 0;
+  virtual void* GetHandle() = 0;
   virtual XtFault ShowControlPanel() = 0;
   virtual XtSystem GetSystem() const = 0;
   virtual XtFault GetMix(XtBool* valid, XtMix* mix) const = 0;
