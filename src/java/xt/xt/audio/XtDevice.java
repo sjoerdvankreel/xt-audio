@@ -19,6 +19,7 @@ public final class XtDevice implements AutoCloseable {
 
     static { Native.register(Utility.LIBRARY); }
     private static native void XtDeviceDestroy(Pointer d);
+    private static native Pointer XtDeviceGetHandle(Pointer d);
     private static native long XtDeviceShowControlPanel(Pointer d);
     private static native long XtDeviceGetMix(Pointer d, IntByReference valid, XtMix mix);
     private static native long XtDeviceGetBufferSize(Pointer d, XtFormat format, XtBufferSize size);
@@ -33,6 +34,7 @@ public final class XtDevice implements AutoCloseable {
     XtDevice(Pointer d) { _d = d; }
 
     @Override public void close() { XtDeviceDestroy(_d); }
+    public Pointer getHandle() { return XtDeviceGetHandle(_d); }
     public void showControlPanel() { handleError(XtDeviceShowControlPanel(_d)); }
 
     public XtBufferSize getBufferSize(XtFormat format) {

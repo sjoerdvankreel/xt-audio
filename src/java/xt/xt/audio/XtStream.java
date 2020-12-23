@@ -6,9 +6,6 @@ import com.sun.jna.ptr.IntByReference;
 import xt.audio.Callbacks.OnBuffer;
 import xt.audio.Callbacks.OnRunning;
 import xt.audio.Callbacks.OnXRun;
-import xt.audio.Callbacks.XtOnBuffer;
-import xt.audio.Callbacks.XtOnRunning;
-import xt.audio.Callbacks.XtOnXRun;
 import xt.audio.Structs.XtBuffer;
 import xt.audio.Structs.XtFormat;
 import xt.audio.Structs.XtLatency;
@@ -21,6 +18,7 @@ public final class XtStream implements AutoCloseable {
     private static native void XtStreamStop(Pointer s);
     private static native long XtStreamStart(Pointer s);
     private static native void XtStreamDestroy(Pointer s);
+    private static native Pointer XtStreamGetHandle(Pointer s);
     private static native boolean XtStreamIsRunning(Pointer s);
     private static native XtFormat XtStreamGetFormat(Pointer s);
     private static native long XtStreamGetLatency(Pointer s, XtLatency latency);
@@ -42,6 +40,7 @@ public final class XtStream implements AutoCloseable {
     public XtFormat getFormat() { return _format; }
     @Override public void close() { XtStreamDestroy(_s); }
     public void start() { handleError(XtStreamStart(_s)); }
+    public Pointer getHandle() { return XtStreamGetHandle(_s); }
     public boolean isRunning() { return XtStreamIsRunning(_s); }
 
     OnXRun onNativeXRun() { return _onNativeXRun; }
