@@ -27,6 +27,8 @@
 * timeout after 3 buffers (see also WFSO)
 * do assert_com like for linux
 * check aggregate 2+2
+* fix jack shutdown
+* do expose backing handles
 
 ** LATER
 * support jack on windows
