@@ -31,12 +31,13 @@ public class RenderSimple {
         return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 
-    static void onBuffer(XtStream stream, XtBuffer buffer, Object user) {
+    static int onBuffer(XtStream stream, XtBuffer buffer, Object user) {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
         float[] output = (float[])safe.getOutput();
         for(int f = 0; f < buffer.frames; f++) output[f] = nextSample();
         safe.unlock(buffer);
+        return 0;
     }
 
     public static void main() throws Exception {
@@ -54,7 +55,7 @@ public class RenderSimple {
                 if(!device.supportsFormat(FORMAT)) return;
 
                 XtBufferSize size = device.getBufferSize(FORMAT);
-                streamParams = new XtStreamParams(true, RenderSimple::onBuffer, null);
+                streamParams = new XtStreamParams(true, RenderSimple::onBuffer, null, null);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

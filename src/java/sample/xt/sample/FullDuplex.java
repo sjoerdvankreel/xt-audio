@@ -19,11 +19,22 @@ import xt.audio.XtStream;
 
 public class FullDuplex {
 
-    static void onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+    static void onXRun(XtStream stream, int index, Object user) {
+        System.out.println("XRun on device " + index + ".");
+    }
+
+    static void onRunning(XtStream stream, boolean running, long error, Object user) {
+        String evt = running? "Started": "Stopped";
+        System.out.println("Stream event: " + evt + ", new state: " + stream.isRunning() + ".");
+        if(error != 0) System.out.println(XtAudio.getErrorInfo(error).toString());
+    }
+
+    static int onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
         System.arraycopy(safe.getInput(), 0, safe.getOutput(), 0, buffer.frames * 2);
         safe.unlock(buffer);
+        return 0;
     }
 
     public static void main() throws Exception {
@@ -50,7 +61,7 @@ public class FullDuplex {
                 else return;
 
                 XtBufferSize size = device.getBufferSize(format);
-                streamParams = new XtStreamParams(true, FullDuplex::onBuffer, null);
+                streamParams = new XtStreamParams(true, FullDuplex::onBuffer, FullDuplex::onXRun, FullDuplex::onRunning);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {

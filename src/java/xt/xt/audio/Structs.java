@@ -4,8 +4,10 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.TypeMapper;
 import xt.audio.Callbacks.OnBuffer;
+import xt.audio.Callbacks.OnRunning;
 import xt.audio.Callbacks.OnXRun;
 import xt.audio.Callbacks.XtOnBuffer;
+import xt.audio.Callbacks.XtOnRunning;
 import xt.audio.Callbacks.XtOnXRun;
 import xt.audio.Enums.XtCause;
 import xt.audio.Enums.XtSample;
@@ -48,8 +50,9 @@ public interface Structs {
         public boolean interleaved;
         public OnBuffer onBuffer;
         public OnXRun onXRun;
+        public OnRunning onRunning;
         public StreamParams() {}
-        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "onBuffer", "onXRun"); }
+        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "onBuffer", "onXRun", "onRunning"); }
     }
 
     public static class XtMix extends Structure {
@@ -65,9 +68,10 @@ public interface Structs {
         public boolean interleaved;
         public XtOnBuffer onBuffer;
         public XtOnXRun onXRun;
+        public XtOnRunning onRunning;
         public XtStreamParams() {}
-        public XtStreamParams(boolean interleaved, XtOnBuffer onBuffer, XtOnXRun onXRun) {
-            this.interleaved = interleaved; this.onBuffer = onBuffer; this.onXRun = onXRun;
+        public XtStreamParams(boolean interleaved, XtOnBuffer onBuffer, XtOnXRun onXRun, XtOnRunning onRunning) {
+            this.interleaved = interleaved; this.onBuffer = onBuffer; this.onXRun = onXRun; this.onRunning = onRunning;
         }
     }
 

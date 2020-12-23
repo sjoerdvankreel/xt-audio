@@ -2,7 +2,7 @@
 * Better document service/list/device/stream lifetime (what needs to be alive when).
 * fix compiler warnings
 * move doxygen to own file
-* explain no io in callback
+* document samples + explain no io in callback
 * fix javadoc warnings
 * package zip in build script
 * cleanup cli gui

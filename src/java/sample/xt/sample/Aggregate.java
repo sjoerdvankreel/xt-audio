@@ -20,16 +20,23 @@ import xt.audio.XtStream;
 
 public class Aggregate {
 
-    static void onXRun(int index, Object user) {
+    static void onXRun(XtStream stream, int index, Object user) {
         System.out.println("XRun on device " + index + ".");
     }
 
-    static void onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
+    static void onRunning(XtStream stream, boolean running, long error, Object user) {
+        String evt = running? "Started": "Stopped";
+        System.out.println("Stream event: " + evt + ", new state: " + stream.isRunning() + ".");
+        if(error != 0) System.out.println(XtAudio.getErrorInfo(error).toString());
+    }
+
+    static int onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
         safe.lock(buffer);
         int count = buffer.frames * stream.getFormat().channels.inputs;
         System.arraycopy(safe.getInput(), 0, safe.getOutput(), 0, count);
         safe.unlock(buffer);
+        return 0;
     }
 
     public static void main() throws Exception {
@@ -56,7 +63,7 @@ public class Aggregate {
                 XtAggregateDeviceParams[] deviceParams = new XtAggregateDeviceParams[2];
                 deviceParams[0] = new XtAggregateDeviceParams(input, inputFormat.channels, 30.0);
                 deviceParams[1] = new XtAggregateDeviceParams(output, outputFormat.channels, 30.0);
-                XtStreamParams streamParams = new XtStreamParams(true, Aggregate::onBuffer, Aggregate::onXRun);
+                XtStreamParams streamParams = new XtStreamParams(true, Aggregate::onBuffer, Aggregate::onXRun, Aggregate::onRunning);
                 aggregateParams = new XtAggregateStreamParams(streamParams, deviceParams, 2, mix, output);
                 try(XtStream stream = service.aggregateStream(aggregateParams, null);
                     XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
