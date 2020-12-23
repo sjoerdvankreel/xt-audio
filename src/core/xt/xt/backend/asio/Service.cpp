@@ -2,6 +2,11 @@
 #include <xt/shared/Win32.hpp>
 #include <xt/private/Platform.hpp>
 #include <xt/backend/asio/Shared.hpp>
+#include <xt/backend/asio/Private.hpp>
+
+XtFault
+AsioService::GetFormatFault() const
+{ return XT_ASE_Format; }
 
 XtFault
 AsioService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const

@@ -57,23 +57,27 @@ XtDeviceSupportsFormat(XtDevice const* d, XtFormat const* format, XtBool* suppor
 XtError XT_CALL
 XtDeviceGetBufferSize(XtDevice const* d, XtFormat const* format, XtBufferSize* size)
 {
+  XtFault fault;
   XT_ASSERT(d != nullptr);
   XT_ASSERT(size != nullptr);
   XT_ASSERT(format != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  std::memset(size, 0, sizeof(XtBufferSize));
+  std::memset(size, 0, sizeof(XtBufferSize));  
+  if((fault = XtiSupportsFormat(d, format)) != 0) return fault;
   return XtiCreateError(d->GetSystem(), d->GetBufferSize(format, size));
 }
 
 XtError XT_CALL 
 XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream)
 {  
+  XtFault fault;
   XT_ASSERT(d != nullptr);
   XT_ASSERT(params != nullptr);
   XT_ASSERT(stream != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
   XT_ASSERT(params->bufferSize > 0.0);
   XT_ASSERT(params->stream.onBuffer != nullptr);
+  if((fault = XtiSupportsFormat(d, &params->format)) != 0) return fault;
   return d->OpenStream(params, user, stream);
 }
 

@@ -37,6 +37,8 @@ void
 XtiAssert(XtLocation const& location, char const* msg);
 void
 XtiCopyString(char const* source, char* buffer, int32_t* size);
+XtFault
+XtiSupportsFormat(XtDevice const* device, XtFormat const* format);
 inline bool
 XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired);
 void 

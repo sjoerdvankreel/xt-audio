@@ -41,6 +41,7 @@ XtService::AggregateStream(XtAggregateStreamParams const* params, void* user, Xt
     if(isMaster) result->_masterIndex = i;
   
     XtBool thisSupports;
+    if((fault = XtiSupportsFormat(device.device, &thisFormat)) != 0) return fault;
     auto thisDevice = &dynamic_cast<XtBlockingDevice&>(*device.device);
     if((fault = thisDevice->SupportsAccess(interleaved, &thisSupports)) != 0) return fault;
     result->_emulated.push_back(!thisSupports);

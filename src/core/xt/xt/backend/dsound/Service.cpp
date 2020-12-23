@@ -5,6 +5,10 @@
 #include <xt/backend/dsound/Private.hpp>
 #include <memory>
 
+XtFault
+DSoundService::GetFormatFault() const
+{ return DSERR_BADFORMAT; }
+
 XtCapabilities 
 DSoundService::GetCapabilities() const
 {

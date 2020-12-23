@@ -1,6 +1,7 @@
 #include <xt/api/XtAudio.h>
 #include <xt/api/XtPrint.h>
 #include <xt/shared/Shared.hpp>
+#include <xt/private/Device.hpp>
 #include <xt/shared/Services.hpp>
 #include <xt/private/Platform.hpp>
 
@@ -128,6 +129,16 @@ XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channel
   for(int32_t f = 0; f < frames; f++)
     for(int32_t c = 0; c < channels; c++)
       memcpy(&d[(f * channels + c) * size], &s[c][f * size], size);
+}
+
+XtFault
+XtiSupportsFormat(XtDevice const* device, XtFormat const* format)
+{
+  XtFault fault;
+  XtBool supports;
+  if((fault = device->SupportsFormat(format, &supports)) != 0) return fault;
+  if(!supports) return XtPlatform::instance->GetService(device->GetSystem())->GetFormatFault();
+  return 0;
 }
 
 void
