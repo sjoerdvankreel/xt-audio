@@ -19,12 +19,11 @@ namespace Xt
         static void OnXRun(XtStream stream, int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
-        static void
-        OnRunning(XtStream stream, bool running, ulong error, object user)
+        static void OnRunning(XtStream stream, bool running, ulong error, object user)
         {
             string evt = running ? "Started" : "Stopped";
-            Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");            
-            if(error != 0) Console.WriteLine(XtAudio.GetErrorInfo(error).ToString());
+            Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
+            if (error != 0) Console.WriteLine(XtAudio.GetErrorInfo(error).ToString());
         }
 
         static void RunStream(XtStream stream)
@@ -100,7 +99,7 @@ namespace Xt
 
             XtFormat format = new XtFormat(Mix, new XtChannels(0, 0, 2, 0));
             string defaultOutput = service.GetDefaultDeviceId(true);
-            if(defaultOutput == null) return;
+            if (defaultOutput == null) return;
             using XtDevice device = service.OpenDevice(defaultOutput);
             if (!device.SupportsFormat(format)) return;
             XtBufferSize size = device.GetBufferSize(format);

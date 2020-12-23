@@ -8,12 +8,11 @@ namespace Xt
         static void OnXRun(XtStream stream, int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
-        static void
-        OnRunning(XtStream stream, bool running, ulong error, object user)
+        static void OnRunning(XtStream stream, bool running, ulong error, object user)
         {
             string evt = running ? "Started" : "Stopped";
             Console.WriteLine("Stream event: " + evt + ", new state: " + stream.IsRunning() + ".");
-            if(error != 0) Console.WriteLine(XtAudio.GetErrorInfo(error).ToString());
+            if (error != 0) Console.WriteLine(XtAudio.GetErrorInfo(error).ToString());
         }
 
         static int OnBuffer(XtStream stream, in XtBuffer buffer, object user)
