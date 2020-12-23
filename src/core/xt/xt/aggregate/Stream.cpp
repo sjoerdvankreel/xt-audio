@@ -20,9 +20,6 @@ XtAggregateStream::StartMasterBuffer()
 XtFault
 XtAggregateStream::BlockMasterBuffer()
 { return _streams[_masterIndex]->BlockMasterBuffer(); }
-XtFault
-XtAggregateStream::PrefillOutputBuffer()
-{ return _streams[_masterIndex]->PrefillOutputBuffer(); }
 
 void
 XtAggregateStream::StopSlaveBuffer()
@@ -31,6 +28,15 @@ XtAggregateStream::StopSlaveBuffer()
   for(size_t i = 0; i < _streams.size(); i++)
     if(i != static_cast<size_t>(_masterIndex))
       _streams[i]->StopSlaveBuffer();
+}
+
+XtFault
+XtAggregateStream::PrefillOutputBuffer()
+{
+  XtFault fault;
+  for(size_t i = 0; i < _streams.size(); i++)
+    if((fault = _streams[i]->PrefillOutputBuffer()) != 0) return fault;
+  return 0;
 }
 
 XtFault

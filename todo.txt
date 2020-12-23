@@ -31,12 +31,6 @@
 * split alsa service -> rw/mmap
 * timeout after 3 buffers (see also WFSO)
 * do assert_com like for linux
-* check xtiguard impl
-* revert onbuffer return value
 * fix header order and outlining
 * check aggregate interleaved emulation
 * check aggregate 2+2
-* make runstream in samples close the stream
-* restore isformatsupportedcheck
-* make runaggregate pass correct iobuffer index
-* move runner logic to aggr stream

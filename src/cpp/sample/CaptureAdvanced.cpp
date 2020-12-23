@@ -75,16 +75,20 @@ CaptureAdvancedMain()
   std::cout << "Capture interleaved...\n";
   Xt::StreamParams streamParams(true, OnInterleavedBuffer, OnXRun, OnRunning);
   Xt::DeviceStreamParams deviceParams(streamParams, Format, size.current);
-  std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
-  std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &interleaved);
-  RunStream(stream.get());
+  {
+    std::ofstream interleaved("xt-audio-interleaved.raw", std::ios::out | std::ios::binary);
+    std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &interleaved);
+    RunStream(stream.get());
+  }
 
   std::cout << "Capture non-interleaved...\n";
   streamParams = Xt::StreamParams(false, OnNonInterleavedBuffer, OnXRun, OnRunning);
   deviceParams = Xt::DeviceStreamParams(streamParams, Format, size.current);
-  std::ofstream nonInterleaved("xt-audio-non-interleaved.raw", std::ios::out | std::ios::binary);
-  stream = device->OpenStream(deviceParams, &nonInterleaved);
-  RunStream(stream.get());
+  {
+    std::ofstream nonInterleaved("xt-audio-non-interleaved.raw", std::ios::out | std::ios::binary);
+    std::unique_ptr<Xt::Stream> stream = device->OpenStream(deviceParams, &nonInterleaved);
+    RunStream(stream.get());
+  }
 
   return 0;
 }
