@@ -11,9 +11,6 @@ _jc(std::move(jc)) { }
 XtBool
 JackStream::IsRunning() const
 { return _running.load() != 0; }
-void
-JackStream::ShutdownCallback(void* arg)
-{ static_cast<JackStream*>(arg)->Stop(); }
 XtFault
 JackStream::GetLatency(XtLatency* latency) const
 { return 0; }
@@ -24,9 +21,18 @@ int JackStream::XRunCallback(void* arg)
 { static_cast<JackStream*>(arg)->OnXRun(-1); return 0; }
 
 void
+JackStream::ShutdownCallback(void* arg)
+{
+  auto stream = static_cast<JackStream*>(arg);
+  XtiCompareExchange(stream->_running, 1, 0);
+  stream->OnRunning(XtFalse, 0);
+}
+
+void
 JackStream::Stop()
 { 
-  if(!XtiCompareExchange(_running, 1, 0)) return;
+  // may be stopped from ShutdownCallback
+  XtiCompareExchange(_running, 1, 0);
   while(_insideCallback.load() == 1);
   _connections.clear();
   XT_TRACE_IF(jack_deactivate(_jc.jc) != 0);
@@ -40,6 +46,9 @@ JackStream::Start()
   std::vector<XtJackConnection> connections;
   auto const& channels = _params.format.channels;
   
+  // may be stopped from ShutdownCallback
+  _connections.clear();
+  jack_deactivate(_jc.jc);
   XT_ASSERT(XtiCompareExchange(_running, 0, 1));
   auto guard = XtiGuard([this] { XtiCompareExchange(_running, 1, 0); });
   jack_on_shutdown(_jc.jc, &JackStream::ShutdownCallback, this);
