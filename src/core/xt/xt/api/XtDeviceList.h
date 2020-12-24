@@ -1,7 +1,9 @@
 #ifndef XT_API_DEVICE_LIST_H
 #define XT_API_DEVICE_LIST_H
 
+#include <xt/api/Enums.h>
 #include <xt/api/Shared.h>
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -12,6 +14,8 @@ XT_API void XT_CALL
 XtDeviceListDestroy(XtDeviceList* l);
 XT_API XtError XT_CALL
 XtDeviceListGetCount(XtDeviceList const* l, int32_t* count);
+XT_API XtDeviceCaps XT_CALL 
+XtDeviceListGetCapabilities(XtDeviceList const* l, char const* id);
 XT_API XtError XT_CALL
 XtDeviceListGetId(XtDeviceList const* l, int32_t index, char* buffer, int32_t* size);
 XT_API XtError XT_CALL

@@ -8,6 +8,7 @@
 #define XT_IMPLEMENT_DEVICE_LIST(s)                                               \
   XtFault GetCount(int32_t* count) const override final;                          \
   XtSystem GetSystem() const override final { return XtSystem##s; }               \
+  XtDeviceCaps GetCapabilities(char const* id) const override final;              \
   XtFault GetId(int32_t index, char* buffer, int32_t* size) const override final; \
   XtFault GetName(char const* id, char* buffer, int32_t* size) const override final
 
@@ -16,6 +17,7 @@ struct XtDeviceList
   virtual ~XtDeviceList() { };  
   virtual XtSystem GetSystem() const = 0;
   virtual XtFault GetCount(int32_t* count) const = 0;
+  virtual XtDeviceCaps GetCapabilities(char const* id) const = 0;
   virtual XtFault GetId(int32_t index, char* buffer, int32_t* size) const = 0;
   virtual XtFault GetName(char const* id, char* buffer, int32_t* size) const = 0;
 };

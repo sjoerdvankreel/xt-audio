@@ -19,6 +19,15 @@ XtDeviceListGetCount(XtDeviceList const* l, int32_t* count)
   return XtiCreateError(l->GetSystem(), l->GetCount(count));
 }
 
+XtDeviceCaps XT_CALL 
+XtDeviceListGetCapabilities(XtDeviceList const* l, char const* id)
+{
+  XT_ASSERT(l != nullptr);  
+  XT_ASSERT(id != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());
+  return l->GetCapabilities(id);
+}
+
 XtError XT_CALL
 XtDeviceListGetId(XtDeviceList const* l, int32_t index, char* buffer, int32_t* size)
 {

@@ -21,6 +21,10 @@ typedef enum XtEnumFlags {
   XtEnumFlagsInput = 0x1, XtEnumFlagsOutput = 0x2, XtEnumFlagsAll = XtEnumFlagsInput | XtEnumFlagsOutput
 } XtEnumFlags;
 
+typedef enum XtDeviceCaps {
+  XtDeviceCapsInput = 0x1, XtDeviceCapsOutput = 0x2, XtDeviceCapsLoopback = 0x4, XtDeviceCapsHwDirect = 0x8
+} XtDeviceCaps;
+
 typedef enum XtServiceCaps {
   XtServiceCapsNone = 0x0, XtServiceCapsTime = 0x1, XtServiceCapsLatency = 0x2, XtServiceCapsFullDuplex = 0x4, 
   XtServiceCapsAggregation = 0x8, XtServiceCapsChannelMask = 0x10, XtServiceCapsControlPanel = 0x20, XtServiceCapsXRunDetection = 0x40
