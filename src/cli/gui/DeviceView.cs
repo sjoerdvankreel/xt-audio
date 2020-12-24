@@ -7,6 +7,7 @@
         internal string name;
         internal bool defaultInput;
         internal bool defaultOutput;
+        internal XtDeviceCaps capabilities;
 
         public override string ToString()
         {

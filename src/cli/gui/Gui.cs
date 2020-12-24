@@ -181,12 +181,12 @@ namespace Xt
                 try
                 {
                     var id = inputList.GetId(i);
-                    var name = inputList.GetName(id);
                     var view = new DeviceView();
                     view.id = id;
-                    view.name = name;
                     view.device = s.OpenDevice(id);
+                    view.name = inputList.GetName(id);
                     view.defaultInput = id == defaultInputId;
+                    view.capabilities = inputList.GetCapabilities(id);
                     inputViews.Add(view);
                     deviceViews.Add(view);
                 } catch (XtException e)
@@ -208,12 +208,12 @@ namespace Xt
                 try
                 {
                     var id = outputList.GetId(i);
-                    var name = outputList.GetName(id);
                     var view = new DeviceView();
                     view.id = id;
-                    view.name = name;
                     view.device = s.OpenDevice(id);
+                    view.name = outputList.GetName(id);
                     view.defaultOutput = id == defaultInputId;
+                    view.capabilities = outputList.GetCapabilities(id);
                     outputViews.Add(view);
                     deviceViews.Add(view);
                 } catch (XtException e)
@@ -261,6 +261,7 @@ namespace Xt
                 : inputDevice.SupportsAccess(false)
                 ? "False"
                 : "True";
+            inputCaps.Text = this.inputDevice.SelectedItem == null ? "None": ((DeviceView)(this.inputDevice.SelectedItem)).capabilities.ToString();
             List<ChannelView> inputViews = new List<ChannelView>();
             if (inputDevice != null)
                 inputViews = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
@@ -287,6 +288,7 @@ namespace Xt
                 : outputDevice.SupportsAccess(false)
                 ? "False"
                 : "True";
+            outputCaps.Text = this.outputDevice.SelectedItem == null ? "None": ((DeviceView)(this.outputDevice.SelectedItem)).capabilities.ToString();
             List<ChannelView> outputViews = new List<ChannelView>();
             if (outputDevice != null)
                 outputViews = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))

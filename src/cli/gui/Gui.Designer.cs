@@ -48,6 +48,8 @@
             System.Windows.Forms.Label label15;
             System.Windows.Forms.Label label20;
             System.Windows.Forms.Label label21;
+            System.Windows.Forms.Label label7;
+            System.Windows.Forms.Label label22;
             this.messages = new System.Windows.Forms.TextBox();
             this.system = new System.Windows.Forms.ComboBox();
             this.inputDevice = new System.Windows.Forms.ComboBox();
@@ -72,6 +74,8 @@
             this.start = new System.Windows.Forms.Button();
             this.stop = new System.Windows.Forms.Button();
             this.panel = new System.Windows.Forms.Panel();
+            this.outputCaps = new System.Windows.Forms.Label();
+            this.inputCaps = new System.Windows.Forms.Label();
             this.outputInterleaved = new System.Windows.Forms.Label();
             this.inputInterleaved = new System.Windows.Forms.Label();
             this.bufferSize = new System.Windows.Forms.TrackBar();
@@ -102,6 +106,8 @@
             label15 = new System.Windows.Forms.Label();
             label20 = new System.Windows.Forms.Label();
             label21 = new System.Windows.Forms.Label();
+            label7 = new System.Windows.Forms.Label();
+            label22 = new System.Windows.Forms.Label();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bufferSize)).BeginInit();
             this.SuspendLayout();
@@ -176,7 +182,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(3, 250);
+            label10.Location = new System.Drawing.Point(3, 276);
             label10.Name = "label10";
             label10.Size = new System.Drawing.Size(77, 13);
             label10.TabIndex = 39;
@@ -239,7 +245,7 @@
             // label19
             // 
             label19.AutoSize = true;
-            label19.Location = new System.Drawing.Point(2, 442);
+            label19.Location = new System.Drawing.Point(3, 468);
             label19.Name = "label19";
             label19.Size = new System.Drawing.Size(77, 13);
             label19.TabIndex = 48;
@@ -290,6 +296,24 @@
             label21.Size = new System.Drawing.Size(305, 13);
             label21.TabIndex = 75;
             label21.Text = "Stream aggregation secondary input/output devices:";
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(3, 250);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(63, 13);
+            label7.TabIndex = 67;
+            label7.Text = "Capabilities:";
+            // 
+            // label22
+            // 
+            label22.AutoSize = true;
+            label22.Location = new System.Drawing.Point(3, 442);
+            label22.Name = "label22";
+            label22.Size = new System.Drawing.Size(63, 13);
+            label22.TabIndex = 69;
+            label22.Text = "Capabilities:";
             // 
             // messages
             // 
@@ -465,19 +489,19 @@
             // inputChannels
             // 
             this.inputChannels.FormattingEnabled = true;
-            this.inputChannels.Location = new System.Drawing.Point(101, 250);
+            this.inputChannels.Location = new System.Drawing.Point(101, 276);
             this.inputChannels.Name = "inputChannels";
             this.inputChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.inputChannels.Size = new System.Drawing.Size(316, 95);
+            this.inputChannels.Size = new System.Drawing.Size(316, 69);
             this.inputChannels.TabIndex = 56;
             // 
             // outputChannels
             // 
             this.outputChannels.FormattingEnabled = true;
-            this.outputChannels.Location = new System.Drawing.Point(100, 442);
+            this.outputChannels.Location = new System.Drawing.Point(100, 468);
             this.outputChannels.Name = "outputChannels";
             this.outputChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.outputChannels.Size = new System.Drawing.Size(316, 95);
+            this.outputChannels.Size = new System.Drawing.Size(316, 69);
             this.outputChannels.TabIndex = 57;
             // 
             // attributes
@@ -511,6 +535,10 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.outputCaps);
+            this.panel.Controls.Add(label22);
+            this.panel.Controls.Add(this.inputCaps);
+            this.panel.Controls.Add(label7);
             this.panel.Controls.Add(this.outputInterleaved);
             this.panel.Controls.Add(this.inputInterleaved);
             this.panel.Controls.Add(label20);
@@ -555,6 +583,24 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(429, 548);
             this.panel.TabIndex = 64;
+            // 
+            // outputCaps
+            // 
+            this.outputCaps.AutoSize = true;
+            this.outputCaps.Location = new System.Drawing.Point(97, 442);
+            this.outputCaps.Name = "outputCaps";
+            this.outputCaps.Size = new System.Drawing.Size(33, 13);
+            this.outputCaps.TabIndex = 70;
+            this.outputCaps.Text = "None";
+            // 
+            // inputCaps
+            // 
+            this.inputCaps.AutoSize = true;
+            this.inputCaps.Location = new System.Drawing.Point(98, 250);
+            this.inputCaps.Name = "inputCaps";
+            this.inputCaps.Size = new System.Drawing.Size(33, 13);
+            this.inputCaps.TabIndex = 68;
+            this.inputCaps.Text = "None";
             // 
             // outputInterleaved
             // 
@@ -723,5 +769,7 @@
         private System.Windows.Forms.ComboBox secondaryInput;
         private System.Windows.Forms.ComboBox secondaryOutput;
         private System.Windows.Forms.CheckBox logXRuns;
+        private System.Windows.Forms.Label inputCaps;
+        private System.Windows.Forms.Label outputCaps;
     }
 }
