@@ -12,20 +12,18 @@ namespace Xt
             for (int d = 0; d < list.GetCount(); d++)
             {
                 string id = list.GetId(d);
-                using (XtDevice device = service.OpenDevice(id))
+                try
                 {
-                    try
-                    {
-                        XtMix? mix = device.GetMix();
-                        Console.WriteLine("    Device " + id + ":");
-                        Console.WriteLine("      Input channels: " + device.GetChannelCount(false));
-                        Console.WriteLine("      Output channels: " + device.GetChannelCount(true));
-                        Console.WriteLine("      Interleaved access: " + device.SupportsAccess(true));
-                        Console.WriteLine("      Non-interleaved access: " + device.SupportsAccess(false));
-                        if (mix != null) Console.WriteLine("      Current mix: " + mix.Value.rate + " " + mix.Value.sample);
-                    } catch (XtException e)
-                    { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError())); }
-                }
+                    using XtDevice device = service.OpenDevice(id);
+                    XtMix? mix = device.GetMix();
+                    Console.WriteLine("    Device " + id + ":");
+                    Console.WriteLine("      Input channels: " + device.GetChannelCount(false));
+                    Console.WriteLine("      Output channels: " + device.GetChannelCount(true));
+                    Console.WriteLine("      Interleaved access: " + device.SupportsAccess(true));
+                    Console.WriteLine("      Non-interleaved access: " + device.SupportsAccess(false));
+                    if (mix != null) Console.WriteLine("      Current mix: " + mix.Value.rate + " " + mix.Value.sample);
+                } catch (XtException e)
+                { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError())); }
             }
         }
 
