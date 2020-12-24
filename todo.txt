@@ -14,6 +14,7 @@
 * split alsa service -> rw/mmap
 * do assert_com like for linux
 * check aggregate 2+2
+* fix alsa channel mapping
 
 ** LATER
 * arm
