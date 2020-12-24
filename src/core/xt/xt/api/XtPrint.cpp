@@ -62,6 +62,22 @@ XtPrintSetupToString(XtSetup setup)
 }
 
 char const* XT_CALL
+XtPrintDeviceCapsToString(XtDeviceCaps capabilities) 
+{
+  size_t i = 0;
+  std::string result;
+  if(capabilities == 0) return "None";
+  static thread_local char buffer[128];
+  if((capabilities & XtDeviceCapsInput) != 0) result += "Input, ";
+  if((capabilities & XtDeviceCapsOutput) != 0) result += "Output, ";
+  if((capabilities & XtDeviceCapsLoopback) != 0) result += "Loopback, ";
+  if((capabilities & XtDeviceCapsHwDirect) != 0) result += "HwDirect, ";
+  std::memcpy(buffer, result.data(), result.size() - 2);
+  buffer[result.size() - 2] = '\0';
+  return buffer;
+}
+
+char const* XT_CALL
 XtPrintServiceCapsToString(XtServiceCaps capabilities) 
 {
   size_t i = 0;

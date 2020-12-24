@@ -22,6 +22,8 @@ XtPrintErrorInfoToString(XtErrorInfo const* info);
 XT_API char const* XT_CALL
 XtPrintLocationToString(XtLocation const* location);
 XT_API char const* XT_CALL 
+XtPrintDeviceCapsToString(XtDeviceCaps capabilities);
+XT_API char const* XT_CALL 
 XtPrintServiceCapsToString(XtServiceCaps capabilities);
 
 #ifdef __cplusplus
