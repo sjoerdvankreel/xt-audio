@@ -1,3 +1,4 @@
+#if 0
 #if XT_ENABLE_WASAPI
 #include <xt/private/Win32.hpp>
 #include <xt/api/private/Service.hpp>
@@ -111,15 +112,6 @@ static HRESULT GetDevices(
 }
 
 // ---- service -----
-
-XtCapabilities WasapiService::GetCapabilities() const {
-  return static_cast<XtCapabilities>(
-    XtCapabilitiesTime | 
-    XtCapabilitiesLatency | 
-    XtCapabilitiesAggregation |
-    XtCapabilitiesChannelMask |
-    XtCapabilitiesXRunDetection);
-}
 
 XtFault WasapiService::GetDeviceCount(int32_t* count) const {
   HRESULT hr;
@@ -600,3 +592,4 @@ void WasapiStream::ProcessBuffer(bool prefill) {
 }
 
 #endif // XT_ENABLE_WASAPI
+#endif

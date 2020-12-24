@@ -1,6 +1,53 @@
 #if XT_ENABLE_WASAPI
-#include <xt/wasapi/Fault.hpp>
-#include <audioclient.h>
+#include <xt/shared/Win32.hpp>
+#include <xt/backend/wasapi/Shared.hpp>
+#include <xt/backend/wasapi/Private.hpp>
+
+#include <memory>
+#include <sstream>
+
+std::unique_ptr<XtService>
+XtiCreateWasapiService()
+{ return std::make_unique<WasapiService>(); }
+
+XtServiceError
+XtiGetWasapiError(XtFault fault)
+{
+  XtServiceError result;
+  result.text = XtiGetWasapiFaultText(fault);
+  result.cause = XtiGetWasapiFaultCause(fault);
+  return result;
+}
+
+XtWasapiDeviceInfo
+XtiParseWasapiDeviceInfo(std::string const& id)
+{
+  XtWasapiDeviceInfo result;
+  result.id = id;
+  result.id.erase(id.size() - 4, 4);
+  std::string type = std::string(1, id[id.length() - 2]);
+  result.type = static_cast<XtWasapiType>(std::stoi(type));
+  return result;
+}
+
+std::string
+XtiGetWasapiDeviceId(XtWasapiDeviceInfo const& info)
+{
+  std::ostringstream sstream;
+  sstream << info.id << ".{" << static_cast<int32_t>(info.type) << "}";
+  return sstream.str();
+}
+
+HRESULT
+XtiGetWasapiDeviceInfo(IMMDevice* device, XtWasapiType type, XtWasapiDeviceInfo* result)
+{
+  HRESULT hr;
+  CComHeapPtr<wchar_t> id;
+  XT_VERIFY_COM(device->GetId(&id));
+  result->type = type;
+  result->id = XtiWideStringToUtf8(id);
+  return S_OK;
+}
 
 XtCause 
 XtiGetWasapiFaultCause(XtFault fault)
