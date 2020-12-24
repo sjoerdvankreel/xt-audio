@@ -24,6 +24,9 @@ inline std::ostream&
 operator<<(std::ostream& os, Sample sample) 
 { return os << XtPrintSampleToString(static_cast<XtSample>(sample)); }
 inline std::ostream& 
+operator<<(std::ostream& os, DeviceCaps capabilities) 
+{ return os << XtPrintDeviceCapsToString(static_cast<XtDeviceCaps>(capabilities)); }
+inline std::ostream& 
 operator<<(std::ostream& os, ServiceCaps capabilities) 
 { return os << XtPrintServiceCapsToString(static_cast<XtServiceCaps>(capabilities)); }
 

@@ -21,6 +21,7 @@ PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)
       std::optional<Xt::Mix> mix = device->GetMix();
       std::cout << "    Device " << id << ":\n";
       std::cout << "      Name: " << list->GetName(id) << "\n";
+      std::cout << "      Capabilities: " << list->GetCapabilities(id) << "\n";
       std::cout << "      Input channels: " << device->GetChannelCount(false) << "\n";
       std::cout << "      Output channels: " << device->GetChannelCount(true) << "\n";
       std::cout << "      Interleaved access: " << device->SupportsAccess(true) << "\n";

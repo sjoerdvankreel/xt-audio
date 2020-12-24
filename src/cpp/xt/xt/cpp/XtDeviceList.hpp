@@ -22,6 +22,7 @@ public:
   int32_t GetCount() const;
   std::string GetId(int32_t index) const;
   std::string GetName(std::string const& id) const;
+  DeviceCaps GetCapabilities(std::string const& id) const;
 };
 
 inline
@@ -54,6 +55,14 @@ DeviceList::GetName(std::string const& id) const
   std::vector<char> buffer(static_cast<size_t>(size));
   Detail::HandleError(XtDeviceListGetName(_l, id.c_str(), buffer.data(), &size));
   return std::string(buffer.data());
+}
+
+inline DeviceCaps
+DeviceList::GetCapabilities(std::string const& id) const
+{
+  XtDeviceCaps coreCapabilities; 
+  Detail::HandleError(XtDeviceListGetCapabilities(_l, id.c_str(), &coreCapabilities));
+  return static_cast<DeviceCaps>(coreCapabilities);
 }
 
 } // namespace Xt
