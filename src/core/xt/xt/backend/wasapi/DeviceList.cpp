@@ -35,18 +35,18 @@ WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
   XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
   XT_VERIFY_COM(enumerator->GetDevice(wideId.c_str(), &device));
   XT_VERIFY_COM(device->OpenPropertyStore(STGM_READ, &store));
-  XT_VERIFY_COM(store->GetValue(PKEY_DeviceInterface_FriendlyName, &pv));
+  XT_VERIFY_COM(store->GetValue(PKEY_Device_FriendlyName, &pv));
   std::string name = XtiWideStringToUtf8(pv.pwszVal);
   PropVariantClear(&pv);
     
   switch(info.type)
   {
-  case XtWasapiType::Shared: type = "Shared";
-  case XtWasapiType::Loopback: type = "Loopback";
-  case XtWasapiType::Exclusive: type = "Exclusive";
+  case XtWasapiType::Shared: type = "Shared"; break;
+  case XtWasapiType::Loopback: type = "Loopback"; break;
+  case XtWasapiType::Exclusive: type = "Exclusive"; break;
   default: XT_ASSERT(false);
   }
-  oss << name << " (" << type << ")";
+  oss << name.c_str() << " (" << type << ")";
   XtiCopyString(oss.str().c_str(), buffer, size);
   return S_OK;
 }

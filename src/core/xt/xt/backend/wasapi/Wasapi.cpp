@@ -34,7 +34,8 @@ std::string
 XtiGetWasapiDeviceId(XtWasapiDeviceInfo const& info)
 {
   std::ostringstream sstream;
-  sstream << info.id << ".{" << static_cast<int32_t>(info.type) << "}";
+  sstream << info.id.c_str();
+  sstream << ".{" << static_cast<int32_t>(info.type) << "}";
   return sstream.str();
 }
 
