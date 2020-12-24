@@ -1,6 +1,7 @@
 package xt.sample;
 
 import xt.audio.Enums.XtSample;
+import xt.audio.Enums.XtServiceCaps;
 import xt.audio.Enums.XtSetup;
 import xt.audio.Enums.XtSystem;
 import xt.audio.Structs.XtBuffer;
@@ -49,7 +50,7 @@ public class FullDuplex {
         try(XtPlatform platform = XtAudio.init(null, null, null)) {
             XtSystem system = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
             XtService service = platform.getService(system);
-            if(service == null) return;
+            if(service == null || !service.getCapabilities().contains(XtServiceCaps.FULL_DUPLEX)) return;
 
             String defaultOutput = service.getDefaultDeviceId(true);
             if(defaultOutput == null) return;

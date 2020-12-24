@@ -4,8 +4,8 @@ import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import java.nio.charset.Charset;
-import xt.audio.Enums.XtCapabilities;
 import xt.audio.Enums.XtEnumFlags;
+import xt.audio.Enums.XtServiceCaps;
 import xt.audio.Structs.AggregateDeviceParams;
 import xt.audio.Structs.AggregateStreamParams;
 import com.sun.jna.ptr.IntByReference;
@@ -61,10 +61,10 @@ public final class XtService {
         return handleError(XtServiceOpenDeviceList(_s, flag, list), new XtDeviceList(list.getValue()));
     }
 
-    public EnumSet<XtCapabilities> getCapabilities() {
-        var result = EnumSet.noneOf(XtCapabilities.class);
+    public EnumSet<XtServiceCaps> getCapabilities() {
+        var result = EnumSet.noneOf(XtServiceCaps.class);
         var flags = XtServiceGetCapabilities(_s);
-        for(XtCapabilities caps: XtCapabilities.values())
+        for(XtServiceCaps caps: XtServiceCaps.values())
             if((flags & caps._flag) != 0)
                 result.add(caps);
         return result;

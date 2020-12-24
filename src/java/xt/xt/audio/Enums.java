@@ -13,9 +13,9 @@ public interface Enums {
         private XtEnumFlags(int flag) { _flag = flag; }
     }
 
-    public enum XtCapabilities {
+    public enum XtServiceCaps {
         NONE(0x0), TIME(0x1), LATENCY(0x2), FULL_DUPLEX(0x4), AGGREGATION(0x8), CHANNEL_MASK(0x10), CONTROL_PANEL(0x20), XRUN_DETECTION(0x40);
         final int _flag;
-        private XtCapabilities(int flag) { _flag = flag; }
+        private XtServiceCaps(int flag) { _flag = flag; }
     }
 }
