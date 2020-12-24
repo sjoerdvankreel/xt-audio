@@ -37,7 +37,7 @@ namespace Xt
             using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero, null);
             XtSystem system = XtAudio.SetupToSystem(XtSetup.SystemAudio);
             XtService service = platform.GetService(system);
-            if (service == null || (service.GetCapabilities() & XtCapabilities.Aggregation) == 0) return;
+            if (service == null || (service.GetCapabilities() & XtServiceCaps.Aggregation) == 0) return;
 
             string defaultInput = service.GetDefaultDeviceId(false);
             if (defaultInput == null) return;

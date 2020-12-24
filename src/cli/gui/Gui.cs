@@ -24,8 +24,8 @@ namespace Xt
             var result = new List<StreamType>();
             result.Add(StreamType.Capture);
             result.Add(StreamType.Render);
-            if ((service.GetCapabilities() & XtCapabilities.FullDuplex) != 0) result.Add(StreamType.Duplex);
-            if ((service.GetCapabilities() & XtCapabilities.Aggregation) != 0) result.Add(StreamType.Aggregate);
+            if ((service.GetCapabilities() & XtServiceCaps.FullDuplex) != 0) result.Add(StreamType.Duplex);
+            if ((service.GetCapabilities() & XtServiceCaps.Aggregation) != 0) result.Add(StreamType.Aggregate);
             result.Add(StreamType.Latency);
             return result;
         }
@@ -229,11 +229,11 @@ namespace Xt
 
             inputDevice.SelectedIndex = inputViews.Count == 1 ? 0 : 1;
             outputDevice.SelectedIndex = outputViews.Count == 1 ? 0 : 1;
-            capabilities.Text = s.GetCapabilities().ToString();
+            serviceCaps.Text = s.GetCapabilities().ToString();
             defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
             defaultOutput.Text = defaultOutputId == null ? "[None]" : outputList.GetName(defaultOutputId);
-            inputControlPanel.Enabled = (s.GetCapabilities() & XtCapabilities.ControlPanel) != 0;
-            outputControlPanel.Enabled = (s.GetCapabilities() & XtCapabilities.ControlPanel) != 0;
+            inputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
+            outputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
         }
 
         private void FormatOrDeviceChanged()

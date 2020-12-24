@@ -10,7 +10,7 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public sealed class XtService
     {
-        [DllImport("xt-core")] static extern XtCapabilities XtServiceGetCapabilities(IntPtr s);
+        [DllImport("xt-core")] static extern XtServiceCaps XtServiceGetCapabilities(IntPtr s);
         [DllImport("xt-core")] static extern ulong XtServiceOpenDevice(IntPtr s, byte[] id, out IntPtr device);
         [DllImport("xt-core")] static extern ulong XtServiceOpenDeviceList(IntPtr s, XtEnumFlags flags, out IntPtr list);
         [DllImport("xt-core")] static extern ulong XtServiceAggregateStream(IntPtr s, in AggregateStreamParams @params, IntPtr user, out IntPtr stream);
@@ -19,7 +19,7 @@ namespace Xt
         readonly IntPtr _s;
         internal XtService(IntPtr s) => _s = s;
 
-        public XtCapabilities GetCapabilities() => XtServiceGetCapabilities(_s);
+        public XtServiceCaps GetCapabilities() => XtServiceGetCapabilities(_s);
         public XtDeviceList OpenDeviceList(XtEnumFlags flags) => HandleError(XtServiceOpenDeviceList(_s, flags, out var r), new XtDeviceList(r));
 
         static AggregateDeviceParams ToNative(XtAggregateDeviceParams managed)
