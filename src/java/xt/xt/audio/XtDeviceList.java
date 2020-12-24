@@ -10,7 +10,6 @@ public final class XtDeviceList implements AutoCloseable {
 
     static { Native.register(Utility.LIBRARY); }
     private static native void XtDeviceListDestroy(Pointer l);
-    private static native Pointer XtDeviceListGetHandle(Pointer d);
     private static native long XtDeviceListGetCount(Pointer l, IntByReference count);
     private static native long XtDeviceListGetId(Pointer l, int index, byte[] buffer, IntByReference size);
     private static native long XtDeviceListGetName(Pointer l, String id, byte[] buffer, IntByReference size);
@@ -19,7 +18,6 @@ public final class XtDeviceList implements AutoCloseable {
     XtDeviceList(Pointer l) { _l = l; }
 
     @Override public void close() { XtDeviceListDestroy(_l); }
-    public Pointer getHandle() { return XtDeviceListGetHandle(_l); }
 
     public int getCount()
     {

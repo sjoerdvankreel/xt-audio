@@ -6,7 +6,6 @@
 #include <xt/shared/Shared.hpp>
 
 #define XT_IMPLEMENT_DEVICE_LIST(s)                                               \
-  void* GetHandle() const override final;                                         \
   XtFault GetCount(int32_t* count) const override final;                          \
   XtSystem GetSystem() const override final { return XtSystem##s; }               \
   XtFault GetId(int32_t index, char* buffer, int32_t* size) const override final; \
@@ -15,7 +14,6 @@
 struct XtDeviceList
 {
   virtual ~XtDeviceList() { };  
-  virtual void* GetHandle() const = 0;
   virtual XtSystem GetSystem() const = 0;
   virtual XtFault GetCount(int32_t* count) const = 0;
   virtual XtFault GetId(int32_t index, char* buffer, int32_t* size) const = 0;

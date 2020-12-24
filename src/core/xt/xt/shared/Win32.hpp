@@ -24,15 +24,6 @@ XtiWfxChannelNames[18];
     if(FAILED(hr_ = (e))) \
     XtiAssertCom(XT_LOCATION, #e, hr_); } while(0)
 
-struct XtPropVariant
-{
-  PROPVARIANT pv;
-  ~XtPropVariant() { PropVariantClear(&pv); }
-  XtPropVariant(): pv() { PropVariantInit(&pv); }
-  XtPropVariant(XtPropVariant const&) = delete;
-  XtPropVariant& operator=(XtPropVariant const&) = delete;
-};
-
 CLSID
 XtiUtf8ToClassId(char const* utf8);
 std::wstring

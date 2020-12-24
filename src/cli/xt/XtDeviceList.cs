@@ -10,7 +10,6 @@ namespace Xt
     public sealed class XtDeviceList : IDisposable
     {
         [DllImport("xt-core")] static extern void XtDeviceListDestroy(IntPtr l);
-        [DllImport("xt-core")] static extern IntPtr XtDeviceListGetHandle(IntPtr l);
         [DllImport("xt-core")] static extern ulong XtDeviceListGetCount(IntPtr l, out int count);
         [DllImport("xt-core")] static extern ulong XtDeviceListGetId(IntPtr l, int index, [Out] byte[] buffer, ref int size);
         [DllImport("xt-core")] static extern ulong XtDeviceListGetName(IntPtr l, byte[] id, [Out] byte[] buffer, ref int size);
@@ -19,7 +18,6 @@ namespace Xt
         internal XtDeviceList(IntPtr l) => _l = l;
 
         public void Dispose() => XtDeviceListDestroy(_l);
-        public IntPtr GetHandle() => XtDeviceListGetHandle(_l);
         public int GetCount() => HandleError(XtDeviceListGetCount(_l, out var r), r);
 
         public string GetId(int index)

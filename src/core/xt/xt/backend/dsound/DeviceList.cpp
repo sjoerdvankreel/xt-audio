@@ -3,9 +3,6 @@
 #include <xt/backend/dsound/Shared.hpp>
 #include <xt/backend/dsound/Private.hpp>
 
-void*
-DSoundDeviceList::GetHandle() const
-{ return nullptr; }
 XtFault
 DSoundDeviceList::GetCount(int32_t* count) const
 { *count = static_cast<int32_t>(_devices.size()); return DS_OK; }

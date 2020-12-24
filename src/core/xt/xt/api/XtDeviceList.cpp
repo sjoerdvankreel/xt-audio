@@ -9,13 +9,6 @@ XtDeviceListDestroy(XtDeviceList* l)
   delete l;
 }
 
-void* XT_CALL
-XtDeviceListGetHandle(XtDeviceList* l)
-{
-  XT_ASSERT(l != nullptr);
-  return l->GetHandle();
-}
-
 XtError XT_CALL
 XtDeviceListGetCount(XtDeviceList const* l, int32_t* count)
 {

@@ -10,8 +10,6 @@ extern "C" {
 
 XT_API void XT_CALL
 XtDeviceListDestroy(XtDeviceList* l);
-XT_API void* XT_CALL
-XtDeviceListGetHandle(XtDeviceList* l);
 XT_API XtError XT_CALL
 XtDeviceListGetCount(XtDeviceList const* l, int32_t* count);
 XT_API XtError XT_CALL
