@@ -10,9 +10,11 @@
 
 enum class XtWasapiType
 {
-  Shared,
-  Loopback,
-  Exclusive
+  SharedCapture,
+  SharedRender,
+  ExclusiveCapture,
+  ExclusiveRender,
+  Loopback
 };
 
 struct XtWasapiDeviceInfo
@@ -25,6 +27,10 @@ char const*
 XtiGetWasapiFaultText(XtFault fault);
 XtCause 
 XtiGetWasapiFaultCause(XtFault fault);
+char const*
+XtiGetWasapiNameSuffix(XtWasapiType type);
+int32_t
+XtiGetWasapiDeviceCaps(XtWasapiType type);
 XtWasapiDeviceInfo
 XtiParseWasapiDeviceInfo(std::string const& id);
 std::string

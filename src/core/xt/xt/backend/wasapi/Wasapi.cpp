@@ -19,6 +19,20 @@ XtiGetWasapiError(XtFault fault)
   return result;
 }
 
+char const*
+XtiGetWasapiNameSuffix(XtWasapiType type)
+{
+  switch(type)
+  {
+  case XtWasapiType::Loopback: return "Loopback";
+  case XtWasapiType::SharedRender:
+  case XtWasapiType::SharedCapture: return "Shared";
+  case XtWasapiType::ExclusiveRender:
+  case XtWasapiType::ExclusiveCapture: return "Exclusive";
+  default: return XT_ASSERT(false), nullptr;
+  }
+}
+
 XtWasapiDeviceInfo
 XtiParseWasapiDeviceInfo(std::string const& id)
 {
@@ -48,6 +62,20 @@ XtiGetWasapiDeviceInfo(IMMDevice* device, XtWasapiType type, XtWasapiDeviceInfo*
   result->type = type;
   result->id = XtiWideStringToUtf8(id);
   return S_OK;
+}
+
+int32_t
+XtiGetWasapiDeviceCaps(XtWasapiType type)
+{
+  switch(type)
+  {
+  case XtWasapiType::SharedRender: return XtDeviceCapsOutput;
+  case XtWasapiType::SharedCapture: return XtDeviceCapsInput;
+  case XtWasapiType::Loopback: return XtDeviceCapsInput | XtDeviceCapsLoopback;
+  case XtWasapiType::ExclusiveRender: return XtDeviceCapsOutput | XtDeviceCapsHwDirect;
+  case XtWasapiType::ExclusiveCapture: return XtDeviceCapsInput | XtDeviceCapsHwDirect;
+  default: return XT_ASSERT(false), 0;
+  }
 }
 
 XtCause 

@@ -51,9 +51,9 @@ WasapiService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
     {
       CComPtr<IMMDevice> device;
       XT_VERIFY_COM(inputs->Item(i, &device));
-      XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, XtWasapiType::Shared, &info));
+      XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, XtWasapiType::SharedCapture, &info));
       result->_devices.push_back(info);
-      info.type = XtWasapiType::Exclusive;
+      info.type = XtWasapiType::ExclusiveCapture;
       result->_devices.push_back(info);
     }
   }
@@ -63,11 +63,11 @@ WasapiService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
   {
     CComPtr<IMMDevice> device;
     XT_VERIFY_COM(outputs->Item(i, &device));
-    XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, XtWasapiType::Shared, &info));
+    XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, XtWasapiType::SharedRender, &info));
     if(output)
     {
       result->_devices.push_back(info);
-      info.type = XtWasapiType::Exclusive;
+      info.type = XtWasapiType::ExclusiveRender;
       result->_devices.push_back(info);
     }
     if(input)
@@ -90,10 +90,12 @@ WasapiService::GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, in
   CComPtr<IMMDevice> device;
   CComPtr<IMMDeviceEnumerator> enumerator;
 
+  auto flow = output ? eRender : eCapture;
   XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
-  hr = enumerator->GetDefaultAudioEndpoint(output ? eRender : eCapture, eMultimedia, &device);
+  hr = enumerator->GetDefaultAudioEndpoint(flow, eMultimedia, &device);
   if (hr == E_NOTFOUND) return S_OK;
-  XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, XtWasapiType::Shared, &info));
+  auto type = output? XtWasapiType::SharedRender: XtWasapiType::SharedCapture;
+  XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, type, &info));
   XtiCopyString(XtiGetWasapiDeviceId(info).c_str(), buffer, size);
   *valid = XtTrue;
   return S_OK;

@@ -19,11 +19,18 @@ WasapiDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 }
 
 XtFault
+WasapiDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
+{
+  XtWasapiDeviceInfo info = XtiParseWasapiDeviceInfo(std::string(id));
+  *capabilities = static_cast<XtDeviceCaps>(XtiGetWasapiDeviceCaps(info.type));
+  return S_OK;
+}
+
+XtFault
 WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
   HRESULT hr;
   PROPVARIANT pv;
-  char const* type;
   std::ostringstream oss;
   CComPtr<IMMDevice> device;
   CComPtr<IPropertyStore> store;
@@ -38,15 +45,7 @@ WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
   XT_VERIFY_COM(store->GetValue(PKEY_Device_FriendlyName, &pv));
   std::string name = XtiWideStringToUtf8(pv.pwszVal);
   PropVariantClear(&pv);
-    
-  switch(info.type)
-  {
-  case XtWasapiType::Shared: type = "Shared"; break;
-  case XtWasapiType::Loopback: type = "Loopback"; break;
-  case XtWasapiType::Exclusive: type = "Exclusive"; break;
-  default: XT_ASSERT(false);
-  }
-  oss << name.c_str() << " (" << type << ")";
+  oss << name.c_str() << " (" << XtiGetWasapiNameSuffix(info.type) << ")";
   XtiCopyString(oss.str().c_str(), buffer, size);
   return S_OK;
 }
