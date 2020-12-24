@@ -13,6 +13,7 @@ namespace Xt
         [DllImport("xt-core")] static extern ulong XtDeviceListGetCount(IntPtr l, out int count);
         [DllImport("xt-core")] static extern ulong XtDeviceListGetId(IntPtr l, int index, [Out] byte[] buffer, ref int size);
         [DllImport("xt-core")] static extern ulong XtDeviceListGetName(IntPtr l, byte[] id, [Out] byte[] buffer, ref int size);
+        [DllImport("xt-core")] static extern ulong XtDeviceListGetCapabilities(IntPtr l, byte[] id, out XtDeviceCaps capabilities);
 
         readonly IntPtr _l;
         internal XtDeviceList(IntPtr l) => _l = l;
@@ -32,11 +33,17 @@ namespace Xt
         public string GetName(string id)
         {
             int size = 0;
-            var bytes = Encoding.UTF8.GetBytes(id);
+            var bytes = Encoding.UTF8.GetBytes(id + char.MinValue);
             HandleError(XtDeviceListGetName(_l, bytes, null, ref size));
             var buffer = new byte[size];
             HandleError(XtDeviceListGetName(_l, bytes, buffer, ref size));
             return Encoding.UTF8.GetString(buffer, 0, size - 1);
+        }
+        
+        public XtDeviceCaps GetCapabilities(string id)
+        {            
+            var bytes = Encoding.UTF8.GetBytes(id + char.MinValue);
+            return HandleError(XtDeviceListGetCapabilities(_l, bytes, out var r), r);
         }
     }
 }
