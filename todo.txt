@@ -1,6 +1,4 @@
-* Figure out JACK support on Ubuntu 20.
 * Better document service/list/device/stream lifetime (what needs to be alive when).
-* fix compiler warnings
 * move doxygen to own file
 * document samples + explain no io in callback
 * fix javadoc warnings
