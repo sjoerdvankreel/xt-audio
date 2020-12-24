@@ -3,6 +3,10 @@
 #include <xt/backend/asio/Shared.hpp>
 #include <xt/backend/asio/Private.hpp>
 
+void*
+AsioDeviceList::GetHandle() const
+{ return &_drivers; }
+
 XtFault
 AsioDeviceList::GetCount(int32_t* count) const
 {

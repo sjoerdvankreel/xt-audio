@@ -5,7 +5,7 @@
 #include <xt/aggregate/Stream.hpp>
 #include <cstdint>
 
-struct XtAggregateRunner:
+struct XtAggregateRunner final:
 public XtBlockingRunner
 {
   XtAggregateStream* const _stream;

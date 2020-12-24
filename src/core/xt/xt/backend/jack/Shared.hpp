@@ -10,7 +10,7 @@
 #include <jack/jack.h>
 #include <vector>
 
-struct JackService:
+struct JackService final:
 public XtService 
 {
   JackService();
@@ -18,7 +18,7 @@ public XtService
   XT_IMPLEMENT_SERVICE(JACK);
 };
 
-struct JackDevice:
+struct JackDevice final:
 public XtDevice
 {
   XtJackClient _jc;
@@ -27,13 +27,13 @@ public XtDevice
   JackDevice(XtJackClient&& jc);
 };
 
-struct JackDeviceList:
+struct JackDeviceList final:
 public XtDeviceList
 {
   XT_IMPLEMENT_DEVICE_LIST(JACK);
 };
 
-struct JackStream:
+struct JackStream final:
 public XtStream
 {
   XtJackClient _jc;

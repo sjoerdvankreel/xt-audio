@@ -13,13 +13,13 @@
 #include <atlbase.h>
 #include <dsound.h>
 
-struct DSoundService:
+struct DSoundService final:
 public XtService 
 {
   XT_IMPLEMENT_SERVICE(DSound);
 };
 
-struct DSoundDevice:
+struct DSoundDevice final:
 public XtBlockingDevice
 {
   DSoundDevice() = default;
@@ -31,7 +31,7 @@ public XtBlockingDevice
   CComPtr<IDirectSoundCapture> _input;
 };
 
-struct DSoundStream:
+struct DSoundStream final:
 public XtBlockingStream
 {
   int32_t _frameSize;
@@ -52,7 +52,7 @@ public XtBlockingStream
   XT_IMPLEMENT_STREAM_BASE_SYSTEM(DSound);
 };
 
-struct DSoundDeviceList:
+struct DSoundDeviceList final:
 public XtDeviceList
 {
   DSoundDeviceList() = default;

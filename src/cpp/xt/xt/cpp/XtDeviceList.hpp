@@ -19,6 +19,7 @@ class DeviceList final
   DeviceList(XtDeviceList* l): _l(l) { }
 public:
   ~DeviceList();
+  void* GetHandle() const;
   int32_t GetCount() const;
   std::string GetId(int32_t index) const;
   std::string GetName(std::string const& id) const;
@@ -27,6 +28,9 @@ public:
 inline
 DeviceList::~DeviceList()
 { XtDeviceListDestroy(_l); }
+inline void*
+DeviceList::GetHandle() const
+{ return XtDeviceListGetHandle(_l); }
 
 inline int32_t
 DeviceList::GetCount() const

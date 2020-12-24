@@ -14,13 +14,13 @@
 #include <cstdint>
 #include <vector>
 
-struct PulseService: 
+struct PulseService final: 
 public XtService 
 {
   XT_IMPLEMENT_SERVICE(Pulse);
 };
 
-struct PulseDevice: 
+struct PulseDevice final: 
 public XtBlockingDevice
 {
   bool const _output;
@@ -29,7 +29,7 @@ public XtBlockingDevice
   PulseDevice(bool output);
 };
 
-struct PulseStream:
+struct PulseStream final:
 public XtBlockingStream 
 {
   bool _output;
@@ -43,7 +43,7 @@ public XtBlockingStream
   XT_IMPLEMENT_STREAM_BASE_SYSTEM(Pulse);
 };
 
-struct PulseDeviceList:
+struct PulseDeviceList final:
 public XtDeviceList 
 {
   bool const _input;

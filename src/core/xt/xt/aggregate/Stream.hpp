@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-struct XtAggregateStream: 
+struct XtAggregateStream final: 
 public XtBlockingStream
 {
   int32_t _frames;

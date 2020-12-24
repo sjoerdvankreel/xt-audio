@@ -17,13 +17,13 @@
 
 #define XT_ASIO_CALL __cdecl
 
-struct AsioService:
+struct AsioService final:
 public XtService 
 {
   XT_IMPLEMENT_SERVICE(ASIO);
 };
 
-struct AsioDeviceList:
+struct AsioDeviceList final:
 public XtDeviceList
 {
   AsioDeviceList() = default;
@@ -31,7 +31,7 @@ public XtDeviceList
   mutable AsioDriverList _drivers;
 };
 
-struct AsioDevice:
+struct AsioDevice final:
 public XtDevice
 {
   CComPtr<IASIO> _asio;
@@ -40,7 +40,7 @@ public XtDevice
   AsioDevice(CComPtr<IASIO> asio);
 };
 
-struct AsioStream:
+struct AsioStream final:
 public XtStream
 {
   long _bufferSize;
