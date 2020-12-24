@@ -59,7 +59,7 @@ public XtDeviceList
   XT_IMPLEMENT_DEVICE_LIST(DSound);
   std::vector<XtDsDeviceInfo> _devices;
   
-  XtFault
+  HRESULT
   GetDeviceInfo(char const* id, XtDsDeviceInfo* device) const;
   static BOOL CALLBACK
   EnumCallback(GUID* id, wchar_t const* name, wchar_t const*, void* ctx);

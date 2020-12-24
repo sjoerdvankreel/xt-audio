@@ -22,7 +22,7 @@ typedef enum XtEnumFlags {
 } XtEnumFlags;
 
 typedef enum XtDeviceCaps {
-  XtDeviceCapsInput = 0x1, XtDeviceCapsOutput = 0x2, XtDeviceCapsLoopback = 0x4, XtDeviceCapsHwDirect = 0x8
+  XtDeviceCapsNone = 0x0, XtDeviceCapsInput = 0x1, XtDeviceCapsOutput = 0x2, XtDeviceCapsLoopback = 0x4, XtDeviceCapsHwDirect = 0x8
 } XtDeviceCaps;
 
 typedef enum XtServiceCaps {

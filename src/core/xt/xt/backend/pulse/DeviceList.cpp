@@ -33,4 +33,13 @@ PulseDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
   return PA_OK;
 }
 
+XtFault
+PulseDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
+{ 
+  if(!strcmp(id, "0")) *capabilities = XtDeviceCapsInput;
+  else if(!strcmp(id, "1")) *capabilities = XtDeviceCapsOutput;
+  else XT_ASSERT(false);
+  return PA_OK;
+}
+
 #endif // XT_ENABLE_PULSE

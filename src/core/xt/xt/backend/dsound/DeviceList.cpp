@@ -18,14 +18,24 @@ DSoundDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 XtFault
 DSoundDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
-  XtFault fault;
+  HRESULT hr;
   XtDsDeviceInfo info;
-  if((fault = GetDeviceInfo(id, &info)) != DS_OK) return fault;
+  XT_VERIFY_COM(GetDeviceInfo(id, &info));
   XtiCopyString(info.name.c_str(), buffer, size);
   return DS_OK;
 }
 
 XtFault
+DSoundDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
+{ 
+  HRESULT hr;
+  XtDsDeviceInfo info;
+  XT_VERIFY_COM(GetDeviceInfo(id, &info));
+  *capabilities = info.output? XtDeviceCapsOutput: XtDeviceCapsInput;
+  return DS_OK;
+}
+
+HRESULT
 DSoundDeviceList::GetDeviceInfo(char const* id, XtDsDeviceInfo* device) const
 {
   for(size_t i = 0; i < _devices.size(); i++)

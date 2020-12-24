@@ -12,4 +12,12 @@ XtFault
 JackDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 { XtiCopyString("JACK", buffer, size); return 0; }
 
+XtFault
+JackDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
+{ 
+  auto result = XtDeviceCapsInput | XtDeviceCapsOutput;
+  *capabilities = static_cast<XtDeviceCaps>(result);
+  return ASE_OK; 
+}
+
 #endif // XT_ENABLE_JACK

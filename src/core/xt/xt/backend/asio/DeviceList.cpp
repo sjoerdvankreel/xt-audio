@@ -5,9 +5,14 @@
 
 XtFault
 AsioDeviceList::GetCount(int32_t* count) const
-{
-  *count = _drivers.asioGetNumDev();
-  return ASE_OK;
+{ *count = _drivers.asioGetNumDev(); return ASE_OK; }
+
+XtFault
+AsioDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
+{ 
+  auto result = XtDeviceCapsInput | XtDeviceCapsOutput | XtDeviceCapsHwDirect;
+  *capabilities = static_cast<XtDeviceCaps>(result);
+  return ASE_OK; 
 }
   
 XtFault 
