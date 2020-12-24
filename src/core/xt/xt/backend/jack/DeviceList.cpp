@@ -17,7 +17,7 @@ JackDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) cons
 { 
   auto result = XtDeviceCapsInput | XtDeviceCapsOutput;
   *capabilities = static_cast<XtDeviceCaps>(result);
-  return ASE_OK; 
+  return 0; 
 }
 
 #endif // XT_ENABLE_JACK
