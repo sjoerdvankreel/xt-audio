@@ -15,9 +15,9 @@ PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)
   for(int32_t d = 0; d < list->GetCount(); d++)
   {
     std::string id = list->GetId(d);
-    std::unique_ptr<Xt::Device> device = service->OpenDevice(id);
     try
     {
+      std::unique_ptr<Xt::Device> device = service->OpenDevice(id);
       std::optional<Xt::Mix> mix = device->GetMix();
       std::cout << "    Device " << id << ":\n";
       std::cout << "      Name: " << list->GetName(id) << "\n";
