@@ -38,7 +38,7 @@ WasapiService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
   CComPtr<IMMDeviceEnumerator> enumerator;
 
   bool input = (flags & XtEnumFlagsInput) != 0;
-  bool output = (flags & XtEnumFlagsInput) != 0;
+  bool output = (flags & XtEnumFlagsOutput) != 0;
   auto result = std::make_unique<WasapiDeviceList>();
   XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
   XT_VERIFY_COM(enumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &inputs));
@@ -64,9 +64,12 @@ WasapiService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
     CComPtr<IMMDevice> device;
     XT_VERIFY_COM(outputs->Item(i, &device));
     XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, XtWasapiType::Shared, &info));
-    result->_devices.push_back(info);
-    info.type = XtWasapiType::Exclusive;
-    result->_devices.push_back(info);
+    if(output)
+    {
+      result->_devices.push_back(info);
+      info.type = XtWasapiType::Exclusive;
+      result->_devices.push_back(info);
+    }
     if(input)
     {
       info.type = XtWasapiType::Loopback;
