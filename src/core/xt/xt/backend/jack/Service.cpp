@@ -19,14 +19,14 @@ XtFault
 JackService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
 { *list = new JackDeviceList; return 0; }
 
-XtCapabilities
+XtServiceCaps
 JackService::GetCapabilities() const 
 {
-  auto result = XtCapabilitiesTime
-    | XtCapabilitiesFullDuplex
-    | XtCapabilitiesChannelMask
-    | XtCapabilitiesXRunDetection;
-  return static_cast<XtCapabilities>(result);
+  auto result = XtServiceCapsTime
+    | XtServiceCapsFullDuplex
+    | XtServiceCapsChannelMask
+    | XtServiceCapsXRunDetection;
+  return static_cast<XtServiceCaps>(result);
 }
 
 XtFault

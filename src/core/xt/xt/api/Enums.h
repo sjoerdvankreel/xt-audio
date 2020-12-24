@@ -21,9 +21,9 @@ typedef enum XtEnumFlags {
   XtEnumFlagsInput = 0x1, XtEnumFlagsOutput = 0x2, XtEnumFlagsAll = XtEnumFlagsInput | XtEnumFlagsOutput
 } XtEnumFlags;
 
-typedef enum XtCapabilities {
-  XtCapabilitiesNone = 0x0, XtCapabilitiesTime = 0x1, XtCapabilitiesLatency = 0x2, XtCapabilitiesFullDuplex = 0x4, 
-  XtCapabilitiesAggregation = 0x8, XtCapabilitiesChannelMask = 0x10, XtCapabilitiesControlPanel = 0x20, XtCapabilitiesXRunDetection = 0x40
-} XtCapabilities;
+typedef enum XtServiceCaps {
+  XtServiceCapsNone = 0x0, XtServiceCapsTime = 0x1, XtServiceCapsLatency = 0x2, XtServiceCapsFullDuplex = 0x4, 
+  XtServiceCapsAggregation = 0x8, XtServiceCapsChannelMask = 0x10, XtServiceCapsControlPanel = 0x20, XtServiceCapsXRunDetection = 0x40
+} XtServiceCaps;
 
 #endif // XT_API_ENUMS_H

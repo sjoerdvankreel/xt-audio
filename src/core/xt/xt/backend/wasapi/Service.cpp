@@ -10,15 +10,15 @@ XtFault
 WasapiService::GetFormatFault() const
 { return AUDCLNT_E_UNSUPPORTED_FORMAT; }
 
-XtCapabilities
+XtServiceCaps
 WasapiService::GetCapabilities() const
 {
-  auto result = XtCapabilitiesTime
-    | XtCapabilitiesLatency
-    | XtCapabilitiesAggregation
-    | XtCapabilitiesChannelMask
-    | XtCapabilitiesXRunDetection;
-  return static_cast<XtCapabilities>(result);
+  auto result = XtServiceCapsTime
+    | XtServiceCapsLatency
+    | XtServiceCapsAggregation
+    | XtServiceCapsChannelMask
+    | XtServiceCapsXRunDetection;
+  return static_cast<XtServiceCaps>(result);
 }
 
 XtFault

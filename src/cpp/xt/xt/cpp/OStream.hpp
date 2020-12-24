@@ -24,8 +24,8 @@ inline std::ostream&
 operator<<(std::ostream& os, Sample sample) 
 { return os << XtPrintSampleToString(static_cast<XtSample>(sample)); }
 inline std::ostream& 
-operator<<(std::ostream& os, Capabilities capabilities) 
-{ return os << XtPrintCapabilitiesToString(static_cast<XtCapabilities>(capabilities)); }
+operator<<(std::ostream& os, ServiceCaps capabilities) 
+{ return os << XtPrintServiceCapsToString(static_cast<XtServiceCaps>(capabilities)); }
 
 inline std::ostream& 
 operator<<(std::ostream& os, Location const& location) 

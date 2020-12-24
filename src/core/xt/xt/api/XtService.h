@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-XT_API XtCapabilities XT_CALL 
+XT_API XtServiceCaps XT_CALL 
 XtServiceGetCapabilities(XtService const* s);
 XT_API XtError XT_CALL
 XtServiceOpenDevice(XtService const* s, char const* id, XtDevice** device);

@@ -23,18 +23,18 @@ class Service final
   XtService const* const _s;
   Service(XtService const* s): _s(s) { }
 public:
-  Capabilities GetCapabilities() const;  
+  ServiceCaps GetCapabilities() const;  
   std::unique_ptr<Device> OpenDevice(std::string const& id) const;
   std::optional<std::string> GetDefaultDeviceId(bool output) const;
   std::unique_ptr<DeviceList> OpenDeviceList(EnumFlags flags) const;
   std::unique_ptr<Stream> AggregateStream(AggregateStreamParams const& params, void* user);
 };
 
-inline Capabilities
+inline ServiceCaps
 Service::GetCapabilities() const
 {
   auto coreCapabilities = XtServiceGetCapabilities(_s);
-  return static_cast<Capabilities>(coreCapabilities); 
+  return static_cast<ServiceCaps>(coreCapabilities); 
 }
 
 inline std::unique_ptr<DeviceList> 

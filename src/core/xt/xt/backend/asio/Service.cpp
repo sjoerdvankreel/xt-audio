@@ -12,15 +12,15 @@ XtFault
 AsioService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
 { *list = new AsioDeviceList; return ASE_OK; }
 
-XtCapabilities
+XtServiceCaps
 AsioService::GetCapabilities() const
 {
-  auto result = XtCapabilitiesTime
-    | XtCapabilitiesLatency
-    | XtCapabilitiesFullDuplex
-    | XtCapabilitiesChannelMask
-    | XtCapabilitiesControlPanel;
-  return static_cast<XtCapabilities>(result);
+  auto result = XtServiceCapsTime
+    | XtServiceCapsLatency
+    | XtServiceCapsFullDuplex
+    | XtServiceCapsChannelMask
+    | XtServiceCapsControlPanel;
+  return static_cast<XtServiceCaps>(result);
 }
 
 XtFault

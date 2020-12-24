@@ -13,7 +13,7 @@
 
 #define XT_IMPLEMENT_SERVICE(s)                                                        \
   XtFault GetFormatFault() const override final;                                       \
-  XtCapabilities GetCapabilities() const override final;                               \
+  XtServiceCaps GetCapabilities() const override final;                                \
   XtSystem GetSystem() const override final { return XtSystem##s; }                    \
   XtFault OpenDevice(char const* id, XtDevice** device) const override final;          \
   XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const override final; \
@@ -24,7 +24,7 @@ struct XtService
   virtual ~XtService() {};
   virtual XtSystem GetSystem() const = 0;
   virtual XtFault GetFormatFault() const = 0;
-  virtual XtCapabilities GetCapabilities() const = 0;
+  virtual XtServiceCaps GetCapabilities() const = 0;
   virtual XtFault OpenDevice(char const* id, XtDevice** device) const = 0;
   virtual XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const = 0;
   XtFault AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const;

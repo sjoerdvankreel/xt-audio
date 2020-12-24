@@ -38,7 +38,7 @@ AggregateMain()
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
-  if(!service || (service->GetCapabilities() & Xt::CapabilitiesAggregation) == 0) return 0;
+  if(!service || (service->GetCapabilities() & Xt::ServiceCapsAggregation) == 0) return 0;
 
   std::optional<std::string> defaultInput = service->GetDefaultDeviceId(false);
   if(!defaultInput.has_value()) return 0;

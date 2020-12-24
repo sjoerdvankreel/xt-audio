@@ -37,7 +37,7 @@ FullDuplexMain()
   std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
   Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
-  if(!service || (service->GetCapabilities() & Xt::CapabilitiesFullDuplex) == 0) return 0;
+  if(!service || (service->GetCapabilities() & Xt::ServiceCapsFullDuplex) == 0) return 0;
 
   std::optional<std::string> id = service->GetDefaultDeviceId(true);
   if(!id.has_value()) return 0;

@@ -62,19 +62,19 @@ XtPrintSetupToString(XtSetup setup)
 }
 
 char const* XT_CALL
-XtPrintCapabilitiesToString(XtCapabilities capabilities) 
+XtPrintServiceCapsToString(XtServiceCaps capabilities) 
 {
   size_t i = 0;
   std::string result;
   if(capabilities == 0) return "None";
-  static thread_local char buffer[128];
-  if((capabilities & XtCapabilitiesTime) != 0) result += "Time, ";
-  if((capabilities & XtCapabilitiesLatency) != 0) result += "Latency, ";
-  if((capabilities & XtCapabilitiesFullDuplex) != 0) result += "FullDuplex, ";
-  if((capabilities & XtCapabilitiesChannelMask) != 0) result += "ChannelMask, ";
-  if((capabilities & XtCapabilitiesAggregation) != 0) result += "Aggregation, ";
-  if((capabilities & XtCapabilitiesControlPanel) != 0) result += "ControlPanel, ";
-  if((capabilities & XtCapabilitiesXRunDetection) != 0) result += "XRunDetection, ";
+  static thread_local char buffer[256];
+  if((capabilities & XtServiceCapsTime) != 0) result += "Time, ";
+  if((capabilities & XtServiceCapsLatency) != 0) result += "Latency, ";
+  if((capabilities & XtServiceCapsFullDuplex) != 0) result += "FullDuplex, ";
+  if((capabilities & XtServiceCapsChannelMask) != 0) result += "ChannelMask, ";
+  if((capabilities & XtServiceCapsAggregation) != 0) result += "Aggregation, ";
+  if((capabilities & XtServiceCapsControlPanel) != 0) result += "ControlPanel, ";
+  if((capabilities & XtServiceCapsXRunDetection) != 0) result += "XRunDetection, ";
   std::memcpy(buffer, result.data(), result.size() - 2);
   buffer[result.size() - 2] = '\0';
   return buffer;

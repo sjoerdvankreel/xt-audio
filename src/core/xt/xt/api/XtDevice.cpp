@@ -74,6 +74,16 @@ XtDeviceGetBufferSize(XtDevice const* d, XtFormat const* format, XtBufferSize* s
   return XtiCreateError(d->GetSystem(), d->GetBufferSize(format, size));
 }
 
+XtError XT_CALL
+XtDeviceGetChannelName(XtDevice const* d, XtBool output, int32_t index, char* buffer, int32_t* size)
+{
+  XT_ASSERT(index >= 0);
+  XT_ASSERT(d != nullptr);
+  XT_ASSERT(XtiCalledOnMainThread());  
+  XT_ASSERT(size != nullptr && *size >= 0);
+  return XtiCreateError(d->GetSystem(), d->GetChannelName(output, index, buffer, size));
+}
+
 XtError XT_CALL 
 XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream)
 {  
@@ -89,20 +99,10 @@ XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, 
 }
 
 XtError XT_CALL
-XtDeviceGetChannelName(XtDevice const* d, XtBool output, int32_t index, char* buffer, int32_t* size)
-{
-  XT_ASSERT(index >= 0);
-  XT_ASSERT(d != nullptr);
-  XT_ASSERT(XtiCalledOnMainThread());  
-  XT_ASSERT(size != nullptr && *size >= 0);
-  return XtiCreateError(d->GetSystem(), d->GetChannelName(output, index, buffer, size));
-}
-
-XtError XT_CALL
 XtDeviceShowControlPanel(XtDevice* d) 
 {
   XT_ASSERT(d != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
-  XT_ASSERT((XtPlatform::instance->GetService(d->GetSystem())->GetCapabilities() & XtCapabilitiesControlPanel) != 0);
+  XT_ASSERT((XtPlatform::instance->GetService(d->GetSystem())->GetCapabilities() & XtServiceCapsControlPanel) != 0);
   return XtiCreateError(d->GetSystem(), d->ShowControlPanel());
 }

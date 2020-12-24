@@ -7,11 +7,11 @@ XtFault
 PulseService::GetFormatFault() const
 { return XT_PA_ERR_FORMAT; }
 
-XtCapabilities 
+XtServiceCaps 
 PulseService::GetCapabilities() const
 { 
-  auto result = XtCapabilitiesAggregation | XtCapabilitiesChannelMask;
-  return static_cast<XtCapabilities>(result); 
+  auto result = XtServiceCapsAggregation | XtServiceCapsChannelMask;
+  return static_cast<XtServiceCaps>(result); 
 }
 
 XtFault

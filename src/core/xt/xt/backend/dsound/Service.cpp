@@ -9,11 +9,11 @@ XtFault
 DSoundService::GetFormatFault() const
 { return DSERR_BADFORMAT; }
 
-XtCapabilities 
+XtServiceCaps 
 DSoundService::GetCapabilities() const
 {
-  auto result = XtCapabilitiesAggregation | XtCapabilitiesChannelMask;
-  return static_cast<XtCapabilities>(result);
+  auto result = XtServiceCapsAggregation | XtServiceCapsChannelMask;
+  return static_cast<XtServiceCaps>(result);
 }
 
 XtFault

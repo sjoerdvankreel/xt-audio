@@ -2,7 +2,7 @@
 #include <xt/shared/Shared.hpp>
 #include <xt/private/Service.hpp>
 
-XtCapabilities XT_CALL
+XtServiceCaps XT_CALL
 XtServiceGetCapabilities(XtService const* s)
 {
   XT_ASSERT(s != nullptr);
@@ -52,6 +52,6 @@ XtServiceAggregateStream(XtService const* s, XtAggregateStreamParams const* para
   XT_ASSERT(params->master != nullptr);
   XT_ASSERT(params->devices != nullptr);
   XT_ASSERT(params->stream.onBuffer != nullptr);
-  XT_ASSERT((s->GetCapabilities() & XtCapabilitiesAggregation) != 0);
+  XT_ASSERT((s->GetCapabilities() & XtServiceCapsAggregation) != 0);
   return XtiCreateError(s->GetSystem(), s->AggregateStream(params, user, stream));
 }
