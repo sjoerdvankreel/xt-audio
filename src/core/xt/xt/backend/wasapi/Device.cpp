@@ -20,7 +20,7 @@ XtFault
 WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const
 { 
   bool isOutput = XtiWasapiTypeIsOutput(_type);
-  return (output != XtFalse) == isOutput? sizeof(XtiWfxChannelNames) / sizeof(const char*): 0;
+  *count = (output != XtFalse) == isOutput? sizeof(XtiWfxChannelNames) / sizeof(const char*): 0;
   return S_OK;
 }
 
