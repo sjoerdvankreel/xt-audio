@@ -59,8 +59,8 @@ public XtBlockingDevice
 
   XT_IMPLEMENT_DEVICE_BLOCKING();
   XT_IMPLEMENT_DEVICE_BASE(WASAPI);
-  virtual HRESULT InitializeStream(XtBlockingParams const* params,
-    REFERENCE_TIME buffer, CComPtr<IAudioClient>& client) = 0;
+  virtual HRESULT InitializeStream(XtBlockingParams const* params, 
+    REFERENCE_TIME buffer, WasapiStream* stream) = 0;
 };
 
 struct WasapiSharedDevice final:
@@ -70,9 +70,8 @@ public WasapiDevice
   CComPtr<IAudioClient3> _client3;
 
   XT_IMPLEMENT_DEVICE();
-  XT_IMPLEMENT_DEVICE_BLOCKING();
   HRESULT InitializeStream(XtBlockingParams const* params,
-    REFERENCE_TIME buffer, CComPtr<IAudioClient>& client) override final;
+    REFERENCE_TIME buffer, WasapiStream* stream) override final;
 };
 
 struct WasapiExclusiveDevice final:
@@ -81,7 +80,7 @@ public WasapiDevice
   XT_IMPLEMENT_DEVICE();
   WasapiExclusiveDevice() = default;
   HRESULT InitializeStream(XtBlockingParams const* params,
-    REFERENCE_TIME buffer, CComPtr<IAudioClient>& client) override final;
+    REFERENCE_TIME buffer, WasapiStream* stream) override final;
 };
 
 #endif // XT_ENABLE_WASAPI

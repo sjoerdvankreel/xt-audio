@@ -76,24 +76,6 @@ WasapiSharedDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) co
   return S_OK;
 }
 
-XtFault
-WasapiSharedDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream)
-{
-  HRESULT hr;
-  XT_VERIFY_COM(WasapiDevice::OpenBlockingStream(params, stream));
-  auto result = std::unique_ptr<WasapiStream>(&dynamic_cast<WasapiStream&>(**stream));
-  *stream = nullptr;
-
-  XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&loopbackClient)));
-    if(!client3) {
-      XT_VERIFY_COM(loopbackClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, wasapiBufferSize, 0, pWfx, nullptr));
-    } else {
-      XT_VERIFY_COM(loopbackClient.QueryInterface(&loopbackClient3));
-      XT_VERIFY_COM(loopbackClient3->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, bufferFrames, pWfx, nullptr));
-    }
-    XT_VERIFY_COM(loopbackClient->SetEventHandle(result->streamEvent.event));
-}
-
 HRESULT
 WasapiSharedDevice::InitializeStream(XtBlockingParams const* params, REFERENCE_TIME buffer, CComPtr<IAudioClient>& client)
 {
@@ -109,6 +91,19 @@ WasapiSharedDevice::InitializeStream(XtBlockingParams const* params, REFERENCE_T
     XT_VERIFY_COM(client->Initialize(mode, flags, buffer, 0, format, nullptr));
     return S_OK;
   }
+
+
+  auto ploopback = reinterpret_cast<void**>(&result->_loopback);
+  XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, ploopback));
+  if(!_client3) XT_VERIFY_COM(result->_loopback->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, buffer, 0, pWfx, nullptr));
+  else
+  {
+    XT_VERIFY_COM(loopbackClient.QueryInterface(&loopbackClient3));
+    XT_VERIFY_COM(loopbackClient3->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, bufferFrames, pWfx, nullptr));
+  }
+  XT_VERIFY_COM(loopbackClient->SetEventHandle(result->streamEvent.event));
+  *stream = result.release();
+
 
   CComPtr<IAudioClient3> client3;
   UINT min, max, default_, fundamental;

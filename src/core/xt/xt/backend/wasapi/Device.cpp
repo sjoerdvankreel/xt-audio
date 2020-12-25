@@ -20,6 +20,14 @@ XtFault
 WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
 { XtiCopyString(XtiWfxChannelNames[index], buffer, size); return S_OK; }
 
+HRESULT
+WasapiDevice::SetEventHandle(REFERENCE_TIME buffer, WasapiStream* stream)
+{
+  HRESULT hr;
+  XT_VERIFY_COM(stream->_client->SetEventHandle(stream->_event.event));
+  return S_OK;
+}
+
 XtFault
 WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const
 { 
@@ -46,7 +54,7 @@ WasapiDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStrea
   result->_type = _type;
   auto pclient = reinterpret_cast<void**>(&result->_client);
   XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, pclient));
-  XT_VERIFY_COM(InitializeStream(params, buffer, result->_client));
+  XT_VERIFY_COM(InitializeStream(params, buffer, result.get()));
   XT_VERIFY_COM(result->_client->GetBufferSize(&result->_frames));
 
   auto pclock = reinterpret_cast<void**>(&result->_clock);
@@ -59,8 +67,6 @@ WasapiDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStrea
   auto pcapture = reinterpret_cast<void**>(&result->_capture);
   if(output) XT_VERIFY_COM(result->_client->GetService(__uuidof(IAudioRenderClient), prender));
   else XT_VERIFY_COM(result->_client->GetService(__uuidof(IAudioCaptureClient), pcapture));
-  
-  if(_type != XtWasapiType::Loopback) XT_VERIFY_COM(result->_client->SetEventHandle(result->_event.event));
   *stream = result.release();
   return S_OK;
 }

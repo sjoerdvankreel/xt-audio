@@ -6,7 +6,7 @@
 #include <xt/blocking/Stream.hpp>
 
 #define XT_IMPLEMENT_DEVICE_BLOCKING() \
-  XtFault OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream) override;
+  XtFault OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream) override final;
 
 struct XtBlockingDevice:
 public XtDevice

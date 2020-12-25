@@ -110,26 +110,20 @@ WasapiService::OpenDevice(char const* id, XtDevice** device) const
   XT_VERIFY_COM(enumerator->GetDevice(wideId.c_str(), &d));
   XT_VERIFY_COM(d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client)));
   
-  if(XtiWasapiTypeIsExclusive(info.type))
+  std::unique_ptr<WasapiDevice> result;
+  if(XtiWasapiTypeIsExclusive(info.type)) result = std::make_unique<WasapiExclusiveDevice>();
+  else
   {
-    auto result = std::make_unique<WasapiExclusiveDevice>();
-    result->_device = d;
-    result->_client = client;
-    result->_type = info.type;
-    *device = result.release();
-    return S_OK;
+    auto shared = new WasapiSharedDevice();
+    result.reset(shared);
+    hr = client.QueryInterface(&client3);
+    if(hr != E_NOINTERFACE) XT_VERIFY_COM(hr);
+    shared->_client3 = client3;
   }
 
-  auto result = std::make_unique<WasapiSharedDevice>();
   result->_device = d;
   result->_client = client;
   result->_type = info.type;
-  if(info.type != XtWasapiType::Loopback)
-  {
-    hr = client.QueryInterface(&client3);
-    if(hr != E_NOINTERFACE) XT_VERIFY_COM(hr);
-    result->_client3 = client3;
-  }
   *device = result.release();
   return S_OK;
 }
