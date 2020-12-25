@@ -20,30 +20,6 @@
 
 // ---- forward ----
 
-struct WasapiStream: public XtBlockingStream {
-  HANDLE mmcssHandle;
-  UINT32 bufferFrames;
-  const Options options;
-  const XtEvent streamEvent;
-  const CComPtr<IAudioClock> clock;
-  const CComPtr<IAudioClock2> clock2;
-  const CComPtr<IAudioClient> client;
-  const CComPtr<IAudioClient> loopback;
-  const CComPtr<IAudioRenderClient> render;
-  const CComPtr<IAudioCaptureClient> capture;
-  XT_IMPLEMENT_BLOCKING_STREAM(WASAPI);
-
-  ~WasapiStream() {  }
-  WasapiStream(UINT32 bufferFrames, CComPtr<IAudioClock> clock, CComPtr<IAudioClock2> clock2, 
-    CComPtr<IAudioClient> client, CComPtr<IAudioClient> loopback, CComPtr<IAudioCaptureClient> capture,
-    CComPtr<IAudioRenderClient> render, const Options& options):
-  XtBlockingStream(), mmcssHandle(), bufferFrames(bufferFrames),
-  options(options), streamEvent(), clock(clock), clock2(clock2), 
-  client(client), loopback(loopback), render(render), capture(capture) {}
-
-  const wchar_t* GetMmcssTaskName() const;
-};
-
 // ---- local ----
 
 // ---- device ----

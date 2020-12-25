@@ -3,6 +3,9 @@
 #include <xt/backend/wasapi/Shared.hpp>
 #include <xt/backend/wasapi/Private.hpp>
 
+#include <memory>
+#include <algorithm>
+
 XtFault
 WasapiSharedDevice::GetMix(XtBool* valid, XtMix* mix) const
 { 
@@ -76,6 +79,44 @@ WasapiSharedDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) co
 XtFault
 WasapiSharedDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream)
 {
+  HRESULT hr;
+  XT_VERIFY_COM(WasapiDevice::OpenBlockingStream(params, stream));
+  auto result = std::unique_ptr<WasapiStream>(&dynamic_cast<WasapiStream&>(**stream));
+  *stream = nullptr;
+
+  XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&loopbackClient)));
+    if(!client3) {
+      XT_VERIFY_COM(loopbackClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, wasapiBufferSize, 0, pWfx, nullptr));
+    } else {
+      XT_VERIFY_COM(loopbackClient.QueryInterface(&loopbackClient3));
+      XT_VERIFY_COM(loopbackClient3->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, bufferFrames, pWfx, nullptr));
+    }
+    XT_VERIFY_COM(loopbackClient->SetEventHandle(result->streamEvent.event));
+}
+
+HRESULT
+WasapiSharedDevice::InitializeStream(XtBlockingParams const* params, REFERENCE_TIME buffer, CComPtr<IAudioClient>& client)
+{
+  HRESULT hr; 
+  WAVEFORMATEXTENSIBLE wfx;
+  XT_ASSERT(XtiFormatToWfx(params->format, wfx));
+  auto format = reinterpret_cast<WAVEFORMATEX*>(&wfx);
+  auto flags = _type == XtWasapiType::Loopback? AUDCLNT_STREAMFLAGS_LOOPBACK: AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
+
+  if(!_client3)
+  {
+    auto mode = AUDCLNT_SHAREMODE_SHARED;
+    XT_VERIFY_COM(client->Initialize(mode, flags, buffer, 0, format, nullptr));
+    return S_OK;
+  }
+
+  CComPtr<IAudioClient3> client3;
+  UINT min, max, default_, fundamental;
+  XT_VERIFY_COM(client->QueryInterface(&client3));
+  XT_VERIFY_COM(client3->GetSharedModeEnginePeriod(format, &default_, &fundamental, &min, &max));
+  UINT32 frames = static_cast<UINT32>(params->bufferSize / 1000.0 * params->format.mix.rate);
+  frames = std::clamp(frames, min, max);
+  XT_VERIFY_COM(client3->InitializeSharedAudioStream(flags, frames, format, nullptr));
   return S_OK;
 }
 

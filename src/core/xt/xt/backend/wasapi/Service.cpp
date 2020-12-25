@@ -113,6 +113,7 @@ WasapiService::OpenDevice(char const* id, XtDevice** device) const
   if(XtiWasapiTypeIsExclusive(info.type))
   {
     auto result = std::make_unique<WasapiExclusiveDevice>();
+    result->_device = d;
     result->_client = client;
     result->_type = info.type;
     *device = result.release();
@@ -120,6 +121,7 @@ WasapiService::OpenDevice(char const* id, XtDevice** device) const
   }
 
   auto result = std::make_unique<WasapiSharedDevice>();
+  result->_device = d;
   result->_client = client;
   result->_type = info.type;
   if(info.type != XtWasapiType::Loopback)

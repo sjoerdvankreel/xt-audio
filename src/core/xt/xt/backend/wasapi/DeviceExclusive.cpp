@@ -2,6 +2,7 @@
 #include <xt/shared/Win32.hpp>
 #include <xt/backend/wasapi/Shared.hpp>
 #include <xt/backend/wasapi/Private.hpp>
+#include <algorithm>
 
 XtFault
 WasapiExclusiveDevice::GetMix(XtBool* valid, XtMix* mix) const
@@ -36,9 +37,53 @@ WasapiExclusiveDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size)
   return S_OK;
 }
 
-XtFault
-WasapiExclusiveDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream)
+HRESULT
+WasapiExclusiveDevice::InitializeStream(XtBlockingParams const* params, REFERENCE_TIME buffer, CComPtr<IAudioClient>& client)
 {
+  HRESULT hr;
+  UINT32 aligned;
+  WAVEFORMATEXTENSIBLE wfx;
+  REFERENCE_TIME hwBuffer;
+  REFERENCE_TIME engineBuffer;
+  auto mode = AUDCLNT_SHAREMODE_EXCLUSIVE;
+  auto flags = AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
+  REFERENCE_TIME maxBuffer = static_cast<REFERENCE_TIME>(XtiWasapiMaxExclusiveBufferMs * XtiWasapiHnsPerMs);
+
+  XT_ASSERT(XtiFormatToWfx(params->format, wfx));
+  auto format = reinterpret_cast<WAVEFORMATEX*>(&wfx);  
+  XT_VERIFY_COM(_client->GetDevicePeriod(&engineBuffer, &hwBuffer));
+
+  hr = client->Initialize(mode, flags, buffer, buffer, format, nullptr);
+  while(hr == E_INVALIDARG && buffer > hwBuffer)
+  {
+    buffer /= 2;
+    hr = client->Initialize(mode, flags, buffer, buffer, format, nullptr);
+  }
+  if(hr != AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED)
+  {
+    XT_VERIFY_COM(hr);
+    return S_OK;
+  }
+
+  XT_VERIFY_COM(client->GetBufferSize(&aligned));
+  client.Release();
+  auto alignedRt = (1000.0 * XtiWasapiHnsPerMs / wfx.Format.nSamplesPerSec * aligned) + 0.5;
+  buffer = static_cast<REFERENCE_TIME>(alignedRt);
+  buffer = std::clamp(buffer, hwBuffer, maxBuffer);
+  auto pclient = reinterpret_cast<void**>(&client);
+  XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, pclient));
+  hr = client->Initialize(mode, flags, buffer, buffer, format, nullptr);
+  if(hr != AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED)
+  {
+    XT_VERIFY_COM(hr);
+    return S_OK;
+  }
+
+  client.Release();
+  buffer = static_cast<REFERENCE_TIME>(alignedRt);  
+  pclient = reinterpret_cast<void**>(&client);
+  XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, pclient));
+  XT_VERIFY_COM(client->Initialize(mode, flags, buffer, buffer, format, nullptr));
   return S_OK;
 }
 

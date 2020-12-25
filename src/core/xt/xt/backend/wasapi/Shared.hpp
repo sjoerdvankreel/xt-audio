@@ -29,34 +29,6 @@ public XtDeviceList
   std::vector<XtWasapiDeviceInfo> _devices;
 };
 
-struct WasapiDevice:
-public XtBlockingDevice
-{
-  XtWasapiType _type;
-  CComPtr<IAudioClient> _client;
-
-  WasapiDevice() = default;
-  XT_IMPLEMENT_DEVICE_BASE(WASAPI);
-};
-
-struct WasapiSharedDevice final:
-public WasapiDevice
-{
-  XT_IMPLEMENT_DEVICE();
-  XT_IMPLEMENT_DEVICE_BLOCKING();
-
-  WasapiSharedDevice() = default;
-  CComPtr<IAudioClient3> _client3;
-};
-
-struct WasapiExclusiveDevice final:
-public WasapiDevice
-{
-  XT_IMPLEMENT_DEVICE();
-  XT_IMPLEMENT_DEVICE_BLOCKING();
-  WasapiExclusiveDevice() = default;
-};
-
 struct WasapiStream final:
 public XtBlockingStream
 {
@@ -75,6 +47,41 @@ public XtBlockingStream
   XT_IMPLEMENT_STREAM_BASE();
   XT_IMPLEMENT_BLOCKING_STREAM();
   XT_IMPLEMENT_STREAM_BASE_SYSTEM(WASAPI);
+};
+
+struct WasapiDevice:
+public XtBlockingDevice
+{
+  XtWasapiType _type;
+  CComPtr<IMMDevice> _device;
+  CComPtr<IAudioClient> _client;
+  WasapiDevice() = default;  
+
+  XT_IMPLEMENT_DEVICE_BLOCKING();
+  XT_IMPLEMENT_DEVICE_BASE(WASAPI);
+  virtual HRESULT InitializeStream(XtBlockingParams const* params,
+    REFERENCE_TIME buffer, CComPtr<IAudioClient>& client) = 0;
+};
+
+struct WasapiSharedDevice final:
+public WasapiDevice
+{
+  WasapiSharedDevice() = default;
+  CComPtr<IAudioClient3> _client3;
+
+  XT_IMPLEMENT_DEVICE();
+  XT_IMPLEMENT_DEVICE_BLOCKING();
+  HRESULT InitializeStream(XtBlockingParams const* params,
+    REFERENCE_TIME buffer, CComPtr<IAudioClient>& client) override final;
+};
+
+struct WasapiExclusiveDevice final:
+public WasapiDevice
+{
+  XT_IMPLEMENT_DEVICE();
+  WasapiExclusiveDevice() = default;
+  HRESULT InitializeStream(XtBlockingParams const* params,
+    REFERENCE_TIME buffer, CComPtr<IAudioClient>& client) override final;
 };
 
 #endif // XT_ENABLE_WASAPI
