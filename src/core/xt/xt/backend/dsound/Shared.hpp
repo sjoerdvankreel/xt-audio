@@ -23,8 +23,9 @@ struct DSoundDevice final:
 public XtBlockingDevice
 {
   DSoundDevice() = default;
-  XT_IMPLEMENT_DEVICE(DSound);
+  XT_IMPLEMENT_DEVICE();
   XT_IMPLEMENT_DEVICE_BLOCKING();
+  XT_IMPLEMENT_DEVICE_BASE(DSound);
 
   GUID _id;
   CComPtr<IDirectSound> _output;

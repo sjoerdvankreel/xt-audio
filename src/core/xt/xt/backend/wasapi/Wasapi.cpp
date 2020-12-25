@@ -19,6 +19,34 @@ XtiGetWasapiError(XtFault fault)
   return result;
 }
 
+bool
+XtiWasapiTypeIsExclusive(XtWasapiType type)
+{
+  switch(type)
+  {
+  case XtWasapiType::Loopback:
+  case XtWasapiType::SharedRender:
+  case XtWasapiType::SharedCapture: return false;
+  case XtWasapiType::ExclusiveRender:
+  case XtWasapiType::ExclusiveCapture: return true;
+  default: XT_ASSERT(false); return false;
+  }
+}
+
+bool
+XtiWasapiTypeIsOutput(XtWasapiType type)
+{
+  switch(type)
+  {
+  case XtWasapiType::SharedRender:
+  case XtWasapiType::ExclusiveRender: return true;
+  case XtWasapiType::Loopback:
+  case XtWasapiType::SharedCapture:
+  case XtWasapiType::ExclusiveCapture: return false;
+  default: XT_ASSERT(false); return false;
+  }
+}
+
 char const*
 XtiGetWasapiNameSuffix(XtWasapiType type)
 {

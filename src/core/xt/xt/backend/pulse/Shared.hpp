@@ -24,6 +24,7 @@ struct PulseDevice final:
 public XtBlockingDevice
 {
   bool const _output;
+  XT_IMPLEMENT_DEVICE_BASE();
   XT_IMPLEMENT_DEVICE(Pulse);
   XT_IMPLEMENT_DEVICE_BLOCKING();
   PulseDevice(bool output);

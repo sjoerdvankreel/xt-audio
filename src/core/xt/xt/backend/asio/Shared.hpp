@@ -35,8 +35,9 @@ struct AsioDevice final:
 public XtDevice
 {
   CComPtr<IASIO> _asio;
-  XT_IMPLEMENT_DEVICE(ASIO);
+  XT_IMPLEMENT_DEVICE();
   XT_IMPLEMENT_DEVICE_STREAM();
+  XT_IMPLEMENT_DEVICE_BASE(ASIO);
   AsioDevice(CComPtr<IASIO> asio);
 };
 

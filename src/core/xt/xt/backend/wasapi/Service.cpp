@@ -22,12 +22,6 @@ WasapiService::GetCapabilities() const
 }
 
 XtFault
-WasapiService::OpenDevice(char const* id, XtDevice** device) const
-{
-  return S_OK;
-}
-
-XtFault
 WasapiService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
 {  
   UINT count;
@@ -98,6 +92,43 @@ WasapiService::GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, in
   XT_VERIFY_COM(XtiGetWasapiDeviceInfo(device, type, &info));
   XtiCopyString(XtiGetWasapiDeviceId(info).c_str(), buffer, size);
   *valid = XtTrue;
+  return S_OK;
+}
+
+XtFault
+WasapiService::OpenDevice(char const* id, XtDevice** device) const
+{
+  HRESULT hr;
+  CComPtr<IMMDevice> d;
+  CComPtr<IAudioClient> client;
+  CComPtr<IAudioClient3> client3;
+  CComPtr<IMMDeviceEnumerator> enumerator;
+
+  auto info = XtiParseWasapiDeviceInfo(id);   
+  auto wideId = XtiUtf8ToWideString(info.id.c_str());
+  XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
+  XT_VERIFY_COM(enumerator->GetDevice(wideId.c_str(), &d));
+  XT_VERIFY_COM(d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client)));
+  
+  if(XtiWasapiTypeIsExclusive(info.type))
+  {
+    auto result = std::make_unique<WasapiExclusiveDevice>();
+    result->_client = client;
+    result->_type = info.type;
+    *device = result.release();
+    return S_OK;
+  }
+
+  auto result = std::make_unique<WasapiSharedDevice>();
+  result->_client = client;
+  result->_type = info.type;
+  if(info.type != XtWasapiType::Loopback)
+  {
+    hr = client.QueryInterface(&client3);
+    if(hr != E_NOINTERFACE) XT_VERIFY_COM(hr);
+    result->_client3 = client3;
+  }
+  *device = result.release();
   return S_OK;
 }
 

@@ -23,14 +23,25 @@ struct XtWasapiDeviceInfo
   XtWasapiType type;
 };
 
+inline double const
+XtiWasapiHnsPerMs = 10000.0;
+inline double const
+XtiWasapiMaxSharedBufferMs = 2000.0;
+inline double const
+XtiWasapiMaxExclusiveBufferMs = 500.0;
+
 char const* 
 XtiGetWasapiFaultText(XtFault fault);
 XtCause 
 XtiGetWasapiFaultCause(XtFault fault);
+bool
+XtiWasapiTypeIsOutput(XtWasapiType type);
 char const*
 XtiGetWasapiNameSuffix(XtWasapiType type);
 int32_t
 XtiGetWasapiDeviceCaps(XtWasapiType type);
+bool
+XtiWasapiTypeIsExclusive(XtWasapiType type);
 XtWasapiDeviceInfo
 XtiParseWasapiDeviceInfo(std::string const& id);
 std::string

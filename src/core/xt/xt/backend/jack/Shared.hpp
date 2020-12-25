@@ -22,8 +22,9 @@ struct JackDevice final:
 public XtDevice
 {
   XtJackClient _jc;
-  XT_IMPLEMENT_DEVICE(JACK);
+  XT_IMPLEMENT_DEVICE();
   XT_IMPLEMENT_DEVICE_STREAM();
+  XT_IMPLEMENT_DEVICE_BASE(JACK);
   JackDevice(XtJackClient&& jc);
 };
 
