@@ -3,6 +3,7 @@
 #if XT_ENABLE_WASAPI
 
 #include <xt/api/Enums.h>
+#include <xt/shared/Win32.hpp>
 #include <xt/shared/Shared.hpp>
 
 #include <mmdeviceapi.h>
@@ -21,6 +22,15 @@ struct XtWasapiDeviceInfo
 {
   std::string id;
   XtWasapiType type;
+};
+
+struct XtWsEvent
+{
+  HANDLE event;
+  XtWsEvent(XtWsEvent const&) = delete;
+  XtWsEvent& operator=(XtWsEvent const&) = delete;
+  ~XtWsEvent() { XT_ASSERT(CloseHandle(event)); }
+  XtWsEvent(): event() { XT_ASSERT((event = CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
 };
 
 inline double const

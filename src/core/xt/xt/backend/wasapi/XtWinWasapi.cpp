@@ -18,28 +18,7 @@
 
 // ---- local ----
 
-struct XtEvent
-{
-  HANDLE event;
-  XtEvent(XtEvent const&) = delete;
-  XtEvent& operator=(XtEvent const&) = delete;
-  ~XtEvent() { XT_ASSERT(CloseHandle(event)); }
-  XtEvent(): event() { XT_ASSERT((event = CreateEvent(nullptr, FALSE, FALSE, nullptr)) != nullptr); }
-};
-
 // ---- forward ----
-
-
-struct WasapiDevice: public XtDevice {
-  const Options options;
-  const CComPtr<IMMDevice> device;
-  const CComPtr<IAudioClient> client;
-  const CComPtr<IAudioClient3> client3;
-  XT_IMPLEMENT_DEVICE(WASAPI);
-  
-  WasapiDevice(CComPtr<IMMDevice> d, CComPtr<IAudioClient> c, CComPtr<IAudioClient3> c3, const Options& o):
-  XtDevice(), options(o), device(d), client(c), client3(c3) {}
-};
 
 struct WasapiStream: public XtBlockingStream {
   HANDLE mmcssHandle;
@@ -66,54 +45,6 @@ struct WasapiStream: public XtBlockingStream {
 };
 
 // ---- local ----
-
-XtFault WasapiService::OpenDevice(int32_t index, XtDevice** device) const {  
-  HRESULT hr;
-  CComPtr<IMMDevice> d;
-  UINT inCount, outCount;
-  Options options = { 0 };
-  CComPtr<IAudioClient> client;  
-  CComPtr<IAudioClient3> client3;
-  CComPtr<IMMDeviceCollection> inputs, outputs;
-  uint32_t uindex = static_cast<uint32_t>(index);
-
-  XT_VERIFY_COM(GetDevices(inputs, inCount, outputs, outCount));
-  if(uindex < inCount) {
-    options.output = false;
-    options.loopback = false;
-    options.exclusive = false;
-    XT_VERIFY_COM(inputs->Item(uindex, &d));
-  } else if(uindex < inCount + outCount) {
-    options.output = false;
-    options.loopback = true;
-    options.exclusive = false;
-    XT_VERIFY_COM(outputs->Item(uindex - inCount, &d));
-  } else if(uindex < 2 * inCount + outCount) {
-    options.output = false;
-    options.loopback = false;
-    options.exclusive = true;
-    XT_VERIFY_COM(inputs->Item(uindex - inCount - outCount, &d));
-  } else if(uindex < 2 * inCount + 2 * outCount) {
-    options.output = true;
-    options.loopback = false;
-    options.exclusive = false;
-    XT_VERIFY_COM(outputs->Item(uindex - 2 * inCount - outCount, &d));
-  } else {
-    options.output = true;
-    options.loopback = false;
-    options.exclusive = true;
-    XT_VERIFY_COM(outputs->Item(uindex - 2 * inCount - 2 * outCount , &d));
-  }
-
-  XT_VERIFY_COM(d->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client)));
-  if(!options.loopback) {
-    hr = client.QueryInterface(&client3);
-    if(hr != E_NOINTERFACE)
-      XT_VERIFY_COM(hr);
-  }
-  *device = new WasapiDevice(d, client, client3, options);
-  return S_OK;
-}
 
 // ---- device ----
 
@@ -230,134 +161,6 @@ XtFault WasapiDevice::OpenStreamCore(const XtDeviceStreamParams* params, void* u
     XT_VERIFY_COM(streamClient->SetEventHandle(result->streamEvent.event));
   *stream = result.release();
   return S_OK;
-}
-
-// ---- stream ----
-
-void WasapiStream::StopStream() {
-  XT_ASSERT_COM(client->Stop());
-  if(loopback)
-    XT_ASSERT_COM(loopback->Stop());
-  if(!_secondary) {
-    XT_ASSERT(AvRevertMmThreadCharacteristics(mmcssHandle));
-    mmcssHandle = nullptr;
-  }
-}
-
-void WasapiStream::StartStream() {
-  if(!_secondary) {
-    DWORD taskIndex = 0;
-    const wchar_t* mmcssTaskName = options.exclusive? L"Pro Audio": L"Audio";
-    XT_ASSERT((mmcssHandle = AvSetMmThreadCharacteristicsW(mmcssTaskName, &taskIndex)) != nullptr);
-  }
-  XT_ASSERT_COM(client->Start());
-  if(loopback)
-    XT_ASSERT_COM(loopback->Start());
-}
-
-XtFault WasapiStream::GetFrames(int32_t* frames) const {
-  HRESULT hr;
-  UINT bufferFrames;
-  XT_VERIFY_COM(client->GetBufferSize(&bufferFrames));
-  *frames = bufferFrames;
-  return S_OK;
-}
-
-XtFault WasapiStream::GetLatency(XtLatency* latency) const {
-  HRESULT hr;
-  REFERENCE_TIME l;
-  UINT bufferFrames;
-  XT_VERIFY_COM(client->GetStreamLatency(&l));
-  XT_VERIFY_COM(client->GetBufferSize(&bufferFrames));
-  double bufferLatency = options.exclusive? 0.0: bufferFrames * 1000.0 / _params.format.mix.rate;
-  if(capture)
-    latency->input = l / XtWsHnsPerMs + bufferLatency;
-  else
-    latency->output = l / XtWsHnsPerMs + bufferLatency;
-  return S_OK;
-}
-
-void WasapiStream::ProcessBuffer(bool prefill) {
-
-  HRESULT hr;
-  BYTE* data;
-  DWORD flags;
-  UINT32 padding;
-  uint32_t frames;
-  DWORD waitResult;
-  double time = 0.0;
-  uint64_t frequency;
-  uint64_t wasapiTime;
-  uint64_t position = 0;
-  uint64_t wasapiPosition;
-  XtBool timeValid = XtFalse;
-  DWORD bufferMillis = static_cast<DWORD>(bufferFrames * 1000.0 / _params.format.mix.rate);
-  XtBuffer buffer = { 0 };
-
-  if(!prefill && !_secondary) {
-    waitResult = WaitForSingleObject(streamEvent.event, bufferMillis);
-    if(waitResult == WAIT_TIMEOUT)
-      return;
-    XT_ASSERT(waitResult == WAIT_OBJECT_0);
-  }
-
-  if(capture && !prefill) {
-    hr = capture->GetBuffer(&data, &frames, &flags, &wasapiPosition, &wasapiTime);
-    if(hr == AUDCLNT_S_BUFFER_EMPTY) {
-      XT_VERIFY_ON_BUFFER(capture->ReleaseBuffer(0));
-      return;
-    }
-    if(!XT_VERIFY_ON_BUFFER(hr))
-      return;
-    if((flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) != 0)
-      OnXRun();
-    timeValid = (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) == 0;
-    position = !timeValid? 0: wasapiPosition;
-    time = !timeValid? 0: wasapiTime / XtWsHnsPerMs;
-    buffer.input = data;
-    buffer.output = nullptr;
-    buffer.frames = frames;
-    buffer.time = time;
-    buffer.position = position;
-    buffer.timeValid = timeValid;
-    OnBuffer(&buffer);
-    XT_VERIFY_ON_BUFFER(capture->ReleaseBuffer(frames));
-  }
-  
-  if(render && !options.loopback) {
-    if(options.exclusive) {
-      frames = bufferFrames;
-    } else {
-      if(!XT_VERIFY_ON_BUFFER(client->GetCurrentPadding(&padding)))
-        return;
-      frames = bufferFrames - padding;
-    }
-    if(!prefill) {
-      if(options.exclusive) {
-        if(!XT_VERIFY_ON_BUFFER(clock->GetFrequency(&frequency)))
-          return;
-        if(!XT_VERIFY_ON_BUFFER(clock->GetPosition(&wasapiPosition, &wasapiTime)))
-          return;
-        position = wasapiPosition * _params.format.mix.rate / frequency;
-      } else {
-        if(!XT_VERIFY_ON_BUFFER(clock2->GetDevicePosition(&wasapiPosition, &wasapiTime)))
-          return;
-        position = wasapiPosition;
-      }
-      timeValid = XtTrue;
-      time = wasapiTime / XtWsHnsPerMs; 
-    }
-    if(!XT_VERIFY_ON_BUFFER(render->GetBuffer(frames, &data)))
-      return;
-    buffer.input = nullptr;
-    buffer.output = data;
-    buffer.frames = frames;
-    buffer.time = time;
-    buffer.position = position;
-    buffer.timeValid = timeValid;
-    OnBuffer(&buffer);
-    XT_VERIFY_ON_BUFFER(render->ReleaseBuffer(frames, 0));
-  }
 }
 
 #endif // XT_ENABLE_WASAPI

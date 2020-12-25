@@ -11,6 +11,7 @@
 * do assert_com like for linux
 * check aggregate 2+2
 * fix alsa channel mapping
+* set wasapi raw mode
 
 ** LATER
 * arm

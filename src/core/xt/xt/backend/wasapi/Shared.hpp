@@ -6,6 +6,7 @@
 #include <xt/private/Stream.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/blocking/Device.hpp>
+#include <xt/blocking/Stream.hpp>
 #include <xt/private/DeviceList.hpp>
 #include <xt/backend/wasapi/Private.hpp>
 
@@ -33,25 +34,47 @@ public XtBlockingDevice
 {
   XtWasapiType _type;
   CComPtr<IAudioClient> _client;
+
   WasapiDevice() = default;
   XT_IMPLEMENT_DEVICE_BASE(WASAPI);
 };
 
-struct WasapiSharedDevice:
+struct WasapiSharedDevice final:
 public WasapiDevice
 {
   XT_IMPLEMENT_DEVICE();
   XT_IMPLEMENT_DEVICE_BLOCKING();
+
   WasapiSharedDevice() = default;
   CComPtr<IAudioClient3> _client3;
 };
 
-struct WasapiExclusiveDevice:
+struct WasapiExclusiveDevice final:
 public WasapiDevice
 {
   XT_IMPLEMENT_DEVICE();
   XT_IMPLEMENT_DEVICE_BLOCKING();
   WasapiExclusiveDevice() = default;
+};
+
+struct WasapiStream final:
+public XtBlockingStream
+{
+  UINT _frames;
+  XtWsEvent _event;
+  XtWasapiType _type;
+  HANDLE _mmcssHandle;
+  CComPtr<IAudioClock> _clock;
+  CComPtr<IAudioClock2> _clock2;
+  CComPtr<IAudioClient> _client;
+  CComPtr<IAudioClient> _loopback;
+  CComPtr<IAudioRenderClient> _render;
+  CComPtr<IAudioCaptureClient> _capture;
+
+  WasapiStream() = default;  
+  XT_IMPLEMENT_STREAM_BASE();
+  XT_IMPLEMENT_BLOCKING_STREAM();
+  XT_IMPLEMENT_STREAM_BASE_SYSTEM(WASAPI);
 };
 
 #endif // XT_ENABLE_WASAPI
