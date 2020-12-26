@@ -363,9 +363,9 @@ namespace Xt
                 stop.Enabled = running;
                 panel.Enabled = !running;
                 start.Enabled = !running;
-                streamRaw.Enabled = !running;
                 bufferSize.Enabled = !running;
-                streamType.Enabled = !running;
+                streamType.Enabled = !running;                
+                streamNative.Enabled = !running;
                 outputMaster.Enabled = !running;
                 secondaryInput.Enabled = !running;
                 secondaryOutput.Enabled = !running;
@@ -452,7 +452,7 @@ namespace Xt
                 if (type == StreamType.Capture)
                 {
                     captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
-                    CaptureCallback callback = new CaptureCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage, captureFile);
+                    CaptureCallback callback = new CaptureCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage, captureFile);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in inputFormat, bufferSize.Value);
                     inputStream = inputDevice.OpenStream(in deviceParams, "capture-user-data");
@@ -461,7 +461,7 @@ namespace Xt
                     inputStream.Start();
                 } else if (type == StreamType.Render)
                 {
-                    RenderCallback callback = new RenderCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    RenderCallback callback = new RenderCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in outputFormat, bufferSize.Value);
                     outputStream = outputDevice.OpenStream(in deviceParams, "render-user-data");
@@ -472,7 +472,7 @@ namespace Xt
                     XtFormat duplexFormat = inputFormat;
                     duplexFormat.channels.outputs = outputFormat.channels.outputs;
                     duplexFormat.channels.outMask = outputFormat.channels.outMask;
-                    FullDuplexCallback callback = new FullDuplexCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    FullDuplexCallback callback = new FullDuplexCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, bufferSize.Value);
                     outputStream = outputDevice.OpenStream(in deviceParams, "duplex-user-data");
@@ -494,7 +494,7 @@ namespace Xt
                         secondaryInputDevice != null ? secondaryInputDevice :
                         outputDevice != null ? outputDevice : secondaryOutputDevice);
 
-                    AggregateCallback streamCallback = new AggregateCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    AggregateCallback streamCallback = new AggregateCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, streamCallback.OnCallback, onXRun, OnRunning);
                     var aggregateParams = new XtAggregateStreamParams(in streamParams, devices.ToArray(), devices.Count, outputFormat.mix, master);
                     outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "aggregate-user-data");
@@ -506,7 +506,7 @@ namespace Xt
                     XtFormat duplexFormat = inputFormat;
                     duplexFormat.channels.outputs = outputFormat.channels.outputs;
                     duplexFormat.channels.outMask = outputFormat.channels.outMask;
-                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, bufferSize.Value);
                     outputStream = outputDevice.OpenStream(in deviceParams, "latency-user-data");
@@ -518,7 +518,7 @@ namespace Xt
                     XtAggregateDeviceParams[] devices = new XtAggregateDeviceParams[2];
                     devices[0] = new XtAggregateDeviceParams(inputDevice, new XtChannels(inputFormat.channels.inputs, inputFormat.channels.inMask, 0, 0), bufferSize.Value);
                     devices[1] = new XtAggregateDeviceParams(outputDevice, new XtChannels(0, 0, outputFormat.channels.outputs, outputFormat.channels.outMask), bufferSize.Value);
-                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamRaw.Checked, AddMessage);
+                    LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     XtStreamParams streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     XtAggregateStreamParams aggregateParams = new XtAggregateStreamParams(in streamParams, devices, 2, in outputFormat.mix, master);
                     outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "latency-user-data");

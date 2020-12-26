@@ -7,8 +7,8 @@ namespace Xt
         private double attenuate = 1.0;
         private double[] aggregateChannel;
 
-        internal AggregateCallback(bool interleaved, bool raw, Action<Func<string>> onMessage) :
-            base(interleaved, raw, "Aggregate", onMessage)
+        internal AggregateCallback(bool interleaved, bool native, Action<Func<string>> onMessage) :
+            base(interleaved, native, "Aggregate", onMessage)
         {
         }
 
@@ -18,13 +18,13 @@ namespace Xt
         }
 
         internal override unsafe void OnCallback(XtFormat format, bool interleaved,
-             bool raw, object input, object output, int frames)
+             bool native, object input, object output, int frames)
         {
             Array.Clear(aggregateChannel, 0, frames);
             for (int f = 0; f < frames; f++)
             {
                 for (int c = 0; c < format.channels.inputs; c++)
-                    if (!raw && !interleaved)
+                    if (!native && !interleaved)
                         switch (format.mix.sample)
                         {
                             case XtSample.UInt8:
@@ -46,7 +46,7 @@ namespace Xt
                             case XtSample.Float32:
                                 aggregateChannel[f] += ((float[][])input)[c][f];
                                 break;
-                        } else if (!raw && interleaved)
+                        } else if (!native && interleaved)
                         switch (format.mix.sample)
                         {
                             case XtSample.UInt8:
@@ -68,7 +68,7 @@ namespace Xt
                             case XtSample.Float32:
                                 aggregateChannel[f] += ((float[])input)[f * format.channels.inputs + c];
                                 break;
-                        } else if (raw && !interleaved)
+                        } else if (native && !interleaved)
                         switch (format.mix.sample)
                         {
                             case XtSample.UInt8:
@@ -116,7 +116,7 @@ namespace Xt
                 attenuate = Math.Min(attenuate, 1.0 / Math.Abs(aggregateChannel[f]));
                 aggregateChannel[f] *= attenuate;
                 for (int c = 0; c < format.channels.outputs; c++)
-                    if (!raw && !interleaved)
+                    if (!native && !interleaved)
                         switch (format.mix.sample)
                         {
                             case XtSample.UInt8:
@@ -137,7 +137,7 @@ namespace Xt
                             case XtSample.Float32:
                                 ((float[][])output)[c][f] = (float)aggregateChannel[f];
                                 break;
-                        } else if (!raw && interleaved)
+                        } else if (!native && interleaved)
                         switch (format.mix.sample)
                         {
                             case XtSample.UInt8:
@@ -158,7 +158,7 @@ namespace Xt
                             case XtSample.Float32:
                                 ((float[])output)[f * format.channels.outputs + c] = (float)aggregateChannel[f];
                                 break;
-                        } else if (raw && !interleaved)
+                        } else if (native && !interleaved)
                         switch (format.mix.sample)
                         {
                             case XtSample.UInt8:

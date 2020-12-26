@@ -4,16 +4,16 @@ namespace Xt
 {
     class FullDuplexCallback : StreamCallback
     {
-        internal FullDuplexCallback(bool interleaved, bool raw, Action<Func<string>> onMessage) :
-            base(interleaved, raw, "FullDuplex", onMessage)
+        internal FullDuplexCallback(bool interleaved, bool native, Action<Func<string>> onMessage) :
+            base(interleaved, native, "FullDuplex", onMessage)
         {
         }
 
         internal override unsafe void OnCallback(XtFormat format, bool interleaved,
-             bool raw, object input, object output, int frames)
+             bool native, object input, object output, int frames)
         {
             int sampleSize = XtAudio.GetSampleAttributes(format.mix.sample).size;
-            if (!raw)
+            if (!native)
             {
                 if (interleaved)
                     Buffer.BlockCopy((Array)input, 0, (Array)output, 0, frames * format.channels.inputs * sampleSize);

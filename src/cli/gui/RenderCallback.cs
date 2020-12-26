@@ -7,13 +7,13 @@ namespace Xt
         private double phase;
         private static readonly double Frequency = 440.0;
 
-        internal RenderCallback(bool interleaved, bool raw, Action<Func<string>> onMessage) :
-            base(interleaved, raw, "Render",  onMessage)
+        internal RenderCallback(bool interleaved, bool native, Action<Func<string>> onMessage) :
+            base(interleaved, native, "Render",  onMessage)
         {
         }
 
         internal override unsafe void OnCallback(XtFormat format, bool interleaved,
-             bool raw, object input, object output, int frames)
+             bool native, object input, object output, int frames)
         {
             for (int f = 0; f < frames; f++)
             {
@@ -24,7 +24,7 @@ namespace Xt
                 if (phase >= 1.0)
                     phase = -1.0;
 
-                if (!raw)
+                if (!native)
                 {
                     if (interleaved)
                         for (int c = 0; c < format.channels.outputs; c++)

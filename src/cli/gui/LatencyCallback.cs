@@ -7,13 +7,13 @@ namespace Xt
         private long pulseSend;
         private long framesProcessed;
 
-        internal LatencyCallback(bool interleaved, bool raw, Action<Func<string>> onMessage) :
-            base(interleaved, raw, "Latency", onMessage)
+        internal LatencyCallback(bool interleaved, bool native, Action<Func<string>> onMessage) :
+            base(interleaved, native, "Latency", onMessage)
         {
         }
 
         internal override unsafe void OnCallback(XtFormat format, bool interleaved,
-             bool raw, object input, object output, int frames)
+             bool native, object input, object output, int frames)
         {
             for (int f = 0; f < frames; f++)
             {
@@ -26,7 +26,7 @@ namespace Xt
                 int intValue = sendPulse ? int.MaxValue : (int)0;
                 float floatValue = sendPulse ? 1.0f : 0.0f;
 
-                if (!raw)
+                if (!native)
                 {
                     if (!interleaved)
                     {

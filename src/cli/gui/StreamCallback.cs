@@ -5,21 +5,21 @@ namespace Xt
 	abstract class StreamCallback
 	{
 		int processed;
-		readonly bool raw;
+		readonly bool native;
 		readonly bool interleaved;
 		protected string name;
 		protected readonly Action<Func<string>> onMessage;
 
-		internal StreamCallback(bool interleaved, bool raw, string name,Action<Func<string>> onMessage)
+		internal StreamCallback(bool interleaved, bool native, string name,Action<Func<string>> onMessage)
 		{
-			this.raw = raw;
+			this.native = native;
 			this.name = name;
 			this.onMessage = onMessage;
 			this.interleaved = interleaved;
 		}
 
 		internal abstract void OnCallback(XtFormat format, bool interleaved,
-			bool raw, object input, object output, int frames);
+			bool native, object input, object output, int frames);
 
 		internal virtual void OnMessage(Func<string> message)
 		{
@@ -30,12 +30,12 @@ namespace Xt
 		{
 			XtFormat format = stream.GetFormat();
 			XtSafeBuffer safe = XtSafeBuffer.Get(stream);
-			if(raw)
-				OnCallback(format, interleaved, raw, buffer.input, buffer.output, buffer.frames);
+			if(native)
+				OnCallback(format, interleaved, native, buffer.input, buffer.output, buffer.frames);
 			else
 			{
 				safe.Lock(in buffer);
-				OnCallback(format, interleaved, raw, safe.GetInput(), safe.GetOutput(), buffer.frames);
+				OnCallback(format, interleaved, native, safe.GetInput(), safe.GetOutput(), buffer.frames);
 				safe.Unlock(in buffer);
 			}
 			processed += buffer.frames;

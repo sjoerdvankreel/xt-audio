@@ -10,9 +10,9 @@ namespace Xt
         private Array interleavedBuffer;
         private readonly FileStream stream;
 
-        internal CaptureCallback(bool interleaved, bool raw, 
+        internal CaptureCallback(bool interleaved, bool native, 
             Action<Func<string>> onMessage, FileStream stream) :
-            base(interleaved, raw, "Capture", onMessage)
+            base(interleaved, native, "Capture", onMessage)
         {
             this.stream = stream;
         }
@@ -25,17 +25,17 @@ namespace Xt
         }
 
         internal override void OnCallback(XtFormat format, bool interleaved,
-            bool raw, object input, object output, int frames)
+            bool native, object input, object output, int frames)
         {
             if (frames == 0)
                 return;
-            if (!raw && !interleaved)
+            if (!native && !interleaved)
                 Utility.Interleave((Array)input, interleavedBuffer, format.mix.sample, format.channels.inputs, frames);
-            else if (raw && !interleaved)
+            else if (native && !interleaved)
                 Utility.Interleave((IntPtr)input, interleavedBuffer, format.mix.sample, format.channels.inputs, frames);
-            else if (raw && interleaved)
+            else if (native && interleaved)
                 Utility.Copy((IntPtr)input, interleavedBuffer, format.mix.sample, format.channels.inputs, frames);
-            Buffer.BlockCopy(interleaved && !raw ? (Array)input : interleavedBuffer, 0, block, 0, frames * frameSize);
+            Buffer.BlockCopy(interleaved && !native ? (Array)input : interleavedBuffer, 0, block, 0, frames * frameSize);
             stream.Write(block, 0, frames * frameSize);
         }
     }

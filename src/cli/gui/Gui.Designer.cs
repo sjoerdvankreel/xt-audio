@@ -81,7 +81,7 @@
             this.bufferSize = new System.Windows.Forms.TrackBar();
             this.streamType = new System.Windows.Forms.ComboBox();
             this.streamInterleaved = new System.Windows.Forms.CheckBox();
-            this.streamRaw = new System.Windows.Forms.CheckBox();
+            this.streamNative = new System.Windows.Forms.CheckBox();
             this.outputMaster = new System.Windows.Forms.CheckBox();
             this.secondaryInput = new System.Windows.Forms.ComboBox();
             this.secondaryOutput = new System.Windows.Forms.ComboBox();
@@ -649,22 +649,22 @@
             this.streamInterleaved.Text = "Interleaved";
             this.streamInterleaved.UseVisualStyleBackColor = true;
             // 
-            // streamRaw
+            // streamNative
             // 
-            this.streamRaw.AutoSize = true;
-            this.streamRaw.Location = new System.Drawing.Point(535, 452);
-            this.streamRaw.Name = "streamRaw";
-            this.streamRaw.Size = new System.Drawing.Size(48, 17);
-            this.streamRaw.TabIndex = 69;
-            this.streamRaw.Text = "Raw";
-            this.streamRaw.UseVisualStyleBackColor = true;
+            this.streamNative.AutoSize = true;
+            this.streamNative.Location = new System.Drawing.Point(535, 452);
+            this.streamNative.Name = "streamNative";
+            this.streamNative.Size = new System.Drawing.Size(57, 17);
+            this.streamNative.TabIndex = 69;
+            this.streamNative.Text = "Native";
+            this.streamNative.UseVisualStyleBackColor = true;
             // 
             // outputMaster
             // 
             this.outputMaster.AutoSize = true;
             this.outputMaster.Checked = true;
             this.outputMaster.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.outputMaster.Location = new System.Drawing.Point(589, 452);
+            this.outputMaster.Location = new System.Drawing.Point(598, 452);
             this.outputMaster.Name = "outputMaster";
             this.outputMaster.Size = new System.Drawing.Size(92, 17);
             this.outputMaster.TabIndex = 70;
@@ -694,7 +694,7 @@
             this.logXRuns.AutoSize = true;
             this.logXRuns.Checked = true;
             this.logXRuns.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.logXRuns.Location = new System.Drawing.Point(687, 452);
+            this.logXRuns.Location = new System.Drawing.Point(696, 452);
             this.logXRuns.Name = "logXRuns";
             this.logXRuns.Size = new System.Drawing.Size(72, 17);
             this.logXRuns.TabIndex = 76;
@@ -710,7 +710,7 @@
             this.Controls.Add(this.secondaryOutput);
             this.Controls.Add(this.secondaryInput);
             this.Controls.Add(this.outputMaster);
-            this.Controls.Add(this.streamRaw);
+            this.Controls.Add(this.streamNative);
             this.Controls.Add(this.streamInterleaved);
             this.Controls.Add(this.streamType);
             this.Controls.Add(label14);
@@ -764,7 +764,7 @@
         private System.Windows.Forms.Label outputInterleaved;
         private System.Windows.Forms.Label inputInterleaved;
         private System.Windows.Forms.CheckBox streamInterleaved;
-        private System.Windows.Forms.CheckBox streamRaw;
+        private System.Windows.Forms.CheckBox streamNative;
         private System.Windows.Forms.CheckBox outputMaster;
         private System.Windows.Forms.ComboBox secondaryInput;
         private System.Windows.Forms.ComboBox secondaryOutput;
