@@ -44,10 +44,11 @@ DSoundStream::StopMasterBuffer()
 
 XtFault
 DSoundStream::BlockMasterBuffer()
-{
+{  
+  int32_t const waitTimeoutBuffers = 3;
   auto rate = _params.format.mix.rate;
   DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / rate);
-  auto timeout = bufferMillis * WaitTimeoutBuffers;
+  auto timeout = bufferMillis * waitTimeoutBuffers;
   XT_VERIFY(WaitForSingleObject(_timer.timer, timeout) == WAIT_OBJECT_0, DSERR_GENERIC);
   return DS_OK;
 }

@@ -22,7 +22,6 @@ public XtStreamBase
 
   ~XtBlockingStream() { };
   XtBlockingStream() = default;
-  static inline int32_t const WaitTimeoutBuffers = 10;
 
   virtual void StopSlaveBuffer() = 0;
   virtual void StopMasterBuffer() = 0;
