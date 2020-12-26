@@ -26,7 +26,7 @@ public XtStream
   std::condition_variable _control;
   std::condition_variable _respond;
   std::unique_ptr<XtBlockingStream> _stream;
-  static inline int const WaitTimeoutMs = 10000;
+  static inline int32_t const WaitTimeoutMs = 10000;
 
   XT_IMPLEMENT_STREAM();
   XT_IMPLEMENT_STREAM_BASE();

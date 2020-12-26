@@ -47,7 +47,8 @@ DSoundStream::BlockMasterBuffer()
 {
   auto rate = _params.format.mix.rate;
   DWORD bufferMillis = static_cast<DWORD>(_bufferFrames * 1000.0 / rate);
-  XT_VERIFY(WaitForSingleObject(_timer.timer, bufferMillis) == WAIT_OBJECT_0, DSERR_GENERIC);
+  auto timeout = bufferMillis * WaitTimeoutBuffers;
+  XT_VERIFY(WaitForSingleObject(_timer.timer, timeout) == WAIT_OBJECT_0, DSERR_GENERIC);
   return DS_OK;
 }
 

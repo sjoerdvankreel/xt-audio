@@ -73,8 +73,9 @@ XtFault
 WasapiStream::BlockMasterBuffer()
 {
   auto rate = _params.format.mix.rate;
-  DWORD bufferMillis = static_cast<DWORD>(_frames * 1000.0 / rate);
-  XT_VERIFY(WaitForSingleObject(_event.event, bufferMillis) == WAIT_OBJECT_0, AUDCLNT_E_BUFFER_ERROR);
+  DWORD bufferMillis = static_cast<DWORD>(_frames * 1000.0 / rate);  
+  auto timeout = bufferMillis * WaitTimeoutBuffers;
+  XT_VERIFY(WaitForSingleObject(_event.event, timeout) == WAIT_OBJECT_0, AUDCLNT_E_BUFFER_ERROR);
   return S_OK;
 }
 
