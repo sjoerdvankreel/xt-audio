@@ -41,6 +41,17 @@ WasapiStream::StopMasterBuffer()
 }
 
 XtFault
+WasapiStream::StartMasterBuffer()
+{
+  DWORD taskIndex = 0;
+  bool exclusive = XtiWasapiTypeIsExclusive(_type);
+  wchar_t const* taskName = exclusive? L"Pro Audio": L"Audio";
+  _mmcssHandle = AvSetMmThreadCharacteristicsW(taskName, &taskIndex);
+  XT_VERIFY(_mmcssHandle != nullptr, AUDCLNT_E_BUFFER_ERROR);
+  return S_OK;
+}
+
+XtFault
 WasapiStream::GetLatency(XtLatency* latency) const
 {
   HRESULT hr;
@@ -63,16 +74,6 @@ WasapiStream::BlockMasterBuffer()
   auto rate = _params.format.mix.rate;
   DWORD bufferMillis = static_cast<DWORD>(_frames * 1000.0 / rate);
   XT_VERIFY(WaitForSingleObject(_event.event, bufferMillis) == WAIT_OBJECT_0, AUDCLNT_E_BUFFER_ERROR);
-  return S_OK;
-}
-
-XtFault
-WasapiStream::StartMasterBuffer()
-{
-  DWORD taskIndex = 0;
-  bool exclusive = XtiWasapiTypeIsExclusive(_type);
-  wchar_t const* taskName = exclusive? L"Pro Audio": L"Audio";
-  XT_VERIFY((_mmcssHandle = AvSetMmThreadCharacteristicsW(taskName, &taskIndex)) != nullptr, AUDCLNT_E_BUFFER_ERROR);
   return S_OK;
 }
 
