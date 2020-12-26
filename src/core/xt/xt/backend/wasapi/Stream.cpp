@@ -36,7 +36,8 @@ WasapiStream::StopSlaveBuffer()
 void
 WasapiStream::StopMasterBuffer()
 {
-  XT_ASSERT(AvRevertMmThreadCharacteristics(_mmcssHandle));
+  if(_mmcssHandle == nullptr) return;
+  XT_TRACE_IF(!AvRevertMmThreadCharacteristics(_mmcssHandle));
   _mmcssHandle = nullptr;
 }
 
