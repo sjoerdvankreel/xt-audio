@@ -77,41 +77,49 @@ WasapiSharedDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) co
 }
 
 HRESULT
-WasapiSharedDevice::InitializeStream(XtBlockingParams const* params, REFERENCE_TIME buffer, CComPtr<IAudioClient>& client)
+WasapiSharedDevice::InitializeStream(XtBlockingParams const* params, REFERENCE_TIME buffer, WasapiStream* stream)
 {
   HRESULT hr; 
+  UINT32 frames = 0;
   WAVEFORMATEXTENSIBLE wfx;
   XT_ASSERT(XtiFormatToWfx(params->format, wfx));
+  auto mode = AUDCLNT_SHAREMODE_SHARED;
   auto format = reinterpret_cast<WAVEFORMATEX*>(&wfx);
   auto flags = _type == XtWasapiType::Loopback? AUDCLNT_STREAMFLAGS_LOOPBACK: AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
 
   if(!_client3)
   {
-    auto mode = AUDCLNT_SHAREMODE_SHARED;
-    XT_VERIFY_COM(client->Initialize(mode, flags, buffer, 0, format, nullptr));
-    return S_OK;
+    XT_VERIFY_COM(stream->_client->Initialize(mode, flags, buffer, 0, format, nullptr));
   }
-
-
-  auto ploopback = reinterpret_cast<void**>(&result->_loopback);
-  XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, ploopback));
-  if(!_client3) XT_VERIFY_COM(result->_loopback->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK, buffer, 0, pWfx, nullptr));
   else
   {
-    XT_VERIFY_COM(loopbackClient.QueryInterface(&loopbackClient3));
-    XT_VERIFY_COM(loopbackClient3->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, bufferFrames, pWfx, nullptr));
+    CComPtr<IAudioClient3> client3;
+    UINT min, max, default_, fundamental;
+    XT_VERIFY_COM(stream->_client->QueryInterface(&client3));
+    XT_VERIFY_COM(client3->GetSharedModeEnginePeriod(format, &default_, &fundamental, &min, &max));
+    frames = static_cast<UINT32>(params->bufferSize / 1000.0 * params->format.mix.rate);
+    frames = std::clamp(frames, min, max);
+    XT_VERIFY_COM(client3->InitializeSharedAudioStream(flags, frames, format, nullptr));
   }
-  XT_VERIFY_COM(loopbackClient->SetEventHandle(result->streamEvent.event));
-  *stream = result.release();
 
-
-  CComPtr<IAudioClient3> client3;
-  UINT min, max, default_, fundamental;
-  XT_VERIFY_COM(client->QueryInterface(&client3));
-  XT_VERIFY_COM(client3->GetSharedModeEnginePeriod(format, &default_, &fundamental, &min, &max));
-  UINT32 frames = static_cast<UINT32>(params->bufferSize / 1000.0 * params->format.mix.rate);
-  frames = std::clamp(frames, min, max);
-  XT_VERIFY_COM(client3->InitializeSharedAudioStream(flags, frames, format, nullptr));
+  if(_type != XtWasapiType::Loopback) 
+  {
+    XT_VERIFY_COM(stream->_client->SetEventHandle(stream->_event.event));
+    return S_OK;
+  }  
+  
+  flags = AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
+  auto ploopback = reinterpret_cast<void**>(&stream->_loopback);
+  XT_VERIFY_COM(_device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, ploopback));
+  if(!_client3)
+    XT_VERIFY_COM(stream->_loopback->Initialize(mode, flags, buffer, 0, format, nullptr));
+  else
+  {
+    CComPtr<IAudioClient3> loopback3;
+    XT_VERIFY_COM(stream->_loopback.QueryInterface(&loopback3));
+    XT_VERIFY_COM(loopback3->InitializeSharedAudioStream(flags, frames, format, nullptr));
+  }
+  XT_VERIFY_COM(stream->_loopback->SetEventHandle(stream->_event.event));
   return S_OK;
 }
 

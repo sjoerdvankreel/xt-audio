@@ -20,14 +20,6 @@ XtFault
 WasapiDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
 { XtiCopyString(XtiWfxChannelNames[index], buffer, size); return S_OK; }
 
-HRESULT
-WasapiDevice::SetEventHandle(REFERENCE_TIME buffer, WasapiStream* stream)
-{
-  HRESULT hr;
-  XT_VERIFY_COM(stream->_client->SetEventHandle(stream->_event.event));
-  return S_OK;
-}
-
 XtFault
 WasapiDevice::GetChannelCount(XtBool output, int32_t* count) const
 { 
