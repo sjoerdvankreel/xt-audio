@@ -76,7 +76,6 @@ WasapiStream::BlockMasterBuffer()
   DWORD bufferMillis = static_cast<DWORD>(_frames * 1000.0 / rate);  
   DWORD waitResult = WaitForSingleObject(_event.event, bufferMillis);
   XT_VERIFY(waitResult == WAIT_OBJECT_0 || waitResult == WAIT_TIMEOUT, AUDCLNT_E_BUFFER_ERROR);
-  WaitForSingleObject(_event.event, bufferMillis);
   return S_OK;
 }
 
