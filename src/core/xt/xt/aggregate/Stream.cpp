@@ -21,8 +21,8 @@ XtFault
 XtAggregateStream::StartMasterBuffer()
 { return _streams[_masterIndex]->StartMasterBuffer(); }
 XtFault
-XtAggregateStream::BlockMasterBuffer()
-{ return _streams[_masterIndex]->BlockMasterBuffer(); }
+XtAggregateStream::BlockMasterBuffer(XtBool* ready)
+{ return _streams[_masterIndex]->BlockMasterBuffer(ready); }
 
 void
 XtAggregateStream::StopSlaveBuffer()

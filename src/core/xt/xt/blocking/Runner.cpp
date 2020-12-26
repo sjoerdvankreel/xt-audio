@@ -66,11 +66,13 @@ void
 XtBlockingRunner::RunBlockingStream(XtBlockingRunner* runner)
 {  
   State state;
+  XtBool ready;
   XtFault fault;
   int32_t threadPolicy;
   int32_t prevThreadPrio;
   XtPlatform::BeginThread();
   XtPlatform::RaiseThreadPriority(&threadPolicy, &prevThreadPrio);
+
   while((state = runner->_state.load()) != State::Closed)
     switch(state)
     {
@@ -81,9 +83,14 @@ XtBlockingRunner::RunBlockingStream(XtBlockingRunner* runner)
       runner->_stream->StopBuffer();
       runner->ReceiveControl(State::Stopped, 0);
       break;
-    case State::Started:      
-      if(((fault = runner->_stream->BlockMasterBuffer()) != 0) ||
-         ((fault = runner->_stream->ProcessBuffer()) != 0))
+    case State::Started:   
+      fault = 0;   
+      ready = XtFalse;
+      while(!ready && fault == 0)
+        fault = runner->_stream->BlockMasterBuffer(&ready);
+      if(ready && fault == 0)
+        fault = runner->_stream->ProcessBuffer();
+      if(fault != 0)
       {
         runner->_stream->StopBuffer();
         runner->ReceiveControl(State::Stopped, fault);

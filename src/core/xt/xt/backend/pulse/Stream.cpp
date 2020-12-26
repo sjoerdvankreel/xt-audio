@@ -16,14 +16,14 @@ XtFault
 PulseStream::StartSlaveBuffer()
 { return PA_OK; }
 XtFault
-PulseStream::BlockMasterBuffer() 
-{ return PA_OK; }
-XtFault
 PulseStream::StartMasterBuffer()
  { return PA_OK; }
 XtFault
 PulseStream::PrefillOutputBuffer() 
 { return PA_OK; }
+XtFault
+PulseStream::BlockMasterBuffer(XtBool* ready) 
+{ *ready = XtTrue; return PA_OK; }
 XtFault
 PulseStream::GetFrames(int32_t* frames) const
 { *frames = _frames; return PA_OK; }

@@ -70,12 +70,13 @@ WasapiStream::GetLatency(XtLatency* latency) const
 }
 
 XtFault
-WasapiStream::BlockMasterBuffer()
+WasapiStream::BlockMasterBuffer(XtBool* ready)
 {
   auto rate = _params.format.mix.rate;
   DWORD bufferMillis = static_cast<DWORD>(_frames * 1000.0 / rate);  
   DWORD waitResult = WaitForSingleObject(_event.event, bufferMillis);
   XT_VERIFY(waitResult == WAIT_OBJECT_0 || waitResult == WAIT_TIMEOUT, AUDCLNT_E_BUFFER_ERROR);
+  *ready = waitResult == WAIT_OBJECT_0;
   return S_OK;
 }
 
