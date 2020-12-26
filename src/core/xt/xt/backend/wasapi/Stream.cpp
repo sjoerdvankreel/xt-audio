@@ -97,7 +97,7 @@ WasapiStream::PrefillOutputBuffer()
   XT_VERIFY_COM(_render->GetBuffer(frames, &data));
   buffer.output = data;
   buffer.frames = frames;
-  OnBuffer(_params.index, &buffer);
+  XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
   XT_VERIFY_COM(_render->ReleaseBuffer(frames, 0));
   return S_OK;
 }  
@@ -129,7 +129,7 @@ WasapiStream::ProcessBuffer()
     buffer.timeValid = (flags & AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR) == 0;
     buffer.position = buffer.timeValid? position: 0;
     buffer.time = buffer.timeValid? time / XtiWasapiHnsPerMs: 0;
-    OnBuffer(_params.index, &buffer);
+    XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
     XT_VERIFY_COM(_capture->ReleaseBuffer(frames));
     return S_OK;
   }
@@ -153,7 +153,7 @@ WasapiStream::ProcessBuffer()
   buffer.frames = frames;
   buffer.timeValid = XtTrue;
   buffer.time = time / XtiWasapiHnsPerMs;
-  OnBuffer(_params.index, &buffer);
+  XT_VERIFY_COM(OnBuffer(_params.index, &buffer));
   XT_VERIFY_COM(_render->ReleaseBuffer(frames, 0));
   return S_OK;
 }
