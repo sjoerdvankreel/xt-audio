@@ -87,7 +87,7 @@ WasapiSharedDevice::InitializeStream(XtBlockingParams const* params, REFERENCE_T
   auto format = reinterpret_cast<WAVEFORMATEX*>(&wfx);
   auto flags = _type == XtWasapiType::Loopback? AUDCLNT_STREAMFLAGS_LOOPBACK: AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
 
-  if(!_client3)
+  if(!_client3 || _type == XtWasapiType::Loopback)
   {
     XT_VERIFY_COM(stream->_client->Initialize(mode, flags, buffer, 0, format, nullptr));
   }
