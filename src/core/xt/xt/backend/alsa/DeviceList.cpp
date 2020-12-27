@@ -23,16 +23,16 @@ XtFault
 AlsaDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
   int32_t index = -1;
-  for(int32_t i = 0; i < _count; i++)
-    if(!strcmp(XtiGetAlsaHint(_hints[i], "NAME").c_str(), id))
+  for(size_t i = 0; i < _devices.size(); i++)
+    if(!strcmp(XtiGetAlsaDeviceId(_devices[i]).c_str(), id))
     {
-      index = i;
+      index = static_cast<int32_t>(i);
       break;
     }
   
   if(index == -1) return -EINVAL;
   std::ostringstream oss;
-  oss << id << " (" << XtiGetAlsaHint(_hints[index], "IOID") << ")";
+  oss << _devices[index].name << " (" << XtiGetAlsaNameSuffix(_devices[index].type) << ")";
   XtiCopyString(oss.str().c_str(), buffer, size);
   return 0;
 }

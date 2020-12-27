@@ -8,6 +8,8 @@
 * update asmjit
 * do assert_com like for linux
 * fix alsa channel mapping
+* handle nonexistent device ids
+* alsa hwdirect
 
 ** LATER
 * arm

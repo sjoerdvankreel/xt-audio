@@ -23,12 +23,12 @@ AlsaService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
 {  
   void** hints;
   auto result = std::make_unique<AlsaDeviceList>();
-  XT_VERIFY_ALSA(snd_device_name_hint(-1, "pcm", &hints);
-  for(size_t i = 0; i < result->_hints[i] != nullptr; i++)
+  XT_VERIFY_ALSA(snd_device_name_hint(-1, "pcm", &hints));
+  for(size_t i = 0; hints[i] != nullptr; i++)
   {
     XtAlsaDeviceInfo info;
-    info.name = XtiGetAlsaHint(_hints[i], "NAME");
-    std::string ioid = XtiGetAlsaHint(_hints[i], "IOID");
+    info.name = XtiGetAlsaHint(hints[i], "NAME");
+    std::string ioid = XtiGetAlsaHint(hints[i], "IOID");
     if(ioid == "Input" || ioid == "")
     {
       info.type = XtAlsaType::InputRw;
