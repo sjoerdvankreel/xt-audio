@@ -72,16 +72,35 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
+                        <id>copy-resources-x86</id>
                         <phase>install</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/sample/target</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/sample/target/x86</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
+                                    <includes>
+                                        <include>xt-core.dll</include>
+                                        <include>libxt-core.so</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-resources-x64</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/../../../dist/java/sample/target/x64</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
                                         <include>xt-core.dll</include>
                                         <include>libxt-core.so</include>
