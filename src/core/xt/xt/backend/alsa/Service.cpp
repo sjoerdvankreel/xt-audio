@@ -25,6 +25,7 @@ AlsaService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
   result->_count = 0;
   XT_VERIFY_ALSA(snd_device_name_hint(-1, "pcm", &result->_hints));
   while(result->_hints[result->_count] != nullptr) result->_count++;
+  *list = result.release();
   return 0;
 }
 
