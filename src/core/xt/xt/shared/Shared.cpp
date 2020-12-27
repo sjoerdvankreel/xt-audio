@@ -92,7 +92,7 @@ XtiInitBuffers(XtBuffers& buffers, XtSample sample, size_t channels, size_t fram
   buffers.nonInterleaved = std::vector<void*>(channels, nullptr);
   buffers.interleaved = std::vector<uint8_t>(frames * channels * size, 0);
   buffers.channels = std::vector<std::vector<uint8_t>>(channels, channel);
-  for(int32_t i = 0; i < channels; i++)
+  for(size_t i = 0; i < channels; i++)
     buffers.nonInterleaved[i] = &(buffers.channels[i][0]);
 }
 
