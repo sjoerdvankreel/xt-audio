@@ -1,3 +1,4 @@
+#if 0
 #if XT_ENABLE_ALSA
 #include <xt/api/private/Platform.hpp>
 #include <xt/api/private/Service.hpp>
@@ -11,8 +12,7 @@
 #include <climits>
 #include <cstring>
 
-#define XT_VERIFY_ALSA(c) do { int e = (c); if(e < 0) \
-  return XT_TRACE(#c), e; } while(0)
+
 
 // ---- local ----
 
@@ -271,14 +271,6 @@ AlsaService::~AlsaService()
 {
   XT_ASSERT(snd_lib_error_set_handler(nullptr) == 0);
   XT_ASSERT(snd_config_update_free_global() == 0);
-}
-
-XtCapabilities AlsaService::GetCapabilities() const {
-  return static_cast<XtCapabilities>(
-    XtCapabilitiesTime |
-    XtCapabilitiesLatency |
-    XtCapabilitiesAggregation |
-    XtCapabilitiesXRunDetection);
 }
 
 XtFault AlsaService::GetDeviceCount(int32_t* count) const {
@@ -646,3 +638,4 @@ void AlsaStream::ProcessBuffer(bool prefill) {
 }
 
 #endif // XT_ENABLE_ALSA
+#endif

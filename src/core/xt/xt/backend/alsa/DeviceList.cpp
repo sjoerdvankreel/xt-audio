@@ -1,33 +1,34 @@
 #if XT_ENABLE_ALSA
-#include <xt/alsa/Shared.hpp>
-#include <xt/alsa/Private.hpp>
-#include <xt/private/Shared.hpp>
+#include <xt/backend/alsa/Shared.hpp>
+#include <xt/backend/alsa/Private.hpp>
+#include <cstring>
+
+AlsaDeviceList::
+~AlsaDeviceList()
+{ XT_TRACE_IF(snd_device_name_free_hint(_hints)); }
 
 XtFault
 AlsaDeviceList::GetCount(int32_t* count) const
-{ *count = _count; return 0; }
-
-AlsaDeviceList::
-AlsaDeviceList(void** hints, size_t count):
-_hints(hints), _count(count) { } 
-AlsaDeviceList::
-~AlsaDeviceList()
-{ XT_ASSERT(snd_device_name_free_hint(_hints) == 0); }
+{ *count = _count; return 0; }  
+XtFault 
+AlsaDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
+{ XtiCopyString(XtiGetAlsaHint(_hints[index], "NAME").c_str(), buffer, size); return 0; }
 
 
 XtFault
-AlsaDeviceList::GetDefaultId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const
+AlsaDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
 {
-}
-  
-XtFault 
-AlsaDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
-{  
+  // TODO
+  return 0;
 }
 
 XtFault
 AlsaDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
+  for(int32_t i = 0; i < _count; i++)
+    if(!strcmp(XtiGetAlsaHint(_hints[i], "NAME").c_str(), id))
+      return XtiCopyString(XtiGetAlsaHint(_hints[i], "DESC").c_str(), buffer, size), 0;
+  return -EINVAL;
 }
 
 #endif // XT_ENABLE_ALSA
