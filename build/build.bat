@@ -22,12 +22,13 @@ for /L %%A in (0, 1, 1) do (
   copy ..\dist\core\xt\!archs[%%A]!\Release\xt-core.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-core.dll
 )
 
-REM cpp headers
-if not exist ..\dist\cpp\xt (mkdir ..\dist\cpp\xt)
-xcopy ..\src\cpp\xt ..\dist\cpp\xt /s /q /y
+REM include files
+if not exist ..\dist\cpp\xt\include (mkdir ..\dist\cpp\xt\include)
+xcopy ..\src\cpp\xt ..\dist\cpp\xt\include /s /q /y
 if !errorlevel! neq 0 exit /b !errorlevel!
-if not exist ..\dist\core\xt\Release\xt (mkdir ..\dist\core\xt\Release\xt)
-echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\Release\xt\XtAudio.h /s /q /y /f
+if not exist ..\dist\core\xt\include (mkdir ..\dist\core\xt\include)
+echo d | xcopy ..\src\core\xt\xt\api\*.h ..\dist\core\xt\include\xt\api /s /q /y
+echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\include\xt\XtAudio.h /s /q /y /f
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 REM java

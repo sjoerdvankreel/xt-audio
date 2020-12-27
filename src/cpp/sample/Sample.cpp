@@ -1,4 +1,4 @@
-#include <xt/cpp/XtCpp.hpp>
+#include <xt/XtAudio.hpp>
 
 #include <string>
 #include <cstdlib>

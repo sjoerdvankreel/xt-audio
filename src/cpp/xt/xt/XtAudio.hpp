@@ -1,5 +1,5 @@
-#ifndef XT_CPP_CPP_HPP
-#define XT_CPP_CPP_HPP
+#ifndef XT_AUDIO_HPP
+#define XT_AUDIO_HPP
 
 /** @file */
 
@@ -16,4 +16,4 @@
 #include <xt/cpp/XtException.hpp>
 #include <xt/cpp/XtDeviceList.hpp>
 
-#endif // XT_CPP_CPP_HPP
+#endif // XT_AUDIO_HPP
