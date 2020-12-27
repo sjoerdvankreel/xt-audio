@@ -4,6 +4,7 @@
 #include <xt/backend/alsa/Private.hpp>
 
 #include <memory>
+#include <sstream>
 
 std::unique_ptr<XtService>
 XtiCreateAlsaService()
@@ -13,9 +14,19 @@ std::string
 XtiGetAlsaHint(void const* hint, char const* id)
 {
   char* value = snd_device_name_get_hint(hint, id);
+  if(value == nullptr) return std::string();
   std::string result(value);
   free(value);
   return result;
+}
+
+std::string
+XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info)
+{
+  std::ostringstream sstream;
+  sstream << "{" << info.name.c_str() << "}";
+  sstream << ".{" << static_cast<int32_t>(info.type) << "}";
+  return sstream.str();
 }
 
 XtServiceError

@@ -8,6 +8,20 @@
   do { int e = (c); if(e < 0) \
   return XT_TRACE(#c), e; } while(0)
 
+enum XtAlsaType
+{
+  InputRw,
+  InputMMap,
+  OutputRw,
+  OutputMMap
+};
+
+struct XtAlsaDeviceInfo
+{
+  XtAlsaType type;
+  std::string name;
+};
+
 std::string
 XtiGetAlsaHint(void const* hint, char const* id);
 

@@ -5,8 +5,10 @@
 #include <xt/private/Stream.hpp>
 #include <xt/private/Service.hpp>
 #include <xt/private/DeviceList.hpp>
+#include <xt/backend/alsa/Private.hpp>
 
 #include <alsa/asoundlib.h>
+#include <vector>
 #include <cstdint>
 
 struct AlsaService final:
@@ -18,11 +20,9 @@ public XtService
 struct AlsaDeviceList final:
 public XtDeviceList
 {
-  void** _hints;
-  int32_t _count;
-  ~AlsaDeviceList();
   AlsaDeviceList() = default;
   XT_IMPLEMENT_DEVICE_LIST(ALSA);
+  std::vector<XtAlsaDeviceInfo> _devices;
 };
 
 #endif // XT_ENABLE_ALSA
