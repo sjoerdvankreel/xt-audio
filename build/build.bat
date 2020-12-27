@@ -10,16 +10,16 @@ set vsarchs[1]=x64
 for /L %%A in (0, 1, 1) do (
   if not exist native\win32\!archs[%%A]! (mkdir native\win32\!archs[%%A]!)
   cd native\win32\!archs[%%A]!
-  cmake ..\..\.. -G"Visual Studio 16 2019" -A !vsarchs[%%A]! -DXT_ENABLE_ALSA=0 -DXT_ENABLE_JACK=0 -DXT_ENABLE_PULSE=0 -DXT_ENABLE_DSOUND=%1 -DXT_ENABLE_WASAPI=%2 -DXT_ENABLE_ASIO=%3 -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 > NUL
+  cmake ..\..\.. -G"Visual Studio 16 2019" -A !vsarchs[%%A]! -DXT_ARCH=!archs[%%A]! -DXT_ENABLE_ALSA=0 -DXT_ENABLE_JACK=0 -DXT_ENABLE_PULSE=0 -DXT_ENABLE_DSOUND=%1 -DXT_ENABLE_WASAPI=%2 -DXT_ENABLE_ASIO=%3 -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 > NUL
   if !errorlevel! neq 0 exit /b !errorlevel!
   msbuild xt-audio.sln /p:Configuration=Debug /verbosity:quiet
   if !errorlevel! neq 0 exit /b !errorlevel!
   msbuild xt-audio.sln /p:Configuration=Release /verbosity:quiet
   if !errorlevel! neq 0 exit /b !errorlevel!
   cd ..\..\..
-  copy ..\dist\core\xt\Debug\!archs[%%A]!\xt-core.dll ..\dist\cpp\sample\Debug\!archs[%%A]!\xt-core.dll
-  copy ..\dist\core\xt\Debug\!archs[%%A]!\xt-core.pdb ..\dist\cpp\sample\Debug\!archs[%%A]!\xt-core.pdb
-  copy ..\dist\core\xt\Release\!archs[%%A]!\xt-core.dll ..\dist\cpp\sample\Release\!archs[%%A]!\xt-core.dll
+  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-core.dll ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-core.dll
+  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-core.pdb ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-core.pdb
+  copy ..\dist\core\xt\!archs[%%A]!\Release\xt-core.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-core.dll
 )
 
 REM cpp headers
