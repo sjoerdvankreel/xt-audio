@@ -38,7 +38,8 @@ class EnumConverter<E extends Enum<E>> implements TypeConverter {
 class Utility {
     static final NativeLibrary LIBRARY;
     static {
-        File library = new File("./" + System.mapLibraryName("xt-core"));
+        String prefix = Native.POINTER_SIZE == 8? "x64": "x86";
+        File library = new File("./" + prefix + "/" + System.mapLibraryName("xt-core"));
         System.load(library.getAbsolutePath());
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
