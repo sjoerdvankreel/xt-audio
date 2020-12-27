@@ -18,6 +18,9 @@
     <Compile Include="..\..\..\src\cli\xt\*.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Cli.dll.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-core.dll" Link="x86/xt-core.dll" Pack="true" />
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-core.dll" Link="x64/xt-core.dll" Pack="true" />
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/libxt-core.so" Link="x86/libxt-core.so" Pack="true" />
