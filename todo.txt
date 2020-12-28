@@ -5,6 +5,7 @@
 * package zip in build script
 * cleanup cli gui
 * update asmjit
+* support not all SND_PCM_TYPEs 
 
 ** LATER
 * arm
