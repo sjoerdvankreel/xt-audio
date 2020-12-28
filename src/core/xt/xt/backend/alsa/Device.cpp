@@ -1,6 +1,8 @@
 #if XT_ENABLE_ALSA
 #include <xt/backend/alsa/Shared.hpp>
 #include <xt/backend/alsa/Private.hpp>
+
+#include <memory>
 #include <algorithm>
 
 void*
@@ -76,6 +78,30 @@ AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* 
 XtFault
 AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream)
 {
+  int err;
+  snd_pcm_uframes_t min;
+  snd_pcm_uframes_t max;
+  snd_pcm_uframes_t buffer;
+  snd_pcm_sw_params_t* swParams;
+
+  snd_pcm_sw_params_alloca(&swParams);
+  auto result = std::make_unique<AlsaStream>();
+  if((err = XtiAlsaOpenPcm(_info, &params->format, &result->_pcm)) < 0) return err;
+  auto access = XtiGetAlsaAccess(_info.type, params->interleaved);
+  XT_VERIFY_ALSA(snd_pcm_hw_params_set_access(result->_pcm.pcm, result->_pcm.params, access));
+  XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_min(result->_pcm.params, &min));
+  XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_max(result->_pcm.params, &max));
+  buffer = params->bufferSize / 1000.0 * params->format.mix.rate;
+  buffer = std::clamp(buffer, min, max);
+  XT_VERIFY_ALSA(snd_pcm_hw_params_set_buffer_size_near(result->_pcm.pcm, result->_pcm.params, &buffer));  
+  XT_VERIFY_ALSA(snd_pcm_hw_params(result->_pcm.pcm, result->_pcm.params));
+  XT_VERIFY_ALSA(snd_pcm_sw_params_current(result->_pcm.pcm, swParams));
+  XT_VERIFY_ALSA(snd_pcm_sw_params_set_tstamp_mode(result->_pcm.pcm, swParams, SND_PCM_TSTAMP_ENABLE));
+  XT_VERIFY_ALSA(snd_pcm_sw_params(result->_pcm.pcm, swParams));
+  result->_processed = 0;
+  result->_frames = buffer;
+  result->_type = _info.type;
+  *stream = result.release();
   return 0;
 }
 
