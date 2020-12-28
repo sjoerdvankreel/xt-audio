@@ -42,15 +42,18 @@ XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info)
   return sstream.str();
 }
 
-XtAlsaDeviceInfo
-XtiParseAlsaDeviceInfo(std::string const& id)
+bool
+XtiParseAlsaDeviceInfo(std::string const& id, XtAlsaDeviceInfo* info)
 {
-  XtAlsaDeviceInfo result;
-  result.id = id;
-  result.id.erase(id.size() - 7, 7);
-  std::string type = std::string(1, id[id.length() - 1]);
-  result.type = static_cast<XtAlsaType>(std::stoi(type));
-  return result;
+  if(id.length() < 7) return false;
+  if(id.substr(id.length() - 7, 6) != ",TYPE=") return false;
+  char typeCode = id[id.length() - 1];
+  auto type = static_cast<XtAlsaType>(typeCode - '0');
+  if(!(XtAlsaType::InputRw <= type && type <= XtAlsaType::OutputMMap)) return false;
+  info->name = id;
+  info->type = type;   
+  info->name.erase(id.size() - 7, 7);
+  return true;
 }
 
 XtServiceError

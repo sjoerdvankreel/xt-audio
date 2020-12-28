@@ -24,12 +24,12 @@ struct XtAlsaDeviceInfo
 
 char const*
 XtiGetAlsaNameSuffix(XtAlsaType type);
-XtAlsaDeviceInfo
-XtiParseAlsaDeviceInfo(std::string const& id);
 std::string
 XtiGetAlsaHint(void const* hint, char const* id);
 std::string
 XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info);
+bool
+XtiParseAlsaDeviceInfo(std::string const& id, XtAlsaDeviceInfo* info);
 
 #endif // XT_ENABLE_ALSA
 #endif // XT_BACKEND_ALSA_PRIVATE_HPP
