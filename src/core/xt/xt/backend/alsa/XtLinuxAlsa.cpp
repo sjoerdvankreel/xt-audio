@@ -16,28 +16,9 @@
 
 // ---- local ----
 
-static void LogError(const char *file, int line, 
-  const char *fun, int err, const char *fmt, ...);
-static void LogNull(const char *file, int line, 
-  const char *fun, int err, const char *fmt, ...) {}
-
 static const double XtAlsaMinBufferMs = 1.0;
 static const double XtAlsaMaxBufferMs = 2000.0;
 static const size_t XtAlsaDefaultBufferBytes = 64 * 1024;
-
-struct AlsaDeviceInfo {
-  bool output;
-  bool mmap;
-  std::string name;
-  std::string description;
-};
-
-struct AlsaLogDisabler {
-  AlsaLogDisabler()
-  { XT_ASSERT(snd_lib_error_set_handler(&LogNull) == 0); }
-  ~AlsaLogDisabler()
-  { XT_ASSERT(snd_lib_error_set_handler(&LogError) == 0); }
-};
 
 struct AlsaPcm {
   snd_pcm_t* pcm;
@@ -56,33 +37,6 @@ struct AlsaPcm {
   ~AlsaPcm()
   { XT_ASSERT(pcm == nullptr || snd_pcm_close(pcm) == 0); }
 };
-
-struct AlsaHint {
-  char* hint;
-  ~AlsaHint() { free(hint); }
-  AlsaHint(char* hint): hint(hint) {}
-};
-
-struct AlsaHints {
-  void** hints;
-  ~AlsaHints()
-  { XT_ASSERT(snd_device_name_free_hint(hints) == 0); }
-  AlsaHints(): hints(nullptr) 
-  { XT_ASSERT(snd_device_name_hint(-1, "pcm", &hints) == 0); }
-};
-
-// ---- forward ----
-
-struct AlsaService: public XtService 
-{
-  AlsaService();
-  ~AlsaService();
-  XT_IMPLEMENT_SERVICE(ALSA);
-};
-
-std::unique_ptr<XtService>
-XtiCreateAlsaService()
-{ return std::make_unique<AlsaService>(); }
 
 struct AlsaDevice: public XtDevice {
   const AlsaDeviceInfo info;
@@ -127,21 +81,7 @@ struct AlsaStream: public XtBlockingStream {
 
 // ---- local ----
 
-static void LogError(const char *file, int line, 
-  const char *fun, int err, const char *fmt, ...) {
 
-  if(err == 0) return;
-  va_list arg;
-  va_list argCopy;
-  va_start(arg, fmt);
-  va_copy(argCopy, arg);
-  int size = vsnprintf(nullptr, 0, fmt, arg);
-  std::vector<char> message(static_cast<size_t>(size + 1), '\0');
-  vsnprintf(&message[0], size + 1, fmt, argCopy);
-  XtiTrace({file, fun, line}, message.data());
-  va_end(argCopy);
-  va_end(arg);
-}
 
 static snd_pcm_format_t ToAlsaSample(XtSample sample) {
   switch(sample) {
@@ -154,46 +94,6 @@ static snd_pcm_format_t ToAlsaSample(XtSample sample) {
   }
 }
 
-static std::vector<AlsaDeviceInfo> GetDeviceInfos() {
-  AlsaHints hints;
-  std::vector<AlsaDeviceInfo> result;
-  std::vector<AlsaDeviceInfo> outputs;
-
-  for(size_t i = 0; hints.hints[i] != nullptr; i++) {
-    AlsaHint ioid(snd_device_name_get_hint(hints.hints[i], "IOID"));
-    AlsaHint name(snd_device_name_get_hint(hints.hints[i], "NAME"));
-    if(!strcmp("null", name.hint))
-      continue;
-
-    if(strstr(name.hint, "dmix") != name.hint 
-      && (ioid.hint == nullptr || !strcmp("Input", ioid.hint))) {
-
-      AlsaDeviceInfo device = AlsaDeviceInfo();
-      device.name = name.hint;
-      device.output = false;
-      device.description = device.name + " (Input) (R/W)";
-      result.push_back(device);
-      device.mmap = true;
-      device.description = device.name + " (Input) (MMap)";
-      result.push_back(device);
-    }
-
-    if(strstr(name.hint, "dsnoop") != name.hint 
-      && (ioid.hint == nullptr || !strcmp("Output", ioid.hint))) {
-
-      AlsaDeviceInfo device = AlsaDeviceInfo();
-      device.name = name.hint;
-      device.output = true;
-      device.description = device.name + " (Output) (R/W)";
-      outputs.push_back(device);
-      device.mmap = true;
-      device.description = device.name + " (Output) (MMap)";
-      outputs.push_back(device);
-    }
-  }
-  result.insert(result.end(), outputs.begin(), outputs.end());
-  return result;
-}
 
 static int SetHwParams(const AlsaDevice& device, snd_pcm_t* pcm, snd_pcm_hw_params_t* hwParams, bool mmap, bool interleaved,
                        const XtFormat* format, snd_pcm_uframes_t* minBuffer, snd_pcm_uframes_t* maxBuffer) {
@@ -258,64 +158,6 @@ static int QueryDevice(const AlsaDevice& device, const XtFormat* format,
     *min = XtAlsaMinBufferMs;
   if(*max > XtAlsaMaxBufferMs)
     *max = XtAlsaMaxBufferMs;
-  return 0;
-}
-
-
-// ---- service ----
-
-AlsaService::AlsaService()
-{ XT_ASSERT(snd_lib_error_set_handler(&LogError) == 0); }
-
-AlsaService::~AlsaService()
-{
-  XT_ASSERT(snd_lib_error_set_handler(nullptr) == 0);
-  XT_ASSERT(snd_config_update_free_global() == 0);
-}
-
-XtFault AlsaService::GetDeviceCount(int32_t* count) const {
-  *count = static_cast<int32_t>(GetDeviceInfos().size());
-  return 0;
-}
-
-XtFault AlsaService::OpenDeviceList(XtDeviceList** list) const {
-  return 0;
-}
-
-XtFault AlsaService::OpenDevice2(char const* id, XtDevice** device) const {  
-  return 0;
-}
-
-XtFault AlsaService::OpenDevice(int32_t index, XtDevice** device) const {  
-  std::vector<AlsaDeviceInfo> infos(GetDeviceInfos());
-  if(index >= static_cast<int32_t>(infos.size()))
-    return -EINVAL;
-  *device = new AlsaDevice(infos[index]);
-  return 0;
-}
-
-XtFault AlsaService::OpenDefaultDevice(XtBool output, XtDevice** device) const { 
-
-  int32_t firstIndex = -1;
-  int32_t defaultIndex = -1;
-  std::vector<AlsaDeviceInfo> infos(GetDeviceInfos());
-
-  for(size_t i = 0; i < infos.size(); i++) {
-    if(firstIndex == -1 && infos[i].output == output)
-      firstIndex = static_cast<int32_t>(i);
-    if(defaultIndex == -1 && infos[i].name == "default (Input) (R/W)" && !infos[i].output && !output) {
-      defaultIndex = static_cast<int32_t>(i);
-      break;
-    }
-    if(defaultIndex == -1 && infos[i].name == "default (Output) (R/W)" && infos[i].output && output) {
-      defaultIndex = static_cast<int32_t>(i);
-      break;
-    }
-  }
-  if(defaultIndex != -1)
-    *device = new AlsaDevice(infos[defaultIndex]);
-  else if(firstIndex != -1)
-    *device = new AlsaDevice(infos[firstIndex]);
   return 0;
 }
 

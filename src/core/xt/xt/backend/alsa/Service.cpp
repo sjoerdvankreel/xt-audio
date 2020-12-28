@@ -8,6 +8,16 @@
 XtFault
 AlsaService::GetFormatFault() const
 { return -EINVAL; }
+AlsaService::
+AlsaService()
+{ XT_ASSERT(snd_lib_error_set_handler(&XtiLogAlsaError) == 0); }
+
+AlsaService::
+~AlsaService()
+{
+  XT_TRACE_IF(snd_lib_error_set_handler(nullptr) != 0);
+  XT_TRACE_IF(snd_config_update_free_global() != 0);
+}
 
 XtServiceCaps
 AlsaService::GetCapabilities() const
@@ -17,6 +27,17 @@ AlsaService::GetCapabilities() const
   | XtServiceCapsAggregation
   | XtServiceCapsXRunDetection;
   return static_cast<XtServiceCaps>(result);
+}
+
+XtFault
+AlsaService::OpenDevice(char const* id, XtDevice** device) const
+{
+  XtAlsaDeviceInfo info;
+  if(!XtiParseAlsaDeviceInfo(id, &info)) return -EINVAL;
+  auto result = std::make_unique<AlsaDevice>();
+  result->_info = info;
+  *device = result.release();
+  return 0;
 }
 
 XtFault
@@ -69,12 +90,6 @@ AlsaService::GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int3
   if(index == -1) return 0;
   *valid = XtTrue;
   XtiCopyString(XtiGetAlsaDeviceId(list->_devices[index]).c_str(), buffer, size);
-  return 0;
-}
-
-XtFault
-AlsaService::OpenDevice(char const* id, XtDevice** device) const
-{
   return 0;
 }
 

@@ -4,6 +4,7 @@
 #include <xt/backend/alsa/Private.hpp>
 
 #include <memory>
+#include <cstring>
 #include <sstream>
 
 std::unique_ptr<XtService>
@@ -42,6 +43,15 @@ XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info)
   return sstream.str();
 }
 
+XtServiceError
+XtiGetAlsaError(XtFault fault)
+{
+  XtServiceError result;
+  result.text = snd_strerror(fault);
+  result.cause = XtiGetPosixFaultCause(std::abs(static_cast<int>(fault)));
+  return result;
+}
+
 bool
 XtiParseAlsaDeviceInfo(std::string const& id, XtAlsaDeviceInfo* info)
 {
@@ -56,13 +66,20 @@ XtiParseAlsaDeviceInfo(std::string const& id, XtAlsaDeviceInfo* info)
   return true;
 }
 
-XtServiceError
-XtiGetAlsaError(XtFault fault)
+void
+XtiLogAlsaError(char const* file, int line, char const* fun, int err, char const* fmt, ...)
 {
-  XtServiceError result;
-  result.text = snd_strerror(fault);
-  result.cause = XtiGetPosixFaultCause(std::abs(static_cast<int>(fault)));
-  return result;
+  if(err == 0) return;
+  va_list arg;
+  va_list argCopy;
+  va_start(arg, fmt);
+  va_copy(argCopy, arg);
+  int size = vsnprintf(nullptr, 0, fmt, arg);
+  std::vector<char> message(static_cast<size_t>(size + 1), '\0');
+  vsnprintf(&message[0], size + 1, fmt, argCopy);
+  XtiTrace({file, fun, line}, message.data());
+  va_end(argCopy);
+  va_end(arg);
 }
 
 #endif // XT_ENABLE_ALSA
