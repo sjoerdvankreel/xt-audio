@@ -27,6 +27,31 @@ AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const
 }
 
 XtFault
+AlsaDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
+{
+  int err;
+  XtAlsaPcm pcm = { 0 };
+  if((err = XtiAlsaOpenPcm(_info, format, &pcm)) < 0) return -EINVAL;
+  *supports = XtTrue;
+  return 0;
+}
+
+XtFault
+AlsaDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
+{
+  int err;
+  XtAlsaPcm pcm = { 0 };
+  snd_pcm_uframes_t min, max;
+  auto rate = format->mix.rate;
+  if((err = XtiAlsaOpenPcm(_info, format, &pcm)) < 0) return -EINVAL;
+  XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_min(pcm.params, &min));
+  XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_max(pcm.params, &max));
+  size->min = min * 1000.0 / rate;
+  size->max = max * 1000.0 / rate;
+  return 0;
+}
+
+XtFault
 AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 { 
   int err;
@@ -40,18 +65,6 @@ AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 XtFault
 AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
 { 
-  return 0;
-}
-
-XtFault
-AlsaDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
-{
-  return 0;
-}
-
-XtFault
-AlsaDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
-{
   return 0;
 }
 

@@ -76,6 +76,20 @@ XtiGetAlsaNameSuffix(XtAlsaType type)
   }
 }
 
+snd_pcm_format_t
+XtiToAlsaSample(XtSample sample)
+{
+  switch(sample) 
+  {
+  case XtSampleUInt8: return SND_PCM_FORMAT_U8; 
+  case XtSampleInt16: return SND_PCM_FORMAT_S16_LE; 
+  case XtSampleInt24: return SND_PCM_FORMAT_S24_3LE;
+  case XtSampleInt32: return SND_PCM_FORMAT_S32_LE;
+  case XtSampleFloat32: return SND_PCM_FORMAT_FLOAT_LE;
+  default: return XT_ASSERT(false), SND_PCM_FORMAT_U8;
+  }
+}
+
 XtServiceError
 XtiGetAlsaError(XtFault fault)
 {
@@ -142,6 +156,24 @@ XtiGetAlsaAccess(XtAlsaType type, XtBool interleaved)
   bool mmap = XtiAlsaTypeIsMMap(type);
   if(mmap) return interleaved? SND_PCM_ACCESS_MMAP_INTERLEAVED: SND_PCM_ACCESS_MMAP_NONINTERLEAVED;
   return interleaved? SND_PCM_ACCESS_RW_INTERLEAVED: SND_PCM_ACCESS_RW_NONINTERLEAVED;
+}
+
+int
+XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtFormat const* format, XtAlsaPcm* pcm)
+{
+  int err;
+  bool output = XtiAlsaTypeIsOutput(info.type);
+  auto sample = XtiToAlsaSample(format->mix.sample);
+  auto interleaved = XtiGetAlsaAccess(info.type, XtTrue);
+  auto nonInterleaved = XtiGetAlsaAccess(info.type, XtFalse);
+  if((err = XtiAlsaOpenPcm(info, pcm)) < 0) return err;
+  int32_t channels = output? format->channels.outputs: format->channels.inputs;
+  if((err = snd_pcm_hw_params_set_format(pcm->pcm, pcm->params, sample)) < 0) return err;
+  if((err = snd_pcm_hw_params_set_channels(pcm->pcm, pcm->params, channels)) < 0) return err;
+  if((err = snd_pcm_hw_params_set_rate(pcm->pcm, pcm->params, format->mix.rate, 0)) < 0) return err;
+  if(snd_pcm_hw_params_test_access(pcm->pcm, pcm->params, interleaved) == 0) return 0;
+  if(snd_pcm_hw_params_test_access(pcm->pcm, pcm->params, nonInterleaved) == 0) return 0;
+  return -EINVAL;
 }
 
 #endif // XT_ENABLE_ALSA

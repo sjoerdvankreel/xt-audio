@@ -35,6 +35,8 @@ struct XtAlsaPcm
   XtAlsaPcm& operator=(XtAlsaPcm const&) = delete;
 };
 
+snd_pcm_format_t
+XtiToAlsaSample(XtSample sample);
 bool
 XtiAlsaTypeIsMMap(XtAlsaType type);
 bool
@@ -51,6 +53,8 @@ int
 XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtAlsaPcm* pcm);
 bool
 XtiParseAlsaDeviceInfo(std::string const& id, XtAlsaDeviceInfo* info);
+int
+XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtFormat const* format, XtAlsaPcm* pcm);
 void
 XtiLogAlsaError(char const* file, int line, char const* fun, int err, char const* fmt, ...);
 
