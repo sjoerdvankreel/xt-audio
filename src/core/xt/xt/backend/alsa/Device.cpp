@@ -65,6 +65,7 @@ AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 XtFault
 AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
 { 
+  XtiCopyString("", buffer, size);
   return 0;
 }
 
