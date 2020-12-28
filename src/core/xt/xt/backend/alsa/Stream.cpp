@@ -58,7 +58,10 @@ AlsaStream::ProcessBuffer()
   snd_timestamp_t stamp;
   XtBuffer buffer = { 0 };
   snd_pcm_status_t* status;
+  snd_pcm_sframes_t sframes;
   snd_pcm_sframes_t available;
+  bool mmap = XtiAlsaTypeIsMMap(_type);
+  bool output = XtiAlsaTypeIsOutput(_type);
 
   snd_pcm_status_alloca(&status);
   XT_VERIFY_ALSA(snd_pcm_status(_pcm.pcm, status));
@@ -66,8 +69,20 @@ AlsaStream::ProcessBuffer()
   buffer.position = _processed;
   buffer.timeValid = stamp.tv_sec != 0 || stamp.tv_usec != 0;
   buffer.time = stamp.tv_sec * 1000.0 + stamp.tv_usec / 1000.0;
-
   if((available = snd_pcm_avail(_pcm.pcm)) < 0) return available;
+  _processed += _frames;
+
+  if(!mmap && output && _alsaInterleaved)
+  {        
+    buffer.frames = _frames;
+    buffer.output = _alsaBuffers.output.interleaved.data();
+    XT_VERIFY_ALSA(OnBuffer(_params.index, &buffer));
+    sframes = snd_pcm_writei(_pcm.pcm, buffer.output, _frames);
+    if(sframes == 0) return 0;
+    if(sframes == -EPIPE) OnXRun(_params.index);
+    XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, sframes, 1));
+    XT_VERIFY_ALSA(snd_pcm_writei(_pcm.pcm, buffer.output, _frames));
+  }
 
   return 0;
 }

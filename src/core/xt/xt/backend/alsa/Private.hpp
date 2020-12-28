@@ -6,8 +6,8 @@
 #include <string>
 #include <iostream>
 
-#define XT_VERIFY_ALSA(c)      \
-  do { int e = (c); if(e != 0) \
+#define XT_VERIFY_ALSA(c)     \
+  do { int e = (c); if(e < 0) \
   return XT_TRACE(#c), e; } while(0)
 
 enum XtAlsaType
