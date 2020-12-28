@@ -7,16 +7,16 @@
 #include <cstring>
 #include <sstream>
 
-XtAlsaPcm::
-~XtAlsaPcm()
-{  
-  XT_TRACE_IF(snd_pcm_close(pcm));
-  snd_pcm_hw_params_free(params);
-}
-
 std::unique_ptr<XtService>
 XtiCreateAlsaService()
 { return std::make_unique<AlsaService>(); }
+
+XtAlsaPcm::
+~XtAlsaPcm()
+{  
+  if(pcm != nullptr) XT_TRACE_IF(snd_pcm_close(pcm));
+  if(params != nullptr) snd_pcm_hw_params_free(params);
+}
 
 bool
 XtiAlsaTypeIsMMap(XtAlsaType type)
@@ -88,13 +88,19 @@ XtiGetAlsaError(XtFault fault)
 int
 XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtAlsaPcm* pcm)
 {
+  int err;
+  snd_pcm_t* pcmp;
+  snd_pcm_hw_params_t* hpp;
+  memset(pcm, 0, sizeof(XtAlsaPcm));
   bool output = XtiAlsaTypeIsOutput(info.type);
   auto stream = output? SND_PCM_STREAM_PLAYBACK: SND_PCM_STREAM_CAPTURE;
-  XT_VERIFY_ALSA(snd_pcm_open(&pcm->pcm, info.name.c_str(), stream, 0));
-  auto pcmGuard = XtiGuard([&pcm] { XT_TRACE_IF(snd_pcm_close(pcm->pcm)); });
-  XT_VERIFY_ALSA(snd_pcm_hw_params_malloc(&pcm->params));
-  auto paramsGuard = XtiGuard([&pcm] { snd_pcm_hw_params_free(pcm->params); });
-  XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm->pcm, pcm->params));
+  if((err = snd_pcm_open(&pcmp, info.name.c_str(), stream, 0)) < 0) return err;
+  auto pcmGuard = XtiGuard([pcmp] { XT_TRACE_IF(snd_pcm_close(pcmp)); });
+  XT_VERIFY_ALSA(snd_pcm_hw_params_malloc(&hpp));
+  auto paramsGuard = XtiGuard([hpp] { snd_pcm_hw_params_free(hpp); });
+  if((err = snd_pcm_hw_params_any(pcmp, hpp)) < 0) return err;
+  pcm->pcm = pcmp;
+  pcm->params = hpp;
   pcmGuard.Commit();
   paramsGuard.Commit();
   return 0;

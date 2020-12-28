@@ -4,6 +4,7 @@
 
 #include <alsa/asoundlib.h>
 #include <string>
+#include <iostream>
 
 #define XT_VERIFY_ALSA(c)      \
   do { int e = (c); if(e != 0) \
