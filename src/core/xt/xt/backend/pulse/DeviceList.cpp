@@ -29,7 +29,7 @@ PulseDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
   if(!strcmp(id, "0")) XtiCopyString("Input", buffer, size);
   else if(!strcmp(id, "1")) XtiCopyString("Output", buffer, size);
-  else XT_ASSERT(false);
+  else return PA_ERR_INVALID;
   return PA_OK;
 }
 
@@ -38,7 +38,7 @@ PulseDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) con
 { 
   if(!strcmp(id, "0")) *capabilities = XtDeviceCapsInput;
   else if(!strcmp(id, "1")) *capabilities = XtDeviceCapsOutput;
-  else XT_ASSERT(false);
+  else return PA_ERR_INVALID;
   return PA_OK;
 }
 
