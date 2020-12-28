@@ -5,8 +5,8 @@
 #include <alsa/asoundlib.h>
 #include <string>
 
-#define XT_VERIFY_ALSA(c)     \
-  do { int e = (c); if(e < 0) \
+#define XT_VERIFY_ALSA(c)      \
+  do { int e = (c); if(e != 0) \
   return XT_TRACE(#c), e; } while(0)
 
 enum XtAlsaType
@@ -27,12 +27,11 @@ struct XtAlsaPcm
 {
   snd_pcm_t* pcm;
   snd_pcm_hw_params_t* params;
-  XtAlsaPcm(): pcm(nullptr) { }
-  XtAlsaPcm(snd_pcm_t* pcm): pcm(pcm) { }
 
+  ~XtAlsaPcm();
+  XtAlsaPcm() = default;
   XtAlsaPcm(XtAlsaPcm const&) = delete;
   XtAlsaPcm& operator=(XtAlsaPcm const&) = delete;
-  ~XtAlsaPcm() { if(pcm != nullptr) XT_TRACE_IF(snd_pcm_close(pcm) != 0); }
 };
 
 bool

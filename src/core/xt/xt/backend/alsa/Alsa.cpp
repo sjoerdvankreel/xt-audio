@@ -7,6 +7,13 @@
 #include <cstring>
 #include <sstream>
 
+XtAlsaPcm::
+~XtAlsaPcm()
+{  
+  XT_TRACE_IF(snd_pcm_close(pcm));
+  snd_pcm_hw_params_free(params);
+}
+
 std::unique_ptr<XtService>
 XtiCreateAlsaService()
 { return std::make_unique<AlsaService>(); }
@@ -38,6 +45,15 @@ XtiAlsaTypeIsOutput(XtAlsaType type)
 }
 
 std::string
+XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info)
+{
+  std::ostringstream sstream;
+  sstream << info.name.c_str() << ",TYPE=";
+  sstream << static_cast<int32_t>(info.type);
+  return sstream.str();
+}
+
+std::string
 XtiGetAlsaHint(void const* hint, char const* id)
 {
   char* value = snd_device_name_get_hint(hint, id);
@@ -60,13 +76,13 @@ XtiGetAlsaNameSuffix(XtAlsaType type)
   }
 }
 
-std::string
-XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info)
+XtServiceError
+XtiGetAlsaError(XtFault fault)
 {
-  std::ostringstream sstream;
-  sstream << info.name.c_str() << ",TYPE=";
-  sstream << static_cast<int32_t>(info.type);
-  return sstream.str();
+  XtServiceError result;
+  result.text = snd_strerror(fault);
+  result.cause = XtiGetPosixFaultCause(std::abs(static_cast<int>(fault)));
+  return result;
 }
 
 int
@@ -75,16 +91,13 @@ XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtAlsaPcm* pcm)
   bool output = XtiAlsaTypeIsOutput(info.type);
   auto stream = output? SND_PCM_STREAM_PLAYBACK: SND_PCM_STREAM_CAPTURE;
   XT_VERIFY_ALSA(snd_pcm_open(&pcm->pcm, info.name.c_str(), stream, 0));
+  auto pcmGuard = XtiGuard([&pcm] { XT_TRACE_IF(snd_pcm_close(pcm->pcm)); });
+  XT_VERIFY_ALSA(snd_pcm_hw_params_malloc(&pcm->params));
+  auto paramsGuard = XtiGuard([&pcm] { snd_pcm_hw_params_free(pcm->params); });
+  XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcm->pcm, pcm->params));
+  pcmGuard.Commit();
+  paramsGuard.Commit();
   return 0;
-}
-
-XtServiceError
-XtiGetAlsaError(XtFault fault)
-{
-  XtServiceError result;
-  result.text = snd_strerror(fault);
-  result.cause = XtiGetPosixFaultCause(std::abs(static_cast<int>(fault)));
-  return result;
 }
 
 bool
