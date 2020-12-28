@@ -26,16 +26,25 @@ struct XtAlsaDeviceInfo
 struct XtAlsaPcm
 {
   snd_pcm_t* pcm;
+  XtAlsaPcm(): pcm(nullptr) { }
   XtAlsaPcm(snd_pcm_t* pcm): pcm(pcm) { }
   ~XtAlsaPcm() { if(pcm != nullptr) XT_TRACE_IF(snd_pcm_close(pcm) != 0); }
 };
 
+bool
+XtiAlsaTypeIsMMap(XtAlsaType type);
+bool
+XtiAlsaTypeIsOutput(XtAlsaType type);
 char const*
 XtiGetAlsaNameSuffix(XtAlsaType type);
 std::string
 XtiGetAlsaHint(void const* hint, char const* id);
 std::string
 XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info);
+snd_pcm_access_t
+XtiGetAlsaAccess(XtAlsaType type, XtBool interleaved);
+int
+XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtAlsaPcm* pcm);
 bool
 XtiParseAlsaDeviceInfo(std::string const& id, XtAlsaDeviceInfo* info);
 void
