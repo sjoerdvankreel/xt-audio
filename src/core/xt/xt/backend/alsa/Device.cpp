@@ -67,7 +67,9 @@ AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 XtFault
 AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
 { 
-  XtiCopyString("", buffer, size);
+  auto pos = static_cast<snd_pcm_chmap_position>(index + SND_CHMAP_FL);
+  if(pos > SND_CHMAP_LAST) pos = SND_CHMAP_UNKNOWN;
+  XtiCopyString(snd_pcm_chmap_long_name(pos), buffer, size);
   return 0;
 }
 
