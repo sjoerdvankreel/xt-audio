@@ -5,16 +5,31 @@
 void*
 AlsaStream::GetHandle() const
 { return _pcm.pcm; }
+XtFault
+AlsaStream::PrefillOutputBuffer()
+{ return ProcessBuffer(); }
 void
 AlsaStream::StopMasterBuffer() { }
 XtFault
 AlsaStream::GetFrames(int32_t* frames) const 
 { *frames = _frames; return 0; }
 XtFault
-AlsaStream::BlockMasterBuffer(XtBool* ready)
-{ *ready = XtTrue; return 0; }
-XtFault
 AlsaStream::StartMasterBuffer() { return 0; }
+
+void
+AlsaStream::StopSlaveBuffer()
+{
+  _processed = 0;
+  XT_TRACE_IF(snd_pcm_drop(_pcm.pcm));
+} 
+
+XtFault
+AlsaStream::StartSlaveBuffer()
+{
+  _processed = 0;
+  XT_VERIFY_ALSA(snd_pcm_prepare(_pcm.pcm));
+  return 0;
+}
 
 XtFault
 AlsaStream::GetLatency(XtLatency* latency) const
@@ -28,33 +43,18 @@ AlsaStream::GetLatency(XtLatency* latency) const
   return 0;
 }
 
-void
-AlsaStream::StopSlaveBuffer()
-{
-  _processed = 0;
-  if(snd_pcm_state(_pcm.pcm) != SND_PCM_STATE_RUNNING) return;
-  XT_TRACE_IF(snd_pcm_drop(_pcm.pcm));
-  XT_TRACE_IF(snd_pcm_prepare(_pcm.pcm));
-}
-
 XtFault
-AlsaStream::StartSlaveBuffer()
-{
-  _processed = 0;
-  if(snd_pcm_state(_pcm.pcm) != SND_PCM_STATE_PREPARED) return 0;
-  XT_VERIFY_ALSA(snd_pcm_start(_pcm.pcm));
+AlsaStream::BlockMasterBuffer(XtBool* ready)
+{ 
+  snd_pcm_sframes_t available;
+  if((available = snd_pcm_avail(_pcm.pcm)) < 0) return available;
+  *ready = available > 0;
   return 0;
 }
-
-XtFault
-AlsaStream::PrefillOutputBuffer()
-{
-  return 0;
-}  
 
 XtFault 
 AlsaStream::ProcessBuffer()
-{  
+{ 
   return 0;
 }
 

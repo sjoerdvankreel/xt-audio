@@ -5,7 +5,6 @@
 * package zip in build script
 * cleanup cli gui
 * update asmjit
-* fix alsa channel mapping
 
 ** LATER
 * arm
