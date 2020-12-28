@@ -87,8 +87,16 @@ AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream*
   snd_pcm_sw_params_alloca(&swParams);
   auto result = std::make_unique<AlsaStream>();
   if((err = XtiAlsaOpenPcm(_info, &params->format, &result->_pcm)) < 0) return err;
+
+  result->_alsaInterleaved = params->interleaved;
   auto access = XtiGetAlsaAccess(_info.type, params->interleaved);
-  XT_VERIFY_ALSA(snd_pcm_hw_params_set_access(result->_pcm.pcm, result->_pcm.params, access));
+  if(snd_pcm_hw_params_set_access(result->_pcm.pcm, result->_pcm.params, access) != 0)
+  {
+    result->_alsaInterleaved = !params->interleaved;
+    access = XtiGetAlsaAccess(_info.type, !params->interleaved);
+    XT_VERIFY_ALSA(snd_pcm_hw_params_set_access(result->_pcm.pcm, result->_pcm.params, access));
+  }
+
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_min(result->_pcm.params, &min));
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_max(result->_pcm.params, &max));
   buffer = params->bufferSize / 1000.0 * params->format.mix.rate;
