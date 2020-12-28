@@ -54,7 +54,18 @@ AlsaStream::BlockMasterBuffer(XtBool* ready)
 
 XtFault 
 AlsaStream::ProcessBuffer()
-{ 
+{
+  snd_timestamp_t stamp;
+  XtBuffer buffer = { 0 };
+  snd_pcm_status_t* status;
+
+  buffer.position = _processed;
+  snd_pcm_status_alloca(&status);
+  XT_VERIFY_ALSA(snd_pcm_status(_pcm.pcm, status));
+  snd_pcm_status_get_tstamp(status, &stamp);
+  buffer.timeValid = stamp.tv_sec != 0 || stamp.tv_usec != 0;
+  buffer.time = stamp.tv_sec * 1000.0 + stamp.tv_usec / 1000.0;
+
   return 0;
 }
 
