@@ -13,6 +13,20 @@ AlsaDevice::GetMix(XtBool* valid, XtMix* mix) const
 { return 0; }
 
 XtFault
+AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const
+{
+  int err;
+  unsigned val;
+  XtAlsaPcm pcm = { 0 };
+  bool isOutput = XtiAlsaTypeIsOutput(_info.type);
+  if(isOutput != (output != XtFalse)) return 0;
+  if((err = XtiAlsaOpenPcm(_info, &pcm)) < 0) return err;  
+  XT_VERIFY_ALSA(snd_pcm_hw_params_get_channels_max(pcm.params, &val));
+  *count = static_cast<int32_t>(val);
+  return 0;
+}
+
+XtFault
 AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 { 
   int err;
@@ -26,12 +40,6 @@ AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 XtFault
 AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* size) const
 { 
-  return 0;
-}
-
-XtFault
-AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const
-{
   return 0;
 }
 

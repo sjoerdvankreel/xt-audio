@@ -44,29 +44,38 @@ XtFault
 AlsaService::OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const
 {  
   void** hints;
-  auto result = std::make_unique<AlsaDeviceList>();
+  std::vector<XtAlsaDeviceInfo> devices;
   XT_VERIFY_ALSA(snd_device_name_hint(-1, "pcm", &hints));
   for(size_t i = 0; hints[i] != nullptr; i++)
   {
     XtAlsaDeviceInfo info;
     info.name = XtiGetAlsaHint(hints[i], "NAME");
     std::string ioid = XtiGetAlsaHint(hints[i], "IOID");
-    if(ioid == "Input" || ioid == "" && ((flags & XtEnumFlagsInput) != 0))
+    if((ioid == "Input" || ioid == "") && ((flags & XtEnumFlagsInput) != 0))
     {
       info.type = XtAlsaType::InputRw;
-      result->_devices.push_back(info);
+      devices.push_back(info);
       info.type = XtAlsaType::InputMMap;
-      result->_devices.push_back(info);
+      devices.push_back(info);
     }    
-    if(ioid == "Output" || ioid == "" && ((flags & XtEnumFlagsOutput) != 0))
+    if((ioid == "Output" || ioid == "") && ((flags & XtEnumFlagsOutput) != 0))
     {
       info.type = XtAlsaType::OutputRw;
-      result->_devices.push_back(info);
+      devices.push_back(info);
       info.type = XtAlsaType::OutputMMap;
-      result->_devices.push_back(info);
+      devices.push_back(info);
     }    
   }
   XT_VERIFY_ALSA(snd_device_name_free_hint(hints));
+
+  int err;
+  auto result = std::make_unique<AlsaDeviceList>();
+  for(size_t i = 0; i < devices.size(); i++) 
+  {
+    XtAlsaPcm pcm = { 0 };
+    if((err = XtiAlsaOpenPcm(devices[i], &pcm)) < 0) continue;
+    result->_devices.push_back(devices[i]);
+  }
   *list = result.release();
   return 0;
 }
