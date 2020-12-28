@@ -61,17 +61,6 @@ XtiGetWasapiNameSuffix(XtWasapiType type)
   }
 }
 
-XtWasapiDeviceInfo
-XtiParseWasapiDeviceInfo(std::string const& id)
-{
-  XtWasapiDeviceInfo result;
-  result.id = id;
-  result.id.erase(id.size() - 4, 4);
-  std::string type = std::string(1, id[id.length() - 2]);
-  result.type = static_cast<XtWasapiType>(std::stoi(type));
-  return result;
-}
-
 std::string
 XtiGetWasapiDeviceId(XtWasapiDeviceInfo const& info)
 {
@@ -79,6 +68,22 @@ XtiGetWasapiDeviceId(XtWasapiDeviceInfo const& info)
   sstream << info.id.c_str();
   sstream << ".{" << static_cast<int32_t>(info.type) << "}";
   return sstream.str();
+}
+
+bool
+XtiParseWasapiDeviceInfo(std::string const& id, XtWasapiDeviceInfo* info)
+{
+  if(id.length() < 4) return false;
+  if(id[id.length() - 4] != '.') return false;
+  if(id[id.length() - 3] != '{') return false;
+  if(id[id.length() - 1] != '}') return false;
+  char typeCode = id[id.length() - 2];
+  auto type = static_cast<XtWasapiType>(typeCode - '0');
+  if(!(XtWasapiType::SharedCapture <= type && type <= XtWasapiType::Loopback)) return false;
+  info->id = id;
+  info->type = type;   
+  info->id.erase(id.size() - 4, 4);
+  return true;
 }
 
 HRESULT

@@ -21,7 +21,8 @@ WasapiDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 XtFault
 WasapiDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
 {
-  XtWasapiDeviceInfo info = XtiParseWasapiDeviceInfo(std::string(id));
+  XtWasapiDeviceInfo info;
+  if(!XtiParseWasapiDeviceInfo(std::string(id), &info)) return AUDCLNT_E_DEVICE_INVALIDATED;
   *capabilities = static_cast<XtDeviceCaps>(XtiGetWasapiDeviceCaps(info.type));
   return S_OK;
 }
@@ -32,12 +33,13 @@ WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
   HRESULT hr;
   PROPVARIANT pv;
   std::ostringstream oss;
+  XtWasapiDeviceInfo info;
   CComPtr<IMMDevice> device;
   CComPtr<IPropertyStore> store;
   CComPtr<IMMDeviceEnumerator> enumerator;
 
   PropVariantInit(&pv);
-  XtWasapiDeviceInfo info = XtiParseWasapiDeviceInfo(std::string(id));
+  if(!XtiParseWasapiDeviceInfo(std::string(id), &info)) return AUDCLNT_E_DEVICE_INVALIDATED;
   std::wstring wideId = XtiUtf8ToWideString(info.id.c_str());
   XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
   XT_VERIFY_COM(enumerator->GetDevice(wideId.c_str(), &device));

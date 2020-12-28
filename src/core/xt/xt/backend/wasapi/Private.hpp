@@ -52,10 +52,10 @@ int32_t
 XtiGetWasapiDeviceCaps(XtWasapiType type);
 bool
 XtiWasapiTypeIsExclusive(XtWasapiType type);
-XtWasapiDeviceInfo
-XtiParseWasapiDeviceInfo(std::string const& id);
 std::string
 XtiGetWasapiDeviceId(XtWasapiDeviceInfo const& info);
+bool
+XtiParseWasapiDeviceInfo(std::string const& id, XtWasapiDeviceInfo* info);
 HRESULT
 XtiGetWasapiDeviceInfo(IMMDevice* device, XtWasapiType type, XtWasapiDeviceInfo* result);
 

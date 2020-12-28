@@ -100,11 +100,12 @@ WasapiService::OpenDevice(char const* id, XtDevice** device) const
 {
   HRESULT hr;
   CComPtr<IMMDevice> d;
+  XtWasapiDeviceInfo info;
   CComPtr<IAudioClient> client;
   CComPtr<IAudioClient3> client3;
   CComPtr<IMMDeviceEnumerator> enumerator;
 
-  auto info = XtiParseWasapiDeviceInfo(id);   
+  if(!XtiParseWasapiDeviceInfo(id, &info)) return AUDCLNT_E_DEVICE_INVALIDATED;   
   auto wideId = XtiUtf8ToWideString(info.id.c_str());
   XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
   XT_VERIFY_COM(enumerator->GetDevice(wideId.c_str(), &d));
