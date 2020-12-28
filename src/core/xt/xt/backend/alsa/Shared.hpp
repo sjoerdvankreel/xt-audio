@@ -32,6 +32,20 @@ public XtBlockingDevice
   XT_IMPLEMENT_DEVICE_BASE(ALSA);  
 };
 
+struct AlsaStream final:
+public XtBlockingStream
+{
+  XtAlsaPcm _pcm;
+  int32_t _frames;  
+  XtAlsaType _type;
+  uint64_t _processed;
+  AlsaStream() = default;
+
+  XT_IMPLEMENT_STREAM_BASE();
+  XT_IMPLEMENT_BLOCKING_STREAM();
+  XT_IMPLEMENT_STREAM_BASE_SYSTEM(ALSA);
+};
+
 struct AlsaDeviceList final:
 public XtDeviceList
 {
