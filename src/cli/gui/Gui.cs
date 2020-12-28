@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Xt
@@ -33,8 +34,23 @@ namespace Xt
         [STAThread]
         public static void Main(string[] args)
         {
+            Application.ThreadException += OnThreadException;
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Application.EnableVisualStyles();
             Application.Run(new XtGui());
+        }
+
+        static void OnThreadException(object sender, ThreadExceptionEventArgs e)
+        => OnError(e.Exception);
+        static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        => OnError((Exception)e.ExceptionObject);
+
+        static void OnError(Exception e)
+        {
+            string message = e.ToString();
+            if (e is XtException xt)
+                message = XtAudio.GetErrorInfo(xt.GetError()).ToString();
+            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private TextWriter log;
@@ -364,7 +380,7 @@ namespace Xt
                 panel.Enabled = !running;
                 start.Enabled = !running;
                 bufferSize.Enabled = !running;
-                streamType.Enabled = !running;                
+                streamType.Enabled = !running;
                 streamNative.Enabled = !running;
                 outputMaster.Enabled = !running;
                 secondaryInput.Enabled = !running;

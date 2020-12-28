@@ -1,6 +1,7 @@
 #if XT_ENABLE_ALSA
 #include <xt/backend/alsa/Shared.hpp>
 #include <xt/backend/alsa/Private.hpp>
+#include <algorithm>
 
 void*
 AlsaDevice::GetHandle() const
@@ -22,7 +23,7 @@ AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const
   if(isOutput != (output != XtFalse)) return 0;
   if((err = XtiAlsaOpenPcm(_info, &pcm)) < 0) return err;  
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_channels_max(pcm.params, &val));
-  *count = static_cast<int32_t>(val);
+  *count = std::min(64, static_cast<int32_t>(val));
   return 0;
 }
 
@@ -31,7 +32,7 @@ AlsaDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 {
   int err;
   XtAlsaPcm pcm = { 0 };
-  if((err = XtiAlsaOpenPcm(_info, format, &pcm)) < 0) return -EINVAL;
+  if((err = XtiAlsaOpenPcm(_info, format, &pcm)) < 0) return 0;
   *supports = XtTrue;
   return 0;
 }
@@ -48,6 +49,7 @@ AlsaDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_max(pcm.params, &max));
   size->min = min * 1000.0 / rate;
   size->max = max * 1000.0 / rate;
+  size->current = size->min;
   return 0;
 }
 
