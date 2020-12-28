@@ -58,13 +58,16 @@ AlsaStream::ProcessBuffer()
   snd_timestamp_t stamp;
   XtBuffer buffer = { 0 };
   snd_pcm_status_t* status;
+  snd_pcm_sframes_t available;
 
-  buffer.position = _processed;
   snd_pcm_status_alloca(&status);
   XT_VERIFY_ALSA(snd_pcm_status(_pcm.pcm, status));
   snd_pcm_status_get_tstamp(status, &stamp);
+  buffer.position = _processed;
   buffer.timeValid = stamp.tv_sec != 0 || stamp.tv_usec != 0;
   buffer.time = stamp.tv_sec * 1000.0 + stamp.tv_usec / 1000.0;
+
+  if((available = snd_pcm_avail(_pcm.pcm)) < 0) return available;
 
   return 0;
 }

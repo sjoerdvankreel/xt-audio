@@ -109,6 +109,7 @@ AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream*
   result->_processed = 0;
   result->_frames = buffer;
   result->_type = _info.type;
+  XtiInitIOBuffers(result->_alsaBuffers, &params->format, buffer);
   *stream = result.release();
   return 0;
 }

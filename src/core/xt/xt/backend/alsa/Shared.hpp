@@ -40,8 +40,9 @@ public XtBlockingStream
   XtAlsaType _type;
   uint64_t _processed;
   bool _alsaInterleaved;
+  XtIOBuffers _alsaBuffers;
+  
   AlsaStream() = default;
-
   XT_IMPLEMENT_STREAM_BASE();
   XT_IMPLEMENT_BLOCKING_STREAM();
   XT_IMPLEMENT_STREAM_BASE_SYSTEM(ALSA);
