@@ -32,9 +32,12 @@ AsioDeviceList::GetId(int32_t index, char* buffer, int32_t* size) const
 XtFault
 AsioDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
+  CLSID classId;
   CLSID current;
   LONG index = -1;
-  CLSID classId = XtiUtf8ToClassId(id);
+
+  HRESULT hr = XtiUtf8ToClassId(id, &classId);
+  if(FAILED(hr)) return DRVERR_DEVICE_NOT_FOUND;
   std::string name(MAXDRVNAMELEN + 1, '\0');
   for(LONG i = 0; i < _drivers.asioGetNumDev(); i++)
   {

@@ -38,13 +38,13 @@ XtiClassIdToUtf8(CLSID const& classId)
   return result;
 }
 
-CLSID
-XtiUtf8ToClassId(char const* utf8)
+HRESULT
+XtiUtf8ToClassId(char const* utf8, CLSID* classId)
 {
-  CLSID result;
+  HRESULT hr;
   std::wstring wide = XtiUtf8ToWideString(utf8);
-  XT_ASSERT_COM(CLSIDFromString(wide.c_str(), &result));
-  return result;
+  XT_VERIFY_COM(CLSIDFromString(wide.c_str(), classId));
+  return S_OK;
 }
 
 void

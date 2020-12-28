@@ -24,14 +24,14 @@ XtiWfxChannelNames[18];
     if(FAILED(hr_ = (e))) \
     XtiAssertCom(XT_LOCATION, #e, hr_); } while(0)
 
-CLSID
-XtiUtf8ToClassId(char const* utf8);
 std::wstring
 XtiUtf8ToWideString(char const* utf8);
 std::string
 XtiClassIdToUtf8(CLSID const& classId);
 std::string
 XtiWideStringToUtf8(wchar_t const* wide);
+HRESULT
+XtiUtf8ToClassId(char const* utf8, CLSID* classId);
 bool
 XtiFormatToWfx(XtFormat const& format, WAVEFORMATEXTENSIBLE& wfx);
 void
