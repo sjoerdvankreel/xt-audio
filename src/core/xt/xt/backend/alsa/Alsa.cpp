@@ -72,11 +72,9 @@ XtiGetAlsaDeviceId(XtAlsaDeviceInfo const& info)
 int
 XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtAlsaPcm* pcm)
 {
-  snd_pcm_t* pcmp;
   bool output = XtiAlsaTypeIsOutput(info.type);
   auto stream = output? SND_PCM_STREAM_PLAYBACK: SND_PCM_STREAM_CAPTURE;
-  XT_VERIFY_ALSA(snd_pcm_open(&pcmp, info.name.c_str(), stream, 0));
-  *pcm = XtAlsaPcm(pcmp);
+  XT_VERIFY_ALSA(snd_pcm_open(&pcm->pcm, info.name.c_str(), stream, 0));
   return 0;
 }
 

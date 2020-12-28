@@ -26,8 +26,12 @@ struct XtAlsaDeviceInfo
 struct XtAlsaPcm
 {
   snd_pcm_t* pcm;
+  snd_pcm_hw_params_t* params;
   XtAlsaPcm(): pcm(nullptr) { }
   XtAlsaPcm(snd_pcm_t* pcm): pcm(pcm) { }
+
+  XtAlsaPcm(XtAlsaPcm const&) = delete;
+  XtAlsaPcm& operator=(XtAlsaPcm const&) = delete;
   ~XtAlsaPcm() { if(pcm != nullptr) XT_TRACE_IF(snd_pcm_close(pcm) != 0); }
 };
 

@@ -15,7 +15,7 @@ AlsaDevice::GetMix(XtBool* valid, XtMix* mix) const
 XtFault
 AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 { 
-  XtAlsaPcm pcm;  
+  XtAlsaPcm pcm;
   snd_pcm_hw_params_t* params;
   snd_pcm_hw_params_alloca(&params);
   XT_VERIFY_ALSA(XtiAlsaOpenPcm(_info, &pcm));
