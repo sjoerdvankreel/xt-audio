@@ -2,6 +2,8 @@
 #include <xt/backend/alsa/Shared.hpp>
 #include <xt/backend/alsa/Private.hpp>
 
+#include <iostream>
+
 void*
 AlsaStream::GetHandle() const
 { return _pcm.pcm; }
@@ -42,9 +44,12 @@ XtFault
 AlsaStream::StartSlaveBuffer()
 {
   _processed = 0;
+  bool mmap = XtiAlsaTypeIsMMap(_type);
   auto state = snd_pcm_state(_pcm.pcm);
   if(state != SND_PCM_STATE_PREPARED && state != SND_PCM_STATE_RUNNING)
     XT_VERIFY_ALSA(snd_pcm_prepare(_pcm.pcm));
+  if(mmap && state != SND_PCM_STATE_RUNNING)
+    XT_VERIFY_ALSA(snd_pcm_start(_pcm.pcm));
   return 0;
 }
 
@@ -124,7 +129,7 @@ AlsaStream::ProcessBuffer()
   }
 
   uframes = _frames;
-  XT_VERIFY_ALSA(snd_pcm_avail_update(_pcm.pcm));
+  XT_VERIFY_ALSA(snd_pcm_avail(_pcm.pcm));
   if((err = snd_pcm_mmap_begin(_pcm.pcm, &areas, &offset, &uframes)) < 0)
   {
     if(err == -EPIPE) OnXRun(_params.index);
@@ -133,14 +138,16 @@ AlsaStream::ProcessBuffer()
     XT_VERIFY_ALSA(snd_pcm_mmap_begin(_pcm.pcm, &areas, &offset, &uframes));
   }
 
-  data = XtiGetAlsaMMapAddress(areas, 0, offset);
-  if(!_alsaInterleaved)
-  {
-    data = _alsaBuffers.nonInterleaved.data();
-    auto channels = _params.format.channels.inputs + _params.format.channels.outputs;
-    for(auto c = 0; c < channels; c++)
-      _alsaBuffers.nonInterleaved[c] = XtiGetAlsaMMapAddress(areas, c, offset);
-  }
+  std::cout << "uf=*********" << " " << uframes << "\n";
+
+ if(_alsaInterleaved)
+      data = static_cast<uint8_t*>(areas[0].addr) + areas[0].first / 8 + offset * areas[0].step / 8;
+    else {
+      data = &_alsaBuffers.nonInterleaved[0];
+      for(auto c = 0; c < _params.format.channels.inputs + _params.format.channels.outputs; c++) {
+        _alsaBuffers.nonInterleaved[c] = static_cast<uint8_t*>(areas[c].addr) + areas[c].first / 8 + offset * areas[c].step / 8;
+      }
+    }
 
   if(output) buffer.output = data;
   else buffer.input = data;

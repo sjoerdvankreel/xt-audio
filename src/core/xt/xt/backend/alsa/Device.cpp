@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <iostream>
 
 void*
 AlsaDevice::GetHandle() const
@@ -86,11 +87,13 @@ AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream*
 
   result->_alsaInterleaved = params->interleaved;
   auto access = XtiGetAlsaAccess(_info.type, params->interleaved);
+  std::cout << "a1 = " <<  access << "\n";
   if(snd_pcm_hw_params_set_access(result->_pcm.pcm, result->_pcm.params, access) != 0)
   {
     result->_alsaInterleaved = !params->interleaved;
     access = XtiGetAlsaAccess(_info.type, !params->interleaved);
     XT_VERIFY_ALSA(snd_pcm_hw_params_set_access(result->_pcm.pcm, result->_pcm.params, access));
+  std::cout << "a2 = " <<  access << "\n";
   }
 
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_min(result->_pcm.params, &min));
