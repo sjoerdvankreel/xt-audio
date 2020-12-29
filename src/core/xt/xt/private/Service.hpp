@@ -27,8 +27,8 @@ struct XtService
   virtual XtServiceCaps GetCapabilities() const = 0;
   virtual XtFault OpenDevice(char const* id, XtDevice** device) const = 0;
   virtual XtFault OpenDeviceList(XtEnumFlags flags, XtDeviceList** list) const = 0;
-  XtFault AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const;
   virtual XtFault GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int32_t* size) const = 0;
+  virtual XtFault AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const;
 };
 
 #endif // XT_PRIVATE_SERVICE_HPP

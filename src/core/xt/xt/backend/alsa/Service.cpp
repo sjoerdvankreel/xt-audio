@@ -93,4 +93,17 @@ AlsaService::GetDefaultDeviceId(XtBool output, XtBool* valid, char* buffer, int3
   return 0;
 }
 
+XtFault
+AlsaService::AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const
+{
+  bool mmap = XtiAlsaTypeIsMMap((&dynamic_cast<AlsaDevice&>(*params->devices[0].device))->_info.type);
+  for(auto i = 1; i < params->count; i++)
+    if(mmap != XtiAlsaTypeIsMMap((&dynamic_cast<AlsaDevice&>(*params->devices[i].device))->_info.type))
+    {
+      XT_TRACE("Cannot combine R/W and MMap devices in ALSA aggregation.");
+      return -ENODEV;
+    }
+  return XtService::AggregateStream(params, user, stream);
+}
+
 #endif // XT_ENABLE_ALSA

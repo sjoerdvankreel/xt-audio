@@ -4,8 +4,6 @@
 * fix javadoc warnings
 * package zip in build script
 * cleanup cli gui
-* fix alsa latency reporting
-* disallow aggregate with rw + mmap
 
 ** LATER
 * arm

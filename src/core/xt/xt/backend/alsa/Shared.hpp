@@ -13,14 +13,6 @@
 #include <vector>
 #include <cstdint>
 
-struct AlsaService final:
-public XtService
-{
-  AlsaService();
-  ~AlsaService();
-  XT_IMPLEMENT_SERVICE(ALSA);
-};
-
 struct AlsaDevice final:
 public XtBlockingDevice
 {
@@ -54,6 +46,15 @@ public XtDeviceList
   AlsaDeviceList() = default;
   XT_IMPLEMENT_DEVICE_LIST(ALSA);
   std::vector<XtAlsaDeviceInfo> _devices;
+};
+
+struct AlsaService final:
+public XtService
+{
+  AlsaService();
+  ~AlsaService();
+  XT_IMPLEMENT_SERVICE(ALSA);
+  XtFault AggregateStream(XtAggregateStreamParams const* params, void* user, XtStream** stream) const override;
 };
 
 #endif // XT_ENABLE_ALSA
