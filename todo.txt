@@ -5,7 +5,6 @@
 * package zip in build script
 * cleanup cli gui
 * fix alsa latency reporting
-* use snd_pcm_wait
 * disallow aggregate with rw + mmap
 
 ** LATER

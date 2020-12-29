@@ -1,4 +1,5 @@
 #if XT_ENABLE_ALSA
+#include <xt/blocking/Runner.hpp>
 #include <xt/backend/alsa/Shared.hpp>
 #include <xt/backend/alsa/Private.hpp>
 
@@ -10,9 +11,6 @@ AlsaStream::PrefillOutputBuffer()
 { return ProcessBuffer(); }
 void
 AlsaStream::StopMasterBuffer() { }
-XtFault
-AlsaStream::BlockMasterBuffer(XtBool* ready)
-{ *ready = XtTrue; return 0; }
 XtFault
 AlsaStream::GetFrames(int32_t* frames) const 
 { *frames = _frames; return 0; }
@@ -49,6 +47,15 @@ AlsaStream::StartSlaveBuffer()
   if(mmap && state != SND_PCM_STATE_RUNNING)
     XT_VERIFY_ALSA(snd_pcm_start(_pcm.pcm));
   return 0;
+}
+
+XtFault
+AlsaStream::BlockMasterBuffer(XtBool* ready)
+{
+  if(XtiAlsaTypeIsMMap(_type)) 
+    XT_VERIFY_ALSA(snd_pcm_wait(_pcm.pcm, XtBlockingRunner::WaitTimeoutMs));
+  *ready = XtTrue;
+  return 0; 
 }
 
 XtFault 
