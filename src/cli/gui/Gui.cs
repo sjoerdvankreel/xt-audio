@@ -10,6 +10,8 @@ namespace Xt
 {
     public partial class XtGui : Form
     {
+        const int MaxMessages = 10;
+
         private static readonly List<int> ChannelCounts
             = Enumerable.Range(1, 64).ToList();
 
@@ -53,6 +55,8 @@ namespace Xt
             MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        bool _messageAdded;
+        readonly System.Windows.Forms.Timer _timer;
         private TextWriter log;
         private XtPlatform platform;
         private XtStream inputStream;
@@ -60,11 +64,28 @@ namespace Xt
         private XtSafeBuffer _safeBuffer;
         private FileStream captureFile;
         private ToolTip bufferTip = new ToolTip();
+        private List<string> _messages = new List<string>();
         private readonly List<DeviceView> deviceViews = new List<DeviceView>();
 
         public XtGui()
         {
             InitializeComponent();
+            _timer = new System.Windows.Forms.Timer();
+            _timer.Interval = 1000;
+            _timer.Tick += OnTimerTick;
+            _timer.Start();
+        }
+
+        void OnTimerTick(object sender, EventArgs e)
+        {
+            if(_messageAdded)
+            {
+                while(_messages.Count > MaxMessages) _messages.RemoveAt(0);
+                messages.Text = string.Join(Environment.NewLine, _messages);
+                messages.SelectionStart = messages.TextLength;
+                messages.ScrollToCaret();
+                _messageAdded = false;
+            }
         }
 
         private void OnStop(object sender, EventArgs e)
@@ -132,11 +153,8 @@ namespace Xt
             log.WriteLine(msg);
             log.Flush();
             messages.BeginInvoke(new Action(() => {
-                messages.Text += string.Format("{0} {1}{2}", DateTime.Now, msg, Environment.NewLine);
-                if (messages.Text.Length > 4000)
-                    messages.Text = messages.Text.Substring(messages.Text.Length - 4000);
-                messages.SelectionStart = messages.TextLength;
-                messages.ScrollToCaret();
+                _messages.Add(string.Format("{0}: {1}", DateTime.Now, msg));
+                _messageAdded = true;
             }));
         }
 
