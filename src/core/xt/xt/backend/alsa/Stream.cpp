@@ -66,26 +66,28 @@ AlsaStream::ProcessBuffer()
   _processed += _frames;
   buffer.frames = _frames;
 
-  if(!mmap && input && _alsaInterleaved)
+  if(!mmap && !output && _alsaInterleaved)
   {
-    buffer.input = _alsaBuffers.input.interleaved.data();
-    sframes = snd_pcm_readi(_pcm.pcm, buffer.input, _frames);
+    auto alsaBuf = _alsaBuffers.input.interleaved.data();
+    buffer.input = alsaBuf;
+    sframes = snd_pcm_readi(_pcm.pcm, alsaBuf, _frames);
     if(sframes >= 0) return OnBuffer(_params.index, &buffer); 
     if(sframes == -EPIPE) OnXRun(_params.index);
     XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, sframes, 1));
-    XT_VERIFY_ALSA(snd_pcm_readi(_pcm.pcm, buffer.input, _frames));
+    XT_VERIFY_ALSA(snd_pcm_readi(_pcm.pcm, alsaBuf, _frames));
     return OnBuffer(_params.index, &buffer);
   }
 
-  if(!mmap && input && !_alsaInterleaved)
+  if(!mmap && !output && !_alsaInterleaved)
   {
-    buffer.input = _alsaBuffers.input.nonInterleaved.data();
-    auto input = reinterpret_cast<void**>(buffer.input);
-    sframes = snd_pcm_readn(_pcm.pcm, input, _frames);
+    auto alsaBuf = _alsaBuffers.input.nonInterleaved.data();
+    buffer.input = alsaBuf;
+    auto appBuf = reinterpret_cast<void**>(alsaBuf);
+    sframes = snd_pcm_readn(_pcm.pcm, appBuf, _frames);
     if(sframes >= 0) return OnBuffer(_params.index, &buffer); 
     if(sframes == -EPIPE) OnXRun(_params.index);
     XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, sframes, 1));
-    XT_VERIFY_ALSA(snd_pcm_readn(_pcm.pcm, input, _frames));
+    XT_VERIFY_ALSA(snd_pcm_readn(_pcm.pcm, appBuf, _frames));
     return OnBuffer(_params.index, &buffer);
   }
 
@@ -104,13 +106,13 @@ AlsaStream::ProcessBuffer()
   if(!mmap && output && !_alsaInterleaved)
   {        
     buffer.output = _alsaBuffers.output.nonInterleaved.data();
-    auto output = reinterpret_cast<void**>(buffer.output);
+    auto buf = reinterpret_cast<void**>(buffer.output);
     XT_VERIFY_ALSA(OnBuffer(_params.index, &buffer));
-    sframes = snd_pcm_writen(_pcm.pcm, output, _frames);
+    sframes = snd_pcm_writen(_pcm.pcm, buf, _frames);
     if(sframes >= 0) return 0;
     if(sframes == -EPIPE) OnXRun(_params.index);
     XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, sframes, 1));
-    XT_VERIFY_ALSA(snd_pcm_writen(_pcm.pcm, output, _frames));
+    XT_VERIFY_ALSA(snd_pcm_writen(_pcm.pcm, buf, _frames));
     return 0;
   }
 
