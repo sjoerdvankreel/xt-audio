@@ -78,7 +78,7 @@ AlsaStream::ProcessBuffer()
     buffer.output = _alsaBuffers.output.interleaved.data();
     XT_VERIFY_ALSA(OnBuffer(_params.index, &buffer));
     sframes = snd_pcm_writei(_pcm.pcm, buffer.output, _frames);
-    if(sframes == 0) return 0;
+    if(sframes >= 0) return 0;
     if(sframes == -EPIPE) OnXRun(_params.index);
     XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, sframes, 1));
     XT_VERIFY_ALSA(snd_pcm_writei(_pcm.pcm, buffer.output, _frames));
