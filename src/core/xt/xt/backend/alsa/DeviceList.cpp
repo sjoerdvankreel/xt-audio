@@ -26,15 +26,21 @@ AlsaDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 XtFault
 AlsaDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
 {
+  int err;
   int flags = 0;
-  XtAlsaPcm pcm = { 0 };
+  snd_pcm_t* pcm;
   XtAlsaDeviceInfo info;
+
   if(!XtiParseAlsaDeviceInfo(id, &info)) return -ENODEV;
-  XT_VERIFY_ALSA(XtiAlsaOpenPcm(info, &pcm));
-  auto pcmType = snd_pcm_type(pcm.pcm);
-  if(info.type == XtAlsaType::InputRw || info.type == XtAlsaType::InputMMap) flags |= XtDeviceCapsInput;
-  else flags |= XtDeviceCapsOutput;
-  if(pcmType == SND_PCM_TYPE_HW) flags |= XtDeviceCapsHwDirect;
+  bool output = XtiAlsaTypeIsOutput(info.type);
+  flags |= output? XtDeviceCapsOutput: XtDeviceCapsInput;
+  auto stream = output? SND_PCM_STREAM_PLAYBACK: SND_PCM_STREAM_CAPTURE;
+  if((err = snd_pcm_open(&pcm, info.name.c_str(), stream, 0)) == 0)
+  {
+    auto pcmType = snd_pcm_type(pcm);
+    if(pcmType == SND_PCM_TYPE_HW) flags |= XtDeviceCapsHwDirect;
+    snd_pcm_close(pcm);
+  }
   *capabilities = static_cast<XtDeviceCaps>(flags);
   return 0;
 }
