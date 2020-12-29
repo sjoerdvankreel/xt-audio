@@ -49,7 +49,7 @@ AlsaDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_max(pcm.params, &max));
   size->min = min * 1000.0 / rate;
   size->max = max * 1000.0 / rate;
-  size->current = size->min;
+  size->current = size->min + (size->max - size->min) / 2.0;
   return 0;
 }
 
