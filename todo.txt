@@ -4,8 +4,9 @@
 * fix javadoc warnings
 * package zip in build script
 * cleanup cli gui
-* update asmjit
-* support not all SND_PCM_TYPEs 
+* fix alsa latency reporting
+* use snd_pcm_wait
+* disallow aggregate with rw + mmap
 
 ** LATER
 * arm
