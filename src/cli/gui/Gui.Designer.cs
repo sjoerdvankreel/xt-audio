@@ -50,42 +50,42 @@
             System.Windows.Forms.Label label21;
             System.Windows.Forms.Label label7;
             System.Windows.Forms.Label label22;
-            this.messages = new System.Windows.Forms.TextBox();
-            this.system = new System.Windows.Forms.ComboBox();
-            this.inputDevice = new System.Windows.Forms.ComboBox();
-            this.serviceCaps = new System.Windows.Forms.Label();
-            this.defaultInput = new System.Windows.Forms.Label();
-            this.defaultOutput = new System.Windows.Forms.Label();
-            this.outputDevice = new System.Windows.Forms.ComboBox();
-            this.rate = new System.Windows.Forms.ComboBox();
-            this.channelCount = new System.Windows.Forms.ComboBox();
-            this.sample = new System.Windows.Forms.ComboBox();
-            this.inputFormatSupported = new System.Windows.Forms.Label();
-            this.inputMix = new System.Windows.Forms.Label();
-            this.inputBufferSizes = new System.Windows.Forms.Label();
-            this.inputControlPanel = new System.Windows.Forms.Button();
-            this.outputControlPanel = new System.Windows.Forms.Button();
-            this.outputBufferSizes = new System.Windows.Forms.Label();
-            this.outputMix = new System.Windows.Forms.Label();
-            this.outputFormatSupported = new System.Windows.Forms.Label();
-            this.inputChannels = new System.Windows.Forms.ListBox();
-            this.outputChannels = new System.Windows.Forms.ListBox();
-            this.attributes = new System.Windows.Forms.Label();
-            this.start = new System.Windows.Forms.Button();
-            this.stop = new System.Windows.Forms.Button();
+            this._guiLog = new System.Windows.Forms.TextBox();
+            this._system = new System.Windows.Forms.ComboBox();
+            this._inputDevice = new System.Windows.Forms.ComboBox();
+            this._serviceCaps = new System.Windows.Forms.Label();
+            this._defaultInput = new System.Windows.Forms.Label();
+            this._defaultOutput = new System.Windows.Forms.Label();
+            this._outputDevice = new System.Windows.Forms.ComboBox();
+            this._rate = new System.Windows.Forms.ComboBox();
+            this._channelCount = new System.Windows.Forms.ComboBox();
+            this._sample = new System.Windows.Forms.ComboBox();
+            this._inputFormatSupported = new System.Windows.Forms.Label();
+            this._inputMix = new System.Windows.Forms.Label();
+            this._inputBufferSizes = new System.Windows.Forms.Label();
+            this._inputControlPanel = new System.Windows.Forms.Button();
+            this._outputControlPanel = new System.Windows.Forms.Button();
+            this._outputBufferSizes = new System.Windows.Forms.Label();
+            this._outputMix = new System.Windows.Forms.Label();
+            this._outputFormatSupported = new System.Windows.Forms.Label();
+            this._inputChannels = new System.Windows.Forms.ListBox();
+            this._outputChannels = new System.Windows.Forms.ListBox();
+            this._attributes = new System.Windows.Forms.Label();
+            this._start = new System.Windows.Forms.Button();
+            this._stop = new System.Windows.Forms.Button();
             this.panel = new System.Windows.Forms.Panel();
-            this.outputCaps = new System.Windows.Forms.Label();
-            this.inputCaps = new System.Windows.Forms.Label();
-            this.outputInterleaved = new System.Windows.Forms.Label();
-            this.inputInterleaved = new System.Windows.Forms.Label();
-            this.bufferSize = new System.Windows.Forms.TrackBar();
-            this.streamType = new System.Windows.Forms.ComboBox();
-            this.streamInterleaved = new System.Windows.Forms.CheckBox();
-            this.streamNative = new System.Windows.Forms.CheckBox();
-            this.outputMaster = new System.Windows.Forms.CheckBox();
-            this.secondaryInput = new System.Windows.Forms.ComboBox();
-            this.secondaryOutput = new System.Windows.Forms.ComboBox();
-            this.logXRuns = new System.Windows.Forms.CheckBox();
+            this._outputCaps = new System.Windows.Forms.Label();
+            this._inputCaps = new System.Windows.Forms.Label();
+            this._outputInterleaved = new System.Windows.Forms.Label();
+            this._inputInterleaved = new System.Windows.Forms.Label();
+            this._bufferSize = new System.Windows.Forms.TrackBar();
+            this._streamType = new System.Windows.Forms.ComboBox();
+            this._streamInterleaved = new System.Windows.Forms.CheckBox();
+            this._streamNative = new System.Windows.Forms.CheckBox();
+            this._outputMaster = new System.Windows.Forms.CheckBox();
+            this._secondaryInput = new System.Windows.Forms.ComboBox();
+            this._secondaryOutput = new System.Windows.Forms.ComboBox();
+            this._logXRuns = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -109,7 +109,7 @@
             label7 = new System.Windows.Forms.Label();
             label22 = new System.Windows.Forms.Label();
             this.panel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bufferSize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._bufferSize)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -315,250 +315,250 @@
             label22.TabIndex = 69;
             label22.Text = "Capabilities:";
             // 
-            // messages
+            // _guiLog
             // 
-            this.messages.Location = new System.Drawing.Point(447, 12);
-            this.messages.Multiline = true;
-            this.messages.Name = "messages";
-            this.messages.ReadOnly = true;
-            this.messages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messages.Size = new System.Drawing.Size(325, 353);
-            this.messages.TabIndex = 0;
+            this._guiLog.Location = new System.Drawing.Point(447, 12);
+            this._guiLog.Multiline = true;
+            this._guiLog.Name = "_guiLog";
+            this._guiLog.ReadOnly = true;
+            this._guiLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this._guiLog.Size = new System.Drawing.Size(325, 353);
+            this._guiLog.TabIndex = 0;
             // 
-            // system
+            // _system
             // 
-            this.system.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.system.FormattingEnabled = true;
-            this.system.Location = new System.Drawing.Point(100, 3);
-            this.system.Name = "system";
-            this.system.Size = new System.Drawing.Size(316, 21);
-            this.system.TabIndex = 4;
-            this.system.SelectedIndexChanged += new System.EventHandler(this.OnSystemChanged);
+            this._system.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._system.FormattingEnabled = true;
+            this._system.Location = new System.Drawing.Point(100, 3);
+            this._system.Name = "_system";
+            this._system.Size = new System.Drawing.Size(316, 21);
+            this._system.TabIndex = 4;
+            this._system.SelectedIndexChanged += new System.EventHandler(this.OnSystemChanged);
             // 
-            // inputDevice
+            // _inputDevice
             // 
-            this.inputDevice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.inputDevice.FormattingEnabled = true;
-            this.inputDevice.Location = new System.Drawing.Point(101, 166);
-            this.inputDevice.Name = "inputDevice";
-            this.inputDevice.Size = new System.Drawing.Size(316, 21);
-            this.inputDevice.TabIndex = 6;
-            this.inputDevice.SelectedIndexChanged += new System.EventHandler(this.OnDeviceChanged);
+            this._inputDevice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._inputDevice.FormattingEnabled = true;
+            this._inputDevice.Location = new System.Drawing.Point(101, 166);
+            this._inputDevice.Name = "_inputDevice";
+            this._inputDevice.Size = new System.Drawing.Size(316, 21);
+            this._inputDevice.TabIndex = 6;
+            this._inputDevice.SelectedIndexChanged += new System.EventHandler(this.OnDeviceChanged);
             // 
-            // serviceCaps
+            // _serviceCaps
             // 
-            this.serviceCaps.AutoSize = true;
-            this.serviceCaps.Location = new System.Drawing.Point(98, 34);
-            this.serviceCaps.Name = "serviceCaps";
-            this.serviceCaps.Size = new System.Drawing.Size(33, 13);
-            this.serviceCaps.TabIndex = 7;
-            this.serviceCaps.Text = "None";
+            this._serviceCaps.AutoSize = true;
+            this._serviceCaps.Location = new System.Drawing.Point(98, 34);
+            this._serviceCaps.Name = "_serviceCaps";
+            this._serviceCaps.Size = new System.Drawing.Size(33, 13);
+            this._serviceCaps.TabIndex = 7;
+            this._serviceCaps.Text = "None";
             // 
-            // defaultInput
+            // _defaultInput
             // 
-            this.defaultInput.AutoSize = true;
-            this.defaultInput.Location = new System.Drawing.Point(98, 61);
-            this.defaultInput.Name = "defaultInput";
-            this.defaultInput.Size = new System.Drawing.Size(198, 13);
-            this.defaultInput.TabIndex = 9;
-            this.defaultInput.Text = "Realtek Digital Input (Realtek HD Audio)";
+            this._defaultInput.AutoSize = true;
+            this._defaultInput.Location = new System.Drawing.Point(98, 61);
+            this._defaultInput.Name = "_defaultInput";
+            this._defaultInput.Size = new System.Drawing.Size(198, 13);
+            this._defaultInput.TabIndex = 9;
+            this._defaultInput.Text = "Realtek Digital Input (Realtek HD Audio)";
             // 
-            // defaultOutput
+            // _defaultOutput
             // 
-            this.defaultOutput.AutoSize = true;
-            this.defaultOutput.Location = new System.Drawing.Point(98, 87);
-            this.defaultOutput.Name = "defaultOutput";
-            this.defaultOutput.Size = new System.Drawing.Size(206, 13);
-            this.defaultOutput.TabIndex = 10;
-            this.defaultOutput.Text = "Realtek Digital Output (Realtek HD Audio)";
+            this._defaultOutput.AutoSize = true;
+            this._defaultOutput.Location = new System.Drawing.Point(98, 87);
+            this._defaultOutput.Name = "_defaultOutput";
+            this._defaultOutput.Size = new System.Drawing.Size(206, 13);
+            this._defaultOutput.TabIndex = 10;
+            this._defaultOutput.Text = "Realtek Digital Output (Realtek HD Audio)";
             // 
-            // outputDevice
+            // _outputDevice
             // 
-            this.outputDevice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.outputDevice.FormattingEnabled = true;
-            this.outputDevice.Location = new System.Drawing.Point(100, 358);
-            this.outputDevice.Name = "outputDevice";
-            this.outputDevice.Size = new System.Drawing.Size(316, 21);
-            this.outputDevice.TabIndex = 22;
-            this.outputDevice.SelectedIndexChanged += new System.EventHandler(this.OnDeviceChanged);
+            this._outputDevice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._outputDevice.FormattingEnabled = true;
+            this._outputDevice.Location = new System.Drawing.Point(100, 358);
+            this._outputDevice.Name = "_outputDevice";
+            this._outputDevice.Size = new System.Drawing.Size(316, 21);
+            this._outputDevice.TabIndex = 22;
+            this._outputDevice.SelectedIndexChanged += new System.EventHandler(this.OnDeviceChanged);
             // 
-            // rate
+            // _rate
             // 
-            this.rate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.rate.FormattingEnabled = true;
-            this.rate.Location = new System.Drawing.Point(101, 112);
-            this.rate.Name = "rate";
-            this.rate.Size = new System.Drawing.Size(103, 21);
-            this.rate.TabIndex = 24;
-            this.rate.SelectedIndexChanged += new System.EventHandler(this.OnFormatChanged);
+            this._rate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._rate.FormattingEnabled = true;
+            this._rate.Location = new System.Drawing.Point(101, 112);
+            this._rate.Name = "_rate";
+            this._rate.Size = new System.Drawing.Size(103, 21);
+            this._rate.TabIndex = 24;
+            this._rate.SelectedIndexChanged += new System.EventHandler(this.OnFormatChanged);
             // 
-            // channelCount
+            // _channelCount
             // 
-            this.channelCount.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.channelCount.FormattingEnabled = true;
-            this.channelCount.Location = new System.Drawing.Point(319, 112);
-            this.channelCount.Name = "channelCount";
-            this.channelCount.Size = new System.Drawing.Size(98, 21);
-            this.channelCount.TabIndex = 25;
-            this.channelCount.SelectedIndexChanged += new System.EventHandler(this.OnFormatChanged);
+            this._channelCount.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._channelCount.FormattingEnabled = true;
+            this._channelCount.Location = new System.Drawing.Point(319, 112);
+            this._channelCount.Name = "_channelCount";
+            this._channelCount.Size = new System.Drawing.Size(98, 21);
+            this._channelCount.TabIndex = 25;
+            this._channelCount.SelectedIndexChanged += new System.EventHandler(this.OnFormatChanged);
             // 
-            // sample
+            // _sample
             // 
-            this.sample.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.sample.FormattingEnabled = true;
-            this.sample.Location = new System.Drawing.Point(210, 112);
-            this.sample.Name = "sample";
-            this.sample.Size = new System.Drawing.Size(103, 21);
-            this.sample.TabIndex = 26;
-            this.sample.SelectedIndexChanged += new System.EventHandler(this.OnFormatChanged);
+            this._sample.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._sample.FormattingEnabled = true;
+            this._sample.Location = new System.Drawing.Point(210, 112);
+            this._sample.Name = "_sample";
+            this._sample.Size = new System.Drawing.Size(103, 21);
+            this._sample.TabIndex = 26;
+            this._sample.SelectedIndexChanged += new System.EventHandler(this.OnFormatChanged);
             // 
-            // inputFormatSupported
+            // _inputFormatSupported
             // 
-            this.inputFormatSupported.AutoSize = true;
-            this.inputFormatSupported.Location = new System.Drawing.Point(98, 196);
-            this.inputFormatSupported.Name = "inputFormatSupported";
-            this.inputFormatSupported.Size = new System.Drawing.Size(32, 13);
-            this.inputFormatSupported.TabIndex = 43;
-            this.inputFormatSupported.Text = "False";
+            this._inputFormatSupported.AutoSize = true;
+            this._inputFormatSupported.Location = new System.Drawing.Point(98, 196);
+            this._inputFormatSupported.Name = "_inputFormatSupported";
+            this._inputFormatSupported.Size = new System.Drawing.Size(32, 13);
+            this._inputFormatSupported.TabIndex = 43;
+            this._inputFormatSupported.Text = "False";
             // 
-            // inputMix
+            // _inputMix
             // 
-            this.inputMix.AutoSize = true;
-            this.inputMix.Location = new System.Drawing.Point(204, 196);
-            this.inputMix.Name = "inputMix";
-            this.inputMix.Size = new System.Drawing.Size(64, 13);
-            this.inputMix.TabIndex = 44;
-            this.inputMix.Text = "44100 Int16";
+            this._inputMix.AutoSize = true;
+            this._inputMix.Location = new System.Drawing.Point(204, 196);
+            this._inputMix.Name = "_inputMix";
+            this._inputMix.Size = new System.Drawing.Size(64, 13);
+            this._inputMix.TabIndex = 44;
+            this._inputMix.Text = "44100 Int16";
             // 
-            // inputBufferSizes
+            // _inputBufferSizes
             // 
-            this.inputBufferSizes.AutoSize = true;
-            this.inputBufferSizes.Location = new System.Drawing.Point(98, 223);
-            this.inputBufferSizes.Name = "inputBufferSizes";
-            this.inputBufferSizes.Size = new System.Drawing.Size(98, 13);
-            this.inputBufferSizes.TabIndex = 45;
-            this.inputBufferSizes.Text = "3.0 / 20.0 / 2000.0";
+            this._inputBufferSizes.AutoSize = true;
+            this._inputBufferSizes.Location = new System.Drawing.Point(98, 223);
+            this._inputBufferSizes.Name = "_inputBufferSizes";
+            this._inputBufferSizes.Size = new System.Drawing.Size(98, 13);
+            this._inputBufferSizes.TabIndex = 45;
+            this._inputBufferSizes.Text = "3.0 / 20.0 / 2000.0";
             // 
-            // inputControlPanel
+            // _inputControlPanel
             // 
-            this.inputControlPanel.Location = new System.Drawing.Point(309, 193);
-            this.inputControlPanel.Name = "inputControlPanel";
-            this.inputControlPanel.Size = new System.Drawing.Size(108, 23);
-            this.inputControlPanel.TabIndex = 46;
-            this.inputControlPanel.Text = "Show control panel";
-            this.inputControlPanel.UseVisualStyleBackColor = true;
-            this.inputControlPanel.Click += new System.EventHandler(this.OnShowInputPanel);
+            this._inputControlPanel.Location = new System.Drawing.Point(309, 193);
+            this._inputControlPanel.Name = "_inputControlPanel";
+            this._inputControlPanel.Size = new System.Drawing.Size(108, 23);
+            this._inputControlPanel.TabIndex = 46;
+            this._inputControlPanel.Text = "Show control panel";
+            this._inputControlPanel.UseVisualStyleBackColor = true;
+            this._inputControlPanel.Click += new System.EventHandler(this.OnShowInputPanel);
             // 
-            // outputControlPanel
+            // _outputControlPanel
             // 
-            this.outputControlPanel.Location = new System.Drawing.Point(308, 385);
-            this.outputControlPanel.Name = "outputControlPanel";
-            this.outputControlPanel.Size = new System.Drawing.Size(108, 23);
-            this.outputControlPanel.TabIndex = 55;
-            this.outputControlPanel.Text = "Show control panel";
-            this.outputControlPanel.UseVisualStyleBackColor = true;
-            this.outputControlPanel.Click += new System.EventHandler(this.OnShowOutputPanel);
+            this._outputControlPanel.Location = new System.Drawing.Point(308, 385);
+            this._outputControlPanel.Name = "_outputControlPanel";
+            this._outputControlPanel.Size = new System.Drawing.Size(108, 23);
+            this._outputControlPanel.TabIndex = 55;
+            this._outputControlPanel.Text = "Show control panel";
+            this._outputControlPanel.UseVisualStyleBackColor = true;
+            this._outputControlPanel.Click += new System.EventHandler(this.OnShowOutputPanel);
             // 
-            // outputBufferSizes
+            // _outputBufferSizes
             // 
-            this.outputBufferSizes.AutoSize = true;
-            this.outputBufferSizes.Location = new System.Drawing.Point(97, 415);
-            this.outputBufferSizes.Name = "outputBufferSizes";
-            this.outputBufferSizes.Size = new System.Drawing.Size(98, 13);
-            this.outputBufferSizes.TabIndex = 54;
-            this.outputBufferSizes.Text = "3.0 / 20.0 / 2000.0";
+            this._outputBufferSizes.AutoSize = true;
+            this._outputBufferSizes.Location = new System.Drawing.Point(97, 415);
+            this._outputBufferSizes.Name = "_outputBufferSizes";
+            this._outputBufferSizes.Size = new System.Drawing.Size(98, 13);
+            this._outputBufferSizes.TabIndex = 54;
+            this._outputBufferSizes.Text = "3.0 / 20.0 / 2000.0";
             // 
-            // outputMix
+            // _outputMix
             // 
-            this.outputMix.AutoSize = true;
-            this.outputMix.Location = new System.Drawing.Point(203, 388);
-            this.outputMix.Name = "outputMix";
-            this.outputMix.Size = new System.Drawing.Size(64, 13);
-            this.outputMix.TabIndex = 53;
-            this.outputMix.Text = "44100 Int16";
+            this._outputMix.AutoSize = true;
+            this._outputMix.Location = new System.Drawing.Point(203, 388);
+            this._outputMix.Name = "_outputMix";
+            this._outputMix.Size = new System.Drawing.Size(64, 13);
+            this._outputMix.TabIndex = 53;
+            this._outputMix.Text = "44100 Int16";
             // 
-            // outputFormatSupported
+            // _outputFormatSupported
             // 
-            this.outputFormatSupported.AutoSize = true;
-            this.outputFormatSupported.Location = new System.Drawing.Point(97, 388);
-            this.outputFormatSupported.Name = "outputFormatSupported";
-            this.outputFormatSupported.Size = new System.Drawing.Size(32, 13);
-            this.outputFormatSupported.TabIndex = 52;
-            this.outputFormatSupported.Text = "False";
+            this._outputFormatSupported.AutoSize = true;
+            this._outputFormatSupported.Location = new System.Drawing.Point(97, 388);
+            this._outputFormatSupported.Name = "_outputFormatSupported";
+            this._outputFormatSupported.Size = new System.Drawing.Size(32, 13);
+            this._outputFormatSupported.TabIndex = 52;
+            this._outputFormatSupported.Text = "False";
             // 
-            // inputChannels
+            // _inputChannels
             // 
-            this.inputChannels.FormattingEnabled = true;
-            this.inputChannels.Location = new System.Drawing.Point(101, 276);
-            this.inputChannels.Name = "inputChannels";
-            this.inputChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.inputChannels.Size = new System.Drawing.Size(316, 69);
-            this.inputChannels.TabIndex = 56;
+            this._inputChannels.FormattingEnabled = true;
+            this._inputChannels.Location = new System.Drawing.Point(101, 276);
+            this._inputChannels.Name = "_inputChannels";
+            this._inputChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this._inputChannels.Size = new System.Drawing.Size(316, 69);
+            this._inputChannels.TabIndex = 56;
             // 
-            // outputChannels
+            // _outputChannels
             // 
-            this.outputChannels.FormattingEnabled = true;
-            this.outputChannels.Location = new System.Drawing.Point(100, 468);
-            this.outputChannels.Name = "outputChannels";
-            this.outputChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.outputChannels.Size = new System.Drawing.Size(316, 69);
-            this.outputChannels.TabIndex = 57;
+            this._outputChannels.FormattingEnabled = true;
+            this._outputChannels.Location = new System.Drawing.Point(100, 468);
+            this._outputChannels.Name = "_outputChannels";
+            this._outputChannels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this._outputChannels.Size = new System.Drawing.Size(316, 69);
+            this._outputChannels.TabIndex = 57;
             // 
-            // attributes
+            // _attributes
             // 
-            this.attributes.AutoSize = true;
-            this.attributes.Location = new System.Drawing.Point(98, 142);
-            this.attributes.Name = "attributes";
-            this.attributes.Size = new System.Drawing.Size(149, 13);
-            this.attributes.TabIndex = 60;
-            this.attributes.Text = "[size: 2, isFloat: 0, isSigned: 0]";
+            this._attributes.AutoSize = true;
+            this._attributes.Location = new System.Drawing.Point(98, 142);
+            this._attributes.Name = "_attributes";
+            this._attributes.Size = new System.Drawing.Size(149, 13);
+            this._attributes.TabIndex = 60;
+            this._attributes.Text = "[size: 2, isFloat: 0, isSigned: 0]";
             // 
-            // start
+            // _start
             // 
-            this.start.Location = new System.Drawing.Point(616, 526);
-            this.start.Name = "start";
-            this.start.Size = new System.Drawing.Size(75, 23);
-            this.start.TabIndex = 62;
-            this.start.Text = "Start";
-            this.start.UseVisualStyleBackColor = true;
-            this.start.Click += new System.EventHandler(this.OnStart);
+            this._start.Location = new System.Drawing.Point(616, 526);
+            this._start.Name = "_start";
+            this._start.Size = new System.Drawing.Size(75, 23);
+            this._start.TabIndex = 62;
+            this._start.Text = "Start";
+            this._start.UseVisualStyleBackColor = true;
+            this._start.Click += new System.EventHandler(this.OnStart);
             // 
-            // stop
+            // _stop
             // 
-            this.stop.Location = new System.Drawing.Point(697, 526);
-            this.stop.Name = "stop";
-            this.stop.Size = new System.Drawing.Size(75, 23);
-            this.stop.TabIndex = 63;
-            this.stop.Text = "Stop";
-            this.stop.UseVisualStyleBackColor = true;
-            this.stop.Click += new System.EventHandler(this.OnStop);
+            this._stop.Location = new System.Drawing.Point(697, 526);
+            this._stop.Name = "_stop";
+            this._stop.Size = new System.Drawing.Size(75, 23);
+            this._stop.TabIndex = 63;
+            this._stop.Text = "Stop";
+            this._stop.UseVisualStyleBackColor = true;
+            this._stop.Click += new System.EventHandler(this.OnStop);
             // 
             // panel
             // 
-            this.panel.Controls.Add(this.outputCaps);
+            this.panel.Controls.Add(this._outputCaps);
             this.panel.Controls.Add(label22);
-            this.panel.Controls.Add(this.inputCaps);
+            this.panel.Controls.Add(this._inputCaps);
             this.panel.Controls.Add(label7);
-            this.panel.Controls.Add(this.outputInterleaved);
-            this.panel.Controls.Add(this.inputInterleaved);
+            this.panel.Controls.Add(this._outputInterleaved);
+            this.panel.Controls.Add(this._inputInterleaved);
             this.panel.Controls.Add(label20);
             this.panel.Controls.Add(label15);
             this.panel.Controls.Add(label1);
-            this.panel.Controls.Add(this.system);
-            this.panel.Controls.Add(this.attributes);
+            this.panel.Controls.Add(this._system);
+            this.panel.Controls.Add(this._attributes);
             this.panel.Controls.Add(label2);
             this.panel.Controls.Add(label9);
-            this.panel.Controls.Add(this.inputDevice);
-            this.panel.Controls.Add(this.outputChannels);
-            this.panel.Controls.Add(this.serviceCaps);
-            this.panel.Controls.Add(this.inputChannels);
-            this.panel.Controls.Add(this.defaultInput);
-            this.panel.Controls.Add(this.outputControlPanel);
-            this.panel.Controls.Add(this.defaultOutput);
-            this.panel.Controls.Add(this.outputBufferSizes);
-            this.panel.Controls.Add(this.outputMix);
+            this.panel.Controls.Add(this._inputDevice);
+            this.panel.Controls.Add(this._outputChannels);
+            this.panel.Controls.Add(this._serviceCaps);
+            this.panel.Controls.Add(this._inputChannels);
+            this.panel.Controls.Add(this._defaultInput);
+            this.panel.Controls.Add(this._outputControlPanel);
+            this.panel.Controls.Add(this._defaultOutput);
+            this.panel.Controls.Add(this._outputBufferSizes);
+            this.panel.Controls.Add(this._outputMix);
             this.panel.Controls.Add(label3);
-            this.panel.Controls.Add(this.outputFormatSupported);
+            this.panel.Controls.Add(this._outputFormatSupported);
             this.panel.Controls.Add(label4);
             this.panel.Controls.Add(label16);
             this.panel.Controls.Add(label6);
@@ -566,14 +566,14 @@
             this.panel.Controls.Add(label18);
             this.panel.Controls.Add(label5);
             this.panel.Controls.Add(label19);
-            this.panel.Controls.Add(this.outputDevice);
-            this.panel.Controls.Add(this.inputControlPanel);
-            this.panel.Controls.Add(this.rate);
-            this.panel.Controls.Add(this.inputBufferSizes);
-            this.panel.Controls.Add(this.channelCount);
-            this.panel.Controls.Add(this.inputMix);
-            this.panel.Controls.Add(this.sample);
-            this.panel.Controls.Add(this.inputFormatSupported);
+            this.panel.Controls.Add(this._outputDevice);
+            this.panel.Controls.Add(this._inputControlPanel);
+            this.panel.Controls.Add(this._rate);
+            this.panel.Controls.Add(this._inputBufferSizes);
+            this.panel.Controls.Add(this._channelCount);
+            this.panel.Controls.Add(this._inputMix);
+            this.panel.Controls.Add(this._sample);
+            this.panel.Controls.Add(this._inputFormatSupported);
             this.panel.Controls.Add(label8);
             this.panel.Controls.Add(label13);
             this.panel.Controls.Add(label10);
@@ -584,141 +584,141 @@
             this.panel.Size = new System.Drawing.Size(429, 548);
             this.panel.TabIndex = 64;
             // 
-            // outputCaps
+            // _outputCaps
             // 
-            this.outputCaps.AutoSize = true;
-            this.outputCaps.Location = new System.Drawing.Point(97, 442);
-            this.outputCaps.Name = "outputCaps";
-            this.outputCaps.Size = new System.Drawing.Size(33, 13);
-            this.outputCaps.TabIndex = 70;
-            this.outputCaps.Text = "None";
+            this._outputCaps.AutoSize = true;
+            this._outputCaps.Location = new System.Drawing.Point(97, 442);
+            this._outputCaps.Name = "_outputCaps";
+            this._outputCaps.Size = new System.Drawing.Size(33, 13);
+            this._outputCaps.TabIndex = 70;
+            this._outputCaps.Text = "None";
             // 
-            // inputCaps
+            // _inputCaps
             // 
-            this.inputCaps.AutoSize = true;
-            this.inputCaps.Location = new System.Drawing.Point(98, 250);
-            this.inputCaps.Name = "inputCaps";
-            this.inputCaps.Size = new System.Drawing.Size(33, 13);
-            this.inputCaps.TabIndex = 68;
-            this.inputCaps.Text = "None";
+            this._inputCaps.AutoSize = true;
+            this._inputCaps.Location = new System.Drawing.Point(98, 250);
+            this._inputCaps.Name = "_inputCaps";
+            this._inputCaps.Size = new System.Drawing.Size(33, 13);
+            this._inputCaps.TabIndex = 68;
+            this._inputCaps.Text = "None";
             // 
-            // outputInterleaved
+            // _outputInterleaved
             // 
-            this.outputInterleaved.AutoSize = true;
-            this.outputInterleaved.Location = new System.Drawing.Point(377, 415);
-            this.outputInterleaved.Name = "outputInterleaved";
-            this.outputInterleaved.Size = new System.Drawing.Size(29, 13);
-            this.outputInterleaved.TabIndex = 66;
-            this.outputInterleaved.Text = "Both";
+            this._outputInterleaved.AutoSize = true;
+            this._outputInterleaved.Location = new System.Drawing.Point(377, 415);
+            this._outputInterleaved.Name = "_outputInterleaved";
+            this._outputInterleaved.Size = new System.Drawing.Size(29, 13);
+            this._outputInterleaved.TabIndex = 66;
+            this._outputInterleaved.Text = "Both";
             // 
-            // inputInterleaved
+            // _inputInterleaved
             // 
-            this.inputInterleaved.AutoSize = true;
-            this.inputInterleaved.Location = new System.Drawing.Point(378, 223);
-            this.inputInterleaved.Name = "inputInterleaved";
-            this.inputInterleaved.Size = new System.Drawing.Size(29, 13);
-            this.inputInterleaved.TabIndex = 65;
-            this.inputInterleaved.Text = "Both";
+            this._inputInterleaved.AutoSize = true;
+            this._inputInterleaved.Location = new System.Drawing.Point(378, 223);
+            this._inputInterleaved.Name = "_inputInterleaved";
+            this._inputInterleaved.Size = new System.Drawing.Size(29, 13);
+            this._inputInterleaved.TabIndex = 65;
+            this._inputInterleaved.Text = "Both";
             // 
-            // bufferSize
+            // _bufferSize
             // 
-            this.bufferSize.Location = new System.Drawing.Point(534, 475);
-            this.bufferSize.Name = "bufferSize";
-            this.bufferSize.Size = new System.Drawing.Size(238, 45);
-            this.bufferSize.TabIndex = 65;
-            this.bufferSize.Scroll += new System.EventHandler(this.OnBufferSizeScroll);
+            this._bufferSize.Location = new System.Drawing.Point(534, 475);
+            this._bufferSize.Name = "_bufferSize";
+            this._bufferSize.Size = new System.Drawing.Size(238, 45);
+            this._bufferSize.TabIndex = 65;
+            this._bufferSize.Scroll += new System.EventHandler(this.OnBufferSizeScroll);
             // 
-            // streamType
+            // _streamType
             // 
-            this.streamType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.streamType.FormattingEnabled = true;
-            this.streamType.Location = new System.Drawing.Point(450, 528);
-            this.streamType.Name = "streamType";
-            this.streamType.Size = new System.Drawing.Size(121, 21);
-            this.streamType.TabIndex = 67;
+            this._streamType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._streamType.FormattingEnabled = true;
+            this._streamType.Location = new System.Drawing.Point(450, 528);
+            this._streamType.Name = "_streamType";
+            this._streamType.Size = new System.Drawing.Size(121, 21);
+            this._streamType.TabIndex = 67;
             // 
-            // streamInterleaved
+            // _streamInterleaved
             // 
-            this.streamInterleaved.AutoSize = true;
-            this.streamInterleaved.Checked = true;
-            this.streamInterleaved.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.streamInterleaved.Location = new System.Drawing.Point(450, 452);
-            this.streamInterleaved.Name = "streamInterleaved";
-            this.streamInterleaved.Size = new System.Drawing.Size(79, 17);
-            this.streamInterleaved.TabIndex = 68;
-            this.streamInterleaved.Text = "Interleaved";
-            this.streamInterleaved.UseVisualStyleBackColor = true;
+            this._streamInterleaved.AutoSize = true;
+            this._streamInterleaved.Checked = true;
+            this._streamInterleaved.CheckState = System.Windows.Forms.CheckState.Checked;
+            this._streamInterleaved.Location = new System.Drawing.Point(450, 452);
+            this._streamInterleaved.Name = "_streamInterleaved";
+            this._streamInterleaved.Size = new System.Drawing.Size(79, 17);
+            this._streamInterleaved.TabIndex = 68;
+            this._streamInterleaved.Text = "Interleaved";
+            this._streamInterleaved.UseVisualStyleBackColor = true;
             // 
-            // streamNative
+            // _streamNative
             // 
-            this.streamNative.AutoSize = true;
-            this.streamNative.Location = new System.Drawing.Point(535, 452);
-            this.streamNative.Name = "streamNative";
-            this.streamNative.Size = new System.Drawing.Size(57, 17);
-            this.streamNative.TabIndex = 69;
-            this.streamNative.Text = "Native";
-            this.streamNative.UseVisualStyleBackColor = true;
+            this._streamNative.AutoSize = true;
+            this._streamNative.Location = new System.Drawing.Point(535, 452);
+            this._streamNative.Name = "_streamNative";
+            this._streamNative.Size = new System.Drawing.Size(57, 17);
+            this._streamNative.TabIndex = 69;
+            this._streamNative.Text = "Native";
+            this._streamNative.UseVisualStyleBackColor = true;
             // 
-            // outputMaster
+            // _outputMaster
             // 
-            this.outputMaster.AutoSize = true;
-            this.outputMaster.Checked = true;
-            this.outputMaster.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.outputMaster.Location = new System.Drawing.Point(598, 452);
-            this.outputMaster.Name = "outputMaster";
-            this.outputMaster.Size = new System.Drawing.Size(92, 17);
-            this.outputMaster.TabIndex = 70;
-            this.outputMaster.Text = "Output master";
-            this.outputMaster.UseVisualStyleBackColor = true;
+            this._outputMaster.AutoSize = true;
+            this._outputMaster.Checked = true;
+            this._outputMaster.CheckState = System.Windows.Forms.CheckState.Checked;
+            this._outputMaster.Location = new System.Drawing.Point(598, 452);
+            this._outputMaster.Name = "_outputMaster";
+            this._outputMaster.Size = new System.Drawing.Size(92, 17);
+            this._outputMaster.TabIndex = 70;
+            this._outputMaster.Text = "Output master";
+            this._outputMaster.UseVisualStyleBackColor = true;
             // 
-            // secondaryInput
+            // _secondaryInput
             // 
-            this.secondaryInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.secondaryInput.FormattingEnabled = true;
-            this.secondaryInput.Location = new System.Drawing.Point(447, 398);
-            this.secondaryInput.Name = "secondaryInput";
-            this.secondaryInput.Size = new System.Drawing.Size(325, 21);
-            this.secondaryInput.TabIndex = 73;
+            this._secondaryInput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._secondaryInput.FormattingEnabled = true;
+            this._secondaryInput.Location = new System.Drawing.Point(447, 398);
+            this._secondaryInput.Name = "_secondaryInput";
+            this._secondaryInput.Size = new System.Drawing.Size(325, 21);
+            this._secondaryInput.TabIndex = 73;
             // 
-            // secondaryOutput
+            // _secondaryOutput
             // 
-            this.secondaryOutput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.secondaryOutput.FormattingEnabled = true;
-            this.secondaryOutput.Location = new System.Drawing.Point(447, 425);
-            this.secondaryOutput.Name = "secondaryOutput";
-            this.secondaryOutput.Size = new System.Drawing.Size(325, 21);
-            this.secondaryOutput.TabIndex = 74;
+            this._secondaryOutput.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this._secondaryOutput.FormattingEnabled = true;
+            this._secondaryOutput.Location = new System.Drawing.Point(447, 425);
+            this._secondaryOutput.Name = "_secondaryOutput";
+            this._secondaryOutput.Size = new System.Drawing.Size(325, 21);
+            this._secondaryOutput.TabIndex = 74;
             // 
-            // logXRuns
+            // _logXRuns
             // 
-            this.logXRuns.AutoSize = true;
-            this.logXRuns.Checked = true;
-            this.logXRuns.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.logXRuns.Location = new System.Drawing.Point(696, 452);
-            this.logXRuns.Name = "logXRuns";
-            this.logXRuns.Size = new System.Drawing.Size(72, 17);
-            this.logXRuns.TabIndex = 76;
-            this.logXRuns.Text = "Log xruns";
-            this.logXRuns.ThreeState = true;
-            this.logXRuns.UseVisualStyleBackColor = true;
+            this._logXRuns.AutoSize = true;
+            this._logXRuns.Checked = true;
+            this._logXRuns.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this._logXRuns.Location = new System.Drawing.Point(696, 452);
+            this._logXRuns.Name = "_logXRuns";
+            this._logXRuns.Size = new System.Drawing.Size(72, 17);
+            this._logXRuns.TabIndex = 76;
+            this._logXRuns.Text = "Log xruns";
+            this._logXRuns.ThreeState = true;
+            this._logXRuns.UseVisualStyleBackColor = true;
             // 
             // XtGui
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
-            this.Controls.Add(this.logXRuns);
+            this.Controls.Add(this._logXRuns);
             this.Controls.Add(label21);
-            this.Controls.Add(this.secondaryOutput);
-            this.Controls.Add(this.secondaryInput);
-            this.Controls.Add(this.outputMaster);
-            this.Controls.Add(this.streamNative);
-            this.Controls.Add(this.streamInterleaved);
-            this.Controls.Add(this.streamType);
+            this.Controls.Add(this._secondaryOutput);
+            this.Controls.Add(this._secondaryInput);
+            this.Controls.Add(this._outputMaster);
+            this.Controls.Add(this._streamNative);
+            this.Controls.Add(this._streamInterleaved);
+            this.Controls.Add(this._streamType);
             this.Controls.Add(label14);
-            this.Controls.Add(this.bufferSize);
+            this.Controls.Add(this._bufferSize);
             this.Controls.Add(this.panel);
-            this.Controls.Add(this.stop);
-            this.Controls.Add(this.start);
-            this.Controls.Add(this.messages);
+            this.Controls.Add(this._stop);
+            this.Controls.Add(this._start);
+            this.Controls.Add(this._guiLog);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(800, 600);
             this.MinimizeBox = false;
@@ -727,7 +727,7 @@
             this.Text = "XT-Audio";
             this.panel.ResumeLayout(false);
             this.panel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bufferSize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._bufferSize)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -735,41 +735,41 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox messages;
-        private System.Windows.Forms.ComboBox system;
-        private System.Windows.Forms.ComboBox inputDevice;
-        private System.Windows.Forms.Label serviceCaps;
-        private System.Windows.Forms.Label defaultInput;
-        private System.Windows.Forms.Label defaultOutput;
-        private System.Windows.Forms.ComboBox outputDevice;
-        private System.Windows.Forms.ComboBox rate;
-        private System.Windows.Forms.ComboBox channelCount;
-        private System.Windows.Forms.ComboBox sample;
-        private System.Windows.Forms.Label inputFormatSupported;
-        private System.Windows.Forms.Label inputMix;
-        private System.Windows.Forms.Label inputBufferSizes;
-        private System.Windows.Forms.Button inputControlPanel;
-        private System.Windows.Forms.Button outputControlPanel;
-        private System.Windows.Forms.Label outputBufferSizes;
-        private System.Windows.Forms.Label outputMix;
-        private System.Windows.Forms.Label outputFormatSupported;
-        private System.Windows.Forms.ListBox inputChannels;
-        private System.Windows.Forms.ListBox outputChannels;
-        private System.Windows.Forms.Label attributes;
-        private System.Windows.Forms.Button start;
-        private System.Windows.Forms.Button stop;
+        private System.Windows.Forms.TextBox _guiLog;
+        private System.Windows.Forms.ComboBox _system;
+        private System.Windows.Forms.ComboBox _inputDevice;
+        private System.Windows.Forms.Label _serviceCaps;
+        private System.Windows.Forms.Label _defaultInput;
+        private System.Windows.Forms.Label _defaultOutput;
+        private System.Windows.Forms.ComboBox _outputDevice;
+        private System.Windows.Forms.ComboBox _rate;
+        private System.Windows.Forms.ComboBox _channelCount;
+        private System.Windows.Forms.ComboBox _sample;
+        private System.Windows.Forms.Label _inputFormatSupported;
+        private System.Windows.Forms.Label _inputMix;
+        private System.Windows.Forms.Label _inputBufferSizes;
+        private System.Windows.Forms.Button _inputControlPanel;
+        private System.Windows.Forms.Button _outputControlPanel;
+        private System.Windows.Forms.Label _outputBufferSizes;
+        private System.Windows.Forms.Label _outputMix;
+        private System.Windows.Forms.Label _outputFormatSupported;
+        private System.Windows.Forms.ListBox _inputChannels;
+        private System.Windows.Forms.ListBox _outputChannels;
+        private System.Windows.Forms.Label _attributes;
+        private System.Windows.Forms.Button _start;
+        private System.Windows.Forms.Button _stop;
         private System.Windows.Forms.Panel panel;
-        private System.Windows.Forms.TrackBar bufferSize;
-        private System.Windows.Forms.ComboBox streamType;
-        private System.Windows.Forms.Label outputInterleaved;
-        private System.Windows.Forms.Label inputInterleaved;
-        private System.Windows.Forms.CheckBox streamInterleaved;
-        private System.Windows.Forms.CheckBox streamNative;
-        private System.Windows.Forms.CheckBox outputMaster;
-        private System.Windows.Forms.ComboBox secondaryInput;
-        private System.Windows.Forms.ComboBox secondaryOutput;
-        private System.Windows.Forms.CheckBox logXRuns;
-        private System.Windows.Forms.Label inputCaps;
-        private System.Windows.Forms.Label outputCaps;
+        private System.Windows.Forms.TrackBar _bufferSize;
+        private System.Windows.Forms.ComboBox _streamType;
+        private System.Windows.Forms.Label _outputInterleaved;
+        private System.Windows.Forms.Label _inputInterleaved;
+        private System.Windows.Forms.CheckBox _streamInterleaved;
+        private System.Windows.Forms.CheckBox _streamNative;
+        private System.Windows.Forms.CheckBox _outputMaster;
+        private System.Windows.Forms.ComboBox _secondaryInput;
+        private System.Windows.Forms.ComboBox _secondaryOutput;
+        private System.Windows.Forms.CheckBox _logXRuns;
+        private System.Windows.Forms.Label _inputCaps;
+        private System.Windows.Forms.Label _outputCaps;
     }
 }
