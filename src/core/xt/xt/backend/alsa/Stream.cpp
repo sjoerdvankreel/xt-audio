@@ -27,14 +27,6 @@ AlsaStream::StopSlaveBuffer()
 } 
 
 XtFault
-AlsaStream::StartSlaveBuffer()
-{
-  _processed = 0;
-  XT_VERIFY_ALSA(snd_pcm_prepare(_pcm.pcm));
-  return 0;
-}
-
-XtFault
 AlsaStream::GetLatency(XtLatency* latency) const
 { 
   snd_pcm_sframes_t delay;
@@ -43,6 +35,16 @@ AlsaStream::GetLatency(XtLatency* latency) const
   if(snd_pcm_delay(_pcm.pcm, &delay) < 0) return 0;
   latency->input = output? 0.0: delay * 1000.0 / rate;
   latency->output = !output? 0.0: delay * 1000.0 / rate;
+  return 0;
+}
+
+XtFault
+AlsaStream::StartSlaveBuffer()
+{
+  _processed = 0;
+  auto state = snd_pcm_state(_pcm.pcm);
+  if(state != SND_PCM_STATE_PREPARED && state != SND_PCM_STATE_RUNNING)
+    XT_VERIFY_ALSA(snd_pcm_prepare(_pcm.pcm));
   return 0;
 }
 
@@ -146,7 +148,7 @@ AlsaStream::ProcessBuffer()
 
   err = snd_pcm_mmap_commit(_pcm.pcm, offset, uframes);
   if(err >= 0 && err != uframes) OnXRun(_params.index);
-  if(err == 0) return 0;
+  if(err == uframes) return 0;
   XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, err, 1));
   XT_VERIFY_ALSA(snd_pcm_mmap_commit(_pcm.pcm, offset, uframes));
   return 0;
