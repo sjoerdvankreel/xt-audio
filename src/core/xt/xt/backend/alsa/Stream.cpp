@@ -2,6 +2,8 @@
 #include <xt/backend/alsa/Shared.hpp>
 #include <xt/backend/alsa/Private.hpp>
 
+#include <iostream>
+
 void*
 AlsaStream::GetHandle() const
 { return _pcm.pcm; }
@@ -10,6 +12,9 @@ AlsaStream::PrefillOutputBuffer()
 { return ProcessBuffer(); }
 void
 AlsaStream::StopMasterBuffer() { }
+XtFault
+AlsaStream::BlockMasterBuffer(XtBool* ready)
+{ *ready = XtTrue; return 0; }
 XtFault
 AlsaStream::GetFrames(int32_t* frames) const 
 { *frames = _frames; return 0; }
@@ -43,15 +48,6 @@ AlsaStream::GetLatency(XtLatency* latency) const
   return 0;
 }
 
-XtFault
-AlsaStream::BlockMasterBuffer(XtBool* ready)
-{ 
-  snd_pcm_sframes_t available;
-  if((available = snd_pcm_avail(_pcm.pcm)) < 0) return available;
-  *ready = available > 0;
-  return 0;
-}
-
 XtFault 
 AlsaStream::ProcessBuffer()
 {
@@ -70,18 +66,26 @@ AlsaStream::ProcessBuffer()
   buffer.timeValid = stamp.tv_sec != 0 || stamp.tv_usec != 0;
   buffer.time = stamp.tv_sec * 1000.0 + stamp.tv_usec / 1000.0;
   if((available = snd_pcm_avail(_pcm.pcm)) < 0) return available;
-  _processed += _frames;
+  available = std::min(available, static_cast<snd_pcm_sframes_t>(_frames));
+  _processed += available;
+  std::cout << "av1 = " << available << "\n";
 
   if(!mmap && output && _alsaInterleaved)
   {        
-    buffer.frames = _frames;
+    buffer.frames = available;
     buffer.output = _alsaBuffers.output.interleaved.data();
+    std::cout << "1\n";
     XT_VERIFY_ALSA(OnBuffer(_params.index, &buffer));
-    sframes = snd_pcm_writei(_pcm.pcm, buffer.output, _frames);
+    std::cout << "2\n";
+    sframes = snd_pcm_writei(_pcm.pcm, buffer.output, available);
+    std::cout << "3\n";
     if(sframes >= 0) return 0;
     if(sframes == -EPIPE) OnXRun(_params.index);
+    std::cout << "4\n";
     XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, sframes, 1));
-    XT_VERIFY_ALSA(snd_pcm_writei(_pcm.pcm, buffer.output, _frames));
+    std::cout << "5\n";
+    XT_VERIFY_ALSA(snd_pcm_writei(_pcm.pcm, buffer.output, available));
+    std::cout << "6\n";
   }
 
   return 0;

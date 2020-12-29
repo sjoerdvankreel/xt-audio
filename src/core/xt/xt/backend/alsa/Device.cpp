@@ -99,9 +99,12 @@ AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream*
   buffer = std::clamp(buffer, min, max);
   XT_VERIFY_ALSA(snd_pcm_hw_params_set_buffer_size_near(result->_pcm.pcm, result->_pcm.params, &buffer));  
   XT_VERIFY_ALSA(snd_pcm_hw_params(result->_pcm.pcm, result->_pcm.params));
+
   XT_VERIFY_ALSA(snd_pcm_sw_params_current(result->_pcm.pcm, swParams));
+  XT_VERIFY_ALSA(snd_pcm_sw_params_set_start_threshold(result->_pcm.pcm, swParams, buffer));
   XT_VERIFY_ALSA(snd_pcm_sw_params_set_tstamp_mode(result->_pcm.pcm, swParams, SND_PCM_TSTAMP_ENABLE));
   XT_VERIFY_ALSA(snd_pcm_sw_params(result->_pcm.pcm, swParams));
+
   result->_processed = 0;
   result->_frames = buffer;
   result->_type = _info.type;

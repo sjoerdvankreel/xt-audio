@@ -93,7 +93,7 @@ void AlsaStream::StopStream() {
 
 void AlsaStream::ProcessBuffer(bool prefill) {
 
-  int32_t c;
+  int32_t c; 
   int fault;
   void* data;
   double time;
