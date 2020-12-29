@@ -49,10 +49,15 @@ AlsaStream::GetLatency(XtLatency* latency) const
 XtFault 
 AlsaStream::ProcessBuffer()
 {
+  int err;  
+  void* data;
   snd_timestamp_t stamp;
   XtBuffer buffer = { 0 };
   snd_pcm_status_t* status;
+  snd_pcm_uframes_t offset;
   snd_pcm_sframes_t sframes;
+  snd_pcm_uframes_t uframes;  
+  snd_pcm_channel_area_t const* areas;
   bool mmap = XtiAlsaTypeIsMMap(_type);
   bool output = XtiAlsaTypeIsOutput(_type);
 
@@ -68,7 +73,7 @@ AlsaStream::ProcessBuffer()
 
   if(!mmap && !output && _alsaInterleaved)
   {
-    auto alsaBuf = _alsaBuffers.input.interleaved.data();
+    auto alsaBuf = _alsaBuffers.interleaved.data();
     buffer.input = alsaBuf;
     sframes = snd_pcm_readi(_pcm.pcm, alsaBuf, _frames);
     if(sframes >= 0) return OnBuffer(_params.index, &buffer); 
@@ -80,7 +85,7 @@ AlsaStream::ProcessBuffer()
 
   if(!mmap && !output && !_alsaInterleaved)
   {
-    auto alsaBuf = _alsaBuffers.input.nonInterleaved.data();
+    auto alsaBuf = _alsaBuffers.nonInterleaved.data();
     buffer.input = alsaBuf;
     auto appBuf = reinterpret_cast<void**>(alsaBuf);
     sframes = snd_pcm_readn(_pcm.pcm, appBuf, _frames);
@@ -93,7 +98,7 @@ AlsaStream::ProcessBuffer()
 
   if(!mmap && output && _alsaInterleaved)
   {        
-    buffer.output = _alsaBuffers.output.interleaved.data();
+    buffer.output = _alsaBuffers.interleaved.data();
     XT_VERIFY_ALSA(OnBuffer(_params.index, &buffer));
     sframes = snd_pcm_writei(_pcm.pcm, buffer.output, _frames);
     if(sframes >= 0) return 0;
@@ -105,7 +110,7 @@ AlsaStream::ProcessBuffer()
 
   if(!mmap && output && !_alsaInterleaved)
   {        
-    buffer.output = _alsaBuffers.output.nonInterleaved.data();
+    buffer.output = _alsaBuffers.nonInterleaved.data();
     auto buf = reinterpret_cast<void**>(buffer.output);
     XT_VERIFY_ALSA(OnBuffer(_params.index, &buffer));
     sframes = snd_pcm_writen(_pcm.pcm, buf, _frames);
@@ -116,6 +121,34 @@ AlsaStream::ProcessBuffer()
     return 0;
   }
 
+  uframes = _frames;
+  XT_VERIFY_ALSA(snd_pcm_avail_update(_pcm.pcm));
+  if((err = snd_pcm_mmap_begin(_pcm.pcm, &areas, &offset, &uframes)) < 0)
+  {
+    if(err == -EPIPE) OnXRun(_params.index);
+    XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, err, 1));
+    XT_VERIFY_ALSA(snd_pcm_avail_update(_pcm.pcm));
+    XT_VERIFY_ALSA(snd_pcm_mmap_begin(_pcm.pcm, &areas, &offset, &uframes));
+  }
+
+  data = XtiGetAlsaMMapAddress(areas, 0, offset);
+  if(!_alsaInterleaved)
+  {
+    data = _alsaBuffers.nonInterleaved.data();
+    auto channels = _params.format.channels.inputs + _params.format.channels.outputs;
+    for(auto c = 0; c < channels; c++)
+      _alsaBuffers.nonInterleaved[c] = XtiGetAlsaMMapAddress(areas, c, offset);
+  }
+
+  if(output) buffer.output = data;
+  else buffer.input = data;
+  XT_VERIFY_ALSA(OnBuffer(_params.index, &buffer));
+
+  err = snd_pcm_mmap_commit(_pcm.pcm, offset, uframes);
+  if(err >= 0 && err != uframes) OnXRun(_params.index);
+  if(err == 0) return 0;
+  XT_VERIFY_ALSA(snd_pcm_recover(_pcm.pcm, err, 1));
+  XT_VERIFY_ALSA(snd_pcm_mmap_commit(_pcm.pcm, offset, uframes));
   return 0;
 }
 

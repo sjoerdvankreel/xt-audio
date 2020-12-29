@@ -57,5 +57,9 @@ XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtFormat const* format, XtAlsaPcm* 
 void
 XtiLogAlsaError(char const* file, int line, char const* fun, int err, char const* fmt, ...);
 
+inline uint8_t*
+XtiGetAlsaMMapAddress(snd_pcm_channel_area_t const* areas, size_t index, snd_pcm_uframes_t offset)
+{ return static_cast<uint8_t*>(areas[index].addr) + areas[index].first / 8 + offset * areas[index].step / 8; }
+
 #endif // XT_ENABLE_ALSA
 #endif // XT_BACKEND_ALSA_PRIVATE_HPP
