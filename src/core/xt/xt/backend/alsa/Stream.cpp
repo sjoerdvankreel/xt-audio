@@ -139,6 +139,7 @@ AlsaStream::ProcessBuffer()
     XT_VERIFY_ALSA(snd_pcm_mmap_begin(_pcm.pcm, &areas, &offset, &uframes));
   }
 
+  buffer.frames = uframes;
   data = XtiGetAlsaMMapAddress(areas, 0, offset);
   if(output) buffer.output = data;
   else buffer.input = data;
