@@ -16,7 +16,7 @@ XtFault
 AlsaDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 {
   XtAlsaDeviceInfo info;
-  if(!XtiParseAlsaDeviceInfo(id, &info)) return -EINVAL;
+  if(!XtiParseAlsaDeviceInfo(id, &info)) return -ENODEV;
   std::ostringstream oss;
   oss << info.name << " (" << XtiGetAlsaNameSuffix(info.type) << ")";
   XtiCopyString(oss.str().c_str(), buffer, size);
@@ -26,12 +26,11 @@ AlsaDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
 XtFault
 AlsaDeviceList::GetCapabilities(char const* id, XtDeviceCaps* capabilities) const
 {
-  int err;
   int flags = 0;
   XtAlsaPcm pcm = { 0 };
   XtAlsaDeviceInfo info;
-  if(!XtiParseAlsaDeviceInfo(id, &info)) return -EINVAL;
-  if((err = XtiAlsaOpenPcm(info, &pcm)) < 0) return err;
+  if(!XtiParseAlsaDeviceInfo(id, &info)) return -ENODEV;
+  XT_VERIFY_ALSA(XtiAlsaOpenPcm(info, &pcm));
   auto pcmType = snd_pcm_type(pcm.pcm);
   if(info.type == XtAlsaType::InputRw || info.type == XtAlsaType::InputMMap) flags |= XtDeviceCapsInput;
   else flags |= XtDeviceCapsOutput;

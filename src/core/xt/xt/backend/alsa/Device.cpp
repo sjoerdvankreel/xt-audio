@@ -18,12 +18,11 @@ AlsaDevice::GetMix(XtBool* valid, XtMix* mix) const
 XtFault
 AlsaDevice::GetChannelCount(XtBool output, int32_t* count) const
 {
-  int err;
   unsigned val;
   XtAlsaPcm pcm = { 0 };
   bool isOutput = XtiAlsaTypeIsOutput(_info.type);
   if(isOutput != (output != XtFalse)) return 0;
-  if((err = XtiAlsaOpenPcm(_info, &pcm)) < 0) return err;  
+  XT_VERIFY_ALSA(XtiAlsaOpenPcm(_info, &pcm));
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_channels_max(pcm.params, &val));
   *count = std::min(64, static_cast<int32_t>(val));
   return 0;
@@ -42,11 +41,10 @@ AlsaDevice::SupportsFormat(XtFormat const* format, XtBool* supports) const
 XtFault
 AlsaDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
 {
-  int err;
   XtAlsaPcm pcm = { 0 };
   snd_pcm_uframes_t min, max;
   auto rate = format->mix.rate;
-  if((err = XtiAlsaOpenPcm(_info, format, &pcm)) < 0) return -EINVAL;
+  XT_VERIFY_ALSA(XtiAlsaOpenPcm(_info, format, &pcm));
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_min(pcm.params, &min));
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_max(pcm.params, &max));
   size->min = min * 1000.0 / rate;
@@ -58,9 +56,8 @@ AlsaDevice::GetBufferSize(XtFormat const* format, XtBufferSize* size) const
 XtFault
 AlsaDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 { 
-  int err;
   XtAlsaPcm pcm = { 0 };
-  if((err = XtiAlsaOpenPcm(_info, &pcm)) < 0) return err;
+  XT_VERIFY_ALSA(XtiAlsaOpenPcm(_info, &pcm));
   auto access = XtiGetAlsaAccess(_info.type, interleaved);
   *supports = snd_pcm_hw_params_test_access(pcm.pcm, pcm.params, access) == 0;
   return 0;
@@ -78,7 +75,6 @@ AlsaDevice::GetChannelName(XtBool output, int32_t index, char* buffer, int32_t* 
 XtFault
 AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream** stream)
 {
-  int err;
   snd_pcm_uframes_t min;
   snd_pcm_uframes_t max;
   snd_pcm_uframes_t buffer;
@@ -86,7 +82,7 @@ AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream*
 
   snd_pcm_sw_params_alloca(&swParams);
   auto result = std::make_unique<AlsaStream>();
-  if((err = XtiAlsaOpenPcm(_info, &params->format, &result->_pcm)) < 0) return err;
+  XT_VERIFY_ALSA(XtiAlsaOpenPcm(_info, &params->format, &result->_pcm));
 
   result->_alsaInterleaved = params->interleaved;
   auto access = XtiGetAlsaAccess(_info.type, params->interleaved);

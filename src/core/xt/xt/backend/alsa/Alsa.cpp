@@ -102,17 +102,16 @@ XtiGetAlsaError(XtFault fault)
 int
 XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtAlsaPcm* pcm)
 {
-  int err;
   snd_pcm_t* pcmp;
   snd_pcm_hw_params_t* hpp;
   memset(pcm, 0, sizeof(XtAlsaPcm));
   bool output = XtiAlsaTypeIsOutput(info.type);
   auto stream = output? SND_PCM_STREAM_PLAYBACK: SND_PCM_STREAM_CAPTURE;
-  if((err = snd_pcm_open(&pcmp, info.name.c_str(), stream, 0)) < 0) return err;
+  XT_VERIFY_ALSA(snd_pcm_open(&pcmp, info.name.c_str(), stream, 0));
   auto pcmGuard = XtiGuard([pcmp] { XT_TRACE_IF(snd_pcm_close(pcmp)); });
   XT_VERIFY_ALSA(snd_pcm_hw_params_malloc(&hpp));
   auto paramsGuard = XtiGuard([hpp] { snd_pcm_hw_params_free(hpp); });
-  if((err = snd_pcm_hw_params_any(pcmp, hpp)) < 0) return err;
+  XT_VERIFY_ALSA(snd_pcm_hw_params_any(pcmp, hpp));
   pcm->pcm = pcmp;
   pcm->params = hpp;
   pcmGuard.Commit();
@@ -166,7 +165,7 @@ XtiAlsaOpenPcm(XtAlsaDeviceInfo const& info, XtFormat const* format, XtAlsaPcm* 
   auto sample = XtiToAlsaSample(format->mix.sample);
   auto interleaved = XtiGetAlsaAccess(info.type, XtTrue);
   auto nonInterleaved = XtiGetAlsaAccess(info.type, XtFalse);
-  if((err = XtiAlsaOpenPcm(info, pcm)) < 0) return err;
+  XT_VERIFY_ALSA(XtiAlsaOpenPcm(info, pcm));
   int32_t channels = output? format->channels.outputs: format->channels.inputs;
   if((err = snd_pcm_hw_params_set_format(pcm->pcm, pcm->params, sample)) < 0) return err;
   if((err = snd_pcm_hw_params_set_channels(pcm->pcm, pcm->params, channels)) < 0) return err;
