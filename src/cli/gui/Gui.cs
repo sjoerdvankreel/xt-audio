@@ -11,22 +11,28 @@ namespace Xt
     public partial class XtGui : Form
     {
         const int MaxMessages = 10;
+        static readonly IList<int> ChannelCounts = Enumerable.Range(1, 64).ToList();
+        static readonly IList<int> Rates = new List<int>() { 11025, 22050, 44100, 48000, 96000, 192000 };
+        static readonly IList<XtSample> Samples = Enum.GetValues(typeof(XtSample)).Cast<XtSample>().ToList();
 
-        private static readonly List<int> ChannelCounts
-            = Enumerable.Range(1, 64).ToList();
+        static void OnThreadException(object sender, ThreadExceptionEventArgs e)
+        => OnError(e.Exception);
+        static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        => OnError((Exception)e.ExceptionObject);
 
-        private static readonly List<XtSample> Samples
-            = Enum.GetValues(typeof(XtSample)).Cast<XtSample>().ToList();
+        static void OnError(Exception e)
+        {
+            string message = e.ToString();
+            if (e is XtException xt)
+                message = XtAudio.GetErrorInfo(xt.GetError()).ToString();
+            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
-        private static readonly List<int> Rates = new List<int>() {
-            11025, 22050, 44100, 48000, 96000, 192000, 384000
-        };
-
-        private static List<StreamType> GetStreamTypes(XtService service)
+        static IList<StreamType> GetStreamTypes(XtService service)
         {
             var result = new List<StreamType>();
-            result.Add(StreamType.Capture);
             result.Add(StreamType.Render);
+            result.Add(StreamType.Capture);
             if ((service.GetCapabilities() & XtServiceCaps.FullDuplex) != 0) result.Add(StreamType.Duplex);
             if ((service.GetCapabilities() & XtServiceCaps.Aggregation) != 0) result.Add(StreamType.Aggregate);
             result.Add(StreamType.Latency);
@@ -42,30 +48,18 @@ namespace Xt
             Application.Run(new XtGui());
         }
 
-        static void OnThreadException(object sender, ThreadExceptionEventArgs e)
-        => OnError(e.Exception);
-        static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        => OnError((Exception)e.ExceptionObject);
-
-        static void OnError(Exception e)
-        {
-            string message = e.ToString();
-            if (e is XtException xt)
-                message = XtAudio.GetErrorInfo(xt.GetError()).ToString();
-            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        TextWriter _log;
+        XtPlatform _platform;
+        XtStream _inputStream;
+        XtStream _outputStream;
+        FileStream _captureFile;
+        XtSafeBuffer _safeBuffer;
 
         bool _messageAdded;
-        readonly System.Windows.Forms.Timer _timer;
-        private TextWriter log;
-        private XtPlatform platform;
-        private XtStream inputStream;
-        private XtStream outputStream;
-        private XtSafeBuffer _safeBuffer;
-        private FileStream captureFile;
-        private ToolTip bufferTip = new ToolTip();
-        private List<string> _messages = new List<string>();
-        private readonly List<DeviceView> deviceViews = new List<DeviceView>();
+        System.Windows.Forms.Timer _timer;
+        ToolTip _bufferTip = new ToolTip();
+        IList<string> _messages = new List<string>();
+        IList<DeviceView> _deviceViews = new List<DeviceView>();
 
         public XtGui()
         {
@@ -78,64 +72,29 @@ namespace Xt
 
         void OnTimerTick(object sender, EventArgs e)
         {
-            if(_messageAdded)
-            {
-                while(_messages.Count > MaxMessages) _messages.RemoveAt(0);
-                messages.Text = string.Join(Environment.NewLine, _messages);
-                messages.SelectionStart = messages.TextLength;
-                messages.ScrollToCaret();
-                _messageAdded = false;
-            }
+            if (!_messageAdded) return;
+            while (_messages.Count > MaxMessages) _messages.RemoveAt(0);
+            messages.Text = string.Join(Environment.NewLine, _messages);
+            messages.SelectionStart = messages.TextLength;
+            messages.ScrollToCaret();
+            _messageAdded = false;
         }
 
-        private void OnStop(object sender, EventArgs e)
-        {
-            Stop();
-        }
+        void OnStop(object sender, EventArgs e) => Stop();
+        void OnSystemChanged(object sender, EventArgs e) => SystemChanged();
+        void OnDeviceChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
+        void OnFormatChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
+        void OnError(in XtLocation location, string message) => AddError(location, message);
+        void AddError(XtLocation location, string message) => AddMessage(() => string.Format("{0}: {1}", location, message));
+        void OnBufferSizeScroll(object sender, EventArgs e) => _bufferTip.SetToolTip(bufferSize, bufferSize.Value.ToString());
+        void OnShowInputPanel(object sender, EventArgs e) => ((DeviceView)inputDevice.SelectedItem)?.device.ShowControlPanel();
+        void OnShowOutputPanel(object sender, EventArgs e) => ((DeviceView)outputDevice.SelectedItem)?.device.ShowControlPanel();
 
-        private void OnSystemChanged(object sender, EventArgs e)
+        void ClearDevices()
         {
-            SystemChanged();
-        }
-
-        private void OnDeviceChanged(object sender, EventArgs e)
-        {
-            FormatOrDeviceChanged();
-        }
-
-        private void OnFormatChanged(object sender, EventArgs e)
-        {
-            FormatOrDeviceChanged();
-        }
-
-        private void OnBufferSizeScroll(object sender, EventArgs e)
-        {
-            bufferTip.SetToolTip(bufferSize, bufferSize.Value.ToString());
-        }
-
-        private void OnError(in XtLocation location, string message)
-        {
-            var loc = location;
-            AddMessage(() => string.Format("{0}: {1}", loc, message));
-        }
-
-        private void OnShowInputPanel(object sender, EventArgs e)
-        {
-            if (inputDevice.SelectedItem != null)
-                ((DeviceView)inputDevice.SelectedItem).device.ShowControlPanel();
-        }
-
-        private void OnShowOutputPanel(object sender, EventArgs e)
-        {
-            if (outputDevice.SelectedItem != null)
-                ((DeviceView)outputDevice.SelectedItem).device.ShowControlPanel();
-        }
-
-        private void ClearDevices()
-        {
-            foreach (DeviceView view in deviceViews)
+            foreach (DeviceView view in _deviceViews)
                 view.device.Dispose();
-            deviceViews.Clear();
+            _deviceViews.Clear();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -143,59 +102,51 @@ namespace Xt
             base.OnClosing(e);
             Stop();
             ClearDevices();
-            platform.Dispose();
-            log.Dispose();
+            _platform.Dispose();
+            _log.Dispose();
         }
 
-        private void AddMessage(Func<string> message)
+        void AddMessage(Func<string> message)
         {
             string msg = message();
-            log.WriteLine(msg);
-            log.Flush();
+            _log.WriteLine(msg);
+            _log.Flush();
             messages.BeginInvoke(new Action(() => {
                 _messages.Add(string.Format("{0}: {1}", DateTime.Now, msg));
                 _messageAdded = true;
             }));
         }
 
-        private XtFormat? GetFormat(bool output)
+        XtFormat? GetFormat(bool output)
         {
-            if (sample.SelectedItem == null
-                || rate.SelectedItem == null
-                || channelCount.SelectedItem == null)
-                return null;
-
+            if (sample.SelectedItem == null || rate.SelectedItem == null || channelCount.SelectedItem == null) return null;
             XtFormat result = new XtFormat();
             result.mix.rate = (int)rate.SelectedItem;
             result.mix.sample = (XtSample)sample.SelectedItem;
-            if (output)
-                result.channels.outputs = (int)channelCount.SelectedItem;
-            else
-                result.channels.inputs = (int)channelCount.SelectedItem;
+            if (output) result.channels.outputs = (int)channelCount.SelectedItem;
+            else result.channels.inputs = (int)channelCount.SelectedItem;
             return result;
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            var libraryVersion = XtAudio.GetVersion();
-            string guid = Guid.NewGuid().ToString();
-            log = new StreamWriter($"xt-audio.{guid}.log");
-
-            Text = $"XT-Audio {libraryVersion.major}.{libraryVersion.minor}";
-            platform = XtAudio.Init("XT-Gui", Handle, OnError);
+            var version = XtAudio.GetVersion();
+            _log = new StreamWriter($"xt-audio.log");
+            Text = $"XT-Audio {version.major}.{version.minor}";
+            _platform = XtAudio.Init("XT-Gui", Handle, OnError);
             rate.DataSource = Rates;
-            rate.SelectedItem = 44100;
+            rate.SelectedItem = 48000;
             sample.DataSource = Samples;
             sample.SelectedItem = XtSample.Int16;
-            channelCount.DataSource = ChannelCounts;
             channelCount.SelectedItem = 2;
-            system.DataSource = platform.GetSystems();
+            channelCount.DataSource = ChannelCounts;
+            system.DataSource = _platform.GetSystems();
         }
 
         private void SystemChanged()
         {
-            XtService s = platform.GetService((XtSystem)(system.SelectedItem));
+            XtService s = _platform.GetService((XtSystem)(system.SelectedItem));
             inputDevice.DataSource = null;
             outputDevice.DataSource = null;
             streamType.DataSource = GetStreamTypes(s);
@@ -228,7 +179,7 @@ namespace Xt
                     {
                         inputViews.Add(view);
                     }
-                    deviceViews.Add(view);
+                    _deviceViews.Add(view);
                 } catch (XtException e)
                 {
                     AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
@@ -261,7 +212,7 @@ namespace Xt
                     {
                         outputViews.Add(view);
                     }
-                    deviceViews.Add(view);
+                    _deviceViews.Add(view);
                 } catch (XtException e)
                 {
                     AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
@@ -358,25 +309,25 @@ namespace Xt
 
         private void Stop()
         {
-            if (outputStream != null)
+            if (_outputStream != null)
             {
-                outputStream.Stop();
-                outputStream.Dispose();
-                outputStream = null;
+                _outputStream.Stop();
+                _outputStream.Dispose();
+                _outputStream = null;
             }
 
-            if (inputStream != null)
+            if (_inputStream != null)
             {
-                inputStream.Stop();
-                inputStream.Dispose();
-                inputStream = null;
+                _inputStream.Stop();
+                _inputStream.Dispose();
+                _inputStream = null;
             }
 
-            if (captureFile != null)
+            if (_captureFile != null)
             {
-                captureFile.Flush();
-                captureFile.Dispose();
-                captureFile = null;
+                _captureFile.Flush();
+                _captureFile.Dispose();
+                _captureFile = null;
             }
 
             if (_safeBuffer != null)
@@ -485,22 +436,22 @@ namespace Xt
 
                 if (type == StreamType.Capture)
                 {
-                    captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
-                    CaptureCallback callback = new CaptureCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage, captureFile);
+                    _captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
+                    CaptureCallback callback = new CaptureCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage, _captureFile);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in inputFormat, bufferSize.Value);
-                    inputStream = inputDevice.OpenStream(in deviceParams, "capture-user-data");
-                    callback.Init(inputStream.GetFormat(), inputStream.GetFrames());
-                    _safeBuffer = XtSafeBuffer.Register(inputStream, streamInterleaved.Checked);
-                    inputStream.Start();
+                    _inputStream = inputDevice.OpenStream(in deviceParams, "capture-user-data");
+                    callback.Init(_inputStream.GetFormat(), _inputStream.GetFrames());
+                    _safeBuffer = XtSafeBuffer.Register(_inputStream, streamInterleaved.Checked);
+                    _inputStream.Start();
                 } else if (type == StreamType.Render)
                 {
                     RenderCallback callback = new RenderCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in outputFormat, bufferSize.Value);
-                    outputStream = outputDevice.OpenStream(in deviceParams, "render-user-data");
-                    _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
-                    outputStream.Start();
+                    _outputStream = outputDevice.OpenStream(in deviceParams, "render-user-data");
+                    _safeBuffer = XtSafeBuffer.Register(_outputStream, streamInterleaved.Checked);
+                    _outputStream.Start();
                 } else if (type == StreamType.Duplex)
                 {
                     XtFormat duplexFormat = inputFormat;
@@ -509,9 +460,9 @@ namespace Xt
                     FullDuplexCallback callback = new FullDuplexCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, bufferSize.Value);
-                    outputStream = outputDevice.OpenStream(in deviceParams, "duplex-user-data");
-                    _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
-                    outputStream.Start();
+                    _outputStream = outputDevice.OpenStream(in deviceParams, "duplex-user-data");
+                    _safeBuffer = XtSafeBuffer.Register(_outputStream, streamInterleaved.Checked);
+                    _outputStream.Start();
                 } else if (type == StreamType.Aggregate)
                 {
                     var devices = new List<XtAggregateDeviceParams>();
@@ -531,10 +482,10 @@ namespace Xt
                     AggregateCallback streamCallback = new AggregateCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, streamCallback.OnCallback, onXRun, OnRunning);
                     var aggregateParams = new XtAggregateStreamParams(in streamParams, devices.ToArray(), devices.Count, outputFormat.mix, master);
-                    outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "aggregate-user-data");
-                    streamCallback.Init(outputStream.GetFrames());
-                    _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
-                    outputStream.Start();
+                    _outputStream = _platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "aggregate-user-data");
+                    streamCallback.Init(_outputStream.GetFrames());
+                    _safeBuffer = XtSafeBuffer.Register(_outputStream, streamInterleaved.Checked);
+                    _outputStream.Start();
                 } else if (inputDevice == outputDevice)
                 {
                     XtFormat duplexFormat = inputFormat;
@@ -543,9 +494,9 @@ namespace Xt
                     LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     var streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, bufferSize.Value);
-                    outputStream = outputDevice.OpenStream(in deviceParams, "latency-user-data");
-                    _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
-                    outputStream.Start();
+                    _outputStream = outputDevice.OpenStream(in deviceParams, "latency-user-data");
+                    _safeBuffer = XtSafeBuffer.Register(_outputStream, streamInterleaved.Checked);
+                    _outputStream.Start();
                 } else
                 {
                     XtDevice master = outputMaster.Checked ? outputDevice : inputDevice;
@@ -555,9 +506,9 @@ namespace Xt
                     LatencyCallback callback = new LatencyCallback(streamInterleaved.Checked, streamNative.Checked, AddMessage);
                     XtStreamParams streamParams = new XtStreamParams(streamInterleaved.Checked, callback.OnCallback, onXRun, OnRunning);
                     XtAggregateStreamParams aggregateParams = new XtAggregateStreamParams(in streamParams, devices, 2, in outputFormat.mix, master);
-                    outputStream = platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "latency-user-data");
-                    _safeBuffer = XtSafeBuffer.Register(outputStream, streamInterleaved.Checked);
-                    outputStream.Start();
+                    _outputStream = _platform.GetService(((XtSystem)this.system.SelectedItem)).AggregateStream(in aggregateParams, "latency-user-data");
+                    _safeBuffer = XtSafeBuffer.Register(_outputStream, streamInterleaved.Checked);
+                    _outputStream.Start();
                 }
 
             } catch (XtException e)
