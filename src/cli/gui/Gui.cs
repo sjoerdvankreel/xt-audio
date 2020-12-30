@@ -85,13 +85,13 @@ namespace Xt
         void OnError(in XtLocation location, string message) => AddError(location, message);
         void AddError(XtLocation location, string message) => AddMessage(() => string.Format("{0}: {1}", location, message));
         void OnBufferSizeScroll(object sender, EventArgs e) => _bufferTip.SetToolTip(_bufferSize, _bufferSize.Value.ToString());
-        void OnShowInputPanel(object sender, EventArgs e) => ((DeviceInfo)_inputDevice.SelectedItem)?.device.ShowControlPanel();
-        void OnShowOutputPanel(object sender, EventArgs e) => ((DeviceInfo)_outputDevice.SelectedItem)?.device.ShowControlPanel();
+        void OnShowInputPanel(object sender, EventArgs e) => ((DeviceInfo)_inputDevice.SelectedItem)?.Device.ShowControlPanel();
+        void OnShowOutputPanel(object sender, EventArgs e) => ((DeviceInfo)_outputDevice.SelectedItem)?.Device.ShowControlPanel();
 
         void ClearDevices()
         {
             foreach (DeviceInfo info in _allDevices)
-                info.device.Dispose();
+                info.Device.Dispose();
             _allDevices.Clear();
         }
 
@@ -148,12 +148,12 @@ namespace Xt
         {
             var id = list.GetId(index);
             var result = new DeviceInfo();
-            result.id = id;
-            result.name = list.GetName(id);
-            result.defaultInput = id == defaultId;
-            result.defaultOutput = id == defaultId;
-            result.device = service.OpenDevice(id);
-            result.capabilities = list.GetCapabilities(id);
+            result.Id = id;
+            result.Name = list.GetName(id);
+            result.DefaultInput = id == defaultId;
+            result.DefaultOutput = id == defaultId;
+            result.Device = service.OpenDevice(id);
+            result.Capabilities = list.GetCapabilities(id);
             return result;
         }
 
@@ -161,14 +161,14 @@ namespace Xt
         {
             var result = new List<DeviceInfo>();
             var noDevice = new DeviceInfo();
-            noDevice.id = "None";
-            noDevice.name = "[None]";
+            noDevice.Id = "None";
+            noDevice.Name = "[None]";
             result.Add(noDevice);
             for (int i = 0; i < list.GetCount(); i++)
                 try
                 {
                     var info = GetDeviceInfo(service, list, i, defaultId);
-                    result.Insert(info.defaultInput || info.defaultInput ? 1 : result.Count, info);
+                    result.Insert(info.DefaultInput || info.DefaultInput ? 1 : result.Count, info);
                     _allDevices.Add(info);
                 } catch (XtException e)
                 {
@@ -216,7 +216,7 @@ namespace Xt
 
             XtFormat? inputFormat = GetFormat(false);
             XtDevice inputDevice = this._inputDevice.SelectedItem == null ?
-                null : ((DeviceInfo)(this._inputDevice.SelectedItem)).device;
+                null : ((DeviceInfo)(this._inputDevice.SelectedItem)).Device;
             bool inputSupported = inputDevice == null || inputFormat == null ? false : inputDevice.SupportsFormat(inputFormat.Value);
             _inputFormatSupported.Text = inputSupported.ToString();
             XtBufferSize? inputBuffer = !inputSupported ? (XtBufferSize?)null : inputDevice.GetBufferSize(inputFormat.Value);
@@ -231,11 +231,11 @@ namespace Xt
                 : inputDevice.SupportsAccess(false)
                 ? "False"
                 : "True";
-            _inputCaps.Text = this._inputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._inputDevice.SelectedItem)).capabilities.ToString();
+            _inputCaps.Text = this._inputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._inputDevice.SelectedItem)).Capabilities.ToString();
             List<ChannelInfo> inputChannels = new List<ChannelInfo>();
             if (inputDevice != null)
                 inputChannels = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
-                              select new ChannelInfo { index = i, name = (1 + i) + ": " + inputDevice.GetChannelName(false, i) })
+                                 select new ChannelInfo(i, (1 + i) + ": " + inputDevice.GetChannelName(false, i)))
                               .ToList();
             _inputChannels.DataSource = null;
             _inputChannels.DataSource = inputChannels;
@@ -243,7 +243,7 @@ namespace Xt
 
             XtFormat? outputFormat = GetFormat(true);
             XtDevice outputDevice = this._outputDevice.SelectedItem == null ?
-                null : ((DeviceInfo)(this._outputDevice.SelectedItem)).device;
+                null : ((DeviceInfo)(this._outputDevice.SelectedItem)).Device;
             bool outputSupported = outputDevice == null || outputFormat == null ? false : outputDevice.SupportsFormat(outputFormat.Value);
             _outputFormatSupported.Text = outputSupported.ToString();
             XtBufferSize? outputBuffer = !outputSupported ? (XtBufferSize?)null : outputDevice.GetBufferSize(outputFormat.Value);
@@ -258,11 +258,11 @@ namespace Xt
                 : outputDevice.SupportsAccess(false)
                 ? "False"
                 : "True";
-            _outputCaps.Text = this._outputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._outputDevice.SelectedItem)).capabilities.ToString();
+            _outputCaps.Text = this._outputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._outputDevice.SelectedItem)).Capabilities.ToString();
             List<ChannelInfo> outputChannels = new List<ChannelInfo>();
             if (outputDevice != null)
                 outputChannels = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))
-                               select new ChannelInfo { index = i, name = (1 + i) + ": " + outputDevice.GetChannelName(true, i) })
+                                  select new ChannelInfo(i, (1 + i) + ": " + outputDevice.GetChannelName(true, i)))
                               .ToList();
             _outputChannels.DataSource = null;
             _outputChannels.DataSource = outputChannels;
@@ -340,10 +340,10 @@ namespace Xt
                 bool output = type == StreamType.Render || type == StreamType.Duplex || type == StreamType.Latency;
                 var inputInfo = (DeviceInfo)this._inputDevice.SelectedItem;
                 var outputInfo = (DeviceInfo)this._outputDevice.SelectedItem;
-                XtDevice inputDevice = inputInfo.device;
-                XtDevice outputDevice = outputInfo.device;
-                XtDevice secondaryInputDevice = ((DeviceInfo)this._secondaryInput.SelectedItem).device;
-                XtDevice secondaryOutputDevice = ((DeviceInfo)this._secondaryOutput.SelectedItem).device;
+                XtDevice inputDevice = inputInfo.Device;
+                XtDevice outputDevice = outputInfo.Device;
+                XtDevice secondaryInputDevice = ((DeviceInfo)this._secondaryInput.SelectedItem).Device;
+                XtDevice secondaryOutputDevice = ((DeviceInfo)this._secondaryOutput.SelectedItem).Device;
 
                 if (input && inputDevice == null)
                 {
@@ -361,7 +361,7 @@ namespace Xt
                     return;
                 }
 
-                if (type == StreamType.Duplex && inputInfo.id != outputInfo.id)
+                if (type == StreamType.Duplex && inputInfo.Id != outputInfo.Id)
                 {
                     MessageBox.Show(this,
                         "For duplex operation, input and output device must be the same.",
@@ -394,7 +394,7 @@ namespace Xt
                     return;
                 }
                 for (int c = 0; c < _inputChannels.SelectedItems.Count; c++)
-                    inputFormat.channels.inMask |= (1UL << ((ChannelInfo)_inputChannels.SelectedItems[c]).index);
+                    inputFormat.channels.inMask |= (1UL << ((ChannelInfo)_inputChannels.SelectedItems[c]).Index);
 
                 XtFormat outputFormat = GetFormat(true).Value;
                 if (output && _outputChannels.SelectedItems.Count > 0 && _outputChannels.SelectedItems.Count != outputFormat.channels.outputs)
@@ -405,7 +405,7 @@ namespace Xt
                     return;
                 }
                 for (int c = 0; c < _outputChannels.SelectedItems.Count; c++)
-                    outputFormat.channels.outMask |= (1UL << ((ChannelInfo)_outputChannels.SelectedItems[c]).index);
+                    outputFormat.channels.outMask |= (1UL << ((ChannelInfo)_outputChannels.SelectedItems[c]).Index);
 
                 if (type == StreamType.Capture)
                 {

@@ -17,7 +17,7 @@
         <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="..\..\..\src\cli\gui\*.cs" />
+        <Compile Include="..\..\..\src\cli\gui\**\*.cs" />
         <EmbeddedResource Include="..\..\..\src\cli\gui\Gui.resx">
             <Link>Gui.cs</Link>
             <DependentUpon>Gui.cs</DependentUpon>
