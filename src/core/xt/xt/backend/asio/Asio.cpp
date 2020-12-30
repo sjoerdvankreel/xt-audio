@@ -164,7 +164,7 @@ XtiAsioJitBufferSwitch(asmjit::JitRuntime* runtime, XtAsioContextBufferSwitch ta
 {
   using namespace asmjit;
   CodeHolder code;
-  code.init(runtime->codeInfo());
+  code.init(runtime->environment());
   x86::Compiler compiler(&code);
   
   auto sdkProto = FuncSignatureT<void, long, ASIOBool>(CallConv::kIdHostCDecl);
@@ -174,11 +174,12 @@ XtiAsioJitBufferSwitch(asmjit::JitRuntime* runtime, XtAsioContextBufferSwitch ta
   compiler.setArg(0, index);
   compiler.setArg(1, directProcess);
 
+  InvokeNode* invoke;
   auto ctxProto = FuncSignatureT<void, long, ASIOBool, void*>(CallConv::kIdHostCDecl);
-  FuncCallNode* call = compiler.call(imm(target), ctxProto);
-  call->setArg(0, index);
-  call->setArg(1, directProcess);
-  call->setArg(2, imm(ctx));
+  XT_ASSERT(compiler.invoke(&invoke, imm(target), ctxProto) == kErrorOk);
+  invoke->setArg(0, index);
+  invoke->setArg(1, directProcess);
+  invoke->setArg(2, imm(ctx));
   
   compiler.endFunc();
   compiler.finalize();
@@ -192,7 +193,7 @@ XtiAsioJitBufferSwitchTimeInfo(asmjit::JitRuntime* runtime, XtAsioContextBufferS
 {
   using namespace asmjit;
   CodeHolder code;
-  code.init(runtime->codeInfo());
+  code.init(runtime->environment());
   x86::Compiler compiler(&code);
   
   auto sdkProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
@@ -204,14 +205,15 @@ XtiAsioJitBufferSwitchTimeInfo(asmjit::JitRuntime* runtime, XtAsioContextBufferS
   compiler.setArg(1, index);
   compiler.setArg(2, directProcess);
 
+  InvokeNode* invoke;
   auto ctxProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool, void*>(CallConv::kIdHostCDecl);
-  FuncCallNode* call = compiler.call(imm(target), ctxProto);
-  call->setArg(0, params);
-  call->setArg(1, index);
-  call->setArg(2, directProcess);
-  call->setArg(3, imm(ctx));
+  XT_ASSERT(compiler.invoke(&invoke, imm(target), ctxProto) == kErrorOk);
+  invoke->setArg(0, params);
+  invoke->setArg(1, index);
+  invoke->setArg(2, directProcess);
+  invoke->setArg(3, imm(ctx));
   x86::Gp ret = compiler.newIntPtr("ret");
-  call->setRet(0, ret);
+  invoke->setRet(0, ret);
   compiler.ret(ret);
 
   compiler.endFunc();
