@@ -15,7 +15,6 @@ namespace Xt
             var format = stream.GetFormat();
             for (int f = 0; f < frames; f++)
             {
-                int ival;
                 double val = Math.Sin(_phase * 2.0 * Math.PI);
                 _phase += Frequency / format.mix.rate;
                 if (_phase >= 1.0) _phase = -1.0;
