@@ -1,6 +1,6 @@
 ﻿namespace Xt
 {
-    class ChannelView
+    class ChannelInfo
     {
         internal int index;
         internal string name;

@@ -232,13 +232,13 @@ namespace Xt
                 ? "False"
                 : "True";
             _inputCaps.Text = this._inputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._inputDevice.SelectedItem)).capabilities.ToString();
-            List<ChannelView> inputViews = new List<ChannelView>();
+            List<ChannelInfo> inputChannels = new List<ChannelInfo>();
             if (inputDevice != null)
-                inputViews = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
-                              select new ChannelView { index = i, name = (1 + i) + ": " + inputDevice.GetChannelName(false, i) })
+                inputChannels = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
+                              select new ChannelInfo { index = i, name = (1 + i) + ": " + inputDevice.GetChannelName(false, i) })
                               .ToList();
             _inputChannels.DataSource = null;
-            _inputChannels.DataSource = inputViews;
+            _inputChannels.DataSource = inputChannels;
             _inputChannels.SelectedItems.Clear();
 
             XtFormat? outputFormat = GetFormat(true);
@@ -259,13 +259,13 @@ namespace Xt
                 ? "False"
                 : "True";
             _outputCaps.Text = this._outputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._outputDevice.SelectedItem)).capabilities.ToString();
-            List<ChannelView> outputViews = new List<ChannelView>();
+            List<ChannelInfo> outputChannels = new List<ChannelInfo>();
             if (outputDevice != null)
-                outputViews = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))
-                               select new ChannelView { index = i, name = (1 + i) + ": " + outputDevice.GetChannelName(true, i) })
+                outputChannels = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))
+                               select new ChannelInfo { index = i, name = (1 + i) + ": " + outputDevice.GetChannelName(true, i) })
                               .ToList();
             _outputChannels.DataSource = null;
-            _outputChannels.DataSource = outputViews;
+            _outputChannels.DataSource = outputChannels;
             _outputChannels.SelectedItems.Clear();
 
             _bufferSize.Minimum = 1;
@@ -394,7 +394,7 @@ namespace Xt
                     return;
                 }
                 for (int c = 0; c < _inputChannels.SelectedItems.Count; c++)
-                    inputFormat.channels.inMask |= (1UL << ((ChannelView)_inputChannels.SelectedItems[c]).index);
+                    inputFormat.channels.inMask |= (1UL << ((ChannelInfo)_inputChannels.SelectedItems[c]).index);
 
                 XtFormat outputFormat = GetFormat(true).Value;
                 if (output && _outputChannels.SelectedItems.Count > 0 && _outputChannels.SelectedItems.Count != outputFormat.channels.outputs)
@@ -405,7 +405,7 @@ namespace Xt
                     return;
                 }
                 for (int c = 0; c < _outputChannels.SelectedItems.Count; c++)
-                    outputFormat.channels.outMask |= (1UL << ((ChannelView)_outputChannels.SelectedItems[c]).index);
+                    outputFormat.channels.outMask |= (1UL << ((ChannelInfo)_outputChannels.SelectedItems[c]).index);
 
                 if (type == StreamType.Capture)
                 {
