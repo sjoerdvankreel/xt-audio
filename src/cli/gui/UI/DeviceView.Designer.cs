@@ -30,11 +30,11 @@
         {
             System.Windows.Forms.Label label7;
             System.Windows.Forms.Label label15;
-            System.Windows.Forms.Label label2;
             System.Windows.Forms.Label label13;
             System.Windows.Forms.Label label10;
             System.Windows.Forms.Label label12;
             System.Windows.Forms.Label label11;
+            this._deviceLabel = new System.Windows.Forms.Label();
             this._capabilities = new System.Windows.Forms.Label();
             this._interleaved = new System.Windows.Forms.Label();
             this._device = new System.Windows.Forms.ComboBox();
@@ -45,7 +45,6 @@
             this._formatSupported = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
             label15 = new System.Windows.Forms.Label();
-            label2 = new System.Windows.Forms.Label();
             label13 = new System.Windows.Forms.Label();
             label10 = new System.Windows.Forms.Label();
             label12 = new System.Windows.Forms.Label();
@@ -70,15 +69,15 @@
             label15.TabIndex = 80;
             label15.Text = "Interleaved: ";
             // 
-            // label2
+            // _deviceLabel
             // 
-            label2.AutoSize = true;
-            label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            label2.Location = new System.Drawing.Point(3, 6);
-            label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(129, 13);
-            label2.TabIndex = 69;
-            label2.Text = "[DIRECTION] device:";
+            this._deviceLabel.AutoSize = true;
+            this._deviceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._deviceLabel.Location = new System.Drawing.Point(3, 6);
+            this._deviceLabel.Name = "_deviceLabel";
+            this._deviceLabel.Size = new System.Drawing.Size(129, 13);
+            this._deviceLabel.TabIndex = 69;
+            this._deviceLabel.Text = "[DIRECTION] device:";
             // 
             // label13
             // 
@@ -165,7 +164,7 @@
             // _bufferSizes
             // 
             this._bufferSizes.AutoSize = true;
-            this._bufferSizes.Location = new System.Drawing.Point(174, 60);
+            this._bufferSizes.Location = new System.Drawing.Point(101, 60);
             this._bufferSizes.Name = "_bufferSizes";
             this._bufferSizes.Size = new System.Drawing.Size(98, 13);
             this._bufferSizes.TabIndex = 77;
@@ -197,7 +196,7 @@
             this.Controls.Add(label7);
             this.Controls.Add(this._interleaved);
             this.Controls.Add(label15);
-            this.Controls.Add(label2);
+            this.Controls.Add(this._deviceLabel);
             this.Controls.Add(this._device);
             this.Controls.Add(this._channels);
             this.Controls.Add(this._controlPanel);
@@ -225,5 +224,6 @@
         private System.Windows.Forms.Label _formatSupported;
         public System.Windows.Forms.ComboBox _device;
         public System.Windows.Forms.ListBox _channels;
+        public System.Windows.Forms.Label _deviceLabel;
     }
 }

@@ -109,6 +109,8 @@ namespace Xt
             base.OnShown(e);
             var version = XtAudio.GetVersion();
             _log = new StreamWriter($"xt-audio.log");
+            _input._deviceLabel.Text = "Input device: ";
+            _output._deviceLabel.Text = "Output device: ";
             Text = $"XT-Audio {version.major}.{version.minor}";
             _platform = XtAudio.Init("XT-Gui", Handle, OnError);
             _rate.DataSource = Rates;
@@ -246,8 +248,8 @@ namespace Xt
         void FormatOrDeviceChanged()
         {
             _bufferSize.Minimum = 1;
-            _bufferSize.Value = 1000;
             _bufferSize.Maximum = 5000;
+            _bufferSize.Value = 1000;
             _output.FormatOrDeviceChanged(true, GetFormat(true));
             _input.FormatOrDeviceChanged(false, GetFormat(false));
 
@@ -258,7 +260,8 @@ namespace Xt
             }
 
             var format = GetFormat(true);
-            var buffer = format == null ? null : (_output._device.SelectedItem as DeviceInfo)?.Device?.GetBufferSize(format.Value);
+            bool supported = format == null ? false : (_output._device.SelectedItem as DeviceInfo)?.Device?.SupportsFormat(format.Value) == true;
+            var buffer = format == null || !supported ? null : (_output._device.SelectedItem as DeviceInfo)?.Device?.GetBufferSize(format.Value);
             if (buffer != null)
             {
                 _bufferSize.Minimum = (int)Math.Floor(buffer.Value.min);
