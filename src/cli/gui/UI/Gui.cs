@@ -109,10 +109,12 @@ namespace Xt
             base.OnShown(e);
             var version = XtAudio.GetVersion();
             _log = new StreamWriter($"xt-audio.log");
-            _input._deviceLabel.Text = "Input device: ";
-            _output._deviceLabel.Text = "Output device: ";
             Text = $"XT-Audio {version.major}.{version.minor}";
             _platform = XtAudio.Init("XT-Gui", Handle, OnError);
+            _input._deviceLabel.Text = "Input device: ";
+            _output._deviceLabel.Text = "Output device: ";
+            _input._device.SelectedValueChanged += OnDeviceChanged;
+            _output._device.SelectedValueChanged += OnDeviceChanged;
             _rate.DataSource = Rates;
             _rate.SelectedItem = 48000;
             _sample.DataSource = Samples;
