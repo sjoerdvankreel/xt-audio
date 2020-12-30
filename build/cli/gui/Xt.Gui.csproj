@@ -18,6 +18,8 @@
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="..\..\..\src\cli\gui\**\*.cs" />
+        <Compile Remove="..\..\..\src\cli\gui\UI\DeviceView.cs" />
+        <Compile Remove="..\..\..\src\cli\gui\UI\DeviceView.Designer.cs" />
         <EmbeddedResource Include="..\..\..\src\cli\gui\UI\Gui.resx">
             <Link>Gui.resx</Link>
             <DependentUpon>Gui.cs</DependentUpon>
