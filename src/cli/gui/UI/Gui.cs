@@ -54,6 +54,7 @@ namespace Xt
         XtSafeBuffer _safeBuffer;
 
         bool _messageAdded;
+        bool _suspendDeviceChanged;
         System.Windows.Forms.Timer _timer;
         ToolTip _bufferTip = new ToolTip();
         IList<string> _messages = new List<string>();
@@ -228,27 +229,36 @@ namespace Xt
 
         void OnSystemChanged(object sender, EventArgs e)
         {
-            XtService s = _platform.GetService((XtSystem)_system.SelectedItem);
-            _streamType.DataSource = GetStreamTypes(s);
-            _streamType.SelectedItem = StreamType.Render;
-            ClearDevices();
-            var defaultInputId = s.GetDefaultDeviceId(false);
-            var defaultOutputId = s.GetDefaultDeviceId(true);
-            using var inputList = s.OpenDeviceList(XtEnumFlags.Input);
-            using var outputList = s.OpenDeviceList(XtEnumFlags.Output);
-            var inputs = GetDeviceInfos(s, inputList, defaultInputId);
-            var outputs = GetDeviceInfos(s, outputList, defaultOutputId);
-            _input.SystemChanged(s, inputs);
-            _output.SystemChanged(s, outputs);
-            _serviceCaps.Text = s.GetCapabilities().ToString();
-            _secondaryInput.DataSource = new List<DeviceInfo>(inputs);
-            _secondaryOutput.DataSource = new List<DeviceInfo>(outputs);
-            _defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
-            _defaultOutput.Text = defaultOutputId == null ? "[None]" : outputList.GetName(defaultOutputId);
+            _suspendDeviceChanged = true;
+            try
+            {
+                XtService s = _platform.GetService((XtSystem)_system.SelectedItem);
+                _streamType.DataSource = GetStreamTypes(s);
+                _streamType.SelectedItem = StreamType.Render;
+                ClearDevices();
+                var defaultInputId = s.GetDefaultDeviceId(false);
+                var defaultOutputId = s.GetDefaultDeviceId(true);
+                using var inputList = s.OpenDeviceList(XtEnumFlags.Input);
+                using var outputList = s.OpenDeviceList(XtEnumFlags.Output);
+                var inputs = GetDeviceInfos(s, inputList, defaultInputId);
+                var outputs = GetDeviceInfos(s, outputList, defaultOutputId);
+                _input.SystemChanged(s, inputs);
+                _output.SystemChanged(s, outputs);
+                _serviceCaps.Text = s.GetCapabilities().ToString();
+                _secondaryInput.DataSource = new List<DeviceInfo>(inputs);
+                _secondaryOutput.DataSource = new List<DeviceInfo>(outputs);
+                _defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
+                _defaultOutput.Text = defaultOutputId == null ? "[None]" : outputList.GetName(defaultOutputId);
+            } finally
+            {
+                _suspendDeviceChanged = false;
+            }
+            FormatOrDeviceChanged();
         }
 
         void FormatOrDeviceChanged()
         {
+            if (_suspendDeviceChanged) return;
             _bufferSize.Minimum = 1;
             _bufferSize.Maximum = 5000;
             _bufferSize.Value = 1000;
