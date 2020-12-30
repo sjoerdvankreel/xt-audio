@@ -115,8 +115,8 @@ namespace Xt
             _rate.SelectedItem = 48000;
             _sample.DataSource = Samples;
             _sample.SelectedItem = XtSample.Int16;
-            _channelCount.SelectedItem = 2;
             _channelCount.DataSource = ChannelCounts;
+            _channelCount.SelectedItem = 2;
             _system.DataSource = _platform.GetSystems();
         }
 
@@ -189,7 +189,7 @@ namespace Xt
             var defaultInputId = s.GetDefaultDeviceId(false);
             var defaultOutputId = s.GetDefaultDeviceId(true);
             using var inputList = s.OpenDeviceList(XtEnumFlags.Input);
-            using var outputList = s.OpenDeviceList(XtEnumFlags.Input);
+            using var outputList = s.OpenDeviceList(XtEnumFlags.Output);
             var inputs = GetDeviceInfos(s, inputList, defaultInputId);
             var outputs = GetDeviceInfos(s, outputList, defaultOutputId);
 

@@ -18,8 +18,8 @@
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="..\..\..\src\cli\gui\**\*.cs" />
-        <EmbeddedResource Include="..\..\..\src\cli\gui\Gui.resx">
-            <Link>Gui.cs</Link>
+        <EmbeddedResource Include="..\..\..\src\cli\gui\UI\Gui.resx">
+            <Link>Gui.resx</Link>
             <DependentUpon>Gui.cs</DependentUpon>
         </EmbeddedResource>
     </ItemGroup>

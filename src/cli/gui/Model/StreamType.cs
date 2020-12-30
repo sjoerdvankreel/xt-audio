@@ -1,6 +1,6 @@
 namespace Xt
 {
-    enum StreamType
+    public enum StreamType
     {
         Capture,
         Render,
