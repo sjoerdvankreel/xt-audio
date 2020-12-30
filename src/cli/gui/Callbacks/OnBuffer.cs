@@ -25,10 +25,15 @@ namespace Xt
         {
             XtFormat format = stream.GetFormat();
             _processed += buffer.frames;
-            using var safe = XtSafeBuffer.Get(stream);
-            safe.Lock(in buffer);
-            ProcessBuffer(stream, in buffer, safe);
-            safe.Unlock(in buffer);
+            if (Params.Native)
+                ProcessBuffer(stream, in buffer, null);
+            else
+            {
+                var safe = XtSafeBuffer.Get(stream);
+                safe.Lock(in buffer);
+                ProcessBuffer(stream, in buffer, safe);
+                safe.Unlock(in buffer);
+            }
             if (_processed < format.mix.rate * 3) return 0;
 
             _processed = 0;
