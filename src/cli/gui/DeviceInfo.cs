@@ -1,6 +1,6 @@
 ﻿namespace Xt
 {
-    class DeviceView
+    class DeviceInfo
     {
         internal XtDevice device;
         internal string id;

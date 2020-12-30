@@ -57,7 +57,7 @@ namespace Xt
         System.Windows.Forms.Timer _timer;
         ToolTip _bufferTip = new ToolTip();
         IList<string> _messages = new List<string>();
-        IList<DeviceView> _deviceViews = new List<DeviceView>();
+        IList<DeviceInfo> _allDevices = new List<DeviceInfo>();
 
         public XtGui()
         {
@@ -85,14 +85,14 @@ namespace Xt
         void OnError(in XtLocation location, string message) => AddError(location, message);
         void AddError(XtLocation location, string message) => AddMessage(() => string.Format("{0}: {1}", location, message));
         void OnBufferSizeScroll(object sender, EventArgs e) => _bufferTip.SetToolTip(_bufferSize, _bufferSize.Value.ToString());
-        void OnShowInputPanel(object sender, EventArgs e) => ((DeviceView)_inputDevice.SelectedItem)?.device.ShowControlPanel();
-        void OnShowOutputPanel(object sender, EventArgs e) => ((DeviceView)_outputDevice.SelectedItem)?.device.ShowControlPanel();
+        void OnShowInputPanel(object sender, EventArgs e) => ((DeviceInfo)_inputDevice.SelectedItem)?.device.ShowControlPanel();
+        void OnShowOutputPanel(object sender, EventArgs e) => ((DeviceInfo)_outputDevice.SelectedItem)?.device.ShowControlPanel();
 
         void ClearDevices()
         {
-            foreach (DeviceView view in _deviceViews)
-                view.device.Dispose();
-            _deviceViews.Clear();
+            foreach (DeviceInfo info in _allDevices)
+                info.device.Dispose();
+            _allDevices.Clear();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -144,10 +144,10 @@ namespace Xt
             return result;
         }
 
-        DeviceView GetDeviceView(XtService service, XtDeviceList list, int index, string defaultId)
+        DeviceInfo GetDeviceInfo(XtService service, XtDeviceList list, int index, string defaultId)
         {
             var id = list.GetId(index);
-            var result = new DeviceView();
+            var result = new DeviceInfo();
             result.id = id;
             result.name = list.GetName(id);
             result.defaultInput = id == defaultId;
@@ -157,19 +157,19 @@ namespace Xt
             return result;
         }
 
-        IList<DeviceView> GetDeviceViews(XtService service, XtDeviceList list, string defaultId)
+        IList<DeviceInfo> GetDeviceInfos(XtService service, XtDeviceList list, string defaultId)
         {
-            var result = new List<DeviceView>();
-            var noDevice = new DeviceView();
+            var result = new List<DeviceInfo>();
+            var noDevice = new DeviceInfo();
             noDevice.id = "None";
             noDevice.name = "[None]";
             result.Add(noDevice);
             for (int i = 0; i < list.GetCount(); i++)
                 try
                 {
-                    var view = GetDeviceView(service, list, i, defaultId);
-                    result.Insert(view.defaultInput || view.defaultInput ? 1 : result.Count, view);
-                    _deviceViews.Add(view);
+                    var info = GetDeviceInfo(service, list, i, defaultId);
+                    result.Insert(info.defaultInput || info.defaultInput ? 1 : result.Count, info);
+                    _allDevices.Add(info);
                 } catch (XtException e)
                 {
                     AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
@@ -190,16 +190,16 @@ namespace Xt
             var defaultOutputId = s.GetDefaultDeviceId(true);
             using var inputList = s.OpenDeviceList(XtEnumFlags.Input);
             using var outputList = s.OpenDeviceList(XtEnumFlags.Input);
-            var inputViews = GetDeviceViews(s, inputList, defaultInputId);
-            var outputViews = GetDeviceViews(s, outputList, defaultOutputId);
+            var inputs = GetDeviceInfos(s, inputList, defaultInputId);
+            var outputs = GetDeviceInfos(s, outputList, defaultOutputId);
 
             _serviceCaps.Text = s.GetCapabilities().ToString();
-            _inputDevice.DataSource = new List<DeviceView>(inputViews);
-            _outputDevice.DataSource = new List<DeviceView>(outputViews);
-            _secondaryInput.DataSource = new List<DeviceView>(inputViews);
-            _secondaryOutput.DataSource = new List<DeviceView>(outputViews);
-            _inputDevice.SelectedIndex = inputViews.Count == 1 ? 0 : 1;
-            _outputDevice.SelectedIndex = outputViews.Count == 1 ? 0 : 1;
+            _inputDevice.DataSource = new List<DeviceInfo>(inputs);
+            _outputDevice.DataSource = new List<DeviceInfo>(outputs);
+            _secondaryInput.DataSource = new List<DeviceInfo>(inputs);
+            _secondaryOutput.DataSource = new List<DeviceInfo>(outputs);
+            _inputDevice.SelectedIndex = inputs.Count == 1 ? 0 : 1;
+            _outputDevice.SelectedIndex = outputs.Count == 1 ? 0 : 1;
             _inputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
             _outputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
             _defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
@@ -216,7 +216,7 @@ namespace Xt
 
             XtFormat? inputFormat = GetFormat(false);
             XtDevice inputDevice = this._inputDevice.SelectedItem == null ?
-                null : ((DeviceView)(this._inputDevice.SelectedItem)).device;
+                null : ((DeviceInfo)(this._inputDevice.SelectedItem)).device;
             bool inputSupported = inputDevice == null || inputFormat == null ? false : inputDevice.SupportsFormat(inputFormat.Value);
             _inputFormatSupported.Text = inputSupported.ToString();
             XtBufferSize? inputBuffer = !inputSupported ? (XtBufferSize?)null : inputDevice.GetBufferSize(inputFormat.Value);
@@ -231,7 +231,7 @@ namespace Xt
                 : inputDevice.SupportsAccess(false)
                 ? "False"
                 : "True";
-            _inputCaps.Text = this._inputDevice.SelectedItem == null ? "None" : ((DeviceView)(this._inputDevice.SelectedItem)).capabilities.ToString();
+            _inputCaps.Text = this._inputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._inputDevice.SelectedItem)).capabilities.ToString();
             List<ChannelView> inputViews = new List<ChannelView>();
             if (inputDevice != null)
                 inputViews = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
@@ -243,7 +243,7 @@ namespace Xt
 
             XtFormat? outputFormat = GetFormat(true);
             XtDevice outputDevice = this._outputDevice.SelectedItem == null ?
-                null : ((DeviceView)(this._outputDevice.SelectedItem)).device;
+                null : ((DeviceInfo)(this._outputDevice.SelectedItem)).device;
             bool outputSupported = outputDevice == null || outputFormat == null ? false : outputDevice.SupportsFormat(outputFormat.Value);
             _outputFormatSupported.Text = outputSupported.ToString();
             XtBufferSize? outputBuffer = !outputSupported ? (XtBufferSize?)null : outputDevice.GetBufferSize(outputFormat.Value);
@@ -258,7 +258,7 @@ namespace Xt
                 : outputDevice.SupportsAccess(false)
                 ? "False"
                 : "True";
-            _outputCaps.Text = this._outputDevice.SelectedItem == null ? "None" : ((DeviceView)(this._outputDevice.SelectedItem)).capabilities.ToString();
+            _outputCaps.Text = this._outputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._outputDevice.SelectedItem)).capabilities.ToString();
             List<ChannelView> outputViews = new List<ChannelView>();
             if (outputDevice != null)
                 outputViews = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))
@@ -338,12 +338,12 @@ namespace Xt
                 StreamType type = (StreamType)_streamType.SelectedItem;
                 bool input = type == StreamType.Capture || type == StreamType.Duplex || type == StreamType.Latency;
                 bool output = type == StreamType.Render || type == StreamType.Duplex || type == StreamType.Latency;
-                var inputView = (DeviceView)this._inputDevice.SelectedItem;
-                var outputView = (DeviceView)this._outputDevice.SelectedItem;
-                XtDevice inputDevice = inputView.device;
-                XtDevice outputDevice = outputView.device;
-                XtDevice secondaryInputDevice = ((DeviceView)this._secondaryInput.SelectedItem).device;
-                XtDevice secondaryOutputDevice = ((DeviceView)this._secondaryOutput.SelectedItem).device;
+                var inputInfo = (DeviceInfo)this._inputDevice.SelectedItem;
+                var outputInfo = (DeviceInfo)this._outputDevice.SelectedItem;
+                XtDevice inputDevice = inputInfo.device;
+                XtDevice outputDevice = outputInfo.device;
+                XtDevice secondaryInputDevice = ((DeviceInfo)this._secondaryInput.SelectedItem).device;
+                XtDevice secondaryOutputDevice = ((DeviceInfo)this._secondaryOutput.SelectedItem).device;
 
                 if (input && inputDevice == null)
                 {
@@ -361,7 +361,7 @@ namespace Xt
                     return;
                 }
 
-                if (type == StreamType.Duplex && inputView.id != outputView.id)
+                if (type == StreamType.Duplex && inputInfo.id != outputInfo.id)
                 {
                     MessageBox.Show(this,
                         "For duplex operation, input and output device must be the same.",
