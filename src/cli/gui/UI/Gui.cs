@@ -84,9 +84,12 @@ namespace Xt
         {
             _stream?.Stop();
             _stream?.Dispose();
+            _stream = null;
             _captureFile?.Flush();
             _captureFile?.Dispose();
+            _captureFile = null;
             _safeBuffer?.Dispose();
+            _safeBuffer = null;
         }
 
         void ClearDevices()
