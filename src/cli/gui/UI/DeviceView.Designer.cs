@@ -219,11 +219,11 @@
 
         private System.Windows.Forms.Label _capabilities;
         private System.Windows.Forms.Label _interleaved;
-        private System.Windows.Forms.ListBox _channels;
         private System.Windows.Forms.Button _controlPanel;
         private System.Windows.Forms.Label _bufferSizes;
         private System.Windows.Forms.Label _mix;
         private System.Windows.Forms.Label _formatSupported;
         public System.Windows.Forms.ComboBox _device;
+        public System.Windows.Forms.ListBox _channels;
     }
 }
