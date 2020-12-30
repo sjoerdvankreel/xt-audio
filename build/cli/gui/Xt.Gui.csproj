@@ -19,8 +19,12 @@
     <ItemGroup>
         <Compile Include="..\..\..\src\cli\gui\**\*.cs" />
         <EmbeddedResource Include="..\..\..\src\cli\gui\UI\Gui.resx">
-            <Link>Gui.resx</Link>
+            <Link>UI\Gui.resx</Link>
             <DependentUpon>Gui.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\src\cli\gui\UI\DeviceView.resx">
+            <Link>UI\DeviceView.resx</Link>
+            <DependentUpon>DeviceView.cs</DependentUpon>
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
