@@ -4,6 +4,7 @@
 * fix javadoc warnings
 * package zip in build script
 * cleanup cli gui
+* test gui on linux
 
 ** LATER
 * arm
