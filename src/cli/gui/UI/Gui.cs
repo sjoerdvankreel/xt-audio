@@ -317,11 +317,13 @@ namespace Xt
             bool native = _streamNative.Checked;
             bool interleaved = _streamInterleaved.Checked;
 
+            var @params = new OnBufferParams(interleaved, native, AddMessage);
             if (type == StreamType.Capture)
             {
+                @params.Name = "Capture";
                 _captureFile = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
-                CaptureCallback callback = new CaptureCallback(interleaved, native, AddMessage, _captureFile);
-                var streamParams = new XtStreamParams(interleaved, callback.OnCallback, onXRun, OnRunning);
+                OnCapture callback = new OnCapture(@params, _captureFile);
+                var streamParams = new XtStreamParams(interleaved, callback.Callback, onXRun, OnRunning);
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in inputFormat, buffer);
                 _stream = inputDevice.OpenStream(in deviceParams, "capture-user-data");
                 callback.Init(_stream.GetFormat(), _stream.GetFrames());
@@ -329,33 +331,36 @@ namespace Xt
                 _stream.Start();
             } else if (type == StreamType.Render)
             {
-                RenderCallback callback = new RenderCallback(interleaved, native, AddMessage);
-                var streamParams = new XtStreamParams(interleaved, callback.OnCallback, onXRun, OnRunning);
+                @params.Name = "Render";
+                OnRender callback = new OnRender(@params);
+                var streamParams = new XtStreamParams(interleaved, callback.Callback, onXRun, OnRunning);
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in outputFormat, buffer);
                 _stream = outputDevice.OpenStream(in deviceParams, "render-user-data");
                 _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
                 _stream.Start();
             } else if (type == StreamType.Duplex)
             {
+                @params.Name = "Duplex";
                 XtFormat duplexFormat = inputFormat;
                 duplexFormat.channels.outputs = outputFormat.channels.outputs;
                 duplexFormat.channels.outMask = outputFormat.channels.outMask;
-                FullDuplexCallback callback = new FullDuplexCallback(interleaved, native, AddMessage);
-                var streamParams = new XtStreamParams(interleaved, callback.OnCallback, onXRun, OnRunning);
+                OnFullDuplex callback = new OnFullDuplex(@params);
+                var streamParams = new XtStreamParams(interleaved, callback.Callback, onXRun, OnRunning);
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, buffer);
                 _stream = outputDevice.OpenStream(in deviceParams, "duplex-user-data");
                 _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
                 _stream.Start();
             } else if (type == StreamType.Aggregate)
             {
+                @params.Name = "Aggregate";
                 var devices = new List<XtAggregateDeviceParams>();
                 XtDevice master = _outputMaster.Checked ? (outputDevice ?? secondaryOutputDevice) : (inputDevice ?? secondaryInputDevice);
                 if (inputDevice != null) devices.Add(new XtAggregateDeviceParams(inputDevice, inputFormat.channels, buffer));
                 if (outputDevice != null) devices.Add(new XtAggregateDeviceParams(outputDevice, outputFormat.channels, buffer));
                 if (secondaryInputDevice != null) devices.Add(new XtAggregateDeviceParams(secondaryInputDevice, inputFormat.channels, buffer));
                 if (secondaryOutputDevice != null) devices.Add(new XtAggregateDeviceParams(secondaryOutputDevice, outputFormat.channels, buffer));
-                AggregateCallback streamCallback = new AggregateCallback(interleaved, native, AddMessage);
-                var streamParams = new XtStreamParams(interleaved, streamCallback.OnCallback, onXRun, OnRunning);
+                OnAggregate streamCallback = new OnAggregate(@params);
+                var streamParams = new XtStreamParams(interleaved, streamCallback.Callback, onXRun, OnRunning);
                 var aggregateParams = new XtAggregateStreamParams(in streamParams, devices.ToArray(), devices.Count, outputFormat.mix, master);
                 _stream = _platform.GetService(system).AggregateStream(in aggregateParams, "aggregate-user-data");
                 streamCallback.Init(_stream.GetFrames());

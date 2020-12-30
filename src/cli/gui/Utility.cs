@@ -22,18 +22,12 @@ namespace Xt
         {
             switch (sample)
             {
-                case XtSample.UInt8:
-                    return new byte[channels * frames];
-                case XtSample.Int16:
-                    return new short[channels * frames];
-                case XtSample.Int24:
-                    return new byte[channels * frames * 3];
-                case XtSample.Int32:
-                    return new int[channels * frames];
-                case XtSample.Float32:
-                    return new float[channels * frames];
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case XtSample.UInt8: return new byte[channels * frames];
+            case XtSample.Int16: return new short[channels * frames];
+            case XtSample.Int24: return new byte[channels * frames * 3];
+            case XtSample.Int32: return new int[channels * frames];
+            case XtSample.Float32: return new float[channels * frames];
+            default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -41,23 +35,12 @@ namespace Xt
         {
             switch (sample)
             {
-                case XtSample.UInt8:
-                    Marshal.Copy(source, (byte[])target, 0, channels * frames);
-                    break;
-                case XtSample.Int16:
-                    Marshal.Copy(source, (short[])target, 0, channels * frames);
-                    break;
-                case XtSample.Int24:
-                    Marshal.Copy(source, (byte[])target, 0, channels * frames * 3);
-                    break;
-                case XtSample.Int32:
-                    Marshal.Copy(source, (int[])target, 0, channels * frames);
-                    break;
-                case XtSample.Float32:
-                    Marshal.Copy(source, (float[])target, 0, channels * frames);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case XtSample.UInt8: Marshal.Copy(source, (byte[])target, 0, channels * frames); break;
+            case XtSample.Int16: Marshal.Copy(source, (short[])target, 0, channels * frames); break;
+            case XtSample.Int24: Marshal.Copy(source, (byte[])target, 0, channels * frames * 3); break;
+            case XtSample.Int32: Marshal.Copy(source, (int[])target, 0, channels * frames); break;
+            case XtSample.Float32: Marshal.Copy(source, (float[])target, 0, channels * frames); break;
+            default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -65,23 +48,12 @@ namespace Xt
         {
             switch (sample)
             {
-                case XtSample.UInt8:
-                    Marshal.Copy((byte[])source, 0, target, channels * frames);
-                    break;
-                case XtSample.Int16:
-                    Marshal.Copy((short[])source, 0, target, channels * frames);
-                    break;
-                case XtSample.Int24:
-                    Marshal.Copy((byte[])source, 0, target, channels * frames * 3);
-                    break;
-                case XtSample.Int32:
-                    Marshal.Copy((int[])source, 0, target, channels * frames);
-                    break;
-                case XtSample.Float32:
-                    Marshal.Copy((float[])source, 0, target, channels * frames);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case XtSample.UInt8: Marshal.Copy((byte[])source, 0, target, channels * frames); break;
+            case XtSample.Int16: Marshal.Copy((short[])source, 0, target, channels * frames); break;
+            case XtSample.Int24: Marshal.Copy((byte[])source, 0, target, channels * frames * 3); break;
+            case XtSample.Int32: Marshal.Copy((int[])source, 0, target, channels * frames); break;
+            case XtSample.Float32: Marshal.Copy((float[])source, 0, target, channels * frames); break;
+            default: throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -89,34 +61,32 @@ namespace Xt
         {
             switch (sample)
             {
-                case XtSample.UInt8:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((byte[])target)[f * channels + c] = ((byte[][])source)[c][f];
-                    break;
-                case XtSample.Int16:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((short[])target)[f * channels + c] = ((short[][])source)[c][f];
-                    break;
-                case XtSample.Int24:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            for (int i = 0; i < 3; i++)
-                                ((byte[])target)[(f * channels + c) * 3 + i] = ((byte[][])source)[c][f * 3 + i];
-                    break;
-                case XtSample.Int32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((int[])target)[f * channels + c] = ((int[][])source)[c][f];
-                    break;
-                case XtSample.Float32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((float[])target)[f * channels + c] = ((float[][])source)[c][f];
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case XtSample.UInt8:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((byte[])target)[f * channels + c] = ((byte[][])source)[c][f];
+            break;
+            case XtSample.Int16:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((short[])target)[f * channels + c] = ((short[][])source)[c][f];
+            break;
+            case XtSample.Int24:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++) for (int i = 0; i < 3; i++)
+                        ((byte[])target)[(f * channels + c) * 3 + i] = ((byte[][])source)[c][f * 3 + i];
+            break;
+            case XtSample.Int32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++) ((int[])target)[f * channels + c] = ((int[][])source)[c][f];
+            break;
+            case XtSample.Float32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((float[])target)[f * channels + c] = ((float[][])source)[c][f];
+            break;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -124,34 +94,34 @@ namespace Xt
         {
             switch (sample)
             {
-                case XtSample.UInt8:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((byte[])target)[f * channels + c] = ((byte**)source)[c][f];
-                    break;
-                case XtSample.Int16:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((short[])target)[f * channels + c] = ((short**)source)[c][f];
-                    break;
-                case XtSample.Int24:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            for (int i = 0; i < 3; i++)
-                                ((byte[])target)[(f * channels + c) * 3 + i] = ((byte**)source)[c][f * 3 + i];
-                    break;
-                case XtSample.Int32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((int[])target)[f * channels + c] = ((int**)source)[c][f];
-                    break;
-                case XtSample.Float32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((float[])target)[f * channels + c] = ((float**)source)[c][f];
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case XtSample.UInt8:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((byte[])target)[f * channels + c] = ((byte**)source)[c][f];
+            break;
+            case XtSample.Int16:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((short[])target)[f * channels + c] = ((short**)source)[c][f];
+            break;
+            case XtSample.Int24:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    for (int i = 0; i < 3; i++)
+                        ((byte[])target)[(f * channels + c) * 3 + i] = ((byte**)source)[c][f * 3 + i];
+            break;
+            case XtSample.Int32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((int[])target)[f * channels + c] = ((int**)source)[c][f];
+            break;
+            case XtSample.Float32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((float[])target)[f * channels + c] = ((float**)source)[c][f];
+            break;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -159,34 +129,34 @@ namespace Xt
         {
             switch (sample)
             {
-                case XtSample.UInt8:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((byte[][])target)[c][f] = ((byte[])source)[f * channels + c];
-                    break;
-                case XtSample.Int16:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((short[][])target)[c][f] = ((short[])source)[f * channels + c];
-                    break;
-                case XtSample.Int24:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            for (int i = 0; i < 3; i++)
-                                ((byte[][])target)[c][f * 3 + i] = ((byte[])source)[(f * channels + c) * 3 + i];
-                    break;
-                case XtSample.Int32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((int[][])target)[c][f] = ((int[])source)[f * channels + c];
-                    break;
-                case XtSample.Float32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((float[][])target)[c][f] = ((float[])source)[f * channels + c];
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case XtSample.UInt8:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((byte[][])target)[c][f] = ((byte[])source)[f * channels + c];
+            break;
+            case XtSample.Int16:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((short[][])target)[c][f] = ((short[])source)[f * channels + c];
+            break;
+            case XtSample.Int24:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    for (int i = 0; i < 3; i++)
+                        ((byte[][])target)[c][f * 3 + i] = ((byte[])source)[(f * channels + c) * 3 + i];
+            break;
+            case XtSample.Int32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((int[][])target)[c][f] = ((int[])source)[f * channels + c];
+            break;
+            case XtSample.Float32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((float[][])target)[c][f] = ((float[])source)[f * channels + c];
+            break;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -194,34 +164,34 @@ namespace Xt
         {
             switch (sample)
             {
-                case XtSample.UInt8:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((byte**)target)[c][f] = ((byte[])source)[f * channels + c];
-                    break;
-                case XtSample.Int16:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((short**)target)[c][f] = ((short[])source)[f * channels + c];
-                    break;
-                case XtSample.Int24:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            for (int i = 0; i < 3; i++)
-                                ((byte**)target)[c][f * 3 + i] = ((byte[])source)[(f * channels + c) * 3 + i];
-                    break;
-                case XtSample.Int32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((int**)target)[c][f] = ((int[])source)[f * channels + c];
-                    break;
-                case XtSample.Float32:
-                    for (int f = 0; f < frames; f++)
-                        for (int c = 0; c < channels; c++)
-                            ((float**)target)[c][f] = ((float[])source)[f * channels + c];
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            case XtSample.UInt8:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((byte**)target)[c][f] = ((byte[])source)[f * channels + c];
+            break;
+            case XtSample.Int16:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((short**)target)[c][f] = ((short[])source)[f * channels + c];
+            break;
+            case XtSample.Int24:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    for (int i = 0; i < 3; i++)
+                        ((byte**)target)[c][f * 3 + i] = ((byte[])source)[(f * channels + c) * 3 + i];
+            break;
+            case XtSample.Int32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((int**)target)[c][f] = ((int[])source)[f * channels + c];
+            break;
+            case XtSample.Float32:
+            for (int f = 0; f < frames; f++)
+                for (int c = 0; c < channels; c++)
+                    ((float**)target)[c][f] = ((float[])source)[f * channels + c];
+            break;
+            default:
+            throw new ArgumentOutOfRangeException();
             }
         }
     }
