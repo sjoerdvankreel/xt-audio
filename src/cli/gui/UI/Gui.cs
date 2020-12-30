@@ -293,7 +293,7 @@ namespace Xt
             XtSystem system = (XtSystem)_system.SelectedItem;
             OnXRun onXRunWrapper = new OnXRun(AddMessage);
             bool doLogXRuns = state == CheckState.Checked || (state == CheckState.Indeterminate && system != XtSystem.JACK);
-            XtOnXRun onXRun = doLogXRuns ? onXRunWrapper.OnCallback : (XtOnXRun)null;
+            XtOnXRun onXRun = doLogXRuns ? onXRunWrapper.Callback : (XtOnXRun)null;
 
             XtFormat inputFormat = GetFormat(false).Value;
             var inputSelection = _input._channels.SelectedItems;
