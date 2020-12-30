@@ -52,37 +52,19 @@
             label11 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // _capabilities
-            // 
-            this._capabilities.AutoSize = true;
-            this._capabilities.Location = new System.Drawing.Point(100, 87);
-            this._capabilities.Name = "_capabilities";
-            this._capabilities.Size = new System.Drawing.Size(33, 13);
-            this._capabilities.TabIndex = 83;
-            this._capabilities.Text = "None";
-            // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new System.Drawing.Point(4, 87);
+            label7.Location = new System.Drawing.Point(3, 87);
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(63, 13);
             label7.TabIndex = 82;
             label7.Text = "Capabilities:";
             // 
-            // _interleaved
-            // 
-            this._interleaved.AutoSize = true;
-            this._interleaved.Location = new System.Drawing.Point(389, 60);
-            this._interleaved.Name = "_interleaved";
-            this._interleaved.Size = new System.Drawing.Size(29, 13);
-            this._interleaved.TabIndex = 81;
-            this._interleaved.Text = "Both";
-            // 
             // label15
             // 
             label15.AutoSize = true;
-            label15.Location = new System.Drawing.Point(307, 60);
+            label15.Location = new System.Drawing.Point(309, 60);
             label15.Name = "label15";
             label15.Size = new System.Drawing.Size(66, 13);
             label15.TabIndex = 80;
@@ -92,17 +74,71 @@
             // 
             label2.AutoSize = true;
             label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            label2.Location = new System.Drawing.Point(4, 6);
+            label2.Location = new System.Drawing.Point(3, 6);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(129, 13);
             label2.TabIndex = 69;
             label2.Text = "[DIRECTION] device:";
             // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new System.Drawing.Point(3, 35);
+            label13.Name = "label13";
+            label13.Size = new System.Drawing.Size(92, 13);
+            label13.TabIndex = 74;
+            label13.Text = "Format supported:";
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new System.Drawing.Point(3, 113);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(77, 13);
+            label10.TabIndex = 71;
+            label10.Text = "Channel mask:";
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new System.Drawing.Point(174, 35);
+            label12.Name = "label12";
+            label12.Size = new System.Drawing.Size(62, 13);
+            label12.TabIndex = 73;
+            label12.Text = "Current mix:";
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new System.Drawing.Point(3, 60);
+            label11.Name = "label11";
+            label11.Size = new System.Drawing.Size(86, 13);
+            label11.TabIndex = 72;
+            label11.Text = "Buffer sizes (ms):";
+            // 
+            // _capabilities
+            // 
+            this._capabilities.AutoSize = true;
+            this._capabilities.Location = new System.Drawing.Point(101, 87);
+            this._capabilities.Name = "_capabilities";
+            this._capabilities.Size = new System.Drawing.Size(33, 13);
+            this._capabilities.TabIndex = 83;
+            this._capabilities.Text = "None";
+            // 
+            // _interleaved
+            // 
+            this._interleaved.AutoSize = true;
+            this._interleaved.Location = new System.Drawing.Point(391, 60);
+            this._interleaved.Name = "_interleaved";
+            this._interleaved.Size = new System.Drawing.Size(29, 13);
+            this._interleaved.TabIndex = 81;
+            this._interleaved.Text = "Both";
+            // 
             // _device
             // 
             this._device.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this._device.FormattingEnabled = true;
-            this._device.Location = new System.Drawing.Point(102, 3);
+            this._device.Location = new System.Drawing.Point(104, 3);
             this._device.Name = "_device";
             this._device.Size = new System.Drawing.Size(316, 21);
             this._device.TabIndex = 70;
@@ -110,7 +146,7 @@
             // _channels
             // 
             this._channels.FormattingEnabled = true;
-            this._channels.Location = new System.Drawing.Point(102, 113);
+            this._channels.Location = new System.Drawing.Point(104, 113);
             this._channels.Name = "_channels";
             this._channels.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this._channels.Size = new System.Drawing.Size(316, 69);
@@ -118,17 +154,18 @@
             // 
             // _controlPanel
             // 
-            this._controlPanel.Location = new System.Drawing.Point(310, 30);
+            this._controlPanel.Location = new System.Drawing.Point(312, 30);
             this._controlPanel.Name = "_controlPanel";
             this._controlPanel.Size = new System.Drawing.Size(108, 23);
             this._controlPanel.TabIndex = 78;
             this._controlPanel.Text = "Show control panel";
             this._controlPanel.UseVisualStyleBackColor = true;
+            this._controlPanel.Click += new System.EventHandler(this.OnControlPanelClick);
             // 
             // _bufferSizes
             // 
             this._bufferSizes.AutoSize = true;
-            this._bufferSizes.Location = new System.Drawing.Point(172, 60);
+            this._bufferSizes.Location = new System.Drawing.Point(174, 60);
             this._bufferSizes.Name = "_bufferSizes";
             this._bufferSizes.Size = new System.Drawing.Size(98, 13);
             this._bufferSizes.TabIndex = 77;
@@ -146,47 +183,11 @@
             // _formatSupported
             // 
             this._formatSupported.AutoSize = true;
-            this._formatSupported.Location = new System.Drawing.Point(99, 35);
+            this._formatSupported.Location = new System.Drawing.Point(101, 35);
             this._formatSupported.Name = "_formatSupported";
             this._formatSupported.Size = new System.Drawing.Size(32, 13);
             this._formatSupported.TabIndex = 75;
             this._formatSupported.Text = "False";
-            // 
-            // label13
-            // 
-            label13.AutoSize = true;
-            label13.Location = new System.Drawing.Point(4, 35);
-            label13.Name = "label13";
-            label13.Size = new System.Drawing.Size(92, 13);
-            label13.TabIndex = 74;
-            label13.Text = "Format supported:";
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(4, 113);
-            label10.Name = "label10";
-            label10.Size = new System.Drawing.Size(77, 13);
-            label10.TabIndex = 71;
-            label10.Text = "Channel mask:";
-            // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.Location = new System.Drawing.Point(172, 35);
-            label12.Name = "label12";
-            label12.Size = new System.Drawing.Size(62, 13);
-            label12.TabIndex = 73;
-            label12.Text = "Current mix:";
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Location = new System.Drawing.Point(4, 60);
-            label11.Name = "label11";
-            label11.Size = new System.Drawing.Size(86, 13);
-            label11.TabIndex = 72;
-            label11.Text = "Buffer sizes (ms):";
             // 
             // DeviceView
             // 

@@ -15,8 +15,10 @@ namespace Xt
         static readonly IList<int> Rates = new List<int>() { 11025, 22050, 44100, 48000, 96000, 192000 };
         static readonly IList<XtSample> Samples = Enum.GetValues(typeof(XtSample)).Cast<XtSample>().ToList();
 
-        static void OnThreadException(object sender, ThreadExceptionEventArgs e) => OnError(e.Exception);
-        static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) => OnError((Exception)e.ExceptionObject);
+        static void OnThreadException(object sender, ThreadExceptionEventArgs e)
+        => OnError(e.Exception);
+        static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        => OnError((Exception)e.ExceptionObject);
 
         [STAThread]
         public static void Main(string[] args)
@@ -59,6 +61,17 @@ namespace Xt
         IList<string> _messages = new List<string>();
         IList<DeviceInfo> _allDevices = new List<DeviceInfo>();
 
+        void OnStop(object sender, EventArgs e) => Stop();
+        void OnDeviceChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
+        void OnFormatChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
+
+        void OnError(in XtLocation location, string message)
+        => AddError(location, message);
+        void AddError(XtLocation location, string message)
+        => AddMessage(() => string.Format("{0}: {1}", location, message));
+        void OnBufferSizeScroll(object sender, EventArgs e)
+        => _bufferTip.SetToolTip(_bufferSize, _bufferSize.Value.ToString());
+
         public XtGui()
         {
             InitializeComponent();
@@ -68,25 +81,16 @@ namespace Xt
             _timer.Start();
         }
 
-        void OnTimerTick(object sender, EventArgs e)
+        void Stop()
         {
-            if (!_messageAdded) return;
-            while (_messages.Count > MaxMessages) _messages.RemoveAt(0);
-            _guiLog.Text = string.Join(Environment.NewLine, _messages);
-            _guiLog.SelectionStart = _guiLog.TextLength;
-            _guiLog.ScrollToCaret();
-            _messageAdded = false;
+            _inputStream?.Stop();
+            _inputStream?.Dispose();
+            _outputStream?.Stop();
+            _outputStream?.Dispose();
+            _captureFile?.Flush();
+            _captureFile?.Dispose(); 
+            _safeBuffer?.Dispose();
         }
-
-        void OnStop(object sender, EventArgs e) => Stop();
-        void OnSystemChanged(object sender, EventArgs e) => SystemChanged();
-        void OnDeviceChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
-        void OnFormatChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
-        void OnError(in XtLocation location, string message) => AddError(location, message);
-        void AddError(XtLocation location, string message) => AddMessage(() => string.Format("{0}: {1}", location, message));
-        void OnBufferSizeScroll(object sender, EventArgs e) => _bufferTip.SetToolTip(_bufferSize, _bufferSize.Value.ToString());
-        void OnShowInputPanel(object sender, EventArgs e) => ((DeviceInfo)_inputDevice.SelectedItem)?.Device.ShowControlPanel();
-        void OnShowOutputPanel(object sender, EventArgs e) => ((DeviceInfo)_outputDevice.SelectedItem)?.Device.ShowControlPanel();
 
         void ClearDevices()
         {
@@ -118,6 +122,16 @@ namespace Xt
             _channelCount.DataSource = ChannelCounts;
             _channelCount.SelectedItem = 2;
             _system.DataSource = _platform.GetSystems();
+        }
+
+        void OnTimerTick(object sender, EventArgs e)
+        {
+            if (!_messageAdded) return;
+            while (_messages.Count > MaxMessages) _messages.RemoveAt(0);
+            _guiLog.Text = string.Join(Environment.NewLine, _messages);
+            _guiLog.SelectionStart = _guiLog.TextLength;
+            _guiLog.ScrollToCaret();
+            _messageAdded = false;
         }
 
         void AddMessage(Func<string> message)
@@ -177,136 +191,49 @@ namespace Xt
             return result;
         }
 
-        private void SystemChanged()
+        void OnSystemChanged(object sender, EventArgs e)
         {
             XtService s = _platform.GetService((XtSystem)_system.SelectedItem);
-            _inputDevice.DataSource = null;
-            _outputDevice.DataSource = null;
             _streamType.DataSource = GetStreamTypes(s);
             _streamType.SelectedItem = StreamType.Render;
             ClearDevices();
-
             var defaultInputId = s.GetDefaultDeviceId(false);
             var defaultOutputId = s.GetDefaultDeviceId(true);
             using var inputList = s.OpenDeviceList(XtEnumFlags.Input);
             using var outputList = s.OpenDeviceList(XtEnumFlags.Output);
             var inputs = GetDeviceInfos(s, inputList, defaultInputId);
             var outputs = GetDeviceInfos(s, outputList, defaultOutputId);
-
+            _input.SystemChanged(s, inputs);
+            _output.SystemChanged(s, outputs);
             _serviceCaps.Text = s.GetCapabilities().ToString();
-            _inputDevice.DataSource = new List<DeviceInfo>(inputs);
-            _outputDevice.DataSource = new List<DeviceInfo>(outputs);
             _secondaryInput.DataSource = new List<DeviceInfo>(inputs);
             _secondaryOutput.DataSource = new List<DeviceInfo>(outputs);
-            _inputDevice.SelectedIndex = inputs.Count == 1 ? 0 : 1;
-            _outputDevice.SelectedIndex = outputs.Count == 1 ? 0 : 1;
-            _inputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
-            _outputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
             _defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
             _defaultOutput.Text = defaultOutputId == null ? "[None]" : outputList.GetName(defaultOutputId);
         }
 
-        private void FormatOrDeviceChanged()
+        void FormatOrDeviceChanged()
         {
+            _bufferSize.Minimum = 1;
+            _bufferSize.Value = 1000;
+            _bufferSize.Maximum = 5000;
+            _output.FormatOrDeviceChanged(true, GetFormat(true));
+            _input.FormatOrDeviceChanged(false, GetFormat(false));
+
             if (_sample.SelectedItem != null)
             {
                 var attrs = XtAudio.GetSampleAttributes((XtSample)_sample.SelectedItem);
                 _attributes.Text = $"Size: {attrs.size}, Count: {attrs.count}, Float: {attrs.isFloat}, Signed: {attrs.isSigned}";
             }
 
-            XtFormat? inputFormat = GetFormat(false);
-            XtDevice inputDevice = this._inputDevice.SelectedItem == null ?
-                null : ((DeviceInfo)(this._inputDevice.SelectedItem)).Device;
-            bool inputSupported = inputDevice == null || inputFormat == null ? false : inputDevice.SupportsFormat(inputFormat.Value);
-            _inputFormatSupported.Text = inputSupported.ToString();
-            XtBufferSize? inputBuffer = !inputSupported ? (XtBufferSize?)null : inputDevice.GetBufferSize(inputFormat.Value);
-            _inputBufferSizes.Text = !inputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
-                inputBuffer.Value.min.ToString("N1"), inputBuffer.Value.current.ToString("N1"), inputBuffer.Value.max.ToString("N1"));
-            var inputDeviceMix = inputDevice?.GetMix();
-            _inputMix.Text = inputDeviceMix == null ? "N/A" : inputDeviceMix.Value.rate + " " + inputDeviceMix.Value.sample;
-            _inputInterleaved.Text = inputDevice == null
-                ? "N/A"
-                : inputDevice.SupportsAccess(true) && inputDevice.SupportsAccess(false)
-                ? "Both"
-                : inputDevice.SupportsAccess(false)
-                ? "False"
-                : "True";
-            _inputCaps.Text = this._inputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._inputDevice.SelectedItem)).Capabilities.ToString();
-            List<ChannelInfo> inputChannels = new List<ChannelInfo>();
-            if (inputDevice != null)
-                inputChannels = (from i in Enumerable.Range(0, inputDevice.GetChannelCount(false))
-                                 select new ChannelInfo(i, (1 + i) + ": " + inputDevice.GetChannelName(false, i)))
-                              .ToList();
-            _inputChannels.DataSource = null;
-            _inputChannels.DataSource = inputChannels;
-            _inputChannels.SelectedItems.Clear();
-
-            XtFormat? outputFormat = GetFormat(true);
-            XtDevice outputDevice = this._outputDevice.SelectedItem == null ?
-                null : ((DeviceInfo)(this._outputDevice.SelectedItem)).Device;
-            bool outputSupported = outputDevice == null || outputFormat == null ? false : outputDevice.SupportsFormat(outputFormat.Value);
-            _outputFormatSupported.Text = outputSupported.ToString();
-            XtBufferSize? outputBuffer = !outputSupported ? (XtBufferSize?)null : outputDevice.GetBufferSize(outputFormat.Value);
-            _outputBufferSizes.Text = !outputSupported ? "N/A" : string.Format("{0} / {1} / {2}",
-                outputBuffer.Value.min.ToString("N1"), outputBuffer.Value.current.ToString("N1"), outputBuffer.Value.max.ToString("N1"));
-            var outputDeviceMix = outputDevice?.GetMix();
-            _outputMix.Text = outputDeviceMix == null ? "N/A" : outputDeviceMix.Value.rate + " " + outputDeviceMix.Value.sample;
-            _outputInterleaved.Text = outputDevice == null
-                ? "N/A"
-                : outputDevice.SupportsAccess(true) && outputDevice.SupportsAccess(false)
-                ? "Both"
-                : outputDevice.SupportsAccess(false)
-                ? "False"
-                : "True";
-            _outputCaps.Text = this._outputDevice.SelectedItem == null ? "None" : ((DeviceInfo)(this._outputDevice.SelectedItem)).Capabilities.ToString();
-            List<ChannelInfo> outputChannels = new List<ChannelInfo>();
-            if (outputDevice != null)
-                outputChannels = (from i in Enumerable.Range(0, outputDevice.GetChannelCount(true))
-                                  select new ChannelInfo(i, (1 + i) + ": " + outputDevice.GetChannelName(true, i)))
-                              .ToList();
-            _outputChannels.DataSource = null;
-            _outputChannels.DataSource = outputChannels;
-            _outputChannels.SelectedItems.Clear();
-
-            _bufferSize.Minimum = 1;
-            _bufferSize.Maximum = 5000;
-            _bufferSize.Value = 1000;
-            if (outputBuffer != null)
+            var format = GetFormat(true);
+            var buffer = format == null ? null : (_output._device.SelectedItem as DeviceInfo)?.Device?.GetBufferSize(format.Value);
+            if (buffer != null)
             {
-                _bufferSize.Minimum = (int)Math.Floor(outputBuffer.Value.min);
-                _bufferSize.Maximum = (int)Math.Ceiling(outputBuffer.Value.max);
-                _bufferSize.Value = (int)Math.Ceiling(outputBuffer.Value.current);
+                _bufferSize.Minimum = (int)Math.Floor(buffer.Value.min);
+                _bufferSize.Maximum = (int)Math.Ceiling(buffer.Value.max);
+                _bufferSize.Value = (int)Math.Ceiling(buffer.Value.current);
                 _bufferSize.TickFrequency = (_bufferSize.Maximum - _bufferSize.Minimum) / 10;
-            }
-        }
-
-        private void Stop()
-        {
-            if (_outputStream != null)
-            {
-                _outputStream.Stop();
-                _outputStream.Dispose();
-                _outputStream = null;
-            }
-
-            if (_inputStream != null)
-            {
-                _inputStream.Stop();
-                _inputStream.Dispose();
-                _inputStream = null;
-            }
-
-            if (_captureFile != null)
-            {
-                _captureFile.Flush();
-                _captureFile.Dispose();
-                _captureFile = null;
-            }
-
-            if (_safeBuffer != null)
-            {
-                _safeBuffer.Dispose();
-                _safeBuffer = null;
             }
         }
 
