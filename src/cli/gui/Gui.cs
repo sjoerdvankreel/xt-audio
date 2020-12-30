@@ -18,6 +18,15 @@ namespace Xt
         static void OnThreadException(object sender, ThreadExceptionEventArgs e) => OnError(e.Exception);
         static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) => OnError((Exception)e.ExceptionObject);
 
+        [STAThread]
+        public static void Main(string[] args)
+        {
+            Application.ThreadException += OnThreadException;
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            Application.EnableVisualStyles();
+            Application.Run(new XtGui());
+        }
+
         static void OnError(Exception e)
         {
             string message = e.ToString();
@@ -35,15 +44,6 @@ namespace Xt
             if ((service.GetCapabilities() & XtServiceCaps.Aggregation) != 0) result.Add(StreamType.Aggregate);
             result.Add(StreamType.Latency);
             return result;
-        }
-
-        [STAThread]
-        public static void Main(string[] args)
-        {
-            Application.ThreadException += OnThreadException;
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            Application.EnableVisualStyles();
-            Application.Run(new XtGui());
         }
 
         TextWriter _log;
@@ -104,28 +104,6 @@ namespace Xt
             _log.Dispose();
         }
 
-        void AddMessage(Func<string> message)
-        {
-            string msg = message();
-            _log.WriteLine(msg);
-            _log.Flush();
-            _guiLog.BeginInvoke(new Action(() => {
-                _messages.Add(string.Format("{0}: {1}", DateTime.Now, msg));
-                _messageAdded = true;
-            }));
-        }
-
-        XtFormat? GetFormat(bool output)
-        {
-            if (_sample.SelectedItem == null || _rate.SelectedItem == null || _channelCount.SelectedItem == null) return null;
-            XtFormat result = new XtFormat();
-            result.mix.rate = (int)_rate.SelectedItem;
-            result.mix.sample = (XtSample)_sample.SelectedItem;
-            if (output) result.channels.outputs = (int)_channelCount.SelectedItem;
-            else result.channels.inputs = (int)_channelCount.SelectedItem;
-            return result;
-        }
-
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
@@ -142,93 +120,90 @@ namespace Xt
             _system.DataSource = _platform.GetSystems();
         }
 
+        void AddMessage(Func<string> message)
+        {
+            string msg = message();
+            _log.WriteLine(msg);
+            _log.Flush();
+            _guiLog.BeginInvoke(new Action(() => {
+                _messages.Add(string.Format("{0}: {1}", DateTime.Now, msg));
+                _messageAdded = true;
+            }));
+        }
+
+        XtFormat? GetFormat(bool output)
+        {
+            if (_sample.SelectedItem == null
+                || _rate.SelectedItem == null
+                || _channelCount.SelectedItem == null) return null;
+            XtFormat result = new XtFormat();
+            result.mix.rate = (int)_rate.SelectedItem;
+            result.mix.sample = (XtSample)_sample.SelectedItem;
+            if (output) result.channels.outputs = (int)_channelCount.SelectedItem;
+            else result.channels.inputs = (int)_channelCount.SelectedItem;
+            return result;
+        }
+
+        DeviceView GetDeviceView(XtService service, XtDeviceList list, int index, string defaultId)
+        {
+            var id = list.GetId(index);
+            var result = new DeviceView();
+            result.id = id;
+            result.name = list.GetName(id);
+            result.defaultInput = id == defaultId;
+            result.defaultOutput = id == defaultId;
+            result.device = service.OpenDevice(id);
+            result.capabilities = list.GetCapabilities(id);
+            return result;
+        }
+
+        IList<DeviceView> GetDeviceViews(XtService service, XtDeviceList list, string defaultId)
+        {
+            var result = new List<DeviceView>();
+            var noDevice = new DeviceView();
+            noDevice.id = "None";
+            noDevice.name = "[None]";
+            result.Add(noDevice);
+            for (int i = 0; i < list.GetCount(); i++)
+                try
+                {
+                    var view = GetDeviceView(service, list, i, defaultId);
+                    result.Insert(view.defaultInput || view.defaultInput ? 1 : result.Count, view);
+                    _deviceViews.Add(view);
+                } catch (XtException e)
+                {
+                    AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
+                }
+            return result;
+        }
+
         private void SystemChanged()
         {
-            XtService s = _platform.GetService((XtSystem)(_system.SelectedItem));
+            XtService s = _platform.GetService((XtSystem)_system.SelectedItem);
             _inputDevice.DataSource = null;
             _outputDevice.DataSource = null;
             _streamType.DataSource = GetStreamTypes(s);
             _streamType.SelectedItem = StreamType.Render;
             ClearDevices();
 
-            var inputViews = new List<DeviceView>();
-            var noInput = new DeviceView();
-            noInput.name = "[None]";
-            noInput.id = "None";
-            inputViews.Add(noInput);
-
-            var inputList = s.OpenDeviceList(XtEnumFlags.Input);
             var defaultInputId = s.GetDefaultDeviceId(false);
-            for (int i = 0; i < inputList.GetCount(); i++)
-            {
-                try
-                {
-                    var id = inputList.GetId(i);
-                    var view = new DeviceView();
-                    view.id = id;
-                    view.device = s.OpenDevice(id);
-                    view.name = inputList.GetName(id);
-                    view.defaultInput = id == defaultInputId;
-                    view.capabilities = inputList.GetCapabilities(id);
-                    if (view.defaultInput)
-                    {
-                        inputViews.Insert(1, view);
-                    } else
-                    {
-                        inputViews.Add(view);
-                    }
-                    _deviceViews.Add(view);
-                } catch (XtException e)
-                {
-                    AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
-                }
-            }
-
-            var outputViews = new List<DeviceView>();
-            var noOutput = new DeviceView();
-            noOutput.name = "[None]";
-            noOutput.id = "None";
-            outputViews.Add(noOutput);
-
-            var outputList = s.OpenDeviceList(XtEnumFlags.Output);
             var defaultOutputId = s.GetDefaultDeviceId(true);
-            for (int i = 0; i < outputList.GetCount(); i++)
-            {
-                try
-                {
-                    var id = outputList.GetId(i);
-                    var view = new DeviceView();
-                    view.id = id;
-                    view.device = s.OpenDevice(id);
-                    view.name = outputList.GetName(id);
-                    view.defaultOutput = id == defaultOutputId;
-                    view.capabilities = outputList.GetCapabilities(id);
-                    if (view.defaultOutput)
-                    {
-                        outputViews.Insert(1, view);
-                    } else
-                    {
-                        outputViews.Add(view);
-                    }
-                    _deviceViews.Add(view);
-                } catch (XtException e)
-                {
-                    AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
-                }
-            }
+            using var inputList = s.OpenDeviceList(XtEnumFlags.Input);
+            using var outputList = s.OpenDeviceList(XtEnumFlags.Input);
+            var inputViews = GetDeviceViews(s, inputList, defaultInputId);
+            var outputViews = GetDeviceViews(s, outputList, defaultOutputId);
 
+            _serviceCaps.Text = s.GetCapabilities().ToString();
             _inputDevice.DataSource = new List<DeviceView>(inputViews);
             _outputDevice.DataSource = new List<DeviceView>(outputViews);
             _secondaryInput.DataSource = new List<DeviceView>(inputViews);
             _secondaryOutput.DataSource = new List<DeviceView>(outputViews);
-
             _inputDevice.SelectedIndex = inputViews.Count == 1 ? 0 : 1;
             _outputDevice.SelectedIndex = outputViews.Count == 1 ? 0 : 1;
-            _serviceCaps.Text = s.GetCapabilities().ToString();
-            _defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
-            _defaultOutput.Text = defaultOutputId == null ? "[None]" : outputList.GetName(defaultOutputId);
             _inputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
             _outputControlPanel.Enabled = (s.GetCapabilities() & XtServiceCaps.ControlPanel) != 0;
+            _defaultInput.Text = defaultInputId == null ? "[None]" : inputList.GetName(defaultInputId);
+            _defaultOutput.Text = defaultOutputId == null ? "[None]" : outputList.GetName(defaultOutputId);
         }
 
         private void FormatOrDeviceChanged()
