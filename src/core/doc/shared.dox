@@ -1,0 +1,50 @@
+/**
+ * @file Shared.h
+ * @brief Calling conventions and common data types.
+ */
+
+/**
+ * @def XT_CALL
+ * @brief Calling convention.
+ *
+ * Public XT-Audio API functions use this convention.
+ */
+
+/**
+ * @def XT_CALLBACK
+ * @brief Calling convention.
+ *
+ * Callback functions passed to XT-Audio must use this convention.
+ */
+
+/**
+ * @typedef typedef int32_t XtBool
+ * @brief Boolean type.
+ *
+ * Zero is false, nonzero is true.
+ *
+ * @see XtTrue
+ * @see XtFalse
+ */
+
+/**
+ * @var XtBool XtTrue
+ * @brief Boolean true (1).
+ *
+ */
+
+/**
+  * @var XtBool XtFalse
+  * @brief Boolean false (0).
+  */
+
+/**
+ * @typedef uint64_t XtError
+ * @brief Error type.
+ *
+ * Use XtAudioGetErrorInfo to extract meaningful data from an error value.
+ 
+ * @see XtErrorInfo
+ * @see XtAudioGetErrorInfo
+ * @see XtPrintErrorInfoToString
+ */

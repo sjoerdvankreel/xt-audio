@@ -4,8 +4,10 @@
 #include <xt/api/Shared.h>
 #include <stdint.h>
 
+/** @cond */
 typedef struct XtBuffer XtBuffer;
 typedef struct XtLocation XtLocation;
+/** @endcond */
 
 typedef void (XT_CALLBACK
 *XtOnError)(XtLocation const* location, char const* message);

@@ -157,58 +157,7 @@
  * and are not intended to be shown to end users.
  */
  
-/**
- * @def XT_CALL
- * @brief Calling convention.
- *
- * Public XT-Audio API functions use this convention.
- * @ingroup library
- */
 
-/**
- * @def XT_CALLBACK
- * @brief Calling convention.
- *
- * Callback functions passed to XT-Audio must use this convention.
- * @ingroup library
- */
-
- /**
-  * @typedef typedef int32_t XtBool
-  * @brief Boolean type.
-  *
-  * Zero is false, nonzero is true.
-  * @ingroup library
-  * @see XtTrue
-  * @see XtFalse
-  */
-
-/**
-  * @var XtBool XtTrue
-  * @brief Boolean true (1).
-  *
-  * @ingroup library
-  */
-
-/**
-  * @var XtBool XtFalse
-  * @brief Boolean false (0).
-  *
-  * @ingroup library
-  */
-
-/**
-  * @typedef uint64_t XtError
-  * @brief Error type.
-  *
-  * Use the XtError* functions to extract meaningful data from an error value.
-  * @ingroup library
-  * @see XtErrorGetText
-  * @see XtErrorGetCause
-  * @see XtErrorGetFault
-  * @see XtErrorGetSystem
-  * @see XtPrintErrorToString
-  */
 
 /** 
   * @struct XtMix
