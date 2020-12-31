@@ -1,0 +1,108 @@
+/**
+ * @file Callbacks.h
+ * @brief Callback function types.
+ */
+ 
+/**
+ * @typedef void (*XtOnError)(XtLocation const* location, char const* message)
+ * @brief Error logging callback.
+ *
+ * @param location Location in the source code where the error occurred.
+ * @param message The log message.
+ *
+ * XT-Audio will call the application-defined logging callback (if one was supplied to XtAudioInit)
+ * on each error, whether fatal or not. This function may be called on any thread,
+ * implementations must ensure thread-safety.
+ *
+ * Note for languages that support exceptions: the error callback should NEVER throw.
+ * It is considered a fatal error if an exception propagates through the callback.
+
+ * @see XtAudioInit
+ */
+
+/**
+ * @typedef void (*XtOnXRun)(XtStream const* stream, int32_t index, void* user)
+ * @brief Audio xrun callback.
+ *
+ * @param stream the audio stream.
+ * @param stream index the stream index in case of aggregation.
+ * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
+ *
+ * The stream index will be -1 for regular and aggregate streams, or the device
+ * index passed to XtServiceAggregateStream for underlying streams of aggregate streams.
+ *
+ * Note for aggregate streams: xruns which occur during stream aggregation are always reported
+ * to the application regardless of whether the stream's service supports xrun detection (see XtServiceCaps).
+ * When an xrun occurs on one of the underlying streams, the callback is invoked using the index of the
+ * actual stream that caused the xrun.
+ *
+ * The xrun callback will normally be called from a high priority thread. To prevent more
+ * glitches the callback should not call any blocking methods (using locks, doing I/O etc).
+ * Note for languages that support exceptions: the xrun callback should NEVER throw.
+ * It is considered a fatal error if an exception propagates through the callback.
+ *
+ * @see XtStreamParams
+ * @see XtOnBuffer
+ * @see XtStreamStart
+ * @see XtDeviceOpenStream
+ * @see XtServiceGetCapabilities
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @typedef void (*XtOnRunning)(XtStream const* stream, XtBool running, XtError error, void* user)
+ * @brief Audio stream state changed callback.
+ *
+ * @param stream the audio stream.
+ * @param running indicates whether the stream started (XtTrue) or stopped (XtFalse).
+ * @param error the error that caused the stream to stop, or 0 if the stop was application-initiated.
+ * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
+ *
+ * Applications may use this callback to detect when streams where stopped outside of their
+ * control (for example, JACK server stopped, WASAPI exclusive-mode stream took precedence,
+ * ALSA stream stopped because of xruns). XT-Audio makes a best effort to report stream stops
+ * initiated by the backend back to the application.
+ *
+ * The running callback may be be called from a high priority thread. To prevent
+ * glitches the callback should not call any blocking methods (using locks, doing I/O etc).
+ * Note for languages that support exceptions: the running callback should NEVER throw.
+ * It is considered a fatal error if an exception propagates through the callback.
+ *
+ * @see XtStreamParams
+ * @see XtStreamStop
+ * @see XtStreamStart
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @typedef uint32_t (*XtOnBuffer)(XtStream const* stream, XtBuffer const* buffer, void* user)
+ * @brief Audio stream processing callback.
+ *
+ * @param stream The audio stream. May be used to query buffer size and latencies only, do not call control methods from the callback.
+ * @param buffer The audio buffer containing input and/or output data, frame count and timestamp information.
+ * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
+ *
+ * The input/output buffers should be cast to the appropriate datatype for the format used to open the stream, e.g.
+ * (unsigned char*) for UInt8 and UInt24, (short*) for Int16, (int*) for Int32 and (float*) for Float32
+ * interleaved access or (unsigned char**) for UInt8 and UInt24, (short**) for Int16, (int**)
+ * for Int32 and (float**) for Float32 non-interleaved access.
+ *
+ * For regular streams, the number of input and output channels equal the channel counts specified in the format passed to XtDeviceOpenStream.
+ * For aggregate streams, the number of input and output channels is the sum of inputs and outputs passed in the channels array passed to XtServiceAggregateStream.
+ * The order of channels in the stream is the same as the order of devices and channels passed to XtServiceAggregateStream.
+ * For example, when opening a stream on 3 devices using (0 inputs, 2 outputs) on device 1, (2 inputs, 2 outputs) on device 2 and (2 inputs, 0 outputs) on device 3,
+ * the input channel order will be (device2:0, device2:1, device3:0, device3:1) and the output channel order will be (device1:0, device1:1, device2:0, device2:1).
+ *
+ * The buffer callback will normally be called from a high priority thread. To prevent glitches the
+ * callback should not call any blocking methods (using locks, doing I/O etc).
+ * Note for languages that support exceptions: the buffer callback should NEVER throw.
+ * It is considered a fatal error if an exception propagates through the callback.
+ *
+ * @see XtOnXRun
+ * @see XtStreamParams
+ * @see XtDeviceOpenStream
+ * @see XtDeviceStreamParams
+ * @see XtAggregateStreamParams
+ * @see XtServiceAggregateStream
+ */
