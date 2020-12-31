@@ -323,4 +323,24 @@
  * @var XtStreamParams::onRunning
  * @brief The application-defined stream state changed callback (may be NULL).
  */
- 
+
+/**
+ * @struct XtDeviceStreamParams
+ * @brief Stream parameters specific to regular (non-aggregated) audio streams.
+ * @see XtDeviceOpenStream
+ */
+
+/**
+ * @var XtDeviceStreamParams::stream
+ * @brief Specifies (non)interleaved access mode and application callbacks.
+ */
+
+/**
+ * @var XtDeviceStreamParams::format
+ * @brief The audio format (must be supported).
+ */
+
+/**
+ * @var XtDeviceStreamParams::bufferSize
+ * @brief The desired buffer size in milliseconds (will be truncated to the supported range).
+ */
