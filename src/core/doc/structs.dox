@@ -1,0 +1,92 @@
+/**
+ * @file Structs.h
+ * @brief Data structure types.
+ */
+ 
+/**
+ * @struct XtMix
+ * @brief Audio mix format.
+ *
+ * @see XtFormat
+ * @see XtDeviceGetMix
+ * @see XtPrintMixToString
+ */
+ 
+/**
+ * @var XtMix::rate
+ * @brief Sample rate in Hz.
+ */
+
+/**
+ * @var XtMix::sample
+ * @brief Sample type.
+ */
+
+/**
+ * @struct XtFormat
+ * @brief Audio stream format.
+ *
+ * @see XtDeviceStreamParams
+ * @see XtDeviceOpenStream
+ * @see XtDeviceSupportsFormat
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtFormat::mix
+ * @brief Sample rate and type.
+ */
+
+/**
+ * @var XtFormat::channels
+ * @brief Audio channel specification.
+ */
+ 
+/**
+ * @struct XtChannels
+ * @brief Audio channel specification.
+ *
+ * Formats with both inputs and outputs can only be used with
+ * services that support full-duplex, see XtServiceGetCapabilities.
+ *
+ * Channel masks will be ignored for services that do not support
+ * masking, see XtServiceGetCapabilities.
+ *
+ * @see XtFormat
+ * @see XtDeviceOpenStream
+ * @see XtDeviceStreamParams
+ * @see XtAggregateDeviceParams
+ * @see XtDeviceSupportsFormat
+ * @see XtServiceGetCapabilities
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtChannels::inputs
+ * @brief Input channel count.
+ */
+
+/**
+ * @var XtChannels::inMask
+ * @brief Input channel mask.
+ *
+ * Set bit N to route channel N from/to that position. For example,
+ * in a stereo stream on a surround71 capable device where channels
+ * 4 and 5 represent back left/right, the mask is (1ULL << 4) | (1ULL << 5)
+ * to use back left/right instead of the default front left/right.
+ */
+ 
+/**
+ * @var XtChannels::outputs
+ * @brief Output channel count.
+ */
+
+/**
+ * @var XtChannels::outMask
+ * @brief Output channel mask.
+ *
+ * Set bit N to route channel N from/to that position. For example,
+ * in a stereo stream on a surround71 capable device where channels
+ * 4 and 5 represent back left/right, the mask is (1ULL << 4) | (1ULL << 5)
+ * to use back left/right instead of the default front left/right.
+ */

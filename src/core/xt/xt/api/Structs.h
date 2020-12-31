@@ -1,11 +1,13 @@
 #ifndef XT_API_STRUCTS_H
 #define XT_API_STRUCTS_H
 
+/** @cond */
 #include <xt/api/Enums.h>
 #include <xt/api/Shared.h>
 #include <xt/api/Callbacks.h>
 
 #include <stdint.h>
+/** @endcond */
 
 typedef struct XtMix
 {

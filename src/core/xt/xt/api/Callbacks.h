@@ -1,8 +1,10 @@
 #ifndef XT_API_CALLBACKS_H
 #define XT_API_CALLBACKS_H
 
+/** @cond */
 #include <xt/api/Shared.h>
 #include <stdint.h>
+/** @endcond */
 
 /** @cond */
 typedef struct XtBuffer XtBuffer;

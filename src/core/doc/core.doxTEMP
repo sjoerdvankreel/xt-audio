@@ -156,46 +156,6 @@
  * the XtPrint* functions are meant as a help to developers
  * and are not intended to be shown to end users.
  */
- 
-
-
-/** 
-  * @struct XtMix
-  * @brief Audio mix format.
-  *
-  * @ingroup library
-  * @see XtFormat
-  * @see XtDeviceGetMix
-  * @see XtPrintMixToString
-  */
-
-/** 
-  * @struct XtFormat
-  * @brief Audio stream format.
-  *
-  * Formats with both inputs and outputs can only be used with 
-  * services that support full-duplex, see XtServiceGetCapabilities.
-  * 
-  * Channel masks will be ignored for services that do not support
-  * masking, see XtServiceGetCapabilities.
-  *
-  * @ingroup library
-  * @see XtDeviceOpenStream
-  * @see XtDeviceSupportsFormat
-  * @see XtDeviceGetBuffer
-  * @see XtPrintFormatToString
-  * @see XtServiceGetCapabilities
-  */
-
-/**
-  * @struct XtChannels
-  * @brief Audio channel specification.
-  *
-  * @ingroup library
-  * @see XtFormat
-  * @see XtServiceAggregateStream
-  * @see XtPrintChannelsToString
-  */
 
 /**
   * @struct XtBuffer
