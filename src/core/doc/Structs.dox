@@ -344,3 +344,59 @@
  * @var XtDeviceStreamParams::bufferSize
  * @brief The desired buffer size in milliseconds (will be truncated to the supported range).
  */
+ 
+/**
+ * @struct XtAggregateDeviceParams
+ * @brief Device-specific parameters for opening an aggregate audio stream.
+ * @see XtAggregateStreamParams
+ */
+
+/**
+ * @var XtAggregateDeviceParams::device
+ * @brief Device to be part of the aggregated stream.
+ */
+
+/**
+ * @var XtAggregateDeviceParams::channels
+ * @brief Channel specification for the current device.
+ */
+
+/**
+ * @var XtAggregateDeviceParams::bufferSize
+ * @brief Buffer size in milliseconds for the current device.
+ */
+ 
+/**
+ * @struct XtAggregateStreamParams
+ * @brief Stream parameters specific to aggregated audio streams.
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtAggregateStreamParams::stream
+ * @brief Specifies (non)interleaved access mode and application callbacks.
+ */
+
+/**
+ * @var XtAggregateStreamParams::devices
+ * @brief Pointer to an array of [count] device specific parameters.
+ */
+
+/**
+ * @var XtAggregateStreamParams::count
+ * @brief Number of elements in the devices array.
+ */
+ 
+/**
+ * @var XtAggregateStreamParams::mix
+ * @brief The mix format, to be used by all streams in the aggregated stream.
+ */
+
+/**
+ * @var XtAggregateStreamParams::master
+ * @brief The master device, will be used for synchronization.
+ *
+ * Whenever there's data available in the master stream, other underlying streams
+ * will be forced to read/write out their data to an intermediate buffer.
+ * The master stream effectively determines the clock of the entire aggregated stream.
+ */
