@@ -113,3 +113,49 @@
  * @var XtBufferSize::current
  * @brief Current or default size in milliseconds, or 0 if unknown/unsupported.
  */
+
+/**
+ * @struct XtLatency
+ * @brief Stream latency.
+ *
+ * @see XtServiceCaps
+ * @see XtStreamGetLatency
+ */
+
+/**
+ * @var XtLatency::input
+ * @brief Input latency in milliseconds, or 0 when no inputs are present or latency is unknown.
+ */
+
+/**
+ * @var XtLatency::output
+ * @brief Output latency in milliseconds, or 0 when no outputs are present or latency is unknown.
+ */
+
+/**
+ * @struct XtAttributes
+ * @brief Sample type attributes.
+ *
+ * @see XtAudioGetSampleAttributes
+ */
+
+/**
+ * @var XtAttributes::size
+ * @brief Sample size in bytes.
+ */
+
+/**
+ * @var XtAttributes::isFloat
+ * @brief Indicates whether samples are integer or floating point.
+ */
+
+/**
+ * @var XtAttributes::isSigned
+ * @brief Indicates whether samples are signed or unsigned.
+ */
+
+/**
+ * @var XtAttributes::count
+ * @brief Number of elements used to represent this sample in a buffer. 3 for 24-bit float, 1 for other types.
+ */
+ 

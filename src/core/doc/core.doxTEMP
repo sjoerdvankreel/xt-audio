@@ -157,24 +157,6 @@
  * and are not intended to be shown to end users.
  */
 
-/** 
-  * @struct XtLatency
-  * @brief Stream latency.
-  *
-  * @ingroup library
-  * @see XtStreamGetLatency
-  * @see XtPrintLatencyToString
-  */
-
-/**
-  * @struct XtAttributes
-  * @brief Sample type attributes.
-  *
-  * @ingroup library
-  * @see XtAudioGetSampleAttributes
-  * @see XtPrintAttributesToString
-  */
-
 /**
  * @fn XtCause XtErrorGetCause(XtError error)
  * @brief Extract system-independent cause from error.
