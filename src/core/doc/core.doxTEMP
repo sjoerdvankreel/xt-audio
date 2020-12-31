@@ -158,51 +158,6 @@
  */
 
 /**
- * @fn XtCause XtErrorGetCause(XtError error)
- * @brief Extract system-independent cause from error.
- * @param error the error value, must not be 0.
- * @return the cause for the given error.
- *
- * An error cause is a system-independent code indicating the source of the error.
- *
- * This function may be called from any thread.
- */
-
-/**
- * @fn uint32_t XtErrorGetFault(XtError error)
- * @brief Extract system-specific fault from error.
- * @param error the error value, must not be 0.
- * @return the fault for the given error.
- *
- * An error fault is a system-specific code indicating the source of the error.
- *
- * This function may be called from any thread.
- */
-
-/**
- * @fn XtSystem XtErrorGetSystem(XtError error)
- * @brief Extract system from error.
- * @param error the error value, must not be 0.
- * @return the system for the given error.
- *
- * An error value contains the system that generated it, to allow mapping
- * between system-specific fault values and system-independent cause values.
- *
- * This function may be called from any thread.
- */
-
-/**
- * @fn const char* XtErrorGetText(XtError error)
- * @brief Extract system-specific text from error.
- * @param error the error value, must not be 0.
- * @return a pointer to a statically allocated string containing the error text for the given error.
- *
- * The error text is only useful for development purposes and is not meant to be shown to end users.
- *
- * This function may be called from any thread.
- */
-
-/**
  * @fn const char* XtPrintLevelToString(XtLevel level)
  * @brief Convert a level to a human-readable string.
  * @param level the level value.
