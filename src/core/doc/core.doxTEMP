@@ -140,14 +140,6 @@
  */
 
 /**
- * @defgroup stream Stream interface
- * @brief Stream queries and operation.
- *
- * Contains functions to control (start/stop) audio streams
- * and querying running audio streams for buffer size and latencies.
- */
-
-/**
  * @fn XtBool XtAudioIsWin32(void)
  * @brief Indicates whether XT-Audio is running on Windows (true) or Linux (false).
  * @return true if running on windows, false if running on linux.
@@ -523,6 +515,16 @@
  * @see XtDeviceSupportsFormat
  * @see XtDeviceSupportsAccess
  * @see XtServiceAggregateStream
+ */
+ 
+
+
+/**
+ * @defgroup stream Stream interface
+ * @brief Stream queries and operation.
+ *
+ * Contains functions to control (start/stop) audio streams
+ * and querying running audio streams for buffer size and latencies.
  */
 
 /**

@@ -1,0 +1,43 @@
+/**
+ * @file XtStream.h
+ * @brief Stream queries and operation.
+ *
+ * Contains functions to control (start/stop) audio streams
+ * and querying running audio streams for buffer size and latencies.
+ */
+
+/**
+ * @fn void XtStreamDestroy(XtStream* s)
+ * @brief Destroys an audio stream.
+ * @param s the audio stream.
+ *
+ * It is ok to pass NULL. Stream should be stopped before it is destroyed.
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn XtError XtStreamStop(XtStream* s)
+ * @brief Stops an audio stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio stream.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamStart
+ * @see XtOnRunning
+ */
+
+/**
+ * @fn XtError XtStreamStart(XtStream* s)
+ * @brief Starts an audio stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio stream.
+ *
+ * When the stream is running the application-defined stream callback will be invoked whenever audio data is needed or available.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamStop
+ * @see XtOnRunning
+ */
