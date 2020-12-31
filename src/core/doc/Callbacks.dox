@@ -2,7 +2,7 @@
  * @file Callbacks.h
  * @brief Callback function types.
  */
- 
+
 /**
  * @typedef void (*XtOnError)(XtLocation const* location, char const* message)
  * @brief Error logging callback.
@@ -82,6 +82,7 @@
  * @param stream The audio stream. May be used to query buffer size and latencies only, do not call control methods from the callback.
  * @param buffer The audio buffer containing input and/or output data, frame count and timestamp information.
  * @param user The user data passed to XtDeviceOpenStream or XtServiceAggregateStream.
+ * @return must return 0.
  *
  * The input/output buffers should be cast to the appropriate datatype for the format used to open the stream, e.g.
  * (unsigned char*) for UInt8 and UInt24, (short*) for Int16, (int*) for Int32 and (float*) for Float32
