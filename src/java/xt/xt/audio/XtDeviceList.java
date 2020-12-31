@@ -17,10 +17,9 @@ public final class XtDeviceList implements AutoCloseable {
     private static native long XtDeviceListGetName(Pointer l, String id, byte[] buffer, IntByReference size);
     private static native long XtDeviceListGetCapabilities(Pointer l, String id, IntByReference capabilities);
 
-    private final Pointer _l;
+    private Pointer _l;
     XtDeviceList(Pointer l) { _l = l; }
-
-    @Override public void close() { XtDeviceListDestroy(_l); }
+    @Override public void close() { XtDeviceListDestroy(_l); _l = Pointer.NULL; }
 
     public int getCount() {
         var count = new IntByReference();

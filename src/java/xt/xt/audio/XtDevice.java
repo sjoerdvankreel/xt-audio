@@ -29,12 +29,12 @@ public final class XtDevice implements AutoCloseable {
     private static native long XtDeviceGetChannelName(Pointer d, boolean output, int index, byte[] buffer, IntByReference size);
     private static native long XtDeviceOpenStream(Pointer d, DeviceStreamParams params, Pointer user, PointerByReference stream);
 
-    private final Pointer _d;
+    private Pointer _d;
     Pointer handle() { return _d; }
     XtDevice(Pointer d) { _d = d; }
 
-    @Override public void close() { XtDeviceDestroy(_d); }
     public Pointer getHandle() { return XtDeviceGetHandle(_d); }
+    @Override public void close() { XtDeviceDestroy(_d); _d = Pointer.NULL; }
     public void showControlPanel() { handleError(XtDeviceShowControlPanel(_d)); }
 
     public XtBufferSize getBufferSize(XtFormat format) {

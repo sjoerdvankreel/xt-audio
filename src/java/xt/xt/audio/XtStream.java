@@ -36,12 +36,12 @@ public final class XtStream implements AutoCloseable {
     private final XtLatency _latency = new XtLatency();
     private final IntByReference _frames = new IntByReference();
 
-    public void stop() { XtStreamStop(_s); }
+    public void stop() { XtStreamStop(_s);}
     public XtFormat getFormat() { return _format; }
-    @Override public void close() { XtStreamDestroy(_s); }
     public void start() { handleError(XtStreamStart(_s)); }
     public Pointer getHandle() { return XtStreamGetHandle(_s); }
     public boolean isRunning() { return XtStreamIsRunning(_s); }
+    @Override public void close() { XtStreamDestroy(_s); _s = Pointer.NULL; }
 
     OnXRun onNativeXRun() { return _onNativeXRun; }
     OnBuffer onNativeBuffer() { return _onNativeBuffer; }

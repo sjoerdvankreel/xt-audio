@@ -15,10 +15,10 @@ public final class XtPlatform implements AutoCloseable {
     private static native Pointer XtPlatformGetService(Pointer p, XtSystem system);
     private static native void XtPlatformGetSystems(Pointer p, int[] buffer, IntByReference size);
 
-    final Pointer _p;
+    Pointer _p;
     final XtOnError _onError;
     XtPlatform(Pointer p, XtOnError onError) { _p = p; _onError = onError; }
-    @Override public void close() { XtPlatformDestroy(_p); }
+    @Override public void close() { XtPlatformDestroy(_p); _p = Pointer.NULL; }
 
     public XtService getService(XtSystem system) {
         Pointer s = XtPlatformGetService(_p, system);
