@@ -9,7 +9,6 @@
  *
  * @see XtFormat
  * @see XtDeviceGetMix
- * @see XtPrintMixToString
  */
  
 /**
@@ -89,4 +88,28 @@
  * in a stereo stream on a surround71 capable device where channels
  * 4 and 5 represent back left/right, the mask is (1ULL << 4) | (1ULL << 5)
  * to use back left/right instead of the default front left/right.
+ */
+
+/**
+ * @struct XtBufferSize
+ * @brief Device buffer size limits.
+ *
+ * @see XtDeviceGetBufferSize
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtBufferSize::min
+ * @brief Minimum size in milliseconds, or 0 if unknown/unsupported.
+ */
+
+/**
+ * @var XtBufferSize::max
+ * @brief Maximum size in milliseconds, or 0 if unknown/unsupported.
+ */
+
+/**
+ * @var XtBufferSize::current
+ * @brief Current or default size in milliseconds, or 0 if unknown/unsupported.
  */

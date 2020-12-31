@@ -157,17 +157,6 @@
  * and are not intended to be shown to end users.
  */
 
-/**
-  * @struct XtBuffer
-  * @brief Device buffer size limits.
-  *
-  * @ingroup library
-  * @see XtDeviceGetBuffer
-  * @see XtDeviceOpenStream
-  * @see XtPrintBufferToString
-  * @see XtServiceAggregateStream
-  */
-
 /** 
   * @struct XtLatency
   * @brief Stream latency.
@@ -177,7 +166,7 @@
   * @see XtPrintLatencyToString
   */
 
-/** 
+/**
   * @struct XtAttributes
   * @brief Sample type attributes.
   *
