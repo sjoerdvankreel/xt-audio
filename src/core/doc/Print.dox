@@ -1,0 +1,81 @@
+/**
+ * @file XtPrint.h
+ * @brief Datatype to text conversions.
+ *
+ * Contains functions to print datatypes to a human
+ * readably representation. Note that values returned by
+ * the XtPrint* functions are meant as a help to developers
+ * and are not intended to be shown to end users.
+ */
+
+/**
+ * @fn const char* XtPrintCauseToString(XtCause cause)
+ * @brief Convert a cause to a human-readable string.
+ * @param cause the cause value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintSetupToString(XtSetup setup)
+ * @brief Convert a setup to a human-readable string.
+ * @param setup the setup value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintSystemToString(XtSystem system)
+ * @brief Convert a system to a human-readable string.
+ * @param system the system value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintSampleToString(XtSample sample)
+ * @brief Convert a sample to a human-readable string.
+ * @param sample the sample value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintServiceCapsToString(XtServiceCaps capabilities)
+ * @brief Convert service capabilities to a human-readable string.
+ * @param capabilities the service capabilities value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+ 
+/**
+ * @fn const char* XtPrintDeviceCapsToString(XtDeviceCaps capabilities)
+ * @brief Convert device capabilities to a human-readable string.
+ * @param capabilities the device capabilities value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+
+/**
+ * @fn const char* XtPrintErrorInfoToString(XtErrorInfo const* error)
+ * @brief Convert error information to a human-readable string.
+ * @param error the error details.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
+ 
+/**
+ * @fn const char* XtPrintLocationToString(XtLocation const* location)
+ * @brief Convert source code location to a human-readable string.
+ * @param location the source code location.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
