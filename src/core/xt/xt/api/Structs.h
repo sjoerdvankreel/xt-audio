@@ -9,13 +9,31 @@
 #include <stdint.h>
 /** @endcond */
 
-typedef struct XtMix
+/** @cond */
+typedef struct XtMix XtMix;
+typedef struct XtFormat XtFormat;
+typedef struct XtBuffer XtBuffer; 
+typedef struct XtVersion XtVersion; 
+typedef struct XtLatency XtLatency; 
+typedef struct XtLocation XtLocation;
+typedef struct XtChannels XtChannels; 
+typedef struct XtErrorInfo XtErrorInfo; 
+typedef struct XtBufferSize XtBufferSize;
+typedef struct XtAttributes XtAttributes;
+typedef struct XtServiceError XtServiceError;
+typedef struct XtStreamParams XtStreamParams;
+typedef struct XtDeviceStreamParams XtDeviceStreamParams; 
+typedef struct XtAggregateDeviceParams XtAggregateDeviceParams;
+typedef struct XtAggregateStreamParams XtAggregateStreamParams;
+/** @endcond */
+
+struct XtMix
 {
   int32_t rate;
   XtSample sample;
-} XtMix;
+};
 
-typedef struct XtBuffer 
+struct XtBuffer 
 {
   void const* input;
   void* output;
@@ -23,98 +41,98 @@ typedef struct XtBuffer
   uint64_t position;
   int32_t frames;
   XtBool timeValid;
-} XtBuffer;
+};
 
-typedef struct XtVersion 
+struct XtVersion 
 {
   int32_t major;
   int32_t minor;
-} XtVersion;
+};
 
-typedef struct XtLatency 
+struct XtLatency 
 {
   double input;
   double output;
-} XtLatency;
+};
 
-typedef struct XtLocation
+struct XtLocation
 {
   char const* file;
   char const* func;
   int32_t line;
-} XtLocation;
+};
 
-typedef struct XtChannels 
+struct XtChannels 
 {
   int32_t inputs;
   uint64_t inMask;
   int32_t outputs;
   uint64_t outMask;
-} XtChannels;
+};
 
-typedef struct XtFormat 
+struct XtFormat 
 {
   XtMix mix;
   XtChannels channels;
-} XtFormat;
+};
 
-typedef struct XtServiceError
+struct XtServiceError
 {
   XtCause cause;
   char const* text;
-} XtServiceError;
+};
 
-typedef struct XtErrorInfo 
+struct XtErrorInfo 
 {
   uint32_t fault;
   XtSystem system;
   XtServiceError service;
-} XtErrorInfo;
+};
 
-typedef struct XtBufferSize
+struct XtBufferSize
 {
   double min;
   double max;
   double current;
-} XtBufferSize;
+};
 
-typedef struct XtAttributes
+struct XtAttributes
 {
   int32_t size;
   int32_t count;
   XtBool isFloat;
   XtBool isSigned;
-} XtAttributes;
+};
 
-typedef struct XtStreamParams
+struct XtStreamParams
 {
   XtBool interleaved;
   XtOnBuffer onBuffer;
   XtOnXRun onXRun;
   XtOnRunning onRunning;
-} XtStreamParams;
+};
 
-typedef struct XtDeviceStreamParams 
+struct XtDeviceStreamParams 
 {
   XtStreamParams stream;
   XtFormat format;
   double bufferSize;
-} XtDeviceStreamParams;
+};
 
-typedef struct XtAggregateDeviceParams 
+struct XtAggregateDeviceParams 
 {
   XtDevice* device;
   XtChannels channels;
   double bufferSize;
-} XtAggregateDeviceParams;
+};
 
-typedef struct XtAggregateStreamParams 
+struct XtAggregateStreamParams 
 {
   XtStreamParams stream;
   XtAggregateDeviceParams* devices;
   int32_t count;
   XtMix mix;
   XtDevice const* master;
-} XtAggregateStreamParams;
+};
 
 #endif // XT_API_STRUCTS_H
