@@ -11,9 +11,9 @@ namespace Xt
         [DllImport("xt-core")] static extern IntPtr XtPlatformGetService(IntPtr p, XtSystem system);
         [DllImport("xt-core")] static extern void XtPlatformGetSystems(IntPtr p, [Out] XtSystem[] buffer, ref int size);
 
-        readonly IntPtr _p;
+        IntPtr _p;
         readonly XtOnError _onError;
-        public void Dispose() => XtPlatformDestroy(_p);
+        public void Dispose() { XtPlatformDestroy(_p); _p = IntPtr.Zero; }
         internal XtPlatform(IntPtr p, XtOnError onError) => (_p, _onError) = (p, onError);
 
         public XtSystem[] GetSystems()

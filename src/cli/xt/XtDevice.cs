@@ -20,12 +20,12 @@ namespace Xt
         [DllImport("xt-core")] static extern ulong XtDeviceGetChannelName(IntPtr d, bool output, int index, [Out] byte[] buffer, ref int size);
         [DllImport("xt-core")] static extern ulong XtDeviceOpenStream(IntPtr d, in DeviceStreamParams @params, IntPtr user, out IntPtr stream);
 
-        readonly IntPtr _d;
+        IntPtr _d;
         internal IntPtr Handle() => _d;
         internal XtDevice(IntPtr d) => _d = d;
 
-        public void Dispose() => XtDeviceDestroy(_d);
         public IntPtr GetHandle() => XtDeviceGetHandle(_d);
+        public void Dispose() { XtDeviceDestroy(_d); _d = IntPtr.Zero; }
         public void ShowControlPanel() => HandleError(XtDeviceShowControlPanel(_d));
         public XtMix? GetMix() => HandleError(XtDeviceGetMix(_d, out var v, out var r)) && v ? r : (XtMix?)null;
         public int GetChannelCount(bool output) => HandleError(XtDeviceGetChannelCount(_d, output, out var r), r);

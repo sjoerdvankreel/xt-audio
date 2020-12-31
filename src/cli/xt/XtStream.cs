@@ -34,11 +34,11 @@ namespace Xt
         }
 
         public void Stop() => XtStreamStop(_s);
-        public void Dispose() => XtStreamDestroy(_s);
-        public IntPtr GetHandle() => XtStreamGetHandle(_s);
+        public IntPtr GetHandle() => XtStreamGetHandle(_s); 
         public void Start() => HandleError(XtStreamStart(_s));
         public bool IsRunning() => XtStreamIsRunning(_s) != 0;
         public unsafe XtFormat GetFormat() => *XtStreamGetFormat(_s);
+        public void Dispose() { XtStreamDestroy(_s); _s = IntPtr.Zero; }
         public int GetFrames() => HandleError(XtStreamGetFrames(_s, out var r), r);
         public XtLatency GetLatency() => HandleError(XtStreamGetLatency(_s, out var r), r);
 
