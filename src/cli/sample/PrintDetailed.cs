@@ -17,7 +17,8 @@ namespace Xt
                     using XtDevice device = service.OpenDevice(id);
                     XtMix? mix = device.GetMix();
                     Console.WriteLine("    Device " + id + ":");
-                    Console.WriteLine("    Capabilities: " + list.GetCapabilities(id));
+                    Console.WriteLine("      Name: " + list.GetName(id));
+                    Console.WriteLine("      Capabilities: " + list.GetCapabilities(id));
                     Console.WriteLine("      Input channels: " + device.GetChannelCount(false));
                     Console.WriteLine("      Output channels: " + device.GetChannelCount(true));
                     Console.WriteLine("      Interleaved access: " + device.SupportsAccess(true));
