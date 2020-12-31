@@ -296,3 +296,31 @@
  * Only available on services which have the Time capability (see XtServiceCaps), otherwise false.
  * Even on services which support time and position info this parameter may be false sometimes, for example during stream startup/shutdown or when a glitch occurred.
  */
+ 
+/**
+ * @struct XtStreamParams
+ * @brief Shared parameters for regular and aggregate audio streams.
+ * @see XtDeviceStreamParams
+ * @see XtAggregateStreamParams
+ */
+ 
+/**
+ * @var XtStreamParams::interleaved
+ * @brief Open the stream for interleaved access (true) or non-interleaved access (false).
+ */
+ 
+/**
+ * @var XtStreamParams::onBuffer
+ * @brief The application-defined streaming audio callback.
+ */
+
+/**
+ * @var XtStreamParams::onXRun
+ * @brief The application-defined xrun callback (may be NULL).
+ */
+ 
+/**
+ * @var XtStreamParams::onRunning
+ * @brief The application-defined stream state changed callback (may be NULL).
+ */
+ 
