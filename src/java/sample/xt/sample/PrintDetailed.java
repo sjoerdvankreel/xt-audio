@@ -45,11 +45,11 @@ public class PrintDetailed {
         try(XtPlatform platform = XtAudio.init("Sample", null, PrintDetailed::onError)) {
             XtVersion version = XtAudio.getVersion();
             System.out.println("Version: " + version.major + "." + version.minor);
-            XtSystem pro = XtAudio.setupToSystem(XtSetup.PRO_AUDIO);
+            XtSystem pro = platform.setupToSystem(XtSetup.PRO_AUDIO);
             System.out.println("Pro Audio: " + pro + " (" + (platform.getService(pro) != null) + ")");
-            XtSystem system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
+            XtSystem system = platform.setupToSystem(XtSetup.SYSTEM_AUDIO);
             System.out.println("System Audio: " + system + " (" + (platform.getService(system) != null) + ")");
-            XtSystem consumer = XtAudio.setupToSystem(XtSetup.CONSUMER_AUDIO);
+            XtSystem consumer = platform.setupToSystem(XtSetup.CONSUMER_AUDIO);
             System.out.println("Consumer Audio: " + consumer + " (" + (platform.getService(consumer) != null) + ")");
 
             for(XtSystem s: platform.getSystems()) {

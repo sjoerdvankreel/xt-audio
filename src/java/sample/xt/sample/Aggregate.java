@@ -47,7 +47,7 @@ public class Aggregate {
         XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
 
         try(XtPlatform platform = XtAudio.init(null, null, null)) {
-            XtSystem system = XtAudio.setupToSystem(XtSetup.SYSTEM_AUDIO);
+            XtSystem system = platform.setupToSystem(XtSetup.SYSTEM_AUDIO);
             XtService service = platform.getService(system);
             if(service == null || !service.getCapabilities().contains(XtServiceCaps.AGGREGATION)) return;
 
