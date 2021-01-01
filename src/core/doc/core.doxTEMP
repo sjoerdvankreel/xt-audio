@@ -189,15 +189,7 @@
  * This function may be called from any thread.
  */
 
-/**
- * @fn const XtService* XtAudioGetServiceBySystem(XtSystem system)
- * @brief Get service by system.
- * @return an audio service, or NULL if XT-Audio was compiled without support for the given system.
- * @param system the desired system.
- *
- * This function may be called from any thread.
- * @see XtAudioIsWin32
- */
+
 
 /**
  * @fn void XtAudioGetSampleAttributes(XtSample sample, XtAttributes* attributes)

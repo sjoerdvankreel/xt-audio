@@ -1,0 +1,33 @@
+/**
+ * @file XtPlatform.h
+ * @brief Service enumeration.
+ *
+ * Contains functions to enumerate available services on the current platform.
+ */
+ 
+/**
+ * @fn void XtPlatformDestroy(XtPlatform* p)
+ * @brief Terminates the XT-Audio library.
+ * @param p the platform handle returned by XtAudioInit.
+ *
+ * It is ok to pass NULL.
+ *
+ * This function may only be called from the main thread.
+ * @see XtAudioInit
+ */
+
+/**
+ * @fn XtService const* XtPlatformGetService(XtPlatform const* p, XtSystem system)
+ * @brief Get audio service corresponding to the given system.
+ * @return an audio service, or NULL if XT-Audio was compiled without support for the given system.
+ * @param p the platform handle returned by XtAudioInit.
+ * @param system the service identifier.
+ *
+ * Use XtPlatformGetSystems to check which systems are supported (and compiled-in) on the current platform.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtAudioInit
+ * @see XtPlatformGetSystems
+ */
+ 

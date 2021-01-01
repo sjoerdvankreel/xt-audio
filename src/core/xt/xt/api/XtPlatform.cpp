@@ -4,7 +4,6 @@
 void XT_CALL
 XtPlatformDestroy(XtPlatform* p)
 {
-  XT_ASSERT(p != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
   delete p; 
   XtPlatform::instance = nullptr;
