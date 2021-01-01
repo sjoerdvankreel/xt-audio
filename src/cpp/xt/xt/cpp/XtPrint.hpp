@@ -1,5 +1,5 @@
-#ifndef XT_CPP_OSTREAM_HPP
-#define XT_CPP_OSTREAM_HPP
+#ifndef XT_CPP_PRINT_HPP
+#define XT_CPP_PRINT_HPP
 
 /** @file */
 
@@ -52,4 +52,4 @@ operator<<(std::ostream& os, ErrorInfo const& info)
 }
 
 } // namespace Xt
-#endif // XT_CPP_OSTREAM_HPP
+#endif // XT_CPP_PRINT_HPP
