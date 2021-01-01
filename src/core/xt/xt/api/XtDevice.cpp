@@ -85,7 +85,7 @@ XtDeviceGetChannelName(XtDevice const* d, XtBool output, int32_t index, char* bu
 }
 
 XtError XT_CALL 
-XtDeviceOpenStream(XtDevice* d, const XtDeviceStreamParams* params, void* user, XtStream** stream)
+XtDeviceOpenStream(XtDevice* d, XtDeviceStreamParams const* params, void* user, XtStream** stream)
 {  
   XtFault fault;
   XT_ASSERT(d != nullptr);

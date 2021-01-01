@@ -2,7 +2,7 @@
  * @file Structs.h
  * @brief Data structure types.
  */
- 
+
 /**
  * @struct XtMix
  * @brief Audio mix format.
@@ -307,6 +307,7 @@
 /**
  * @var XtStreamParams::interleaved
  * @brief Open the stream for interleaved access (true) or non-interleaved access (false).
+ * @see XtDeviceSupportsAccess
  */
  
 /**
@@ -338,11 +339,15 @@
 /**
  * @var XtDeviceStreamParams::format
  * @brief The audio format (must be supported).
+ * @see XtDeviceSupportsFormat
  */
 
 /**
  * @var XtDeviceStreamParams::bufferSize
  * @brief The desired buffer size in milliseconds (will be truncated to the supported range).
+ *
+ * Use XtDeviceGetBufferSize to query supported buffer sizes.
+ * @see XtDeviceGetBufferSize
  */
  
 /**
@@ -359,11 +364,15 @@
 /**
  * @var XtAggregateDeviceParams::channels
  * @brief Channel specification for the current device.
+ * @see XtDeviceSupportsFormat
  */
 
 /**
  * @var XtAggregateDeviceParams::bufferSize
  * @brief Buffer size in milliseconds for the current device.
+ *
+ * Use XtDeviceGetBufferSize to query supported buffer sizes.
+ * @see XtDeviceGetBufferSize
  */
  
 /**
@@ -390,6 +399,7 @@
 /**
  * @var XtAggregateStreamParams::mix
  * @brief The mix format, to be used by all streams in the aggregated stream.
+ * @see XtDeviceSupportsFormat
  */
 
 /**
