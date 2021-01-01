@@ -49,6 +49,15 @@ XtPrintSystemToString(XtSystem system)
   }
 }
 
+char const*
+XtPrintEnumFlagsToString(XtEnumFlags flags)
+{
+  if(flags == XtEnumFlagsAll) return "All";
+  if(flags == XtEnumFlagsInput) return "Input";
+  if(flags == XtEnumFlagsOutput) return "Output";
+  XT_ASSERT(false); return nullptr;
+}
+
 char const* XT_CALL
 XtPrintSetupToString(XtSetup setup) 
 {

@@ -20,6 +20,8 @@ XtPrintSystemToString(XtSystem system);
 XT_API char const* XT_CALL 
 XtPrintSampleToString(XtSample sample);
 XT_API char const* XT_CALL 
+XtPrintEnumFlagsToString(XtEnumFlags flags);
+XT_API char const* XT_CALL 
 XtPrintErrorInfoToString(XtErrorInfo const* info);
 XT_API char const* XT_CALL
 XtPrintLocationToString(XtLocation const* location);

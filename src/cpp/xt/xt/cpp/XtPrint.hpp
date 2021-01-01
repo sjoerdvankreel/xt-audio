@@ -24,6 +24,9 @@ inline std::ostream&
 operator<<(std::ostream& os, Sample sample) 
 { return os << XtPrintSampleToString(static_cast<XtSample>(sample)); }
 inline std::ostream& 
+operator<<(std::ostream& os, EnumFlags flags) 
+{ return os << XtPrintEnumFlagsToString(static_cast<XtEnumFlags>(flags)); }
+inline std::ostream& 
 operator<<(std::ostream& os, DeviceCaps capabilities) 
 { return os << XtPrintDeviceCapsToString(static_cast<XtDeviceCaps>(capabilities)); }
 inline std::ostream& 

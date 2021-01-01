@@ -5,6 +5,8 @@
 * package zip in build script
 * cleanup cli gui
 * test gui on linux
+* printXtostring->printx
+* finish the docs
 
 ** LATER
 * arm
