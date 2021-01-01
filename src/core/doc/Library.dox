@@ -144,18 +144,26 @@
  *
  * The core API uses error codes exclusively. C++, Java and C# API's use only exceptions.
  *
- * <b>String handling</b>
+ * @see XtError
+ * @see XtErrorInfo
+ * @see XtAudioGetErrorInfo
+ * @see XtPrintErrorInfoToString
+ *
+ * <b>String handling and printing/ToString()</b>
  *
  * In the C and C++ API's, all strings are encoded as UTF-8. In the C# and Java API's strings use the built-in string type.
+ * XT-Audio provides ToString() like functionality for basic data types (mostly enums) using the XtPrint* interfaces for C
+ * or operator << (std::ostream&) for C++. For .NET and Java, use the built-in ToString() functions. ZORK TODO TODO
  *
  * <b>Resource handling</b>
  *
- * In all language API's there are 3 resources that must be explicitly managed: devices, streams, and the library itself.
- * For C, this means XtDeviceDestroy/XtStreamDestroy/XtAudioTerminate. For C++ everything is handled using RAII,
- * the XtAudio constructor calls XtAudioInit and destructor calls XtAudioTerminate. Devices and streams are handled
- * using std::unique_ptrs. For Java each resource implements Closeable, for C# IDisposable. Except for the C API
- * these are the only resources the application needs to be concerned about. For C, it is documented whether return
- * values and output parameters should be explicitly cleaned up using XtAudioFree().
+ * In all language API's there are 4 resources that must be explicitly managed: device lists, devices, streams, and
+ * the library itself. For C, this means XtDeviceListDestroy/XtDeviceDestroy/XtStreamDestroy/XtAudioTerminate.
+ * For C++ everything is handled using unique_ptrs. For Java each resource implements Closeable, for C# IDisposable.
+ * No other resources are returned to the application that must be cleaned up by the caller. Strings and collections
+ * are handled by the language's respective data types (eg std::string, System.String, java.lang.String and
+ * std::vector or built-in array types). For C, string and array-like API's either return statically-allocated data
+ * or take caller-allocated buffers.
  *
  * <b>Audio buffers</b>
  *
@@ -165,9 +173,12 @@
  * callback is a pointer to an array of pointers each pointing to the audio buffer for a single channel,
  * e.g. [LLL][RRR] for a stereo stream.
  *
- * The input/output buffers passed to XtStreamCallback should be cast to the appropriate type before usage.
- * For C and C++ (and Java and C# in raw mode) this means unsigned char*, short*, int* or float* for interleaved
- * buffers, or unsigned char**, short**, int** or float** for non-interleaved buffers. For Java and C# this
+ * The input/output buffers passed to XtOnBuffer should be cast to the appropriate type before usage.
+ * This means unsigned char*, short*, int* or float* for interleaved buffers, or unsigned char**, short**,
+ * int** or float** for non-interleaved buffers.
+ *
+ * <b>Safe buffers (Java and .NET)</b>
+ *
  * means byte[], short[], int[] or float[] for interleaved buffers or byte[][], short[][], int[][] or float[][]
  * for non-interleaved buffers. Applications should never write to the input buffer.
  *
