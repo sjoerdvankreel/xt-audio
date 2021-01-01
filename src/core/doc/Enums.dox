@@ -2,7 +2,7 @@
  * @file Enums.h
  * @brief Enumeration types.
  */
- 
+
 /**
  * @enum XtCause
  * @brief Platform-independent error cause value.
@@ -75,7 +75,7 @@
  * @brief Platform-independent service setup.
  *
  * @see XtPrintSetupToString
- * @see XtAudioSetupToSystem
+ * @see XtPlatformSetupToSystem
  */
 
 /**

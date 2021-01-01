@@ -1,8 +1,12 @@
 /**
  * @file XtPlatform.h
- * @brief Service enumeration.
+ * @brief Maps setup and system identifiers to platform specific services.
  *
- * Contains functions to enumerate available services on the current platform.
+ * Contains functions to retrieve available audio setups and systems,
+ * and to retrieve the corresponding platform specific audio service.
+ *
+ * @see XtSetup
+ * @see XtSystem
  */
  
 /**
@@ -23,11 +27,44 @@
  * @param p the platform handle returned by XtAudioInit.
  * @param system the service identifier.
  *
- * Use XtPlatformGetSystems to check which systems are supported (and compiled-in) on the current platform.
+ * Use XtPlatformGetSystems to check which systems are actually supported (and compiled-in) on the current platform.
  *
  * This function may only be called from the main thread.
  *
  * @see XtAudioInit
  * @see XtPlatformGetSystems
+ * @see XtPlatformSetupToSystem
  */
- 
+
+/**
+ * @fn XtSystem XtPlatformSetupToSystem(XtPlatform const* p, XtSetup setup)
+ * @brief Translate audio setup to corresponding system on the current platform.
+ * @return the system corresponding to the given setup.
+ * @param p the platform handle returned by XtAudioInit.
+ * @param setup the audio setup.
+ *
+ * Use XtPlatformGetSystems to check which systems are actually supported (and compiled-in) on the current platform.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtAudioInit
+ * @see XtPlatformGetService
+ * @see XtPlatformGetSystems
+ */
+
+/**
+ * @fn void XtPlatformGetSystems(XtPlatform const* p, XtSystem* buffer, int32_t* size)
+ * @brief Get available systems for the current platform.
+ * @param p the platform handle returned by XtAudioInit.
+ * @param buffer the buffer to receive the available systems. If NULL, *size receives the required buffer size.
+ * @param size the size of the buffer.
+ *
+ * This function retrieves all XtSystems which are compiled into the running XT-Audio binary. Only these systems
+ * will return a non-null XtService handle from XtPlatformGetService.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtAudioInit
+ * @see XtPlatformGetSystems
+ * @see XtPlatformSetupToSystem
+ */
