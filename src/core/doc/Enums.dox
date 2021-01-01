@@ -231,6 +231,11 @@
  * @brief Audio stream aggregation.
  *
  * Applications are allowed to call XtServiceAggregateStream.
+ * Stream aggregatrion is primarily intended to emulate full-duplex on backends which do not
+ * natively support this, but may be used to combine any number of input and output devices into a single
+ * audio stream. Currently supported for WASAPI, DirectSound, PulseAudio and ALSA. Unsupported for JACK
+ * and ASIO (because they natively provide full-duplex already, but also because they are natively callback
+ * based API's instead of blocking API's which would greatly complicate implementing stream combining).
  * @see XtServiceAggregateStream
  */
 

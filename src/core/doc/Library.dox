@@ -1,0 +1,184 @@
+/**
+ * @mainpage XT-Audio
+ *
+ * @section abstractions Core abstractions
+ *
+ * <b>Platform, setup and system</b>
+ *
+ * The audio platform (XtPlatform) is the entry point to the XT-Audio library. Applications obtain a platform handle
+ * using XtAudioInit, and cleanup the library using XtPlatformDestroy. The audio platform translates audio setups
+ * (XtSetup, consumer, system and pro-audio) to platform-specific backend identifiers (XtSystem) identifying
+ * the supported backends (DirectSound, WASAPI and ASIO on windows, and PulseAudio, ALSA and JACK on linux).
+ * XT-Audio may be compiled with support for specific backends enabled. Therefore not all systems which are
+ * supported on a given platform may actually be available in the compiled binary. Use XtPlatformGetSystems
+ * to determine which systems are available. Use XtPlatformSetupToSystem to translate a platform-independent
+ * audio setup (consumer, system and pro-audio) to a platform-specific system identifier. From there, use
+ * XtPlatformGetService to start working with a specific audio service.
+ *
+ * @see XtSetup
+ * @see XtSystem
+ * @see XtPlatform
+ * @see XtAudioInit
+ * @see XtPlatformDestroy
+ * @see XtPlatformGetSystems
+ * @see XtPlatformGetService
+ * @see XtPlatformSetupToSystem
+ *
+ * <b>Service and device list</b>
+ *
+ * An audio service (XtService) is an implementation of the XtService API on a specific backend.
+ * Services are used to query and open available audio devices and to query service-specific capabilities.
+ * The device list (XtDeviceList) represents metadata about the available audio devices within a given
+ * service. The device list allows retrieving device names and identifiers for all audio devices in a
+ * service without actually opening the device. Querying other metadata such as device capabilities
+ * may have to open the device (depending on the backend). XtService also allows retrieving a default
+ * device-id, for backends which support the notion of a default device. In addition, the XtService API
+ * provides a stream-aggregation feature which allows the application to combine multiple devices into
+ * a single audio stream. This is primarily intended to emulate full-duplex on backends which do not
+ * natively support this, but may be used to combine any number of input and output devices into a single
+ * audio stream.
+ *
+ * @see XtService
+ * @see XtDeviceList
+ * @see XtDeviceListGetId
+ * @see XtDeviceListGetName
+ * @see XtServiceOpenDeviceList
+ * @see XtServiceGetDefaultDeviceId
+ * @see XtDeviceListGetCapabilities
+ * @see XtServiceGetCapabilities
+ * @see XtServiceAggregateStream
+ *
+ * <b>Devices</b>
+ *
+ * An audio device is an implementation of the XtDevice API on a specific backend.
+ * Depending on the backend type, devices may directly correspond to physical audio
+ * cards (ASIO, ALSA hw, WASAPI exclusive), system mixers on top of such cards
+ * (ALSA plughw, WASAPI shared, DirectSound), or sound services which allow user-
+ * defined routing from application input/output to physical or virtual devices
+ * (JACK and PulseAudio). The device API may be used to query format support and
+ * buffer sizes, and to create audio streams.
+ *
+ * @see XtServiceOpenDevice
+ * @see XtDeviceSupportsFormat
+ * @see XtDeviceGetBufferSize
+ * @see XtDeviceOpenStream
+ *
+ * <b>Streams</b>
+ *
+ * An audio stream is an implementation of the XtStream API on a specific backend.
+ * Each stream is tied to an application-defined callback function (XtOnBuffer)
+ * which is called whenever the stream is ready to deliver or receive more data.
+ * The XtStream API can be used to control (start/stop) audio streams and to query
+ * latencies and buffer sizes. In addition, applications may optionally supply a
+ * buffer under/overrun callback (XtOnXRun) and stream state changed callback (XtOnRunning).
+ *
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ * @see XtOnBuffer
+ * @see XtOnXRun
+ * @see XtOnRunning
+ * @see XtStreamStart
+ * @see XtStreamStop
+ * @see XtStreamIsRunning
+ *
+ * @section handles Backend handles
+ *
+ * Applications that wish to extend XT-Audio's feature set can do so by using backend-specific
+ * functionality through XtDeviceGetHandle and XtStreamGetHandle. This allows direct access
+ * to IASIO, IDirectSound, IMMDevice/IAudioClient, snd_pcm_t, pa_simple, jack_client_t  etc depending on the backend.
+ *
+ * @see XtDeviceGetHandle
+ * @see XtStreamGetHandle
+ *
+ * @section usage Basic usage
+ *
+ * Include <xt/XtAudio.h> for C, <xt/XtAudio.hpp> for C++ and link xt-core.dll/libxt-core.so.
+ * Reference Xt.Cli.dll for .NET, xt.audio-(version).jar for java.
+ *
+ * An application must first initialize the library using XtAudioInit.
+ * From there, using the returned platform handle it can select an audio
+ * service, query for available devices, and open streams on those devices.
+ * The choice of backend (system) greatly affects the way audio is streamed
+ * in terms of latency, supported formats and whether the application takes
+ * system-wide exclusive control of a device. If you know exactly what your
+ * application needs, use XtPlatformSetupToSystem to select a backend with
+ * specific characteristics. Otherwise it's probably best to let the end-user
+ * pick the system (XtPlatformGetSystems) and device to use.
+ *
+ * Streaming audio with XT-Audio involves at least these steps:
+ * 1. Initialize (XtAudioInit)
+ * 2. Select service (XtPlatformGetService)
+ * 3. Get device id (XtServiceGetDefaultDeviceId/XtServiceOpenDeviceList and XtDeviceListGetId)
+ * 4. Select device (XtServiceOpenDevice)
+ * 5. Test format and buffer size support (XtDeviceSupportsFormat/XtDeviceGetBufferSize)
+ * 6. Open a stream (XtDeviceOpenStream/XtServiceAggregateStream)
+ * 7. Start running (XtStreamStart)
+ * 8. Stop running (XtStreamStop)
+ * 9. Cleanup stream (XtStreamDestroy)
+ * 10. Cleanup device (XtDeviceDestroy)
+ * 11. Cleanup device list (XtDeviceListDestroy)
+ * 12. Cleanup library (XtPlatformDestroy)
+ *
+ * @see XtAudioInit
+ * @see XtPlatformGetService
+ * @see XtPlatformGetSystems
+ * @see XtPlatformSetupToSystem
+ * @see XtServiceGetDefaultDeviceId
+ * @see XtServiceOpenDeviceList
+ * @see XtDeviceListGetId
+ * @see XtServiceOpenDevice
+ * @see XtDeviceSupportsFormat
+ * @see XtDeviceGetBufferSize
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ * @see XtStreamStart
+ * @see XtStreamStop
+ * @see XtStreamDestroy
+ * @see XtDeviceDestroy
+ * @see XtDeviceListDestroy
+ * @see XtPlatformDestroy
+ *
+ * @section langdiffs API differences between languages
+ *
+ * <b>Error handling</b>
+ *
+ * The core API uses error codes exclusively. C++, Java and C# API's use only exceptions.
+ *
+ * <b>String handling</b>
+ *
+ * In the C and C++ API's, all strings are encoded as UTF-8. In the C# and Java API's strings use the built-in string type.
+ *
+ * <b>Resource handling</b>
+ *
+ * In all language API's there are 3 resources that must be explicitly managed: devices, streams, and the library itself.
+ * For C, this means XtDeviceDestroy/XtStreamDestroy/XtAudioTerminate. For C++ everything is handled using RAII,
+ * the XtAudio constructor calls XtAudioInit and destructor calls XtAudioTerminate. Devices and streams are handled
+ * using std::unique_ptrs. For Java each resource implements Closeable, for C# IDisposable. Except for the C API
+ * these are the only resources the application needs to be concerned about. For C, it is documented whether return
+ * values and output parameters should be explicitly cleaned up using XtAudioFree().
+ *
+ * <b>Audio buffers</b>
+ *
+ * When using interleaved access, the data passed to the callback is a pointer to a single array of samples,
+ * and the audio buffer contains alternating samples for each channel, e.g. [LRLRLR] for a stereo stream.
+ * When using non-interleaved access, there is one audio buffer for each channel, and the data passed to the
+ * callback is a pointer to an array of pointers each pointing to the audio buffer for a single channel,
+ * e.g. [LLL][RRR] for a stereo stream.
+ *
+ * The input/output buffers passed to XtStreamCallback should be cast to the appropriate type before usage.
+ * For C and C++ (and Java and C# in raw mode) this means unsigned char*, short*, int* or float* for interleaved
+ * buffers, or unsigned char**, short**, int** or float** for non-interleaved buffers. For Java and C# this
+ * means byte[], short[], int[] or float[] for interleaved buffers or byte[][], short[][], int[][] or float[][]
+ * for non-interleaved buffers. Applications should never write to the input buffer.
+ *
+ * <b>Stream aggregation</b>
+ *
+ * XT-Audio allows an application to open an audio stream on more than one device. This is primarily intended
+ * to emulate full-duplex operation on systems which don't natively support it, but may be used to aggregate
+ * any number of input, output and/or full-duplex streams. The resulting stream's channel count will be equal
+ * to the total number of channels requested for each of the underlying streams. Aggregate streams introduce
+ * an intermediate buffer to keep underlying streams in sync, and as such (and unlike anything else in XT-Audio)
+ * they actually add latency to a running stream. Aggregate streams are created using XtServiceAggregateStream
+ * instead of XtDeviceOpenStream. Other than that, the stream interface (including callback functions) is 
+ * exactly the same as for regular audio streams.
+ */

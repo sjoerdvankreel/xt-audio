@@ -48,3 +48,28 @@
  * @see XtAudioGetErrorInfo
  * @see XtPrintErrorInfoToString
  */
+ 
+/**
+ * @typedef struct XtPlatform XtPlatform
+ * @brief opaque platform handle
+ */ 
+ 
+/**
+ * @typedef struct XtService XtService
+ * @brief opaque audio service handle
+ */
+ 
+/**
+ * @typedef struct XtDeviceList XtDeviceList
+ * @brief opaque device list handle
+ */
+ 
+/**
+ * @typedef struct XtDevice XtDevice
+ * @brief opaque audio device handle
+ */
+ 
+/**
+ * @typedef struct XtStream XtStream
+ * @brief opaque audio stream handle
+ */

@@ -92,10 +92,13 @@
  *
  * When the requested interleaving mode is not supported by any device it will be emulated.
  *
+ * The service must support stream aggregation (XtServiceCapsAggregation).
+ *
  * This function may only be called from the main thread.
  *
  * @see XtStreamDestroy
  * @see XtDeviceOpenStream
  * @see XtDeviceSupportsFormat
  * @see XtDeviceSupportsAccess
+ * @see XtServiceCapsAggregation
  */

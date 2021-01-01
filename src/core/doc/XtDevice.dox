@@ -37,6 +37,7 @@
  * @return 0 on success, a nonzero error code otherwise.
  * @param d the audio device.
  *
+ * The service must support the device control panel feature (XtServiceCapsControlPanel).
  * This method is currently supported for ASIO devices only.
  *
  * This function may only be called from the main thread.

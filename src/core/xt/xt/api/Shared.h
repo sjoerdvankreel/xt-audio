@@ -25,12 +25,10 @@ typedef uint64_t XtError;
 static XtBool const XtTrue = 1;
 static XtBool const XtFalse = 0;
 
-/** @cond */
 typedef struct XtDevice XtDevice;
 typedef struct XtStream XtStream;
 typedef struct XtService XtService;
 typedef struct XtPlatform XtPlatform;
 typedef struct XtDeviceList XtDeviceList;
-/** @endcond */
 
 #endif // XT_API_SHARED_H

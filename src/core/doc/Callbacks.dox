@@ -22,7 +22,7 @@
 
 /**
  * @typedef void (*XtOnXRun)(XtStream const* stream, int32_t index, void* user)
- * @brief Audio xrun callback.
+ * @brief Audio xrun (underrun/overrun) callback.
  *
  * @param stream the audio stream.
  * @param stream index the stream index in case of aggregation.
@@ -30,6 +30,13 @@
  *
  * The stream index will be -1 for regular and aggregate streams, or the device
  * index passed to XtServiceAggregateStream for underlying streams of aggregate streams.
+ * When xruns regularly occur, applications should pick a larger buffer size when opening
+ * the stream to ensure glitch-free streaming. Also, some backends may stop the stream
+ * altogether when xruns repeatedly occur (this currently happens on ALSA).
+ *
+ * XRuns will be reported for streams on all services that natively support xrun detection.
+ * In addition, XT-Audio may report xruns detected in internal infrastructure even for
+ * backends which do not support xrun detection. 
  *
  * Note for aggregate streams: xruns which occur during stream aggregation are always reported
  * to the application regardless of whether the stream's service supports xrun detection (see XtServiceCaps).
