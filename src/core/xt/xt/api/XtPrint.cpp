@@ -49,7 +49,7 @@ XtPrintSystemToString(XtSystem system)
   }
 }
 
-char const*
+char const* XT_CALL
 XtPrintEnumFlagsToString(XtEnumFlags flags)
 {
   if(flags == XtEnumFlagsAll) return "All";
