@@ -15,6 +15,7 @@
  * @param p the platform handle returned by XtAudioInit.
  *
  * It is ok to pass NULL.
+ * It is an error to terminate the library when any streams, devices or device lists are still open.
  *
  * This function may only be called from the main thread.
  * @see XtAudioInit
