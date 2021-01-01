@@ -22,12 +22,21 @@ class Platform final
 public:
   ~Platform();
   std::vector<System> GetSystems();
+  System SetupToSystem(Setup setup) const;
   std::unique_ptr<Service> GetService(System system);
 };
 
 inline
 Platform::~Platform()
 { XtPlatformDestroy(_p); }
+
+inline System
+Platform::SetupToSystem(Setup setup) const
+{ 
+  auto coreSetup = static_cast<XtSetup>(setup);
+  auto result = XtPlatformSetupToSystem(_p, coreSetup);
+  return static_cast<System>(result); 
+}
 
 inline std::vector<System> 
 Platform::GetSystems() 

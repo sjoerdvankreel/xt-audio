@@ -20,7 +20,7 @@ XtPlatform::
 }
 
 XtSystem
-XtPlatform::SetupToSystem(XtSetup setup)
+XtPlatform::SetupToSystem(XtSetup setup) const
 {
   switch(setup)
   {

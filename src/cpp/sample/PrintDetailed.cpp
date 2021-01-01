@@ -40,11 +40,11 @@ PrintDetailedMain()
   {
     Xt::Version version = Xt::Audio::GetVersion();
     std::cout << "Version: " << version.major << "." << version.minor << "\n";    
-    Xt::System pro = Xt::Audio::SetupToSystem(Xt::Setup::ProAudio);
+    Xt::System pro = platform->SetupToSystem(Xt::Setup::ProAudio);
     std::cout << "Pro Audio: " << pro << " (" << (platform->GetService(pro) != nullptr) << ")\n";
-    Xt::System system = Xt::Audio::SetupToSystem(Xt::Setup::SystemAudio);
+    Xt::System system = platform->SetupToSystem(Xt::Setup::SystemAudio);
     std::cout << "System Audio: " << system << " (" << (platform->GetService(system) != nullptr) << ")\n";
-    Xt::System consumer = Xt::Audio::SetupToSystem(Xt::Setup::ConsumerAudio);
+    Xt::System consumer = platform->SetupToSystem(Xt::Setup::ConsumerAudio);
     std::cout << "Consumer Audio: " << consumer << " (" << (platform->GetService(consumer) != nullptr) << ")\n";
 
     for(Xt::System s: platform->GetSystems()) 

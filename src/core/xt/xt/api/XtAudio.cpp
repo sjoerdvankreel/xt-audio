@@ -66,10 +66,3 @@ XtAudioInit(char const* id, void* window, XtOnError onError)
   if(wasapi) result->_services.emplace_back(std::move(wasapi));
   return XtPlatform::instance = result.release();
 }
-
-XtSystem XT_CALL 
-XtAudioSetupToSystem(XtSetup setup)
-{
-  XT_ASSERT(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
-  return XtPlatform::SetupToSystem(setup);
-}

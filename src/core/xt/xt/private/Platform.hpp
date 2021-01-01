@@ -14,8 +14,9 @@ struct XtPlatform
   ~XtPlatform();
   XtPlatform() = default;
   XtPlatform(void* window);
-
   static inline XtPlatform* instance = nullptr;
+
+  XtSystem SetupToSystem(XtSetup setup) const;
   XtService const* GetService(XtSystem system) const;
   void GetSystems(XtSystem* buffer, int32_t* size) const;
 
@@ -28,7 +29,6 @@ struct XtPlatform
 
   static void EndThread(); 
   static void BeginThread();
-  static XtSystem SetupToSystem(XtSetup setup);
   static void RevertThreadPriority(int32_t policy, int32_t previous);
   static void RaiseThreadPriority(int32_t* policy, int32_t* previous);
 };
