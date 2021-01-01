@@ -4,7 +4,6 @@
 /** @file */
 
 #include <xt/cpp/Core.hpp>
-
 #include <ostream>
 
 namespace Xt {

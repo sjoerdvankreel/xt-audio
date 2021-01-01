@@ -7,7 +7,6 @@
 #include <xt/cpp/Forward.hpp>
 #include <xt/cpp/Structs.hpp>
 #include <xt/cpp/Callbacks.hpp>
-
 #include <cstdint>
 
 namespace Xt {
