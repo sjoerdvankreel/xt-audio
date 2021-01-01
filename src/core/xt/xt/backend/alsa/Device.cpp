@@ -96,7 +96,8 @@ AlsaDevice::OpenBlockingStream(XtBlockingParams const* params, XtBlockingStream*
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_min(result->_pcm.params, &min));
   XT_VERIFY_ALSA(snd_pcm_hw_params_get_buffer_size_max(result->_pcm.params, &max));
   buffer = params->bufferSize / 1000.0 * params->format.mix.rate;
-  buffer = std::clamp(buffer, min, max);
+  if(buffer < min) buffer = min;
+  if(buffer > max) buffer = max;
   XT_VERIFY_ALSA(snd_pcm_hw_params_set_buffer_size_near(result->_pcm.pcm, result->_pcm.params, &buffer));  
   XT_VERIFY_ALSA(snd_pcm_hw_params(result->_pcm.pcm, result->_pcm.params));
 
