@@ -270,17 +270,6 @@
  * @see XtStreamGetLatency
  */
 
-/**
- * @fn XtError XtServiceGetDeviceCount(const XtService* s, int32_t* count)
- * @brief Gets number of devices in service.
- * @return 0 on success, a nonzero error code otherwise.
- * @param s the audio service.
- * @param count on success, receives the number of devices.
- *
- * This function may only be called from the main thread.
- *
- * @see XtServiceOpenDevice
- */
 
 /**
  * @fn XtError XtServiceOpenDevice(const XtService* s, int32_t index, XtDevice** device)
@@ -351,13 +340,3 @@
  */
 
 
-
-/**
- * @fn XtError XtDeviceGetName(const XtDevice* d, char** name)
- * @brief Gets the device's name.
- * @return 0 on success, a nonzero error code otherwise.
- * @param d the audio device.
- * @param name on success, receives a pointer to a dynamically allocated string. Use XtAudioFree to free the returned string. On error *name will be NULL.
- *
- * This function may only be called from the main thread.
- */

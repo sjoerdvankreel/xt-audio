@@ -1,0 +1,71 @@
+/**
+ * @file XtDeviceList.h
+ * @brief Device enumeration and metadata.
+ *
+ * Contains functions to enumerate devices and retrieve device names and capabilities.
+ */
+
+/**
+ * @fn void XtDeviceListDestroy(XtDeviceList* l)
+ * @brief Destroys a device list.
+ * @param l the device list.
+ *
+ * It is ok to pass NULL.
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn XtError XtDeviceListGetCount(XtDeviceList const* l, int32_t* count)
+ * @brief Gets the number of devices enumerated.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param l the device list.
+ * @param count on success, receives the number of devices.
+ *
+ * This function may only be called from the main thread.
+ * @see XtEnumFlags
+ * @see XtServiceOpenDeviceList
+ */
+ 
+/**
+ * @fn XtError XtDeviceListGetId(XtDeviceList const* l, int32_t index, char* buffer, int32_t* size)
+ * @brief Gets a device's id.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param l the device list.
+ * @param index the device index.
+ * @param buffer the string buffer to receive the device id. If NULL, *size receives the required buffer size.
+ * @param size the size of the buffer.
+ *
+ * The device id is stable and suitable to store between application sessions, for example to remember the user-selected device.
+ * This function copies up to *size characters into *buffer, including the terminating null character.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceListGetCount
+ */
+
+/**
+ * @fn XtError XtDeviceListGetName(XtDeviceList const* l, char const* id, char* buffer, int32_t* size)
+ * @brief Gets a device's name.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param l the device list.
+ * @param id the device id.
+ * @param buffer the string buffer to receive the device name. If NULL, *size receives the required buffer size.
+ * @param size the size of the buffer.
+ *
+ * This function copies up to *size characters into *buffer, including the terminating null character.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceListGetId
+ */
+
+/**
+ * @fn XtError XtDeviceListGetCapabilities(XtDeviceList const* l, char const* id, XtDeviceCaps* capabilities)
+ * @brief Gets a device's capabilities.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param l the device list.
+ * @param id the device id.
+ * @param capabilities on success, receives the device capabilities.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceListGetId
+ */
