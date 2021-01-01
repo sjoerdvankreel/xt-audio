@@ -12,25 +12,25 @@ using namespace Detail;
 
 inline std::ostream& 
 operator<<(std::ostream& os, Cause cause) 
-{ return os << XtPrintCauseToString(static_cast<XtCause>(cause)); }
+{ return os << XtPrintCause(static_cast<XtCause>(cause)); }
 inline std::ostream& 
 operator<<(std::ostream& os, Setup setup) 
-{ return os << XtPrintSetupToString(static_cast<XtSetup>(setup)); }
+{ return os << XtPrintSetup(static_cast<XtSetup>(setup)); }
 inline std::ostream& 
 operator<<(std::ostream& os, System system) 
-{ return os << XtPrintSystemToString(static_cast<XtSystem>(system)); }
+{ return os << XtPrintSystem(static_cast<XtSystem>(system)); }
 inline std::ostream& 
 operator<<(std::ostream& os, Sample sample) 
-{ return os << XtPrintSampleToString(static_cast<XtSample>(sample)); }
+{ return os << XtPrintSample(static_cast<XtSample>(sample)); }
 inline std::ostream& 
 operator<<(std::ostream& os, EnumFlags flags) 
-{ return os << XtPrintEnumFlagsToString(static_cast<XtEnumFlags>(flags)); }
+{ return os << XtPrintEnumFlags(static_cast<XtEnumFlags>(flags)); }
 inline std::ostream& 
 operator<<(std::ostream& os, DeviceCaps capabilities) 
-{ return os << XtPrintDeviceCapsToString(static_cast<XtDeviceCaps>(capabilities)); }
+{ return os << XtPrintDeviceCaps(static_cast<XtDeviceCaps>(capabilities)); }
 inline std::ostream& 
 operator<<(std::ostream& os, ServiceCaps capabilities) 
-{ return os << XtPrintServiceCapsToString(static_cast<XtServiceCaps>(capabilities)); }
+{ return os << XtPrintServiceCaps(static_cast<XtServiceCaps>(capabilities)); }
 
 inline std::ostream& 
 operator<<(std::ostream& os, Location const& location) 
@@ -39,7 +39,7 @@ operator<<(std::ostream& os, Location const& location)
   loc.line = location.line;
   loc.file = location.file.c_str();
   loc.func = location.func.c_str();
-  return os << XtPrintLocationToString(&loc);
+  return os << XtPrintLocation(&loc);
 }
 
 inline std::ostream& 
@@ -50,7 +50,7 @@ operator<<(std::ostream& os, ErrorInfo const& info)
   i.service.text = info.service.text.c_str();
   i.system = static_cast<XtSystem>(info.system);
   i.service.cause = static_cast<XtCause>(info.service.cause);
-  return os << XtPrintErrorInfoToString(&i);
+  return os << XtPrintErrorInfo(&i);
 }
 
 } // namespace Xt

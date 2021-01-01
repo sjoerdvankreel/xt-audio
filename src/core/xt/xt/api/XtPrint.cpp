@@ -7,7 +7,7 @@
 #include <algorithm>
 
 char const* XT_CALL
-XtPrintSampleToString(XtSample sample) 
+XtPrintSample(XtSample sample) 
 {
   switch(sample) 
   {
@@ -21,7 +21,7 @@ XtPrintSampleToString(XtSample sample)
 }
 
 char const* XT_CALL
-XtPrintCauseToString(XtCause cause) 
+XtPrintCause(XtCause cause) 
 {
   switch(cause) 
   {
@@ -35,7 +35,7 @@ XtPrintCauseToString(XtCause cause)
 }
 
 char const* XT_CALL 
-XtPrintSystemToString(XtSystem system) 
+XtPrintSystem(XtSystem system) 
 {
   switch(system) 
   {
@@ -50,7 +50,7 @@ XtPrintSystemToString(XtSystem system)
 }
 
 char const* XT_CALL
-XtPrintEnumFlagsToString(XtEnumFlags flags)
+XtPrintEnumFlags(XtEnumFlags flags)
 {
   if(flags == XtEnumFlagsAll) return "All";
   if(flags == XtEnumFlagsInput) return "Input";
@@ -59,7 +59,7 @@ XtPrintEnumFlagsToString(XtEnumFlags flags)
 }
 
 char const* XT_CALL
-XtPrintSetupToString(XtSetup setup) 
+XtPrintSetup(XtSetup setup) 
 {
   switch(setup) 
   {
@@ -71,7 +71,7 @@ XtPrintSetupToString(XtSetup setup)
 }
 
 char const* XT_CALL
-XtPrintDeviceCapsToString(XtDeviceCaps capabilities) 
+XtPrintDeviceCaps(XtDeviceCaps capabilities) 
 {
   size_t i = 0;
   std::string result;
@@ -87,7 +87,7 @@ XtPrintDeviceCapsToString(XtDeviceCaps capabilities)
 }
 
 char const* XT_CALL
-XtPrintServiceCapsToString(XtServiceCaps capabilities) 
+XtPrintServiceCaps(XtServiceCaps capabilities) 
 {
   size_t i = 0;
   std::string result;
@@ -106,7 +106,7 @@ XtPrintServiceCapsToString(XtServiceCaps capabilities)
 }
 
 char const* XT_CALL
-XtPrintLocationToString(XtLocation const* location) 
+XtPrintLocation(XtLocation const* location) 
 {
   std::ostringstream stream;
   static thread_local char buffer[1024];
@@ -118,13 +118,13 @@ XtPrintLocationToString(XtLocation const* location)
 }
 
 char const* XT_CALL
-XtPrintErrorInfoToString(XtErrorInfo const* info) 
+XtPrintErrorInfo(XtErrorInfo const* info) 
 {
   std::ostringstream stream;
   static thread_local char buffer[1024];
   std::memset(buffer, 0, sizeof(buffer));
-  stream << XtPrintSystemToString(info->system);
-  stream << " " << XtPrintCauseToString(info->service.cause);
+  stream << XtPrintSystem(info->system);
+  stream << " " << XtPrintCause(info->service.cause);
   stream << " Error: " << info->fault << " (" << info->service.text << ")";
   auto result = stream.str();
   std::memcpy(buffer, result.c_str(), std::min(static_cast<size_t>(1023), result.size()));

@@ -12,23 +12,23 @@ extern "C" {
 #endif
 
 XT_API char const* XT_CALL 
-XtPrintCauseToString(XtCause cause);
+XtPrintCause(XtCause cause);
 XT_API char const* XT_CALL 
-XtPrintSetupToString(XtSetup setup);
+XtPrintSetup(XtSetup setup);
 XT_API char const* XT_CALL 
-XtPrintSystemToString(XtSystem system);
+XtPrintSystem(XtSystem system);
 XT_API char const* XT_CALL 
-XtPrintSampleToString(XtSample sample);
+XtPrintSample(XtSample sample);
 XT_API char const* XT_CALL 
-XtPrintEnumFlagsToString(XtEnumFlags flags);
+XtPrintEnumFlags(XtEnumFlags flags);
 XT_API char const* XT_CALL 
-XtPrintErrorInfoToString(XtErrorInfo const* info);
+XtPrintErrorInfo(XtErrorInfo const* info);
 XT_API char const* XT_CALL
-XtPrintLocationToString(XtLocation const* location);
+XtPrintLocation(XtLocation const* location);
 XT_API char const* XT_CALL 
-XtPrintDeviceCapsToString(XtDeviceCaps capabilities);
+XtPrintDeviceCaps(XtDeviceCaps capabilities);
 XT_API char const* XT_CALL 
-XtPrintServiceCapsToString(XtServiceCaps capabilities);
+XtPrintServiceCaps(XtServiceCaps capabilities);
 
 #ifdef __cplusplus
 }

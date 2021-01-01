@@ -72,7 +72,7 @@ XtiCreateError(XtSystem system, XtFault fault)
   if(fault == 0) return 0;
   auto result = static_cast<XtError>(system) << 32ULL | fault;
   auto info = XtAudioGetErrorInfo(result);
-  XT_TRACE(XtPrintErrorInfoToString(&info));
+  XT_TRACE(XtPrintErrorInfo(&info));
   return result;
 }
 
