@@ -1,11 +1,12 @@
 #ifndef XT_API_SERVICE_H
 #define XT_API_SERVICE_H
 
+/** @cond */
 #include <xt/api/Enums.h>
 #include <xt/api/Shared.h>
 #include <xt/api/Structs.h>
-
 #include <stdint.h>
+/** @endcond */
 
 #ifdef __cplusplus
 extern "C" {

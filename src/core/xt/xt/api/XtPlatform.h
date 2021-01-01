@@ -1,10 +1,11 @@
 #ifndef XT_API_PLATFORM_H
 #define XT_API_PLATFORM_H
 
+/** @cond */
 #include <xt/api/Enums.h>
 #include <xt/api/Shared.h>
-
 #include <stdint.h>
+/** @endcond */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,10 +1,11 @@
 #ifndef XT_API_DEVICE_H
 #define XT_API_DEVICE_H
 
+/** @cond */
 #include <xt/api/Shared.h>
 #include <xt/api/Structs.h>
-
 #include <stdint.h>
+/** @endcond */
 
 #ifdef __cplusplus
 extern "C" {

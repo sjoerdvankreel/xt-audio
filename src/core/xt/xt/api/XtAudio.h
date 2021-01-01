@@ -1,12 +1,13 @@
 #ifndef XT_API_AUDIO_H
 #define XT_API_AUDIO_H
 
+/** @cond */
 #include <xt/api/Enums.h>
 #include <xt/api/Shared.h>
 #include <xt/api/Structs.h>
 #include <xt/api/Callbacks.h>
-
 #include <stdint.h>
+/** @endcond */
 
 #ifdef __cplusplus
 extern "C" {
