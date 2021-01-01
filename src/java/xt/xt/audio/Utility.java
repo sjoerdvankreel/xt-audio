@@ -59,8 +59,8 @@ class Utility {
         Native.register(LIBRARY);
     }
 
-    static native String XtPrintErrorInfoToString(XtErrorInfo info);
-    static native String XtPrintLocationToString(XtLocation location);
+    static native String XtPrintErrorInfo(XtErrorInfo info);
+    static native String XtPrintLocation(XtLocation location);
     static void handleError(long error) { if(error != 0) throw new XtException(error); }
     static <T> T handleError(long error, T result) { if(error != 0) throw new XtException(error); return result; }
 }
