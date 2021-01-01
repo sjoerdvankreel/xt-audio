@@ -36,11 +36,11 @@ namespace Xt
             {
                 XtVersion version = XtAudio.GetVersion();
                 Console.WriteLine("Version: " + version.major + "." + version.minor);
-                XtSystem pro = XtAudio.SetupToSystem(XtSetup.ProAudio);
+                XtSystem pro = platform.SetupToSystem(XtSetup.ProAudio);
                 Console.WriteLine("Pro Audio: " + pro + " (" + (platform.GetService(pro) != null) + ")");
-                XtSystem system = XtAudio.SetupToSystem(XtSetup.SystemAudio);
+                XtSystem system = platform.SetupToSystem(XtSetup.SystemAudio);
                 Console.WriteLine("System Audio: " + system + " (" + (platform.GetService(system) != null) + ")");
-                XtSystem consumer = XtAudio.SetupToSystem(XtSetup.ConsumerAudio);
+                XtSystem consumer = platform.SetupToSystem(XtSetup.ConsumerAudio);
                 Console.WriteLine("Consumer Audio: " + consumer + " (" + (platform.GetService(consumer) != null) + ")");
 
                 foreach (XtSystem s in platform.GetSystems())

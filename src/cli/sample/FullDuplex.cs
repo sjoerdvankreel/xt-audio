@@ -35,7 +35,7 @@ namespace Xt
             XtFormat float48000 = new XtFormat(new XtMix(48000, XtSample.Float32), new XtChannels(2, 0, 2, 0));
 
             using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero, null);
-            XtSystem system = XtAudio.SetupToSystem(XtSetup.ProAudio);
+            XtSystem system = platform.SetupToSystem(XtSetup.ProAudio);
             XtService service = platform.GetService(system);
             if (service == null || (service.GetCapabilities() & XtServiceCaps.FullDuplex) == 0) return;
 
