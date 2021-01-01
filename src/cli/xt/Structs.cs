@@ -118,7 +118,7 @@ namespace Xt
         IntPtr _func;
         public string func => PtrToStringUTF8(_func);
         public int line;
-        public override string ToString() => PtrToStringUTF8(XtPrintLocationToString(ref this));
+        public override string ToString() => PtrToStringUTF8(XtPrintLocation(ref this));
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -127,7 +127,7 @@ namespace Xt
         public int fault;
         public XtSystem system;
         public XtServiceError service;        
-        public override string ToString() => PtrToStringUTF8(XtPrintErrorInfoToString(ref this));
+        public override string ToString() => PtrToStringUTF8(XtPrintErrorInfo(ref this));
     }
 
     public struct XtAggregateDeviceParams
