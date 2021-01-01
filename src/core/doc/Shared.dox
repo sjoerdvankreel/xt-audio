@@ -46,7 +46,7 @@
  
  * @see XtErrorInfo
  * @see XtAudioGetErrorInfo
- * @see XtPrintErrorInfoToString
+ * @see XtPrintErrorInfo
  */
  
 /**

@@ -8,7 +8,7 @@
  * @brief Platform-independent error cause value.
 
  * @see XtServiceError
- * @see XtPrintCauseToString
+ * @see XtPrintCause
  */
  
 /**
@@ -41,7 +41,7 @@
  * @brief Audio sample format.
  *
  * @see XtMix
- * @see XtPrintSampleToString
+ * @see XtPrintSample
  * @see XtAudioGetSampleAttributes
  */
 
@@ -74,7 +74,7 @@
  * @enum XtSetup
  * @brief Platform-independent service setup.
  *
- * @see XtPrintSetupToString
+ * @see XtPrintSetup
  * @see XtPlatformSetupToSystem
  */
 
@@ -112,7 +112,7 @@
  * @see XtErrorInfo
  * @see XtPlatformGetService
  * @see XtPlatformGetSystems
- * @see XtPrintSystemToString
+ * @see XtPrintSystem
  */
 
 /**
@@ -172,7 +172,7 @@
  * @brief Audio service capabilities.
  *
  * @see XtServiceGetCapabilities
- * @see XtPrintServiceCapsToString
+ * @see XtPrintServiceCaps
  */
 
 /**
@@ -252,7 +252,7 @@
  * @brief Audio device capabilities.
  *
  * @see XtDeviceListGetCapabilities
- * @see XtPrintDeviceCapsToString
+ * @see XtPrintDeviceCaps
  */
 
 /**

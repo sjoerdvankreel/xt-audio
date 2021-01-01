@@ -1,12 +1,8 @@
-* Better document service/list/device/stream lifetime (what needs to be alive when).
-* move doxygen to own file
 * document samples + explain no io in callback
-* fix javadoc warnings
 * package zip in build script
-* cleanup cli gui
-* test gui on linux
-* printXtostring->printx
 * finish the docs
+* check build scripts
+* update site and samples
 
 ** LATER
 * arm

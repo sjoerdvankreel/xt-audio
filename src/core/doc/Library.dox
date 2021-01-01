@@ -147,7 +147,7 @@
  * @see XtError
  * @see XtErrorInfo
  * @see XtAudioGetErrorInfo
- * @see XtPrintErrorInfoToString
+ * @see XtPrintErrorInfo
  *
  * <b>String handling and printing/ToString()</b>
  *
