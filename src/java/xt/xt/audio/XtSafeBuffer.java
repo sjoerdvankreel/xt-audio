@@ -56,7 +56,8 @@ public final class XtSafeBuffer implements AutoCloseable {
         var type = _types.get(_format.mix.sample);
         int elems = _stream.getFrames() * _attrs.count;
         if(_interleaved) return Array.newInstance(type, channels * elems);
-        var result = Array.newInstance(type.arrayType(), channels);
+        var channelType = Array.newInstance(type, 0).getClass();
+        var result = Array.newInstance(channelType, channels);
         for(int i = 0; i < channels; i++) Array.set(result, i, Array.newInstance(type, elems));
         return result;
     }
