@@ -59,3 +59,8 @@ cd java\xt
 call mvn -q javadoc:javadoc
 cd ..\..
 msbuild cli\doc\Xt.Cli.shfbproj /verbosity:quiet
+
+REM package
+cd ..
+tar.exe -cf xt-audio.zip -T dist-files.txt
+cd build
