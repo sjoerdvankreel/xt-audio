@@ -1,2 +1,0 @@
-* package zip in build script
-* update site and samples
