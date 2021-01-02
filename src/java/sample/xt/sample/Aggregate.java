@@ -20,6 +20,7 @@ import xt.audio.XtStream;
 
 public class Aggregate {
 
+    // Normally don't do I/O in the callback.
     static void onXRun(XtStream stream, int index, Object user) {
         System.out.println("XRun on device " + index + ".");
     }

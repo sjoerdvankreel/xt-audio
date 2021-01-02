@@ -5,6 +5,7 @@ namespace Xt
 {
     public class FullDuplex
     {
+        // Normally don't do I/O in the callback.
         static void OnXRun(XtStream stream, int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 

@@ -11,6 +11,7 @@ static float _phase = 0.0f;
 static float const Frequency = 440.0f;
 static Xt::Mix const Mix(44100, Xt::Sample::Float32);
 
+// Normally don't do I/O in the callback.
 static void 
 OnXRun(Xt::Stream const& stream, int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }

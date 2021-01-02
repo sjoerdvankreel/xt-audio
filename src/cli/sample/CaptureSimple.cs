@@ -10,6 +10,7 @@ namespace Xt
         static readonly XtChannels Channels = new XtChannels(1, 0, 0, 0);
         static readonly XtFormat Format = new XtFormat(Mix, Channels);
 
+        // Normally don't do I/O in the callback.
         static int OnBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var output = (FileStream)user;

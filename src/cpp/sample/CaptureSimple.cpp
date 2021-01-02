@@ -8,6 +8,7 @@ static Xt::Channels const Channels(1, 0, 0, 0);
 static Xt::Mix const Mix(44100, Xt::Sample::Int24);
 static Xt::Format const Format(Mix, Channels);
 
+// Normally don't do I/O in the callback.
 static uint32_t 
 OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {

@@ -32,6 +32,7 @@ public class CaptureAdvanced {
     static final XtChannels CHANNELS = new XtChannels(2, 0, 0, 0);
     static final XtFormat FORMAT = new XtFormat(MIX, CHANNELS);
 
+    // Normally don't do I/O in the callback.
     static void onXRun(XtStream stream, int index, Object user) {
         System.out.println("XRun on device " + index + ".");
     }
@@ -53,6 +54,7 @@ public class CaptureAdvanced {
         stream.stop();
     }
 
+    // Normally don't do I/O in the callback.
     static int onInterleavedSafeBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var out = (FileOutputStream)user;
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
@@ -63,6 +65,7 @@ public class CaptureAdvanced {
         return 0;
     }
 
+    // Normally don't do I/O in the callback.
     static int onInterleavedNativeBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var ctx = (Context)user;
         int bytes = getBufferSize(CHANNELS.inputs, buffer.frames);
@@ -71,6 +74,7 @@ public class CaptureAdvanced {
         return 0;
     }
 
+    // Normally don't do I/O in the callback.
     static int onNonInterleavedSafeBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var out = (FileOutputStream)user;
         XtSafeBuffer safe = XtSafeBuffer.get(stream);
@@ -83,6 +87,7 @@ public class CaptureAdvanced {
         return 0;
     }
 
+    // Normally don't do I/O in the callback.
     static int onNonInterleavedNativeBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var ctx = (Context)user;
         int size = XtAudio.getSampleAttributes(MIX.sample).size;

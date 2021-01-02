@@ -30,6 +30,7 @@ public class RenderAdvanced {
         return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 
+    // Normally don't do I/O in the callback.
     static void onXRun(XtStream stream, int index, Object user) {
         System.out.println("XRun on device " + index + ".");
     }

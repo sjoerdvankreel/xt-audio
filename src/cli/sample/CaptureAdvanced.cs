@@ -17,6 +17,7 @@ namespace Xt
         static readonly XtChannels Channels = new XtChannels(2, 0, 0, 0);
         static readonly XtFormat Format = new XtFormat(Mix, Channels);
 
+        // Normally don't do I/O in the callback.
         static void OnXRun(XtStream stream, int index, object user)
         => Console.WriteLine("XRun on device " + index + ".");
 
@@ -40,6 +41,7 @@ namespace Xt
             return channels * frames * size;
         }
 
+        // Normally don't do I/O in the callback.
         static int OnInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var output = (FileStream)user;
@@ -51,6 +53,7 @@ namespace Xt
             return 0;
         }
 
+        // Normally don't do I/O in the callback.
         static int OnInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var ctx = (Context)user;
@@ -60,6 +63,7 @@ namespace Xt
             return 0;
         }
 
+        // Normally don't do I/O in the callback.
         static int OnNonInterleavedSafeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var output = (FileStream)user;
@@ -73,6 +77,7 @@ namespace Xt
             return 0;
         }
 
+        // Normally don't do I/O in the callback.
         static unsafe int OnNonInterleavedNativeBuffer(XtStream stream, in XtBuffer buffer, object user)
         {
             var ctx = (Context)user;

@@ -24,6 +24,7 @@ public class CaptureSimple {
     static final XtChannels CHANNELS = new XtChannels(1, 0, 0, 0);
     static final XtFormat FORMAT = new XtFormat(MIX, CHANNELS);
 
+    // Normally don't do I/O in the callback.
     static int onBuffer(XtStream stream, XtBuffer buffer, Object user) throws Exception {
         var output = (FileOutputStream)user;
         XtSafeBuffer safe = XtSafeBuffer.get(stream);

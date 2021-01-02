@@ -1,10 +1,2 @@
-* document samples + explain no io in callback
 * package zip in build script
-* check build scripts
 * update site and samples
-
-** LATER
-* arm
-* support jack on windows
-* support multiple JACK servers
-* support multiple PulseAudio servers

@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 
+// Normally don't do I/O in the callback.
 static void 
 OnXRun(Xt::Stream const& stream, int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }

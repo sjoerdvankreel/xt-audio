@@ -9,6 +9,7 @@ static Xt::Channels const Channels(2, 0, 0, 0);
 static Xt::Mix const Mix(44100, Xt::Sample::Int24);
 static Xt::Format const Format(Mix, Channels);
 
+// Normally don't do I/O in the callback.
 static void 
 OnXRun(Xt::Stream const& stream, int32_t index, void* user) 
 { std::cout << "XRun on device " << index << ".\n"; }
@@ -36,6 +37,7 @@ GetBufferSize(int32_t channels, int32_t frames)
   return channels * frames * size;
 }
 
+// Normally don't do I/O in the callback.
 static uint32_t 
 OnInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
@@ -46,6 +48,7 @@ OnInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* us
   return 0;
 }
 
+// Normally don't do I/O in the callback.
 static uint32_t 
 OnNonInterleavedBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user) 
 {
