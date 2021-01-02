@@ -1,6 +1,5 @@
 * document samples + explain no io in callback
 * package zip in build script
-* finish the docs
 * check build scripts
 * update site and samples
 
