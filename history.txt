@@ -1,3 +1,70 @@
+January 2, 2021 - V1.0.7
+* Major cleanup/rewrite/bugfix release.
+
+* New features:
+- Query stream state for stopped/running (see XtStreamIsRunning). 
+- Get notified when stream stops outside of application's control (see XtOnRunning).
+- Querying device name can now be done without opening the device (see the new XtDeviceList API's).
+- Service capabilities now correctly indicate whether a service supports stream aggregation (see XtServiceCapsAggregation).
+- Service capabilities now correctly indicate whether a service supports device control panels (see XtServiceCapsControlPanel).
+- Added access to backend-specific handles (IASIO*, IAudioClient*, snd_pcm_t*, pa_simple* etc). See XtDeviceGetHandle and XtStreamGetHandle.
+- Added device capabilities to explicitly test for input/output devices, WASAPI loopback streams and direct-to-hardware access (see XtDeviceCaps).
+- Devices are now queried by device id's instead of indices. Device id's are stable across application sessions (see the new XtDeviceList API's).
+
+* Bugfixes:
+- ALSA mmapped mode now uses blocking waits.
+- ALSA R/W mode now uses implicit start (previously the first buffer would cause an xrun).
+- ALSA backed used to call snd_device_name_hint once for each device, is now only done once in XtServiceOpenDeviceList.
+- DirectSound would crash in aggregated mode if an xrun occurred on a secondary buffer. This is now reported to the applications OnXRun handler instead.
+- ALSA, Pulse, DSound, WASAPI: errors that occurred on the audio thread would crash the process. Instead now the stream is stopped and error reported to XtOnRunning.
+- DSound, WASAPI: audio thread now uses a 10 second timeout to wait for buffer to become available. After this, the stream is stopped instead of hanging indefinately.
+
+* Breaking changes (build):
+- Dropped support for static linking.
+- C++ bindings are now a header-only library.
+- Selective compilation support is now opt-in (XT_ENABLE_{BACKEND}) instead of opt-out (XT_DISABLE_{BACKEND}).
+
+* Breaking changes (C++):
+- #include <xt/XtAudio.hpp> instead of <xt-cpp.hpp>.
+
+* Breaking changes (C)
+- #include <xt/XtAudio.h> instead of <xt-audio.h>.
+- Removed XtAudioFree. All returned buffers are now either statically allocated or must be allocated by the caller.
+-- See XtDeviceGetChannelName, XtDeviceListGetId, XtDeviceListGetName, XtPlatformGetSystems, XtServiceGetDefaultDeviceId
+
+* Breaking changes (Java and .NET)
+- The "raw" parameter to the OpenStream/AggregateStream functions is removed.
+- Native buffers is now the default, applications must use the XtSafeBuffer API to use CLR/JVM managed arrays.
+
+* Breaking changes (all languages):
+- XtFormat struct changed (grouped channel parameters).
+- XtBuffer renamed to XtBufferSize.
+- XtXRunCallback replaced by XtOnXRun and signature changed.
+- XtStreamCallback replaced by XtOnBuffer and signature changed.
+- XtFatalCallback/XtTraceCallback replaced by XtOnError and signature changed.
+- Removed XtLevel enum. Only errors are now logged.
+- Renamed XtCapabilities to XtServiceCaps (to allow clear distinction with the new XtDeviceCaps).
+- Dropped XtErrorGet* functions. Use XtAudioGetErrorInfo instead.
+- Optional return values are now handled by an (XtBool* valid) parameter in C, or optional/nullable datatypes in other languages. 
+-- See XtServiceGetDefaultDeviceId, XtDeviceGetMix
+- XtPrint*ToString functions are renamed to XtPrint*.
+- Dropped most XtPrint* functions. Only enums, XtErrorInfo and XtLocation now have print/tostring()/operator<< functions.
+- Dropped XtAudioIsWin32.
+- XtAudioTerminate replaced by XtPlatformDestroy.
+- XtAudioGetVersion now returns a struct.
+- XtAudioInit now returns XtPlatform handle.
+- XtAudioGetServiceCount/BySetup/ByIndex/BySystem are replaced by the new XtPlatform API's.
+- XtAudioGetSampleAttributes now returns struct by value.
+- Dropped XtServiceGetSystem/XtDeviceGetSystem/XtStreamGetSystem.
+- Dropped XtServiceOpenDefaultDevice. Use XtServiceGetDefaultDeviceId/XtServiceOpenDevice instead.
+- XtServiceOpenDevice now opens a device by id instead of by index. See XtDeviceListGetId.
+- Parameters to XtServiceAggregateStream are now grouped in a struct (XtAggregateStreamParams params).
+- Parameters to XtDeviceOpenStream are now grouped in a struct (XtDeviceStreamParams).
+- The audio buffer callback now returns an (u)int value for internal use. Applications must return 0.
+- The audio buffer callback no longer receives an error value. Use XtOnRunning instead.
+- Dropped XtDeviceGetName. Use XtDeviceListGetName instead.
+- Dropped XtStreamIsInterleaved.
+
 July 8, 2020 - V1.0.6.
 * Support .NET Core.
 * Support Java 9 modules.
