@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+    <PropertyGroup>
+        <Version>1.7</Version>
+        <LangVersion>8.0</LangVersion>
+        <FileVersion>1.7</FileVersion>
+        <OutputType>WinExe</OutputType>
+        <RootNamespace>Xt</RootNamespace>
+        <AssemblyName>Xt.Gui</AssemblyName>
+        <AssemblyVersion>1.7</AssemblyVersion>
+        <UseWindowsForms>true</UseWindowsForms>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
+        <OutputPath>..\..\..\dist\cli\gui\$(Configuration)</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="..\..\..\src\cli\gui\**\*.cs" />
+        <EmbeddedResource Include="..\..\..\src\cli\gui\UI\Gui.resx">
+            <Link>UI\Gui.resx</Link>
+            <DependentUpon>Gui.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\src\cli\gui\UI\DeviceView.resx">
+            <Link>UI\DeviceView.resx</Link>
+            <DependentUpon>DeviceView.cs</DependentUpon>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\xt\Xt.Cli.csproj" />
+    </ItemGroup>
+</Project>

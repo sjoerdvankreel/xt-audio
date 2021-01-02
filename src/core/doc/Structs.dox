@@ -1,0 +1,412 @@
+/**
+ * @file Structs.h
+ * @brief Data structure types.
+ */
+
+/**
+ * @struct XtMix
+ * @brief Audio mix format.
+ *
+ * @see XtFormat
+ * @see XtDeviceGetMix
+ */
+ 
+/**
+ * @var XtMix::rate
+ * @brief Sample rate in Hz.
+ */
+
+/**
+ * @var XtMix::sample
+ * @brief Sample type.
+ */
+
+/**
+ * @struct XtFormat
+ * @brief Audio stream format.
+ *
+ * @see XtDeviceStreamParams
+ * @see XtDeviceOpenStream
+ * @see XtDeviceSupportsFormat
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtFormat::mix
+ * @brief Sample rate and type.
+ */
+
+/**
+ * @var XtFormat::channels
+ * @brief Audio channel specification.
+ */
+ 
+/**
+ * @struct XtChannels
+ * @brief Audio channel specification.
+ *
+ * Formats with both inputs and outputs can only be used with
+ * services that support full-duplex, see XtServiceGetCapabilities.
+ *
+ * Channel masks will be ignored for services that do not support
+ * masking, see XtServiceGetCapabilities.
+ *
+ * @see XtFormat
+ * @see XtDeviceOpenStream
+ * @see XtDeviceStreamParams
+ * @see XtAggregateDeviceParams
+ * @see XtDeviceSupportsFormat
+ * @see XtServiceGetCapabilities
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtChannels::inputs
+ * @brief Input channel count.
+ */
+
+/**
+ * @var XtChannels::inMask
+ * @brief Input channel mask.
+ *
+ * Set bit N to route channel N from/to that position. For example,
+ * in a stereo stream on a surround71 capable device where channels
+ * 4 and 5 represent back left/right, the mask is (1ULL << 4) | (1ULL << 5)
+ * to use back left/right instead of the default front left/right.
+ */
+ 
+/**
+ * @var XtChannels::outputs
+ * @brief Output channel count.
+ */
+
+/**
+ * @var XtChannels::outMask
+ * @brief Output channel mask.
+ *
+ * Set bit N to route channel N from/to that position. For example,
+ * in a stereo stream on a surround71 capable device where channels
+ * 4 and 5 represent back left/right, the mask is (1ULL << 4) | (1ULL << 5)
+ * to use back left/right instead of the default front left/right.
+ */
+
+/**
+ * @struct XtBufferSize
+ * @brief Device buffer size limits.
+ *
+ * @see XtDeviceGetBufferSize
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtBufferSize::min
+ * @brief Minimum size in milliseconds, or 0 if unknown/unsupported.
+ */
+
+/**
+ * @var XtBufferSize::max
+ * @brief Maximum size in milliseconds, or 0 if unknown/unsupported.
+ */
+
+/**
+ * @var XtBufferSize::current
+ * @brief Current or default size in milliseconds, or 0 if unknown/unsupported.
+ */
+
+/**
+ * @struct XtLatency
+ * @brief Stream latency.
+ *
+ * @see XtServiceCaps
+ * @see XtStreamGetLatency
+ */
+
+/**
+ * @var XtLatency::input
+ * @brief Input latency in milliseconds, or 0 when no inputs are present or latency is unknown.
+ */
+
+/**
+ * @var XtLatency::output
+ * @brief Output latency in milliseconds, or 0 when no outputs are present or latency is unknown.
+ */
+
+/**
+ * @struct XtAttributes
+ * @brief Sample type attributes.
+ *
+ * @see XtAudioGetSampleAttributes
+ */
+
+/**
+ * @var XtAttributes::size
+ * @brief Sample size in bytes.
+ */
+
+/**
+ * @var XtAttributes::isFloat
+ * @brief Indicates whether samples are integer or floating point.
+ */
+
+/**
+ * @var XtAttributes::isSigned
+ * @brief Indicates whether samples are signed or unsigned.
+ */
+
+/**
+ * @var XtAttributes::count
+ * @brief Number of elements used to represent this sample in a buffer. 3 for 24-bit float, 1 for other types.
+ */
+
+/**
+ * @struct XtVersion
+ * @brief XT-Audio library version information.
+ */
+
+/**
+ * @var XtVersion::major
+ * @brief Library major version.
+ */
+ 
+/**
+ * @var XtVersion::minor
+ * @brief Library minor version.
+ */
+ 
+/**
+ * @struct XtLocation
+ * @brief Location in the source code where an error occurred.
+ * @see XtOnError
+ * @see XtPrintLocation
+ */
+
+/**
+ * @var XtLocation::file
+ * @brief Source code file.
+ */
+
+/**
+ * @var XtLocation::line
+ * @brief Source code line number.
+ */
+
+/**
+ * @var XtLocation::func
+ * @brief Function where the error occurred.
+ */
+ 
+/**
+ * @struct XtErrorInfo
+ * @brief Useful error details derived from XtError opaque error code.
+ * 
+ * XT-Audio internally used backend-specific error codes for error handling.
+ * XtErrorInfo maps these backend specific errors to generic error information.
+ *
+ * @see XtAudioGetErrorInfo
+ * @see XtPrintErrorInfo
+ */
+
+/**
+ * @var XtErrorInfo::fault
+ * @brief System-specific error code indicating the type of error.
+ */
+
+/**
+ * @var XtErrorInfo::system
+ * @brief The system that generated the current error.
+ *
+ * An XtError value contains the system that generated it, to allow mapping
+ * between system-specific fault values and system-independent cause values.
+ */
+
+/**
+ * @var XtErrorInfo::service
+ * @brief Platform-independent error details.
+ */
+ 
+/**
+ * @struct XtServiceError
+ * @brief Platform-independent error details.
+ *
+ * @see XtErrorInfo
+ * @see XtAudioGetErrorInfo
+ * @see XtPrintErrorInfo
+ */
+
+/**
+ * @var XtServiceError::cause
+ * @brief System-independent error cause indicating the type of error.
+ */
+
+/**
+ * @var XtServiceError::text
+ * @brief Pointer to a statically allocated string containing the error text for the given error.
+ *
+ * The error text is only useful for development purposes and is not meant to be shown to end users.
+ */
+ 
+/** 
+ * @struct XtBuffer
+ * @brief Streaming audio buffer.
+ *
+ * Contains the input and output audio data and timestamp information for the audio callback (XtOnBuffer).
+ * @see XtOnBuffer
+ */
+ 
+/**
+ * @var XtBuffer::input
+ * @brief The buffer containing data captured from the device, if any.
+ *
+ * May be NULL if frames == 0 or when no input channels are present.
+ */
+
+/**
+ * @var XtBuffer::output
+ * @brief The buffer where the application writes it's output, if any. 
+ *
+ * May be NULL if frames == 0 or when no output channels are present.
+ */
+
+/**
+ * @var XtBuffer::frames
+ * @brief The number of frames in the input and/or output buffer.
+ *
+ * Will never exceed XtStreamGetFrames.
+ */
+
+/**
+ * @var XtBuffer::time
+ * @brief The stream timestamp.
+ *
+ * Only available on services which have the Time capability (see XtServiceCaps), otherwise 0.
+ */
+ 
+/**
+ * @var XtBuffer::position
+ * @brief The stream position.
+ *
+ * Only available on services which have the Time capability (see XtServiceCaps), otherwise 0.
+ */
+ 
+/**
+ * @var XtBuffer::timeValid
+ * @brief Indicates whether the time and position fields are valid.
+ *
+ * Only available on services which have the Time capability (see XtServiceCaps), otherwise false.
+ * Even on services which support time and position info this parameter may be false sometimes, for example during stream startup/shutdown or when a glitch occurred.
+ */
+ 
+/**
+ * @struct XtStreamParams
+ * @brief Shared parameters for regular and aggregate audio streams.
+ * @see XtDeviceStreamParams
+ * @see XtAggregateStreamParams
+ */
+ 
+/**
+ * @var XtStreamParams::interleaved
+ * @brief Open the stream for interleaved access (true) or non-interleaved access (false).
+ * @see XtDeviceSupportsAccess
+ */
+ 
+/**
+ * @var XtStreamParams::onBuffer
+ * @brief The application-defined streaming audio callback.
+ */
+
+/**
+ * @var XtStreamParams::onXRun
+ * @brief The application-defined xrun callback (may be NULL).
+ */
+ 
+/**
+ * @var XtStreamParams::onRunning
+ * @brief The application-defined stream state changed callback (may be NULL).
+ */
+
+/**
+ * @struct XtDeviceStreamParams
+ * @brief Stream parameters specific to regular (non-aggregated) audio streams.
+ * @see XtDeviceOpenStream
+ */
+
+/**
+ * @var XtDeviceStreamParams::stream
+ * @brief Specifies (non)interleaved access mode and application callbacks.
+ */
+
+/**
+ * @var XtDeviceStreamParams::format
+ * @brief The audio format (must be supported).
+ * @see XtDeviceSupportsFormat
+ */
+
+/**
+ * @var XtDeviceStreamParams::bufferSize
+ * @brief The desired buffer size in milliseconds (will be truncated to the supported range).
+ *
+ * Use XtDeviceGetBufferSize to query supported buffer sizes.
+ * @see XtDeviceGetBufferSize
+ */
+ 
+/**
+ * @struct XtAggregateDeviceParams
+ * @brief Device-specific parameters for opening an aggregate audio stream.
+ * @see XtAggregateStreamParams
+ */
+
+/**
+ * @var XtAggregateDeviceParams::device
+ * @brief Device to be part of the aggregated stream.
+ */
+
+/**
+ * @var XtAggregateDeviceParams::channels
+ * @brief Channel specification for the current device.
+ * @see XtDeviceSupportsFormat
+ */
+
+/**
+ * @var XtAggregateDeviceParams::bufferSize
+ * @brief Buffer size in milliseconds for the current device.
+ *
+ * Use XtDeviceGetBufferSize to query supported buffer sizes.
+ * @see XtDeviceGetBufferSize
+ */
+ 
+/**
+ * @struct XtAggregateStreamParams
+ * @brief Stream parameters specific to aggregated audio streams.
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtAggregateStreamParams::stream
+ * @brief Specifies (non)interleaved access mode and application callbacks.
+ */
+
+/**
+ * @var XtAggregateStreamParams::devices
+ * @brief Pointer to an array of [count] device specific parameters.
+ */
+
+/**
+ * @var XtAggregateStreamParams::count
+ * @brief Number of elements in the devices array.
+ */
+ 
+/**
+ * @var XtAggregateStreamParams::mix
+ * @brief The mix format, to be used by all streams in the aggregated stream.
+ * @see XtDeviceSupportsFormat
+ */
+
+/**
+ * @var XtAggregateStreamParams::master
+ * @brief The master device, will be used for synchronization.
+ *
+ * Whenever there's data available in the master stream, other underlying streams
+ * will be forced to read/write out their data to an intermediate buffer.
+ * The master stream effectively determines the clock of the entire aggregated stream.
+ */

@@ -1,0 +1,114 @@
+/**
+ * @file XtStream.h
+ * @brief Stream queries and operation.
+ *
+ * Contains functions to control (start/stop) audio streams
+ * and querying running audio streams for buffer size and latencies.
+ */
+
+/**
+ * @fn void XtStreamDestroy(XtStream* s)
+ * @brief Destroys an audio stream.
+ * @param s the audio stream.
+ *
+ * It is ok to pass NULL. Stream should be stopped before it is destroyed.
+ *
+ * This function may only be called from the main thread.
+ */
+
+/**
+ * @fn XtError XtStreamStop(XtStream* s)
+ * @brief Stops an audio stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio stream.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamStart
+ * @see XtOnRunning
+ * @see XtStreamIsRunning
+ */
+
+/**
+ * @fn XtError XtStreamStart(XtStream* s)
+ * @brief Starts an audio stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio stream.
+ *
+ * When the stream is running the application-defined stream callback will be invoked whenever audio data is needed or available.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamStop
+ * @see XtOnRunning
+ * @see XtStreamIsRunning
+ */
+ 
+/**
+ * @fn void* XtStreamGetHandle(XtStream const* s)
+ * @brief Implementation-defined handle to the backend stream.
+ *
+ * ASIO: IASIO*\n
+ * ALSA: snd_pcm_t*\n
+ * JACK: jack_client_t*\n
+ * WASAPI: IAudioClient*\n
+ * PulseAudio: pa_simple*\n
+ * DirectSound: IDirectSoundBuffer* / IDirectSoundCaptureBuffer*
+ *
+ * This function may be called from any thread.
+ * @see XtDeviceGetHandle
+ */
+
+/**
+ * @fn XtBool XtStreamIsRunning(XtStream const* s)
+ * @brief Query stream state.
+ *
+ * This function may be called from any thread.
+ * @see XtOnRunning
+ * @see XtStreamStart
+ * @see XtStreamStop
+ */
+
+/**
+ * @fn XtFormat const* XtStreamGetFormat(XtStream const* s)
+ * @brief Get stream format.
+ * @return the audio format used to open the stream.
+ * @param s the audio stream
+ *
+ * Note: for aggregate streams this format will contain the total number of input and output channels
+ * passed to XtServiceAggregateStream. Channel masks for aggregate streams will always be 0.
+ *
+ * This function may be called from any thread.
+ *
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @fn XtError XtStreamGetFrames(XtStream const* s, int32_t* frames)
+ * @brief Get maximum stream buffer size.
+ * @return The maximum buffer size for the given stream.
+ * @param s the audio stream.
+ * @param frames on success, reveices the stream buffer size in frames.
+ *
+ * This value is constant for the lifetime of the stream. It may be used
+ * to pre-allocate any intermediate buffers the application may need.
+ *
+ * This function may be called from any thread (to allow invocation from the stream callback).
+ */
+
+/**
+ * @fn XtError XtStreamGetLatency(XtStream const* s, XtLatency* latency)
+ * @brief Get the end-to-end latency, if supported by the system.
+ * @return The current latencies for the given stream.
+ * @param s the audio stream.
+ * @param latency on success, receives the current input/output latency in milliseconds. When the service does not support latency information, latency->input and latency->output will be 0.
+ *
+ * This value may change during the lifetime of the stream.
+ * For aggregate streams, the maximum input and output latencies of any underlying stream, plus the latency of the aggregation buffer is reported.
+ * When any of the underlying streams does not support latency info, the latency of the entire aggregated stream is reported as unknown.
+ *
+ * This function may be called from any thread (to allow invocation from the stream callback).
+ *
+ * @see XtServiceGetCapabilities
+ */

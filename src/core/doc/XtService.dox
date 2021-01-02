@@ -1,0 +1,104 @@
+/**
+ * @file XtService.h
+ * @brief Service queries and device creation.
+ *
+ * Contains functions to query service capabilities and open devices.
+ */
+
+/**
+ * @fn XtServiceCaps XtServiceGetCapabilities(XtService const* s)
+ * @brief Get service capabilities.
+ * @return the capabilities for the given service.
+ * @param s the audio service.
+ *
+ * This function may be called from any thread.
+ *
+ * @see XtFormat
+ * @see XtBuffer
+ * @see XtStreamGetLatency
+ * @see XtServiceAggregateStream
+ * @see XtDeviceShowControlPanel
+ * @see XtOnXRun
+ */
+
+/**
+ * @fn XtError XtServiceGetDefaultDeviceId(XtService const* s, XtBool output, XtBool* valid, char* buffer, int32_t* size)
+ * @brief Get default device id.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param output XtTrue for default output device, XtFalse for default input device
+ * @param valid on success, *valid will be true if a default device is present
+ * @param buffer the string buffer to receive the device id. If NULL, *size receives the required buffer size.
+ * @param size the size of the buffer.
+ *
+ * It is NOT an error when no default device is present.
+ *
+ * @see XtDeviceListGetId
+ * @see XtServiceOpenDevice
+ */
+
+/**
+ * @fn XtError XtServiceOpenDeviceList(XtService const* s, XtEnumFlags flags, XtDeviceList** list)
+ * @brief Enumerate available devices.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param flags specifies whether to enumerate input, output or all devices.
+ * @param list on success, receives a pointer to the opened device list. On error, *list is set to NULL.
+ *
+ * Use XtDeviceListDestroy to clean up the device list.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceListDestroy
+ * @see XtDeviceListGetId
+ * @see XtDeviceListGetCount
+ * @see XtServiceGetDefaultDeviceId
+ * @see XtServiceOpenDevice
+ */
+ 
+/**
+ * @fn XtError XtServiceOpenDevice(XtService const* s, char const* id, XtDevice** device)
+ * @brief Open an audio device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param id the device id.
+ * @param device on success, receives a pointer to the opened device. On error, *device is set to NULL.
+ *
+ * Use XtDeviceDestroy to clean up the device.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceDestroy
+ * @see XtDeviceListGetId
+ * @see XtServiceGetDefaultDeviceId
+ */
+
+/**
+ * @fn XtError XtServiceAggregateStream(XtService const* s, XtAggregateStreamParams const* params, void* user, XtStream** stream)
+ * @brief Combines multiple audio devices into a single stream.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param s the audio service.
+ * @param params the stream parameters.
+ * @param user user data passed to the stream callbacks (may be NULL).
+ * @param stream on success, receives a pointer to the opened audio stream. On error, *stream will be NULL.
+ *
+ * Each underlying stream is opened using the combination of the shared mix
+ * format and the device-specific channel specification as the audio format.
+ *
+ * Aggregate streams use an intermediate buffer to keep underlying streams in sync.
+ * The total latency overhead of the aggregate stream is bounded by the largest
+ * buffer size of any of the underlying streams times a constant factor.
+ *
+ * Use XtDeviceGetBufferSize to query supported buffer sizes.
+ * The resulting stream must be closed using XtStreamDestroy.
+ *
+ * When the requested interleaving mode is not supported by any device it will be emulated.
+ *
+ * The service must support stream aggregation (XtServiceCapsAggregation).
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamDestroy
+ * @see XtDeviceOpenStream
+ * @see XtDeviceSupportsFormat
+ * @see XtDeviceSupportsAccess
+ * @see XtServiceCapsAggregation
+ */

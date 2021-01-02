@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>1.7</Version>
+    <LangVersion>8.0</LangVersion>
+    <FileVersion>1.7</FileVersion>
+    <RootNamespace>Xt</RootNamespace>
+    <AssemblyName>Xt.Cli</AssemblyName>
+    <AssemblyVersion>1.7</AssemblyVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <OutputPath>..\..\..\dist\cli\xt\$(Configuration)</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\src\cli\xt\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Cli.dll.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-core.dll" Link="x86/xt-core.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-core.dll" Link="x64/xt-core.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/libxt-core.so" Link="x86/libxt-core.so" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/libxt-core.so" Link="x64/libxt-core.so" Pack="true" />
+  </ItemGroup>
+</Project>

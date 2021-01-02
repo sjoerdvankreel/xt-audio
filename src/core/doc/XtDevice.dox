@@ -1,0 +1,163 @@
+/**
+ * @file XtDevice.h
+ * @brief Device queries and stream creation.
+ *
+ * Contains functions to query audio devices for
+ * supported formats and buffer sizes, and opening audio streams.
+ */
+
+/**
+ * @fn void XtDeviceDestroy(XtDevice* d)
+ * @brief Destroys an audio device.
+ * @param d the audio device.
+ *
+ * It is an error to destroy a device which still has open streams. It is ok to pass NULL.
+ *
+ * This function may only be called from the main thread.
+ */
+ 
+/**
+ * @fn void* XtDeviceGetHandle(XtDevice const* s)
+ * @brief Implementation-defined handle to the backend device.
+ *
+ * ASIO: IASIO*\n
+ * ALSA: NULL\n
+ * JACK: jack_client_t*\n
+ * WASAPI: IMMDevice*\n
+ * PulseAudio: NULL\n
+ * DirectSound: IDirectSound* / IDirectSoundCapture*
+ *
+ * This function may be called from any thread.
+ * @see XtStreamGetHandle
+ */
+
+/**
+ * @fn XtError XtDeviceShowControlPanel(XtDevice* d)
+ * @brief Show the device specific control panel.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ *
+ * The service must support the device control panel feature (XtServiceCapsControlPanel).
+ * This method is currently supported for ASIO devices only.
+ *
+ * This function may only be called from the main thread.
+ * @see XtServiceCapsControlPanel
+ */
+
+/**
+ * @fn XtError XtDeviceGetMix(XtDevice const* d, XtBool* valid, XtMix* mix)
+ * @brief Gets the device's current mix format.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param valid on success, *valid will be true if the device's current mix format is known.
+ * @param mix on success, and when the current mix format is known, receives the devices current mix format
+ *
+ * It is NOT an error when a device has no current or default mix format.
+ * The mix format may be used as a starting point to query for supported
+ * audio formats (see XtDeviceSupportsFormat).
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceSupportsFormat
+ */
+
+/**
+ * @fn XtError XtDeviceGetChannelCount(XtDevice const* d, XtBool output, int32_t* count)
+ * @brief Gets the maximum number of channels supported by the device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param output true to query output channels, false to query input channels.
+ * @param count on success, receives the maximum channel count.
+ *
+ * The channel count represents the maximum number of channels representable by
+ * the current device. This value dictates the possible values of the audio
+ * format's channel masks only, it does not indicate that the device actually
+ * supports streams with the number of channels returned by this method.
+ *
+ * This function may only be called from the main thread.
+ * @see XtFormat
+ * @see XtDeviceGetChannelName
+ */
+
+/**
+ * @fn XtError XtDeviceGetBufferSize(XtDevice const* d, const XtFormat* format, XtBufferSize* size)
+ * @brief Gets the buffer size limits supported by the device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param format the audio format to test buffer limits for.
+ * @param size on success, buffer receives the buffer size limits for the given format.
+ *
+ * The given format must be supported by the device, see XtDeviceSupportsFormat.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceOpenStream
+ * @see XtDeviceSupportsFormat
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @fn XtError XtDeviceSupportsFormat(XtDevice const* d, const XtFormat* format, XtBool* supports)
+ * @brief Indicates whether an audio format is supported by the device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param format the audio format to test support for.
+ * @param supports on success, indicates whether the format is supported.
+ *
+ * This function may only be called from the main thread.
+ * @see XtDeviceOpenStream
+ * @see XtDeviceGetBufferSize
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @fn XtError XtDeviceSupportsAccess(XtDevice const* d, XtBool interleaved, XtBool* supports)
+ * @brief Indicates whether the device supports the specified access mode.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param interleaved the desired access mode. True for interleaved, false for non-interleaved.
+ * @param supports on success, indicates whether the access mode is supported.
+ *
+ * When opening a stream using an access mode that is not supported by the device, the
+ * access mode will be emulated.
+ *
+ * This function may only be called from the main thread.
+ * @see XtStreamParams
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ */
+ 
+/**
+ * @fn XtError XtDeviceGetChannelName(XtDevice const* d, XtBool output, int32_t index, char* buffer, int32_t* size)
+ * @brief Gets the name of a specific input/output channel.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param output true for output channels, false for input channels.
+ * @param index the channel index.
+ * @param buffer the string buffer to receive the channel name. If NULL, *size receives the required buffer size.
+ * @param size the size of the buffer.
+ *
+ * This function copies up to *size characters into *buffer, including the terminating null character.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtDeviceGetChannelCount
+ */
+
+/**
+ * @fn XtError XtDeviceOpenStream(XtDevice* d, XtDeviceStreamParams const* params, void* user, XtStream** stream)
+ * @brief Opens an audio stream on the given device.
+ * @return 0 on success, a nonzero error code otherwise.
+ * @param d the audio device.
+ * @param params the stream parameters.
+ * @param user user data passed to the stream callbacks (may be NULL).
+ * @param stream on success, receives a pointer to the opened audio stream. On error, *stream will be NULL.
+ *
+ * The resulting stream must be closed using XtStreamDestroy.
+ * When the requested interleaving mode is not supported by the device it will be emulated.
+ *
+ * This function may only be called from the main thread.
+ *
+ * @see XtStreamDestroy
+ * @see XtDeviceSupportsFormat
+ * @see XtDeviceSupportsAccess
+ * @see XtServiceAggregateStream
+ */

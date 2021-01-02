@@ -1,0 +1,292 @@
+/**
+ * @file Enums.h
+ * @brief Enumeration types.
+ */
+
+/**
+ * @enum XtCause
+ * @brief Platform-independent error cause value.
+
+ * @see XtServiceError
+ * @see XtPrintCause
+ */
+ 
+/**
+ * @var XtCause::XtCauseFormat
+ * @brief Invalid or unsupported audio format.
+ */
+
+/**
+ * @var XtCause::XtCauseService
+ * @brief A required system service is not running or otherwise unavailable.
+ */
+
+/**
+ * @var XtCause::XtCauseGeneric
+ * @brief A generic, but anticipated, error occurred.
+ */
+
+/**
+ * @var XtCause::XtCauseUnknown
+ * @brief An unknown error occurred.
+ */
+
+/**
+ * @var XtCause::XtCauseEndpoint
+ * @brief Device or channel disconnected, in use, or otherwise unavailable.
+ */
+ 
+/**
+ * @enum XtSample
+ * @brief Audio sample format.
+ *
+ * @see XtMix
+ * @see XtPrintSample
+ * @see XtAudioGetSampleAttributes
+ */
+
+/**
+ * @var XtSample::XtSampleUInt8
+ * @brief 8-bit unsigned integer.
+ */
+
+/**
+ * @var XtSample::XtSampleInt16
+ * @brief 16-bit signed integer.
+ */
+
+/**
+ * @var XtSample::XtSampleInt24
+ * @brief 24-bit signed integer (packed).
+ */
+
+/**
+ * @var XtSample::XtSampleInt32
+ * @brief 32-bit signed integer.
+ */
+
+/**
+ * @var XtSample::XtSampleFloat32
+ * @brief 32-bit floating-point.
+ */
+ 
+/**
+ * @enum XtSetup
+ * @brief Platform-independent service setup.
+ *
+ * @see XtPrintSetup
+ * @see XtPlatformSetupToSystem
+ */
+
+/**
+ * @var XtSetup::XtSetupProAudio
+ * @brief Pro audio setup (ASIO and JACK).
+ *
+ * Focused on full-duplex operation and low latency.
+ * Device sharing and automatic format conversions are less important.
+ * May require specialized software and/or hardware.
+ */
+
+/**
+ * @var XtSetup::XtSetupSystemAudio
+ * @brief System audio setup (WASAPI and ALSA).
+ *
+ * Focused on direct hardware access and low latency.
+ * Full duplex operation, device sharing and automatic format conversions are less important.
+ * Does not require additional software.
+ */
+
+/**
+ * @var XtSetup::XtSetupConsumerAudio
+ * @brief Consumer audio setup (DirectSound and PulseAudio).
+ *
+ * Focused on device sharing and automatic format conversions.
+ * Full duplex operation, direct hardware access and low latency are less important.
+ * Usually does not require additional software.
+ */
+
+/**
+ * @enum XtSystem
+ * @brief Platform-specific service identifier.
+ *
+ * @see XtErrorInfo
+ * @see XtPlatformGetService
+ * @see XtPlatformGetSystems
+ * @see XtPrintSystem
+ */
+
+/**
+ * @var XtSystem::XtSystemALSA
+ * @brief Linux ALSA backend.
+ */
+
+/**
+ * @var XtSystem::XtSystemASIO
+ * @brief Windows Steinberg ASIO backend.
+ */
+
+/**
+ * @var XtSystem::XtSystemJACK
+ * @brief Linux JACK backend.
+ */
+
+/**
+ * @var XtSystem::XtSystemPulse
+ * @brief Linux PulseAudio backend.
+ */
+
+/**
+ * @var XtSystem::XtSystemDSound
+ * @brief Windows DirectSound backend.
+ */
+
+/**
+ * @var XtSystem::XtSystemWASAPI
+ * @brief Windows WASAPI backend.
+ */
+ 
+/**
+ * @enum XtEnumFlags
+ * @brief Device enumeration flags.
+ *
+ * @see XtServiceOpenDeviceList
+ */
+
+/**
+ * @var XtEnumFlags::XtEnumFlagsAll
+ * @brief Enumerate both input and output devices.
+ */
+
+/**
+ * @var XtEnumFlags::XtEnumFlagsInput
+ * @brief Enumerate only input devices.
+ */
+
+/**
+ * @var XtEnumFlags::XtEnumFlagsOutput
+ * @brief Enumerate only output devices.
+ */
+ 
+/**
+ * @enum XtServiceCaps
+ * @brief Audio service capabilities.
+ *
+ * @see XtServiceGetCapabilities
+ * @see XtPrintServiceCaps
+ */
+
+/**
+ * @var XtServiceCaps::XtServiceCapsNone
+ * @brief No capabilities.
+ */
+
+/**
+ * @var XtServiceCaps::XtServiceCapsTime
+ * @brief Time stamping.
+ *
+ * Audio streams are able to provide accurate position and time
+ * stamp information which may be used for stream synchronization.
+ * @see XtBuffer
+ * @see XtOnBuffer
+ */
+
+/**
+ * @var XtServiceCaps::XtServiceCapsLatency
+ * @brief Latency information.
+ *
+ * Applications can query the end-to-end latency of a running audio stream.
+ * @see XtStreamGetLatency
+ */
+
+/**
+ * @var XtServiceCaps::XtServiceCapsFullDuplex
+ * @brief Full duplex operation.
+ *
+ * Devices support streams with both input and output channels.
+ * @see XtFormat
+ * @see XtChannels
+ */
+ 
+/**
+ * @var XtServiceCaps::XtServiceCapsChannelMask
+ * @brief Channel masking.
+ *
+ * Applications can route stream channels from/to specific input/
+ * output channels, for example to specific speaker positions.
+ * @see XtFormat
+ * @see XtChannels
+ */
+ 
+/**
+ * @var XtServiceCaps::XtServiceCapsXRunDetection
+ * @brief Under/overflow detection.
+ *
+ * Streams support xrun detection and will invoke the
+ * application's xrun callback when an under/overflow occurs.
+ * @see XtOnXRun
+ */
+ 
+/**
+ * @var XtServiceCaps::XtServiceCapsAggregation
+ * @brief Audio stream aggregation.
+ *
+ * Applications are allowed to call XtServiceAggregateStream.
+ * Stream aggregatrion is primarily intended to emulate full-duplex on backends which do not
+ * natively support this, but may be used to combine any number of input and output devices into a single
+ * audio stream. Currently supported for WASAPI, DirectSound, PulseAudio and ALSA. Unsupported for JACK
+ * and ASIO (because they natively provide full-duplex already, but also because they are natively callback
+ * based API's instead of blocking API's which would greatly complicate implementing stream combining).
+ * @see XtServiceAggregateStream
+ */
+
+/**
+ * @var XtServiceCaps::XtServiceCapsControlPanel
+ * @brief Backend specific control panel.
+ *
+ * Applications are allowed to call XtDeviceShowControlPanel.
+ * @see XtDeviceShowControlPanel
+ */
+ 
+/**
+ * @enum XtDeviceCaps
+ * @brief Audio device capabilities.
+ *
+ * @see XtDeviceListGetCapabilities
+ * @see XtPrintDeviceCaps
+ */
+
+/**
+ * @var XtDeviceCaps::XtDeviceCapsNone
+ * @brief No capabilities.
+ */
+ 
+/**
+ * @var XtDeviceCaps::XtDeviceCapsInput
+ * @brief The device supports input streams.
+ *
+ * This includes input and full-duplex devices.
+ */
+ 
+/**
+ * @var XtDeviceCaps::XtDeviceCapsOutput
+ * @brief The device supports output streams.
+ *
+ * This includes output and full-duplex devices.
+ */
+ 
+/**
+ * @var XtDeviceCaps::XtDeviceCapsLoopback
+ * @brief The device is a loopback device.
+ *
+ * Loopback devices capture the output of other applications.
+ * Currently supported for WASAPI only.
+ */
+ 
+/**
+ * @var XtDeviceCaps::XtDeviceCapsHwDirect
+ * @brief The device corresponds directly to a hardware device.
+ *
+ * HwDirect devices have system-wide exclusive access to the audio device.
+ * No audio mixers run on top of it. Currently corresponds to ASIO,
+ * exclusive-mode WASAPI and ALSA hw: devices.
+ */
