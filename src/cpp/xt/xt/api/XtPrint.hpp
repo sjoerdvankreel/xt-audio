@@ -2,9 +2,10 @@
 #define XT_API_PRINT_HPP
 
 /** @file */
-
-#include <xt/api/Core.hpp>
+/** @cond */
+#include <xt/cpp/Core.hpp>
 #include <ostream>
+/** @endcond */
 
 namespace Xt {
 

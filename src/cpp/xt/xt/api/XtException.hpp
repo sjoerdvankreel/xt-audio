@@ -2,8 +2,9 @@
 #define XT_API_EXCEPTION_HPP
 
 /** @file */
-
+/** @cond */
 #include <stdexcept>
+/** @endcond */
 
 namespace Xt {
 

@@ -1,7 +1,7 @@
-#ifndef XT_API_UTILITY_HPP
-#define XT_API_UTILITY_HPP
+#ifndef XT_CPP_UTILITY_HPP
+#define XT_CPP_UTILITY_HPP
 
-#include <xt/api/Core.hpp>
+#include <xt/cpp/Core.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/XtStream.hpp>
 #include <xt/api/XtException.hpp>
@@ -54,4 +54,4 @@ ForwardOnRunning(XtStream const* coreStream, XtBool running, uint64_t error, voi
 }
 
 } // namespace Xt::Detail
-#endif // XT_API_UTILITY_HPP
+#endif // XT_CPP_UTILITY_HPP

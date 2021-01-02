@@ -2,16 +2,17 @@
 #define XT_API_SERVICE_HPP
 
 /** @file */
-
-#include <xt/api/Core.hpp>
+/** @cond */
+#include <xt/cpp/Core.hpp>
+#include <xt/cpp/Forward.hpp>
 #include <xt/api/Enums.hpp>
 #include <xt/api/Structs.hpp>
-#include <xt/api/Forward.hpp>
 #include <xt/api/XtDevice.hpp>
 #include <xt/api/XtDeviceList.hpp>
 
 #include <memory>
 #include <optional>
+/** @endcond */
 
 namespace Xt {
 

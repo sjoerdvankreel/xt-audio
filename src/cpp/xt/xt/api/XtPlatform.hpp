@@ -2,13 +2,14 @@
 #define XT_API_PLATFORM_HPP
 
 /** @file */
-
-#include <xt/api/Core.hpp>
+/** @cond */
+#include <xt/cpp/Core.hpp>
 #include <xt/api/Enums.hpp>
 #include <xt/api/XtService.hpp>
 
 #include <vector>
 #include <memory>
+/** @endcond */
 
 namespace Xt {
 

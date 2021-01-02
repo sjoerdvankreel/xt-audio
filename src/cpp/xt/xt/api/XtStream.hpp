@@ -2,12 +2,13 @@
 #define XT_API_STREAM_HPP
 
 /** @file */
-
-#include <xt/api/Core.hpp>
-#include <xt/api/Forward.hpp>
+/** @cond */
+#include <xt/cpp/Core.hpp>
+#include <xt/cpp/Forward.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/Callbacks.hpp>
 #include <cstdint>
+/** @endcond */
 
 namespace Xt {
 

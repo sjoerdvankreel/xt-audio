@@ -2,12 +2,13 @@
 #define XT_API_STRUCTS_HPP
 
 /** @file */
-
+/** @cond */
 #include <xt/api/Enums.hpp>
 #include <xt/api/Callbacks.hpp>
 
 #include <string>
 #include <cstdint>
+/** @endcond */
 
 namespace Xt {
 

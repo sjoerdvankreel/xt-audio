@@ -2,8 +2,8 @@
 #define XT_API_AUDIO_HPP
 
 /** @file */
-
-#include <xt/api/Core.hpp>
+/** @cond */
+#include <xt/cpp/Core.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/XtService.hpp>
 #include <xt/api/XtPlatform.hpp>
@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+/** @endcond */
 
 namespace Xt {
 

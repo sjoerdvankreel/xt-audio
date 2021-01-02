@@ -2,12 +2,13 @@
 #define XT_API_DEVICE_LIST_HPP
 
 /** @file */
-
-#include <xt/api/Core.hpp>
-#include <xt/api/Utility.hpp>
+/** @cond */
+#include <xt/cpp/Core.hpp>
+#include <xt/cpp/Utility.hpp>
 
 #include <string>
 #include <vector>
+/** @endcond */
 
 namespace Xt {
 

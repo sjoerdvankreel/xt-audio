@@ -2,9 +2,10 @@
 #define XT_API_CALLBACKS_HPP
 
 /** @file */
-
+/** @cond */
 #include <string>
 #include <cstdint>
+/** @endcond */
 
 namespace Xt {
 
