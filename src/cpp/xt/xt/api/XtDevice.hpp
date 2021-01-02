@@ -19,7 +19,9 @@ using namespace Detail;
 
 class Device final
 {
+/** @cond */
   friend class Service;
+/** @endcond */
   XtDevice* const _d;
   Device(XtDevice* d): _d(d) { }
 public:

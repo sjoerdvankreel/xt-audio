@@ -17,7 +17,9 @@ using namespace Detail;
 
 class Platform final
 {
+/** @cond */
   friend class Audio;
+/** @endcond */
   XtPlatform* const _p;
   Platform(XtPlatform* p): _p(p) { }
 public:

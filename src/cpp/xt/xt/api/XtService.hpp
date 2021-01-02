@@ -20,7 +20,9 @@ using namespace Detail;
 
 class Service final 
 {
+/** @cond */
   friend class Platform;
+/** @endcond */
   XtService const* const _s;
   Service(XtService const* s): _s(s) { }
 public:

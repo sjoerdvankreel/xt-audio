@@ -33,6 +33,7 @@ public:
   Latency GetLatency() const;
   Format const& GetFormat() const;
 
+/** @cond */
   friend class Device;
   friend class Service;
   friend void XT_CALLBACK 
@@ -41,6 +42,7 @@ public:
   Detail::ForwardOnBuffer(XtStream const* coreStream, XtBuffer const* coreBuffer, void* user);
   friend void XT_CALLBACK 
   Detail::ForwardOnRunning(XtStream const* coreStream, XtBool running, uint64_t error, void* user);
+/** @endcond */
 };
 
 inline void
