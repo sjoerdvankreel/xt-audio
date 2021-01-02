@@ -1,4 +1,4 @@
-January 2, 2021 - V1.0.7
+January 2, 2021 - V1.7
 * Major cleanup/rewrite/bugfix release.
 
 * New features:
