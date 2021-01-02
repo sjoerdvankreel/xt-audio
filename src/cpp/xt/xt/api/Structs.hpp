@@ -1,10 +1,10 @@
-#ifndef XT_CPP_STRUCTS_HPP
-#define XT_CPP_STRUCTS_HPP
+#ifndef XT_API_STRUCTS_HPP
+#define XT_API_STRUCTS_HPP
 
 /** @file */
 
-#include <xt/cpp/Enums.hpp>
-#include <xt/cpp/Callbacks.hpp>
+#include <xt/api/Enums.hpp>
+#include <xt/api/Callbacks.hpp>
 
 #include <string>
 #include <cstdint>
@@ -141,4 +141,4 @@ struct AggregateStreamParams final
 };
 
 } // namespace Xt
-#endif // XT_CPP_STRUCTS_HPP
+#endif // XT_API_STRUCTS_HPP

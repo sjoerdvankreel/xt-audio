@@ -1,12 +1,12 @@
-#ifndef XT_CPP_AUDIO_HPP
-#define XT_CPP_AUDIO_HPP
+#ifndef XT_API_AUDIO_HPP
+#define XT_API_AUDIO_HPP
 
 /** @file */
 
-#include <xt/cpp/Core.hpp>
-#include <xt/cpp/Structs.hpp>
-#include <xt/cpp/XtService.hpp>
-#include <xt/cpp/XtPlatform.hpp>
+#include <xt/api/Core.hpp>
+#include <xt/api/Structs.hpp>
+#include <xt/api/XtService.hpp>
+#include <xt/api/XtPlatform.hpp>
 
 #include <memory>
 #include <vector>
@@ -68,4 +68,4 @@ Audio::Init(std::string const& id, void* window, OnError onError)
 }
 
 } // namespace Xt
-#endif // XT_CPP_AUDIO_HPP
+#endif // XT_API_AUDIO_HPP

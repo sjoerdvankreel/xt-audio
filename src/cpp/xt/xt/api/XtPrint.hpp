@@ -1,9 +1,9 @@
-#ifndef XT_CPP_PRINT_HPP
-#define XT_CPP_PRINT_HPP
+#ifndef XT_API_PRINT_HPP
+#define XT_API_PRINT_HPP
 
 /** @file */
 
-#include <xt/cpp/Core.hpp>
+#include <xt/api/Core.hpp>
 #include <ostream>
 
 namespace Xt {
@@ -54,4 +54,4 @@ operator<<(std::ostream& os, ErrorInfo const& info)
 }
 
 } // namespace Xt
-#endif // XT_CPP_PRINT_HPP
+#endif // XT_API_PRINT_HPP

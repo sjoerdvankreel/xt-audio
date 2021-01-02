@@ -1,7 +1,7 @@
-#ifndef XT_CPP_FORWARD_HPP
-#define XT_CPP_FORWARD_HPP
+#ifndef XT_API_FORWARD_HPP
+#define XT_API_FORWARD_HPP
 
-#include <xt/cpp/Core.hpp>
+#include <xt/api/Core.hpp>
 
 namespace Xt::Detail {
 
@@ -17,4 +17,4 @@ inline void XT_CALLBACK
 ForwardOnRunning(XtStream const* coreStream, XtBool running, uint64_t error, void* user);
 
 } // namespace Xt::Detail
-#endif // XT_CPP_FORWARD_HPP
+#endif // XT_API_FORWARD_HPP

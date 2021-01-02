@@ -1,12 +1,12 @@
-#ifndef XT_CPP_DEVICE_HPP
-#define XT_CPP_DEVICE_HPP
+#ifndef XT_API_DEVICE_HPP
+#define XT_API_DEVICE_HPP
 
 /** @file */
 
-#include <xt/cpp/Core.hpp>
-#include <xt/cpp/Utility.hpp>
-#include <xt/cpp/Structs.hpp>
-#include <xt/cpp/XtStream.hpp>
+#include <xt/api/Core.hpp>
+#include <xt/api/Utility.hpp>
+#include <xt/api/Structs.hpp>
+#include <xt/api/XtStream.hpp>
 
 #include <memory>
 #include <vector>
@@ -117,4 +117,4 @@ Device::OpenStream(DeviceStreamParams const& params, void* user)
 }
 
 } // namespace Xt
-#endif // XT_CPP_DEVICE_HPP
+#endif // XT_API_DEVICE_HPP

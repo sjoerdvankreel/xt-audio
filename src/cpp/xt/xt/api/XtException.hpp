@@ -1,5 +1,5 @@
-#ifndef XT_CPP_EXCEPTION_HPP
-#define XT_CPP_EXCEPTION_HPP
+#ifndef XT_API_EXCEPTION_HPP
+#define XT_API_EXCEPTION_HPP
 
 /** @file */
 
@@ -17,4 +17,4 @@ public:
 };
 
 } // namespace Xt
-#endif // XT_CPP_EXCEPTION_HPP
+#endif // XT_API_EXCEPTION_HPP

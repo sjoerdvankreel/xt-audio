@@ -3,17 +3,17 @@
 
 /** @file */
 
-#include <xt/cpp/Enums.hpp>
-#include <xt/cpp/Structs.hpp>
-#include <xt/cpp/Callbacks.hpp>
+#include <xt/api/Enums.hpp>
+#include <xt/api/Structs.hpp>
+#include <xt/api/Callbacks.hpp>
 
-#include <xt/cpp/XtAudio.hpp>
-#include <xt/cpp/XtPrint.hpp>
-#include <xt/cpp/XtDevice.hpp>
-#include <xt/cpp/XtStream.hpp>
-#include <xt/cpp/XtService.hpp>
-#include <xt/cpp/XtPlatform.hpp>
-#include <xt/cpp/XtException.hpp>
-#include <xt/cpp/XtDeviceList.hpp>
+#include <xt/api/XtAudio.hpp>
+#include <xt/api/XtPrint.hpp>
+#include <xt/api/XtDevice.hpp>
+#include <xt/api/XtStream.hpp>
+#include <xt/api/XtService.hpp>
+#include <xt/api/XtPlatform.hpp>
+#include <xt/api/XtException.hpp>
+#include <xt/api/XtDeviceList.hpp>
 
 #endif // XT_AUDIO_HPP

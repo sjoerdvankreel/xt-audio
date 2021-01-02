@@ -1,10 +1,10 @@
-#ifndef XT_CPP_DEVICE_LIST_HPP
-#define XT_CPP_DEVICE_LIST_HPP
+#ifndef XT_API_DEVICE_LIST_HPP
+#define XT_API_DEVICE_LIST_HPP
 
 /** @file */
 
-#include <xt/cpp/Core.hpp>
-#include <xt/cpp/Utility.hpp>
+#include <xt/api/Core.hpp>
+#include <xt/api/Utility.hpp>
 
 #include <string>
 #include <vector>
@@ -67,4 +67,4 @@ DeviceList::GetCapabilities(std::string const& id) const
 }
 
 } // namespace Xt
-#endif // XT_CPP_DEVICE_LIST_HPP
+#endif // XT_API_DEVICE_LIST_HPP

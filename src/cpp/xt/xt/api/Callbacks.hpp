@@ -1,5 +1,5 @@
-#ifndef XT_CPP_CALLBACKS_HPP
-#define XT_CPP_CALLBACKS_HPP
+#ifndef XT_API_CALLBACKS_HPP
+#define XT_API_CALLBACKS_HPP
 
 /** @file */
 
@@ -18,4 +18,4 @@ typedef void (*
 OnRunning)(class Stream const& stream, bool running, uint64_t error, void* user);
 
 } // namespace Xt
-#endif // XT_CPP_CALLBACKS_HPP
+#endif // XT_API_CALLBACKS_HPP

@@ -1,11 +1,11 @@
-#ifndef XT_CPP_PLATFORM_HPP
-#define XT_CPP_PLATFORM_HPP
+#ifndef XT_API_PLATFORM_HPP
+#define XT_API_PLATFORM_HPP
 
 /** @file */
 
-#include <xt/cpp/Core.hpp>
-#include <xt/cpp/Enums.hpp>
-#include <xt/cpp/XtService.hpp>
+#include <xt/api/Core.hpp>
+#include <xt/api/Enums.hpp>
+#include <xt/api/XtService.hpp>
 
 #include <vector>
 #include <memory>
@@ -59,4 +59,4 @@ Platform::GetService(System system)
 }
 
 } // namespace Xt
-#endif // XT_CPP_PLATFORM_HPP
+#endif // XT_API_PLATFORM_HPP

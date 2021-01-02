@@ -1,14 +1,14 @@
-#ifndef XT_CPP_SERVICE_HPP
-#define XT_CPP_SERVICE_HPP
+#ifndef XT_API_SERVICE_HPP
+#define XT_API_SERVICE_HPP
 
 /** @file */
 
-#include <xt/cpp/Core.hpp>
-#include <xt/cpp/Enums.hpp>
-#include <xt/cpp/Structs.hpp>
-#include <xt/cpp/Forward.hpp>
-#include <xt/cpp/XtDevice.hpp>
-#include <xt/cpp/XtDeviceList.hpp>
+#include <xt/api/Core.hpp>
+#include <xt/api/Enums.hpp>
+#include <xt/api/Structs.hpp>
+#include <xt/api/Forward.hpp>
+#include <xt/api/XtDevice.hpp>
+#include <xt/api/XtDeviceList.hpp>
 
 #include <memory>
 #include <optional>
@@ -94,4 +94,4 @@ Service::AggregateStream(AggregateStreamParams const& params, void* user)
 }
 
 } // namespace Xt
-#endif // XT_CPP_SERVICE_HPP
+#endif // XT_API_SERVICE_HPP

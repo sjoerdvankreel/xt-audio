@@ -1,5 +1,5 @@
-#ifndef XT_CPP_ENUMS_HPP
-#define XT_CPP_ENUMS_HPP
+#ifndef XT_API_ENUMS_HPP
+#define XT_API_ENUMS_HPP
 
 /** @file */
 
@@ -16,4 +16,4 @@ enum ServiceCaps { ServiceCapsNone = 0x0, ServiceCapsTime = 0x1, ServiceCapsLate
 enum DeviceCaps { DeviceCapsNone = 0x0, DeviceCapsInput = 0x1, DeviceCapsOutput = 0x2, DeviceCapsLoopback = 0x4, DeviceCapsHwDirect = 0x8 };
 
 } // namespace Xt
-#endif // XT_CPP_ENUMS_HPP
+#endif // XT_API_ENUMS_HPP
