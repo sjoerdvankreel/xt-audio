@@ -2,8 +2,8 @@ package xt.audio;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import xt.audio.Structs.DeviceStreamParams;
-import xt.audio.Structs.StreamParams;
+import xt.audio.NativeStructs.DeviceStreamParams;
+import xt.audio.NativeStructs.StreamParams;
 import xt.audio.Structs.XtBufferSize;
 import xt.audio.Structs.XtDeviceStreamParams;
 import xt.audio.Structs.XtFormat;

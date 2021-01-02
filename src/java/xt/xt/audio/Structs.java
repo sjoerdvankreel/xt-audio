@@ -3,9 +3,6 @@ package xt.audio;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.TypeMapper;
-import xt.audio.Callbacks.OnBuffer;
-import xt.audio.Callbacks.OnRunning;
-import xt.audio.Callbacks.OnXRun;
 import xt.audio.Callbacks.XtOnBuffer;
 import xt.audio.Callbacks.XtOnRunning;
 import xt.audio.Callbacks.XtOnXRun;
@@ -18,42 +15,6 @@ import java.util.List;
 import static xt.audio.Utility.XtPrintLocation;
 
 public interface Structs {
-
-    public static class DeviceStreamParams extends Structure {
-        public StreamParams stream;
-        public XtFormat format;
-        public double bufferSize;
-        public DeviceStreamParams() {}
-        @Override protected List getFieldOrder() { return Arrays.asList("stream", "format", "bufferSize"); }
-    }
-
-    public static class AggregateDeviceParams extends Structure {
-        public Pointer device;
-        public XtChannels channels;
-        public double bufferSize;
-        public AggregateDeviceParams() {}
-        public static class ByValue extends AggregateDeviceParams implements Structure.ByValue {}
-        @Override protected List getFieldOrder() { return Arrays.asList("device", "channels", "bufferSize"); }
-    }
-
-    public static class AggregateStreamParams extends Structure {
-        public StreamParams stream;
-        public Pointer devices;
-        public int count;
-        public XtMix mix;
-        public Pointer master;
-        public AggregateStreamParams() {}
-        @Override protected List getFieldOrder() { return Arrays.asList("stream", "devices", "count", "mix", "master"); }
-    }
-
-    public static class StreamParams extends Structure {
-        public boolean interleaved;
-        public OnBuffer onBuffer;
-        public OnXRun onXRun;
-        public OnRunning onRunning;
-        public StreamParams() {}
-        @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "onBuffer", "onXRun", "onRunning"); }
-    }
 
     public static class XtMix extends Structure {
         public XtMix() { }
