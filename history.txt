@@ -19,6 +19,12 @@ January 2, 2021 - V1.0.7
 - ALSA, Pulse, DSound, WASAPI: errors that occurred on the audio thread would crash the process. Instead now the stream is stopped and error reported to XtOnRunning.
 - DSound, WASAPI: audio thread now uses a 10 second timeout to wait for buffer to become available. After this, the stream is stopped instead of hanging indefinately.
 
+* New API's
+- XtDeviceCaps to test for device specific capabilities
+- XtDeviceGetHandle and XtStreamGetHandle to retrieve backend-specific handles
+- XtDeviceList, XtServiceOpenDeviceList, XtEnumFlags to query device names and ids
+- XtOnRunning and XtStreamIsRunning to check whether stream stopped outside applications control
+
 * Breaking changes (build):
 - Dropped support for static linking.
 - C++ bindings are now a header-only library.
