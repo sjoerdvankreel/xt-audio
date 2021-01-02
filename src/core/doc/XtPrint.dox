@@ -43,6 +43,15 @@
  *
  * This function may be called from any thread.
  */
+ 
+/**
+ * @fn const char* XtPrintEnumFlags(XtEnumFlags	flags)
+ * @brief Convert device enumeration flags to a human-readable string.
+ * @param flags the enumeration flags value.
+ * @return a pointer to a statically allocated string.
+ *
+ * This function may be called from any thread.
+ */
 
 /**
  * @fn const char* XtPrintServiceCaps(XtServiceCaps capabilities)

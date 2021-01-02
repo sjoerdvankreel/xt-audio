@@ -28,7 +28,7 @@
  * Stream time-stamping\n
  * Buffer under/overrun detection\n
  * Support both interleaved and non-interleaved operation\n
- * Full-duplex operation (JACK, ASIO) OR stream aggregation (all others)
+ * Full-duplex operation (JACK, ASIO) or stream aggregation (all others)
  *
  * @section abstractions Core abstractions
  *
@@ -227,11 +227,12 @@
  * @see XtPrintErrorInfo
  * @see XtPrintDeviceCaps
  * @see XtPrintServiceCaps
+ * @see XtDeviceListGetName
  *
  * @subsection reshandling Resource handling
  *
  * In all language API's there are 4 resources that must be explicitly managed: device lists, devices, streams, and
- * the library itself. For C, this means XtDeviceListDestroy/XtDeviceDestroy/XtStreamDestroy/XtAudioTerminate.
+ * the library itself. For C, this means XtDeviceListDestroy/XtDeviceDestroy/XtStreamDestroy/XtPlatformDestroy.
  * For C++ everything is handled using unique_ptrs. For Java each resource implements Closeable, for C# IDisposable.
  * No other resources are returned to the application that must be cleaned up by the caller. Strings and collections
  * are handled by the language's respective data types (eg std::string, System.String, java.lang.String and

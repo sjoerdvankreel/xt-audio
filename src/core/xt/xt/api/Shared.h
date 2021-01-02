@@ -1,7 +1,9 @@
 #ifndef XT_API_SHARED_H
 #define XT_API_SHARED_H
 
+/** @cond */
 #include <stdint.h>
+/** @endcond */
 
 #ifdef _WIN32
 #define XT_CALL __stdcall
