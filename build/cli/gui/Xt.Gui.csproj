@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <PropertyGroup>
-        <Version>1.7</Version>
+        <Version>1.8</Version>
         <LangVersion>8.0</LangVersion>
-        <FileVersion>1.7</FileVersion>
+        <FileVersion>1.8</FileVersion>
         <OutputType>WinExe</OutputType>
         <RootNamespace>Xt</RootNamespace>
         <AssemblyName>Xt.Gui</AssemblyName>
-        <AssemblyVersion>1.7</AssemblyVersion>
+        <AssemblyVersion>1.8</AssemblyVersion>
         <UseWindowsForms>true</UseWindowsForms>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>

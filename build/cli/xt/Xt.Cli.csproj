@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.7</Version>
+    <Version>1.8</Version>
     <LangVersion>8.0</LangVersion>
-    <FileVersion>1.7</FileVersion>
+    <FileVersion>1.8</FileVersion>
     <RootNamespace>Xt</RootNamespace>
     <AssemblyName>Xt.Cli</AssemblyName>
-    <AssemblyVersion>1.7</AssemblyVersion>
+    <AssemblyVersion>1.8</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <OutputPath>..\..\..\dist\cli\xt\$(Configuration)</OutputPath>
