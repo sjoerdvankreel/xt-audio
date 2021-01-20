@@ -7,8 +7,8 @@
     <AssemblyName>Xt.Audio</AssemblyName>
     <AssemblyVersion>1.8</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <OutputPath>..\..\..\dist\cli\xt\$(Configuration)</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -17,7 +17,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\..\src\cli\xt\*.cs" />
-    <None Include="..\..\..\LICENSE" Pack="true" PackagePath="LICENSE.txt"/>
     <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Audio.dll.config" />
   </ItemGroup>
   <ItemGroup>
