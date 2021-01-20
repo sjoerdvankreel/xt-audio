@@ -1,3 +1,4 @@
+*.nupkg
 xt-audio.zip
 dist/**
 src/java/xt/.idea/**

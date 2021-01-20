@@ -64,3 +64,8 @@ REM package
 cd ..
 tar.exe -cf xt-audio.zip -T dist-files.txt
 cd build
+
+REM package nuget
+cd ..
+nuget pack Xt.Audio.nuspec
+cd build
