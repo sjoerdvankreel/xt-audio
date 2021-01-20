@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Xt.Audio</id>
+    <version>1.8-beta</version>
+    <authors>Sjoerd van Kreel</authors>
+    <license type="expression">MIT</license>
+    <copyright>2015-2021 Sjoerd van Kreel</copyright>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://sjoerdvankreel.github.io/xt-audio/</projectUrl>
+    <tags>lowlatency audio directsound asio wasapi alsa pulseaudio jack</tags>
+    <description>Streaming audio focused on low latency, platform independence and API simplicity.</description>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0"/>
+    </dependencies>
+  </metadata>
+</package>
