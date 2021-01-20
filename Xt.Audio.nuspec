@@ -12,9 +12,10 @@
     <id>Xt.Audio</id>
     <version>1.8-beta</version>
     <projectUrl>https://sjoerdvankreel.github.io/xt-audio/</projectUrl>
+    <repository type="git" url="https://github.com/sjoerdvankreel/xt-audio" />
 
     <summary>Low latency streaming audio.</summary>
-    <tags>lowlatency audio directsound asio wasapi alsa pulseaudio jack</tags>
+    <tags>C# .NET lowlatency audio directsound asio wasapi alsa pulseaudio jack</tags>
     <description>Streaming audio focused on low latency, platform independence and API simplicity.</description>
 
     <dependencies>
