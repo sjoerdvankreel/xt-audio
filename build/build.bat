@@ -44,9 +44,9 @@ cd ..\..
 REM cli
 cd cli
 dotnet restore
-msbuild Xt.Cli.sln /p:Configuration=Debug /verbosity:quiet
+msbuild Xt.Audio.sln /p:Configuration=Debug /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
-msbuild Xt.Cli.sln /p:Configuration=Release /verbosity:quiet
+msbuild Xt.Audio.sln /p:Configuration=Release /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 
@@ -58,7 +58,7 @@ doxygen doc\core.doxyfile
 cd java\xt
 call mvn -q javadoc:javadoc
 cd ..\..
-msbuild cli\doc\Xt.Cli.shfbproj /verbosity:quiet
+msbuild cli\doc\Xt.Audio.shfbproj /verbosity:quiet
 
 REM package
 cd ..

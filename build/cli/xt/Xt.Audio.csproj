@@ -4,7 +4,7 @@
     <LangVersion>8.0</LangVersion>
     <FileVersion>1.8</FileVersion>
     <RootNamespace>Xt</RootNamespace>
-    <AssemblyName>Xt.Cli</AssemblyName>
+    <AssemblyName>Xt.Audio</AssemblyName>
     <AssemblyVersion>1.8</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -18,7 +18,7 @@
     <Compile Include="..\..\..\src\cli\xt\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Cli.dll.config" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Audio.dll.config" />
   </ItemGroup>
   <ItemGroup>
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-core.dll" Link="x86/xt-core.dll" Pack="true" />

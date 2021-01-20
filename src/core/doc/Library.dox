@@ -113,7 +113,7 @@
  * @section usage Basic usage
  *
  * Include <xt/XtAudio.h> for C, <xt/XtAudio.hpp> for C++ and link xt-core.dll/libxt-core.so.
- * Reference Xt.Cli.dll for .NET, xt.audio-(version).jar for java.
+ * Reference Xt.Audio.dll for .NET, xt.audio-(version).jar for java.
  *
  * An application must first initialize the library using XtAudioInit.
  * From there, using the returned platform handle it can select an audio

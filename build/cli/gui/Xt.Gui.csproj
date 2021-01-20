@@ -28,6 +28,6 @@
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\xt\Xt.Cli.csproj" />
+        <ProjectReference Include="..\xt\Xt.Audio.csproj" />
     </ItemGroup>
 </Project>
