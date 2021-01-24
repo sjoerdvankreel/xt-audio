@@ -3,7 +3,7 @@
     <packaging>jar</packaging>
     <version>1.8</version>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>xt.audio</groupId>
+    <groupId>com.github.sjoerdvankreel</groupId>
     <artifactId>xt.audio</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
