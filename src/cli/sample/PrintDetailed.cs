@@ -29,6 +29,7 @@ namespace Xt
             }
         }
 
+        [STAThread]
         public static void Main()
         {
             using XtPlatform platform = XtAudio.Init("Sample", IntPtr.Zero, OnError);

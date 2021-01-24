@@ -4,6 +4,7 @@ namespace Xt
 {
     public static class PrintSimple
     {
+        [STAThread]
         public static void Main()
         {
             using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero, null);
