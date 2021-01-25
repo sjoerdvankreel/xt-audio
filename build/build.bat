@@ -33,7 +33,7 @@ if !errorlevel! neq 0 exit /b !errorlevel!
 
 REM java
 cd java\xt
-echo 0 | call mvn javadoc:jar source:jar repository:bundle-create
+call mvn javadoc:jar source:jar repository:bundle-create
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
 cd java\sample
