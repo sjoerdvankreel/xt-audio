@@ -8,6 +8,17 @@
     <groupId>com.github.sjoerdvankreel</groupId>
     <url>https://sjoerdvankreel.github.io/xt-audio/</url>
     <description>Streaming audio focused on low latency, platform independence and API simplicity.</description>
+    <developers>
+        <developer>
+            <id>sjoerdvankreel</id>
+            <name>Sjoerd van Kreel</name>
+            <email>sjoerdvankreel@gmail.com</email>
+            <url>https://github.com/sjoerdvankreel</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
     <licenses>
         <license>
             <name>MIT License</name>
