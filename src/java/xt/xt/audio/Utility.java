@@ -42,16 +42,6 @@ class EnumConverter<E extends Enum<E>> implements TypeConverter {
 class Utility {
     static final NativeLibrary LIBRARY;
     static {
-        URI location = null;
-        try {
-            location = Utility.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-        } catch(URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        var folder = new File(location).getParent();
-        String prefix = Native.POINTER_SIZE == 8? "x64": "x86";
-        var path = Path.of(folder, prefix, System.mapLibraryName("xt-core"));
-        System.load(path.toAbsolutePath().toString());
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());

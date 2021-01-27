@@ -18,7 +18,7 @@
     <HtmlHelpName>XT-Audio</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\..\..\dist\cli\xt\Release\netstandard2.0\Xt.Cli.dll" xmlns="" />
+      <DocumentationSource sourceFile="..\..\..\dist\cli\xt\Release\netstandard2.0\Xt.Audio.dll" xmlns="" />
     </DocumentationSources>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>

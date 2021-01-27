@@ -4,7 +4,7 @@ read -p "C++ x86 sample..."
 read -p "C++ x64 sample..."
 ../dist/cpp/sample/x64/Release/xt-sample
 read -p "Java sample..."
-java -jar ../dist/java/sample/target/xt.sample-1.7.jar
+java -jar ../dist/java/sample/target/xt.sample-1.8.jar
 read -p ".NET Framework sample..."
 mono ../dist/cli/sample/Release/net48/Xt.Sample.exe
 read -p ".NET Core sample..."

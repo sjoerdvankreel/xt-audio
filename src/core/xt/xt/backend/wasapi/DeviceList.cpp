@@ -39,6 +39,7 @@ WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
   CComPtr<IMMDeviceEnumerator> enumerator;
 
   PropVariantInit(&pv);
+  auto nameGuard = XtiGuard([&pv] { PropVariantClear(&pv); });
   if(!XtiParseWasapiDeviceInfo(std::string(id), &info)) return AUDCLNT_E_DEVICE_INVALIDATED;
   std::wstring wideId = XtiUtf8ToWideString(info.id.c_str());
   XT_VERIFY_COM(enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator)));
@@ -46,7 +47,6 @@ WasapiDeviceList::GetName(char const* id, char* buffer, int32_t* size) const
   XT_VERIFY_COM(device->OpenPropertyStore(STGM_READ, &store));
   XT_VERIFY_COM(store->GetValue(PKEY_Device_FriendlyName, &pv));
   std::string name = XtiWideStringToUtf8(pv.pwszVal);
-  PropVariantClear(&pv);
   oss << name.c_str() << " (" << XtiGetWasapiNameSuffix(info.type) << ")";
   XtiCopyString(oss.str().c_str(), buffer, size);
   return S_OK;

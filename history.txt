@@ -1,3 +1,10 @@
+January 27, 2021 - V1.8
+* Minor bugfixes.
+* Switched LGPL to MIT.
+* Support nuget and mvn.
+* Breaking change (java): changed mvn groupId.
+* Breaking change (cli): renamed Xt.Cli.dll to Xt.Audio.dll.
+
 January 2, 2021 - V1.7
 * Major cleanup/rewrite/bugfix release.
 

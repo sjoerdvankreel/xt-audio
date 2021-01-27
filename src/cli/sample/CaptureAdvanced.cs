@@ -92,6 +92,7 @@ namespace Xt
             return 0;
         }
 
+        [STAThread]
         public static void Main()
         {
             XtStreamParams streamParams;

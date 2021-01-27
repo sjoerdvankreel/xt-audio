@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <title>XT-Audio</title>
+    <owners>Sjoerd van Kreel</owners>
+    <authors>Sjoerd van Kreel</authors>
+
+    <license type="expression">MIT</license>
+    <copyright>2015-2021 Sjoerd van Kreel</copyright>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+    <id>Xt.Audio</id>
+    <version>1.8</version>
+    <projectUrl>https://sjoerdvankreel.github.io/xt-audio/</projectUrl>
+    <repository type="git" url="https://github.com/sjoerdvankreel/xt-audio" />
+
+    <summary>Low latency streaming audio.</summary>
+    <tags>C# .NET lowlatency audio directsound asio wasapi alsa pulseaudio jack</tags>
+    <description>Streaming audio focused on low latency, platform independence and API simplicity.</description>
+
+    <dependencies>
+      <group targetFramework=".NETStandard2.0"/>
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="Xt.Audio.targets" target="build\Xt.Audio.targets"/>
+    <file src="dist\cli\xt\Release\netstandard2.0\x86\*.*" target="build\x86" />
+    <file src="dist\cli\xt\Release\netstandard2.0\x64\*.*" target="build\x64" />
+    <file src="dist\cli\xt\Release\netstandard2.0\*.*" target="lib\netstandard2.0" />
+  </files>
+</package>

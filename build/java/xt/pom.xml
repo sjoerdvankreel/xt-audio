@@ -1,13 +1,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <name>XT-Audio</name>
     <packaging>jar</packaging>
-    <version>1.7</version>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>xt.audio</groupId>
+    <version>1.8</version>
     <artifactId>xt.audio</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.sjoerdvankreel</groupId>
+    <url>https://sjoerdvankreel.github.io/xt-audio/</url>
+    <description>Streaming audio focused on low latency, platform independence and API simplicity.</description>
+    <developers>
+        <developer>
+            <id>sjoerdvankreel</id>
+            <name>Sjoerd van Kreel</name>
+            <email>sjoerdvankreel@gmail.com</email>
+            <url>https://github.com/sjoerdvankreel</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <scm>
+        <url>https://github.com/sjoerdvankreel/xt-audio</url>
+        <connection>scm:git:git://github.com/sjoerdvankreel/xt-audio.git</connection>
+        <developerConnection>scm:git:git@github.com:sjoerdvankreel/xt-audio.git</developerConnection>
+    </scm>
     <dependencies>
         <dependency>
             <version>5.6.0</version>
@@ -54,18 +80,53 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>copy-resources-x86</id>
-                        <phase>install</phase>
+                        <id>copy-resources-win32-x86</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/target/x86</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/win32-x86</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
                                     <includes>
                                         <include>xt-core.dll</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-resources-win32-x86-64</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/win32-x86-64</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
+                                    <includes>
+                                        <include>xt-core.dll</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-resources-linux-x86</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/linux-x86</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
+                                    <includes>
                                         <include>libxt-core.so</include>
                                     </includes>
                                 </resource>
@@ -73,18 +134,17 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-resources-x64</id>
-                        <phase>install</phase>
+                        <id>copy-resources-linux-x86-64</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/target/x64</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/linux-x86-64</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
-                                        <include>xt-core.dll</include>
                                         <include>libxt-core.so</include>
                                     </includes>
                                 </resource>
@@ -104,6 +164,32 @@
                     </sourceFileExcludes>
                     <reportOutputDirectory>${basedir}/../../../dist/java/doc</reportOutputDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

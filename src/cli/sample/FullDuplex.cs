@@ -25,6 +25,7 @@ namespace Xt
             return 0;
         }
 
+        [STAThread]
         public static void Main()
         {
             XtFormat format;

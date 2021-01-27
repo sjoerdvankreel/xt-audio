@@ -21,7 +21,7 @@ public class PrintDetailed {
         System.out.println(location + ": " + message);
     }
 
-    static void PrintDevices(XtService service, XtDeviceList list) {
+    static void printDevices(XtService service, XtDeviceList list) {
         for(int d = 0; d < list.getCount(); d++) {
             String id = list.getId(d);
             try(XtDevice device = service.openDevice(id)) {
@@ -70,11 +70,11 @@ public class PrintDetailed {
                 }
                 try(XtDeviceList inputs = service.openDeviceList(EnumSet.of(XtEnumFlags.INPUT))) {
                     System.out.println("  Input device count: " + inputs.getCount());
-                    PrintDevices(service, inputs);
+                    printDevices(service, inputs);
                 }
                 try(XtDeviceList outputs = service.openDeviceList(EnumSet.of(XtEnumFlags.OUTPUT))) {
                     System.out.println("  Output device count: " + outputs.getCount());
-                    PrintDevices(service, outputs);
+                    printDevices(service, outputs);
                 }
             }
         } catch(XtException e) {

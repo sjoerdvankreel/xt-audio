@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.7</Version>
+    <Version>1.8</Version>
     <LangVersion>8.0</LangVersion>
-    <FileVersion>1.7</FileVersion>
+    <FileVersion>1.8</FileVersion>
     <RootNamespace>Xt</RootNamespace>
-    <AssemblyName>Xt.Cli</AssemblyName>
-    <AssemblyVersion>1.7</AssemblyVersion>
+    <AssemblyName>Xt.Audio</AssemblyName>
+    <AssemblyVersion>1.8</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <OutputPath>..\..\..\dist\cli\xt\$(Configuration)</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -16,9 +17,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\..\src\cli\xt\*.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Cli.dll.config" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Audio.dll.config" />
   </ItemGroup>
   <ItemGroup>
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-core.dll" Link="x86/xt-core.dll" Pack="true" />
