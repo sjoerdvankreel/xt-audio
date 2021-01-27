@@ -1,4 +1,4 @@
-? - V1.8
+January 27, 2021 - V1.8
 * Minor bugfixes.
 * Switched LGPL to MIT.
 * Support nuget and mvn.
