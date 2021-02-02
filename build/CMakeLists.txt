@@ -1,9 +1,15 @@
+cmake_policy(SET CMP0091 NEW)
+cmake_minimum_required (VERSION 3.15)
 project (xt-audio)
-cmake_minimum_required (VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Static link runtime libs.
+if (WIN32)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif (WIN32)
 
 # Core library (C API).
 set (CORE_DIR "../src/core/xt")
