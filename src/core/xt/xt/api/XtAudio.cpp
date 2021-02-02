@@ -8,7 +8,7 @@
 
 XtVersion XT_CALL
 XtAudioGetVersion(void) 
-{ return { 1, 8 }; }
+{ return { 1, 9 }; }
 
 XtErrorInfo XT_CALL
 XtAudioGetErrorInfo(XtError error) 
