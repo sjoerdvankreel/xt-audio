@@ -1,5 +1,6 @@
 ?, ? - V1.9
 * Support static linking against msvcrt/libstdc++.
+* Breaking change (native): renamed (lib)xt-core.(dll/so) to (lib)xt-audio.(dll/so).
 
 January 27, 2021 - V1.8
 * Minor bugfixes.
