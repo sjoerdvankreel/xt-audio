@@ -14,11 +14,11 @@
     <Name>Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.6.1</FrameworkVersion>
-    <OutputPath>..\..\..\dist\cli\doc</OutputPath>
+    <OutputPath>..\..\..\dist\net\doc</OutputPath>
     <HtmlHelpName>XT-Audio</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\..\..\dist\cli\xt\Release\netstandard2.0\Xt.Audio.dll" xmlns="" />
+      <DocumentationSource sourceFile="..\..\..\dist\net\xt\Release\netstandard2.0\Xt.Audio.dll" xmlns="" />
     </DocumentationSources>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
@@ -37,7 +37,7 @@
     <KeepLogFile>True</KeepLogFile>
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
     <CleanIntermediates>True</CleanIntermediates>
-    <WorkingPath>..\..\..\dist\cli\doc\working</WorkingPath>
+    <WorkingPath>..\..\..\dist\net\doc\working</WorkingPath>
     <MissingTags>AutoDocumentCtors, AutoDocumentDispose</MissingTags>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform

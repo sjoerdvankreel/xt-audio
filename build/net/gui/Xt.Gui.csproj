@@ -10,19 +10,19 @@
         <UseWindowsForms>true</UseWindowsForms>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
-        <OutputPath>..\..\..\dist\cli\gui\$(Configuration)</OutputPath>
+        <OutputPath>..\..\..\dist\net\gui\$(Configuration)</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <DebugType>None</DebugType>
         <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="..\..\..\src\cli\gui\**\*.cs" />
-        <EmbeddedResource Include="..\..\..\src\cli\gui\UI\Gui.resx">
+        <Compile Include="..\..\..\src\net\gui\**\*.cs" />
+        <EmbeddedResource Include="..\..\..\src\net\gui\UI\Gui.resx">
             <Link>UI\Gui.resx</Link>
             <DependentUpon>Gui.cs</DependentUpon>
         </EmbeddedResource>
-        <EmbeddedResource Include="..\..\..\src\cli\gui\UI\DeviceView.resx">
+        <EmbeddedResource Include="..\..\..\src\net\gui\UI\DeviceView.resx">
             <Link>UI\DeviceView.resx</Link>
             <DependentUpon>DeviceView.cs</DependentUpon>
         </EmbeddedResource>

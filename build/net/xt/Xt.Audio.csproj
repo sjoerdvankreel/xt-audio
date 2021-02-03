@@ -9,15 +9,15 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <OutputPath>..\..\..\dist\cli\xt\$(Configuration)</OutputPath>
+    <OutputPath>..\..\..\dist\net\xt\$(Configuration)</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>None</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\src\cli\xt\*.cs" />
-    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Audio.dll.config" />
+    <Compile Include="..\..\..\src\net\xt\*.cs" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\net\xt\Xt.Audio.dll.config" />
   </ItemGroup>
   <ItemGroup>
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-audio.dll" Link="x86/xt-audio.dll" Pack="true" />

@@ -6,6 +6,6 @@ set /p ok="C++ x64 sample..."
 set /p ok="Java sample..."
 java -jar ..\dist\java\sample\target\xt.sample-1.9.jar
 set /p ok=".NET Framework sample..."
-..\dist\cli\sample\Release\net48\Xt.Sample.exe
+..\dist\net\sample\Release\net48\Xt.Sample.exe
 set /p ok=".NET Core sample..."
-..\dist\cli\sample\Release\netcoreapp3.1\Xt.Sample.exe
+..\dist\net\sample\Release\netcoreapp3.1\Xt.Sample.exe

@@ -42,8 +42,8 @@ call mvn -q install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
 
-REM cli
-cd cli
+REM net
+cd net
 dotnet restore
 msbuild Xt.Audio.sln /p:Configuration=Debug /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
@@ -59,7 +59,7 @@ doxygen doc\core.doxyfile
 cd java\xt
 call mvn -q javadoc:javadoc
 cd ..\..
-msbuild cli\doc\Xt.Audio.shfbproj /verbosity:quiet
+msbuild net\doc\Xt.Audio.shfbproj /verbosity:quiet
 
 REM package
 cd ..
