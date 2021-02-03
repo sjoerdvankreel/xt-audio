@@ -91,7 +91,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
                                     <includes>
-                                        <include>xt-core.dll</include>
+                                        <include>xt-audio.dll</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -109,7 +109,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
-                                        <include>xt-core.dll</include>
+                                        <include>xt-audio.dll</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -127,7 +127,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
                                     <includes>
-                                        <include>libxt-core.so</include>
+                                        <include>libxt-audio.so</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -145,7 +145,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
-                                        <include>libxt-core.so</include>
+                                        <include>libxt-audio.so</include>
                                     </includes>
                                 </resource>
                             </resources>

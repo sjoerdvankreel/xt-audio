@@ -8,14 +8,14 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public sealed class XtStream : IDisposable
     {
-        [DllImport("xt-core")] static extern void XtStreamStop(IntPtr s);
-        [DllImport("xt-core")] static extern ulong XtStreamStart(IntPtr s);
-        [DllImport("xt-core")] static extern void XtStreamDestroy(IntPtr s);
-        [DllImport("xt-core")] static extern int XtStreamIsRunning(IntPtr s);
-        [DllImport("xt-core")] static extern IntPtr XtStreamGetHandle(IntPtr s);
-        [DllImport("xt-core")] static extern unsafe XtFormat* XtStreamGetFormat(IntPtr s);
-        [DllImport("xt-core")] static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
-        [DllImport("xt-core")] static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
+        [DllImport("xt-audio")] static extern void XtStreamStop(IntPtr s);
+        [DllImport("xt-audio")] static extern ulong XtStreamStart(IntPtr s);
+        [DllImport("xt-audio")] static extern void XtStreamDestroy(IntPtr s);
+        [DllImport("xt-audio")] static extern int XtStreamIsRunning(IntPtr s);
+        [DllImport("xt-audio")] static extern IntPtr XtStreamGetHandle(IntPtr s);
+        [DllImport("xt-audio")] static extern unsafe XtFormat* XtStreamGetFormat(IntPtr s);
+        [DllImport("xt-audio")] static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
+        [DllImport("xt-audio")] static extern ulong XtStreamGetLatency(IntPtr s, out XtLatency latency);
 
         IntPtr _s;
         readonly object _user;

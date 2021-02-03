@@ -10,11 +10,11 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public sealed class XtService
     {
-        [DllImport("xt-core")] static extern XtServiceCaps XtServiceGetCapabilities(IntPtr s);
-        [DllImport("xt-core")] static extern ulong XtServiceOpenDevice(IntPtr s, byte[] id, out IntPtr device);
-        [DllImport("xt-core")] static extern ulong XtServiceOpenDeviceList(IntPtr s, XtEnumFlags flags, out IntPtr list);
-        [DllImport("xt-core")] static extern ulong XtServiceAggregateStream(IntPtr s, in AggregateStreamParams @params, IntPtr user, out IntPtr stream);
-        [DllImport("xt-core")] static extern ulong XtServiceGetDefaultDeviceId(IntPtr s, bool output, out bool valid, [Out] byte[] buffer, ref int size);
+        [DllImport("xt-audio")] static extern XtServiceCaps XtServiceGetCapabilities(IntPtr s);
+        [DllImport("xt-audio")] static extern ulong XtServiceOpenDevice(IntPtr s, byte[] id, out IntPtr device);
+        [DllImport("xt-audio")] static extern ulong XtServiceOpenDeviceList(IntPtr s, XtEnumFlags flags, out IntPtr list);
+        [DllImport("xt-audio")] static extern ulong XtServiceAggregateStream(IntPtr s, in AggregateStreamParams @params, IntPtr user, out IntPtr stream);
+        [DllImport("xt-audio")] static extern ulong XtServiceGetDefaultDeviceId(IntPtr s, bool output, out bool valid, [Out] byte[] buffer, ref int size);
 
         readonly IntPtr _s;
         internal XtService(IntPtr s) => _s = s;

@@ -7,10 +7,10 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public sealed class XtPlatform : IDisposable
     {
-        [DllImport("xt-core")] static extern void XtPlatformDestroy(IntPtr p);
-        [DllImport("xt-core")] static extern IntPtr XtPlatformGetService(IntPtr p, XtSystem system);
-        [DllImport("xt-core")] static extern XtSystem XtPlatformSetupToSystem(IntPtr p, XtSetup setup);
-        [DllImport("xt-core")] static extern void XtPlatformGetSystems(IntPtr p, [Out] XtSystem[] buffer, ref int size);
+        [DllImport("xt-audio")] static extern void XtPlatformDestroy(IntPtr p);
+        [DllImport("xt-audio")] static extern IntPtr XtPlatformGetService(IntPtr p, XtSystem system);
+        [DllImport("xt-audio")] static extern XtSystem XtPlatformSetupToSystem(IntPtr p, XtSetup setup);
+        [DllImport("xt-audio")] static extern void XtPlatformGetSystems(IntPtr p, [Out] XtSystem[] buffer, ref int size);
 
         IntPtr _p;
         readonly XtOnError _onError;

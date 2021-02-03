@@ -17,9 +17,9 @@ for /L %%A in (0, 1, 1) do (
   msbuild xt-audio.sln /p:Configuration=Release /verbosity:quiet
   if !errorlevel! neq 0 exit /b !errorlevel!
   cd ..\..\..
-  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-core.dll ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-core.dll
-  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-core.pdb ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-core.pdb
-  copy ..\dist\core\xt\!archs[%%A]!\Release\xt-core.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-core.dll
+  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-audio.dll ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-audio.dll
+  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-audio.pdb ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-audio.pdb
+  copy ..\dist\core\xt\!archs[%%A]!\Release\xt-audio.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-audio.dll
 )
 
 REM include files

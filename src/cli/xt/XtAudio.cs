@@ -13,10 +13,10 @@ namespace Xt
         [DllImport("kernel32.dll")] static extern IntPtr LoadLibrary(string file);
         [DllImport("libdl.so")] static extern IntPtr dlopen(string filename, int flags);
 
-        [DllImport("xt-core")] static extern XtVersion XtAudioGetVersion();
-        [DllImport("xt-core")] static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
-        [DllImport("xt-core")] static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
-        [DllImport("xt-core")] static extern IntPtr XtAudioInit(byte[] id, IntPtr window, XtOnError onError);
+        [DllImport("xt-audio")] static extern XtVersion XtAudioGetVersion();
+        [DllImport("xt-audio")] static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
+        [DllImport("xt-audio")] static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
+        [DllImport("xt-audio")] static extern IntPtr XtAudioInit(byte[] id, IntPtr window, XtOnError onError);
 
         static XtAudio()
         {
@@ -24,10 +24,10 @@ namespace Xt
             string location = Path.GetDirectoryName(typeof(XtAudio).Assembly.Location);
             string path = Path.Combine(location, prefix);
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                if (LoadLibrary(Path.Combine(path, "xt-core.dll")) == IntPtr.Zero)
+                if (LoadLibrary(Path.Combine(path, "xt-audio.dll")) == IntPtr.Zero)
                     throw new DllNotFoundException();
             if (Environment.OSVersion.Platform == PlatformID.Unix)
-                if (dlopen(Path.Combine(path, "libxt-core.so"), RTLD_NOW) == IntPtr.Zero)
+                if (dlopen(Path.Combine(path, "libxt-audio.so"), RTLD_NOW) == IntPtr.Zero)
                     throw new DllNotFoundException();
         }
 

@@ -45,7 +45,7 @@ class Utility {
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
-        LIBRARY = NativeLibrary.getInstance("xt-core", options);
+        LIBRARY = NativeLibrary.getInstance("xt-audio", options);
         Native.register(LIBRARY);
     }
 

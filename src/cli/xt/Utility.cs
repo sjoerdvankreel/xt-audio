@@ -9,8 +9,8 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     static class Utility
     {
-        [DllImport("xt-core")] internal static extern IntPtr XtPrintErrorInfo(ref XtErrorInfo info);
-        [DllImport("xt-core")] internal static extern IntPtr XtPrintLocation(ref XtLocation location);
+        [DllImport("xt-audio")] internal static extern IntPtr XtPrintErrorInfo(ref XtErrorInfo info);
+        [DllImport("xt-audio")] internal static extern IntPtr XtPrintLocation(ref XtLocation location);
         internal static bool HandleError(ulong error) => error == 0 ? true : throw new XtException(error);
         internal static T HandleError<T>(ulong error, T result) => error == 0 ? result : throw new XtException(error);
 

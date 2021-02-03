@@ -20,9 +20,9 @@
     <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\cli\xt\Xt.Audio.dll.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-core.dll" Link="x86/xt-core.dll" Pack="true" />
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-core.dll" Link="x64/xt-core.dll" Pack="true" />
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/libxt-core.so" Link="x86/libxt-core.so" Pack="true" />
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/libxt-core.so" Link="x64/libxt-core.so" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-audio.dll" Link="x86/xt-audio.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-audio.dll" Link="x64/xt-audio.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/libxt-audio.so" Link="x86/libxt-audio.so" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/libxt-audio.so" Link="x64/libxt-audio.so" Pack="true" />
   </ItemGroup>
 </Project>
