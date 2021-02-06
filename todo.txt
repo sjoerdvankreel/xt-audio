@@ -1,1 +1,3 @@
-default loopback id -> getcorrespondingdevice
+* device correlation
+* improve error handling
+* check wrong device id handling
