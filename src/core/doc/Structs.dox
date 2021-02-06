@@ -175,28 +175,6 @@
  */
  
 /**
- * @struct XtLocation
- * @brief Location in the source code where an error occurred.
- * @see XtOnError
- * @see XtPrintLocation
- */
-
-/**
- * @var XtLocation::file
- * @brief Source code file.
- */
-
-/**
- * @var XtLocation::line
- * @brief Source code line number.
- */
-
-/**
- * @var XtLocation::func
- * @brief Function where the error occurred.
- */
- 
-/**
  * @struct XtErrorInfo
  * @brief Useful error details derived from XtError opaque error code.
  * 

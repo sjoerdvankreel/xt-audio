@@ -4,10 +4,9 @@
  */
 
 /**
- * @typedef void (*XtOnError)(XtLocation const* location, char const* message)
+ * @typedef void (*XtOnError)(char const* message)
  * @brief Error logging callback.
  *
- * @param location Location in the source code where the error occurred.
  * @param message The log message.
  *
  * XT-Audio will call the application-defined logging callback (if one was supplied to XtAudioInit)
