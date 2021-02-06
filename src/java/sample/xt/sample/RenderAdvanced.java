@@ -99,7 +99,7 @@ public class RenderAdvanced {
         XtStreamParams streamParams;
         XtDeviceStreamParams deviceParams;
 
-        try(XtPlatform platform = XtAudio.init(null, null, null)) {
+        try(XtPlatform platform = XtAudio.init(null, null)) {
             XtSystem system = platform.setupToSystem(XtSetup.CONSUMER_AUDIO);
             XtService service = platform.getService(system);
             if(service == null) return;

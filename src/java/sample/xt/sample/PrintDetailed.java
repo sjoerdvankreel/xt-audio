@@ -41,7 +41,8 @@ public class PrintDetailed {
     }
 
     public static void main() throws Exception {
-        try(XtPlatform platform = XtAudio.init("Sample", null, PrintDetailed::onError)) {
+        XtAudio.setOnError(PrintDetailed::onError);
+        try(XtPlatform platform = XtAudio.init("Sample", null)) {
             XtVersion version = XtAudio.getVersion();
             System.out.println("Version: " + version.major + "." + version.minor);
             XtSystem pro = platform.setupToSystem(XtSetup.PRO_AUDIO);

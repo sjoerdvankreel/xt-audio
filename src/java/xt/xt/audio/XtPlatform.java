@@ -4,7 +4,6 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-import xt.audio.Callbacks.XtOnError;
 import xt.audio.Enums.XtSetup;
 import xt.audio.Enums.XtSystem;
 import java.util.Arrays;
@@ -18,8 +17,7 @@ public final class XtPlatform implements AutoCloseable {
     private static native void XtPlatformGetSystems(Pointer p, int[] buffer, IntByReference size);
 
     Pointer _p;
-    final XtOnError _onError;
-    XtPlatform(Pointer p, XtOnError onError) { _p = p; _onError = onError; }
+    XtPlatform(Pointer p) { _p = p; }
 
     @Override public void close() { XtPlatformDestroy(_p); _p = Pointer.NULL; }
     public XtSystem setupToSystem(XtSetup setup) { return XtPlatformSetupToSystem(_p, setup); }
