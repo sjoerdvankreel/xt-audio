@@ -19,32 +19,38 @@ typedef uint32_t XtFault;
 #define XT_TRACE_IF(c) (!(c) || (XtiTrace(XT_LOCATION, #c), 0))
 #define XT_VERIFY(e, f) do { auto e_ = (e); if(!(e)) { XT_TRACE(#e); return f; } } while(0)
 
-bool
-XtiCalledOnMainThread();
-int32_t
-XtiGetPopCount64(uint64_t x);
 uint32_t
 XtiGetErrorFault(XtError error);
-int32_t
-XtiGetSampleSize(XtSample sample);
 XtError
 XtiCreateError(XtSystem system, XtFault fault);
 XtServiceError
 XtiGetServiceError(XtSystem system, XtFault fault);
+
 void
 XtiTrace(XtLocation const& location, char const* msg);
 void
 XtiAssert(XtLocation const& location, char const* msg);
+
+bool
+XtiCalledOnMainThread();
 void
 XtiCopyString(char const* source, char* buffer, int32_t* size);
+
+int32_t
+XtiGetPopCount64(uint64_t x);
+int32_t
+XtiGetSampleSize(XtSample sample);
 XtFault
 XtiSupportsFormat(XtDevice const* device, XtFormat const* format);
+
 inline bool
 XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired);
+
 void 
 XtiInitIOBuffers(XtIOBuffers& buffers, XtFormat const* format, size_t frames);
 void
 XtiInitBuffers(XtBuffers& buffers, XtSample sample, size_t channels, size_t frames);
+
 void
 XtiDeinterleave(void** dst, void const* src, int32_t frames, int32_t channels, int32_t size);
 void
