@@ -11,6 +11,16 @@
 #include <sstream>
 #include <algorithm>
 
+static XtOnError
+_onError;
+
+void XtiSetOnError(XtOnError onError)
+{ _onError = onError; }
+void XtiOnError(char const* msg) 
+{ if(_onError != nullptr) _onError(msg); }
+void XtiTrace(XtLocation const& location, char const* msg)
+{ XtiOnError(XtiPrintErrorDetails(location, msg)); }
+
 int32_t
 XtiGetPopCount64(uint64_t x) 
 {
@@ -76,14 +86,6 @@ XtiCreateError(XtSystem system, XtFault fault)
   auto info = XtAudioGetErrorInfo(result);
   XT_TRACE(XtPrintErrorInfo(&info));
   return result;
-}
-
-void
-XtiTrace(XtLocation const& location, char const* msg)
-{
-  auto platform = XtPlatform::instance;
-  if(platform == nullptr || platform->_onError == nullptr) return;
-  platform->_onError(XtiPrintErrorDetails(location, msg));
 }
 
 void

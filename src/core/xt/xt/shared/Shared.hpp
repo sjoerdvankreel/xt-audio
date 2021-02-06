@@ -19,6 +19,11 @@ typedef uint32_t XtFault;
 #define XT_TRACE_IF(c) (!(c) || (XtiTrace(XT_LOCATION, #c), 0))
 #define XT_VERIFY(e, f) do { auto e_ = (e); if(!(e)) { XT_TRACE(#e); return f; } } while(0)
 
+void
+XtiOnError(char const* msg);
+void
+XtiSetOnError(XtOnError onError);
+
 uint32_t
 XtiGetErrorFault(XtError error);
 XtError

@@ -23,7 +23,6 @@ struct XtPlatform
   void* _window;
   bool _ownWindow;
   std::string _id;
-  XtOnError _onError;
   std::thread::id _threadId;
   std::vector<std::unique_ptr<XtService>> _services;
 

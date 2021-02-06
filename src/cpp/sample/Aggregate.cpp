@@ -36,7 +36,7 @@ AggregateMain()
   Xt::Format inputFormat(mix, Xt::Channels(2, 0, 0, 0));
   Xt::Format outputFormat(mix, Xt::Channels(0, 0, 2, 0));
   
-  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr);
   Xt::System system = platform->SetupToSystem(Xt::Setup::SystemAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if(!service || (service->GetCapabilities() & Xt::ServiceCapsAggregation) == 0) return 0;

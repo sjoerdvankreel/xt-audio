@@ -35,7 +35,8 @@ PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)
 int 
 PrintDetailedMain()
 {
-  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, OnError);
+  Xt::Audio::SetOnError(OnError);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr);
   try 
   {
     Xt::Version version = Xt::Audio::GetVersion();

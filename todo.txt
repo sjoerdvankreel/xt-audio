@@ -1,3 +1,4 @@
 * device correlation
 * improve error handling
 * check wrong device id handling
+* update docs

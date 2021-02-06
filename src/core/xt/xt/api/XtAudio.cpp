@@ -10,6 +10,10 @@ XtVersion XT_CALL
 XtAudioGetVersion(void) 
 { return { 1, 9 }; }
 
+void XT_CALL
+XtAudioSetOnError(XtOnError onError)
+{ XtiSetOnError(onError); }
+
 XtErrorInfo XT_CALL
 XtAudioGetErrorInfo(XtError error) 
 {
@@ -45,11 +49,10 @@ XtAudioGetSampleAttributes(XtSample sample)
 }
 
 XtPlatform* XT_CALL
-XtAudioInit(char const* id, void* window, XtOnError onError)
+XtAudioInit(char const* id, void* window)
 {
   XT_ASSERT(XtPlatform::instance == nullptr);
   auto result = std::make_unique<XtPlatform>(window);
-  result->_onError = onError;
   result->_threadId = std::this_thread::get_id();
   result->_id = id == nullptr || strlen(id) == 0? "XT-Audio": id;
   auto alsa = XtiCreateAlsaService();

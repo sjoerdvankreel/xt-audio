@@ -22,9 +22,10 @@ class Audio final
   Audio() = default;
 public:
   static Version GetVersion();
+  static void SetOnError(OnError onError);
   static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
-  static std::unique_ptr<Platform> Init(std::string const& id, void* window, OnError onError);
+  static std::unique_ptr<Platform> Init(std::string const& id, void* window);
 };
 
 inline Version
@@ -47,6 +48,13 @@ Audio::GetSampleAttributes(Sample sample)
   return result;
 }
 
+inline std::unique_ptr<Platform>
+Audio::Init(std::string const& id, void* window) 
+{
+  XtPlatform* result = XtAudioInit(id.c_str(), window);
+  return std::unique_ptr<Platform>(new Platform(result));
+}
+
 inline ErrorInfo
 Audio::GetErrorInfo(uint64_t error) 
 { 
@@ -59,13 +67,12 @@ Audio::GetErrorInfo(uint64_t error)
   return result;
 }
 
-inline std::unique_ptr<Platform>
-Audio::Init(std::string const& id, void* window, OnError onError) 
-{
+inline void
+Audio::SetOnError(OnError onError)
+{ 
   Detail::_onError = onError;
   XtOnError coreOnError = onError == nullptr? nullptr: &Detail::ForwardOnError;
-  XtPlatform* result = XtAudioInit(id.c_str(), window, coreOnError);
-  return std::unique_ptr<Platform>(new Platform(result));
+  XtAudioSetOnError(coreOnError);
 }
 
 } // namespace Xt
