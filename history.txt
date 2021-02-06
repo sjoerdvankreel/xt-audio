@@ -1,6 +1,7 @@
 ?, ? - V1.9
 * Static link against msvcrt.
 * Breaking change (all languages): changed XtOnError signature.
+* Breaking change (all languages): removed XtLocation and XtPrintLocation.
 * Breaking change (native): renamed (lib)xt-core.(dll/so) to (lib)xt-audio.(dll/so).
 
 January 27, 2021 - V1.8

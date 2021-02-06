@@ -6,8 +6,8 @@
 #include <iostream>
 
 static void 
-OnError(Xt::Location const& location, std::string const& message)
-{ std::cout << location << ": " << message << std::endl; }
+OnError(std::string const& message)
+{ std::cout << message << std::endl; }
 
 void
 PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)

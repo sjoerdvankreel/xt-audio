@@ -10,9 +10,9 @@
 namespace Xt {
 
 typedef void (*
-OnXRun)(class Stream const& stream, int32_t index, void* user);
+OnError)(std::string const& message);
 typedef void (*
-OnError)(struct Location const& location, std::string const& message);
+OnXRun)(class Stream const& stream, int32_t index, void* user);
 typedef uint32_t (*
 OnBuffer)(class Stream const& stream, struct Buffer const& buffer, void* user);
 typedef void (*

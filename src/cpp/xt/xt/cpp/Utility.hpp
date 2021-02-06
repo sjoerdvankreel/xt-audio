@@ -15,15 +15,8 @@ HandleError(XtError error)
 { if(error != 0) throw Exception(error); }
 
 inline void XT_CALLBACK 
-ForwardOnError(XtLocation const* location, char const* message) 
-{ 
-  Location loc;
-  if(!_onError) return;
-  loc.line = location->line;
-  loc.file = location->file;
-  loc.func = location->func;
-  _onError(loc, message); 
-}
+ForwardOnError(char const* message) 
+{ _onError(message); }
 
 inline void XT_CALLBACK 
 ForwardOnXRun(XtStream const* coreStream, int32_t index, void* user) 
