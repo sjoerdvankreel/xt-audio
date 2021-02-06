@@ -7,7 +7,7 @@ namespace Xt
         [STAThread]
         public static void Main()
         {
-            using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero, null);
+            using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero);
             foreach (XtSystem system in platform.GetSystems())
             {
                 XtService service = platform.GetService(system);

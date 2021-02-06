@@ -29,7 +29,7 @@ namespace Xt
             XtStreamParams streamParams;
             XtDeviceStreamParams deviceParams;
 
-            using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero, null);
+            using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero);
             XtSystem system = platform.SetupToSystem(XtSetup.ConsumerAudio);
             XtService service = platform.GetService(system);
             if (service == null) return;

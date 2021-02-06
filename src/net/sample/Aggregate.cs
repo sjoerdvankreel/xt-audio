@@ -36,7 +36,7 @@ namespace Xt
             XtFormat inputFormat = new XtFormat(mix, new XtChannels(2, 0, 0, 0));
             XtFormat outputFormat = new XtFormat(mix, new XtChannels(0, 0, 2, 0));
 
-            using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero, null);
+            using XtPlatform platform = XtAudio.Init(null, IntPtr.Zero);
             XtSystem system = platform.SetupToSystem(XtSetup.SystemAudio);
             XtService service = platform.GetService(system);
             if (service == null || (service.GetCapabilities() & XtServiceCaps.Aggregation) == 0) return;

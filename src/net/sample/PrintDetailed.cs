@@ -32,7 +32,8 @@ namespace Xt
         [STAThread]
         public static void Main()
         {
-            using XtPlatform platform = XtAudio.Init("Sample", IntPtr.Zero, OnError);
+            XtAudio.SetOnError(OnError);
+            using XtPlatform platform = XtAudio.Init("Sample", IntPtr.Zero);
             try
             {
                 XtVersion version = XtAudio.GetVersion();

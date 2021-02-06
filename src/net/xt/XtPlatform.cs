@@ -13,8 +13,7 @@ namespace Xt
         [DllImport("xt-audio")] static extern void XtPlatformGetSystems(IntPtr p, [Out] XtSystem[] buffer, ref int size);
 
         IntPtr _p;
-        readonly XtOnError _onError;
-        internal XtPlatform(IntPtr p, XtOnError onError) => (_p, _onError) = (p, onError);
+        internal XtPlatform(IntPtr p) => _p = p;
 
         public void Dispose() { XtPlatformDestroy(_p); _p = IntPtr.Zero; }
         public XtSystem SetupToSystem(XtSetup setup) => XtPlatformSetupToSystem(_p, setup);

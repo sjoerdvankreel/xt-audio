@@ -14,9 +14,12 @@ namespace Xt
         [DllImport("libdl.so")] static extern IntPtr dlopen(string filename, int flags);
 
         [DllImport("xt-audio")] static extern XtVersion XtAudioGetVersion();
+        [DllImport("xt-audio")] static extern void XtAudioSetOnError(XtOnError onError);
         [DllImport("xt-audio")] static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
+        [DllImport("xt-audio")] static extern IntPtr XtAudioInit(byte[] id, IntPtr window);
         [DllImport("xt-audio")] static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
-        [DllImport("xt-audio")] static extern IntPtr XtAudioInit(byte[] id, IntPtr window, XtOnError onError);
+
+        static XtOnError _onError;
 
         static XtAudio()
         {
@@ -35,10 +38,16 @@ namespace Xt
         public static XtErrorInfo GetErrorInfo(ulong error) => XtAudioGetErrorInfo(error);
         public static XtAttributes GetSampleAttributes(XtSample sample) => XtAudioGetSampleAttributes(sample);
 
-        public static XtPlatform Init(string id, IntPtr window, XtOnError onError)
+        public static void SetOnError(XtOnError onError)
+        {
+            _onError = onError;
+            XtAudioSetOnError(onError);
+        }
+
+        public static XtPlatform Init(string id, IntPtr window)
         {
             byte[] idBytes = Encoding.UTF8.GetBytes(id + char.MinValue);
-            return new XtPlatform(XtAudioInit(idBytes, window, onError), onError);
+            return new XtPlatform(XtAudioInit(idBytes, window));
         }
     }
 }
