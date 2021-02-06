@@ -24,6 +24,7 @@ XtDeviceGetMix(XtDevice const* d, XtBool* valid, XtMix* mix)
 {
   XT_ASSERT(d != nullptr);
   XT_ASSERT(mix != nullptr);
+  XT_ASSERT(valid != nullptr);
   XT_ASSERT(XtiCalledOnMainThread());
   *valid = XtFalse;
   std::memset(mix, 0, sizeof(XtMix));
