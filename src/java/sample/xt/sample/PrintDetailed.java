@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import xt.audio.Enums.XtEnumFlags;
 import xt.audio.Enums.XtSetup;
 import xt.audio.Enums.XtSystem;
-import xt.audio.Structs.XtLocation;
 import xt.audio.Structs.XtMix;
 import xt.audio.Structs.XtVersion;
 import xt.audio.XtAudio;
@@ -17,8 +16,8 @@ import java.util.Optional;
 
 public class PrintDetailed {
 
-    static void onError(XtLocation location, String message) {
-        System.out.println(location + ": " + message);
+    static void onError(String message) {
+        System.out.println(message);
     }
 
     static void printDevices(XtService service, XtDeviceList list) {

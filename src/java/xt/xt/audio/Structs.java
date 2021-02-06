@@ -12,7 +12,6 @@ import xt.audio.Enums.XtSystem;
 import static xt.audio.Utility.XtPrintErrorInfo;
 import java.util.Arrays;
 import java.util.List;
-import static xt.audio.Utility.XtPrintLocation;
 
 public interface Structs {
 
@@ -47,15 +46,6 @@ public interface Structs {
         public double input;
         public double output;
         @Override protected List getFieldOrder() { return Arrays.asList("input", "output"); }
-    }
-
-    public static class XtLocation extends Structure {
-        public String file;
-        public String func;
-        public int line;
-        public static final TypeMapper TYPE_MAPPER = new XtTypeMapper();
-        @Override public String toString() { return XtPrintLocation(this); }
-        @Override protected List getFieldOrder() { return Arrays.asList("file", "func", "line"); }
     }
 
     public static class XtDeviceStreamParams {
