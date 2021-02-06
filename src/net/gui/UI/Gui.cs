@@ -60,16 +60,16 @@ namespace Xt
         IList<string> _messages = new List<string>();
         IList<DeviceInfo> _allDevices = new List<DeviceInfo>();
 
+        void OnError(string message)
+        => AddError(message);
+        void AddError(string message)
+        => AddMessage(() => message);
+        void OnBufferSizeScroll(object sender, EventArgs e)
+        => _bufferTip.SetToolTip(_bufferSize, _bufferSize.Value.ToString());
+
         void OnStop(object sender, EventArgs e) => Stop();
         void OnDeviceChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
         void OnFormatChanged(object sender, EventArgs e) => FormatOrDeviceChanged();
-
-        void OnError(in XtLocation location, string message)
-        => AddError(location, message);
-        void AddError(XtLocation location, string message)
-        => AddMessage(() => string.Format("{0}: {1}", location, message));
-        void OnBufferSizeScroll(object sender, EventArgs e)
-        => _bufferTip.SetToolTip(_bufferSize, _bufferSize.Value.ToString());
 
         public XtGui()
         {

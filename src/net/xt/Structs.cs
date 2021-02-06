@@ -111,17 +111,6 @@ namespace Xt
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct XtLocation
-    {
-        IntPtr _file;
-        public string file => PtrToStringUTF8(_file);
-        IntPtr _func;
-        public string func => PtrToStringUTF8(_func);
-        public int line;
-        public override string ToString() => PtrToStringUTF8(XtPrintLocation(ref this));
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct XtErrorInfo
     {
         public int fault;

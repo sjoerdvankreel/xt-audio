@@ -4,8 +4,8 @@ namespace Xt
 {
     public static class PrintDetailed
     {
-        static void OnError(in XtLocation location, string message)
-        => Console.WriteLine($"{location}: {message}");
+        static void OnError(string message)
+        => Console.WriteLine(message);
 
         static void PrintDevices(XtService service, XtDeviceList list)
         {

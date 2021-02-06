@@ -4,11 +4,11 @@ using System.Security;
 namespace Xt
 {
     [SuppressUnmanagedCodeSecurity]
+    public delegate void XtOnError(string message);
+    [SuppressUnmanagedCodeSecurity]
     delegate void OnXRun(IntPtr stream, int index, IntPtr user);
     [SuppressUnmanagedCodeSecurity]
     delegate int OnBuffer(IntPtr stream, in XtBuffer buffer, IntPtr user);
-    [SuppressUnmanagedCodeSecurity]
-    public delegate void XtOnError(in XtLocation location, string message);
     [SuppressUnmanagedCodeSecurity]
     delegate void OnRunning(IntPtr stream, int running, ulong error, IntPtr user);
 
