@@ -26,15 +26,17 @@ XtiCreateError(XtSystem system, XtFault fault);
 XtServiceError
 XtiGetServiceError(XtSystem system, XtFault fault);
 
-void
-XtiTrace(XtLocation const& location, char const* msg);
-void
-XtiAssert(XtLocation const& location, char const* msg);
-
 bool
 XtiCalledOnMainThread();
 void
 XtiCopyString(char const* source, char* buffer, int32_t* size);
+
+void
+XtiTrace(XtLocation const& location, char const* msg);
+void
+XtiAssert(XtLocation const& location, char const* msg);
+char const*
+XtiPrintErrorDetails(XtLocation const& location, char const* msg);
 
 int32_t
 XtiGetPopCount64(uint64_t x);

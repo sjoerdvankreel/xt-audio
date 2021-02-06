@@ -8,6 +8,8 @@
 #include <thread>
 #include <cassert>
 #include <cstring>
+#include <sstream>
+#include <algorithm>
 
 int32_t
 XtiGetPopCount64(uint64_t x) 
@@ -81,7 +83,7 @@ XtiTrace(XtLocation const& location, char const* msg)
 {
   auto platform = XtPlatform::instance;
   if(platform == nullptr || platform->_onError == nullptr) return;
-  platform->_onError(&location, msg);
+  platform->_onError(XtiPrintErrorDetails(location, msg));
 }
 
 void
@@ -129,6 +131,18 @@ XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channel
   for(int32_t f = 0; f < frames; f++)
     for(int32_t c = 0; c < channels; c++)
       memcpy(&d[(f * channels + c) * size], &s[c][f * size], size);
+}
+
+char const*
+XtiPrintErrorDetails(XtLocation const& location, char const* msg)
+{
+  std::ostringstream stream;
+  static thread_local char buffer[4096];
+  std::memset(buffer, 0, sizeof(buffer));
+  stream << location.file << ":" << location.line << ": in function " << location.func << ": " << msg;
+  auto result = stream.str();
+  std::memcpy(buffer, result.c_str(), std::min(static_cast<size_t>(4095), result.size()));
+  return buffer;
 }
 
 XtFault

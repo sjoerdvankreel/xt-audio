@@ -106,18 +106,6 @@ XtPrintServiceCaps(XtServiceCaps capabilities)
 }
 
 char const* XT_CALL
-XtPrintLocation(XtLocation const* location) 
-{
-  std::ostringstream stream;
-  static thread_local char buffer[1024];
-  std::memset(buffer, 0, sizeof(buffer));
-  stream << location->file << ":" << location->line << ": in function " << location->func;
-  auto result = stream.str();
-  std::memcpy(buffer, result.c_str(), std::min(static_cast<size_t>(1023), result.size()));
-  return buffer;
-}
-
-char const* XT_CALL
 XtPrintErrorInfo(XtErrorInfo const* info) 
 {
   std::ostringstream stream;

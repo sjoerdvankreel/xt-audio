@@ -23,8 +23,6 @@ XT_API char const* XT_CALL
 XtPrintEnumFlags(XtEnumFlags flags);
 XT_API char const* XT_CALL 
 XtPrintErrorInfo(XtErrorInfo const* info);
-XT_API char const* XT_CALL
-XtPrintLocation(XtLocation const* location);
 XT_API char const* XT_CALL 
 XtPrintDeviceCaps(XtDeviceCaps capabilities);
 XT_API char const* XT_CALL 

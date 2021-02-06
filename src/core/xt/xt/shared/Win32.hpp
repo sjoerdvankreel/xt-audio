@@ -4,6 +4,7 @@
 #define NOMINMAX 1
 #include <xt/api/Shared.h>
 #include <xt/api/Structs.h>
+#include <xt/shared/Structs.hpp>
 
 #include <Windows.h>
 #include <atlbase.h>
