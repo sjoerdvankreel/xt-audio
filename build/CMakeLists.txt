@@ -9,8 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Static link runtime libs.
 if (WIN32)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-else (WIN32)
-  set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif (WIN32)
 
 # Core library (C API).
