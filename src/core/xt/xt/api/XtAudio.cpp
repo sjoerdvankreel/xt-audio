@@ -9,10 +9,15 @@
 XtVersion XT_CALL
 XtAudioGetVersion(void) 
 { return { 1, 9 }; }
-
+char const* XT_CALL
+XtAudioGetLastAssert(void)
+{ return XtiGetLastAssert(); }
 void XT_CALL
 XtAudioSetOnError(XtOnError onError)
 { XtiSetOnError(onError); }
+void XT_CALL
+XtAudioSetAssertTerminates(XtBool terminates)
+{ XtiSetAssertTerminates(terminates); }
 
 XtErrorInfo XT_CALL
 XtAudioGetErrorInfo(XtError error) 

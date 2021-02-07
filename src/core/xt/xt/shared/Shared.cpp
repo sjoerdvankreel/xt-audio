@@ -11,14 +11,27 @@
 #include <sstream>
 #include <algorithm>
 
-static XtOnError
-_onError;
+static XtOnError 
+_onError = nullptr;
+static XtBool 
+_assertTerminates = XtTrue;
+static thread_local char const* 
+_lastAssert = nullptr;
 
-void XtiSetOnError(XtOnError onError)
+char const*
+XtiGetLastAssert()
+{ return _lastAssert; }
+void 
+XtiSetOnError(XtOnError onError)
 { _onError = onError; }
-void XtiOnError(char const* msg) 
+void
+XtiSetAssertTerminates(XtBool terminates)
+{ _assertTerminates = terminates; }
+void 
+XtiOnError(char const* msg) 
 { if(_onError != nullptr) _onError(msg); }
-void XtiTrace(XtLocation const& location, char const* msg)
+void 
+XtiTrace(XtLocation const& location, char const* msg)
 { XtiOnError(XtiPrintErrorDetails(location, msg)); }
 
 int32_t
@@ -53,6 +66,14 @@ XtiAssert(XtLocation const& location, char const* msg)
 {
   XtiTrace(location, msg);
   std::terminate();
+}
+
+void
+XtiAssertApi(XtLocation const& location, char const* msg)
+{
+  _lastAssert = XtiPrintErrorDetails(location, msg);
+  XtiOnError(_lastAssert);
+  if(_assertTerminates) std::terminate();
 }
 
 XtServiceError
