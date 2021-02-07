@@ -2,3 +2,4 @@
 * improve error handling
 * check wrong device id handling
 * improve CoInit error handling
+* bugfix: wait for callback to return before stop blocking stream
