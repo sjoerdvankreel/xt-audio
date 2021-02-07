@@ -4,8 +4,9 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
+#include <xt/cpp/Error.hpp>
 #include <xt/cpp/Forward.hpp>
-#include <xt/cpp/Utility.hpp>
+
 #include <xt/api/Enums.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/XtDevice.hpp>

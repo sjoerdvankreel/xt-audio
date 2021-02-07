@@ -4,9 +4,10 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
-#include <xt/cpp/Forward.hpp>
+#include <xt/cpp/Error.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/Callbacks.hpp>
+
 #include <cstdint>
 /** @endcond */
 

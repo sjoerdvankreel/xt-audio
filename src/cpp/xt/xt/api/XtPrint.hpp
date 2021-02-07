@@ -4,7 +4,7 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
-#include <xt/cpp/Utility.hpp>
+#include <xt/cpp/Error.hpp>
 
 #include <ostream>
 /** @endcond */
