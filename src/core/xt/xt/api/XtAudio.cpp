@@ -23,7 +23,7 @@ XtErrorInfo XT_CALL
 XtAudioGetErrorInfo(XtError error) 
 {
   XtErrorInfo result;
-  XT_ASSERT(error != 0);
+  XT_ASSERT_API(error != 0);
   auto fault = XtiGetErrorFault(error);
   auto sysid = (error & 0xFFFFFFFF00000000) >> 32ULL;
   auto system = static_cast<XtSystem>(sysid);
@@ -37,7 +37,7 @@ XtAttributes XT_CALL
 XtAudioGetSampleAttributes(XtSample sample) 
 {
   XtAttributes result;
-  XT_ASSERT(XtSampleUInt8 <= sample && sample <= XtSampleFloat32);
+  XT_ASSERT_API(XtSampleUInt8 <= sample && sample <= XtSampleFloat32);
   result.isSigned = sample != XtSampleUInt8;
   result.isFloat = sample == XtSampleFloat32;
   result.count = sample == XtSampleInt24? 3: 1;
@@ -56,7 +56,7 @@ XtAudioGetSampleAttributes(XtSample sample)
 XtPlatform* XT_CALL
 XtAudioInit(char const* id, void* window)
 {
-  XT_ASSERT(XtPlatform::instance == nullptr);
+  XT_ASSERT_API(XtPlatform::instance == nullptr);
   auto result = std::make_unique<XtPlatform>(window);
   result->_threadId = std::this_thread::get_id();
   result->_id = id == nullptr || strlen(id) == 0? "XT-Audio": id;
