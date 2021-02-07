@@ -47,20 +47,20 @@ public:
 };
 
 inline void
-Stream::Stop() 
-{ XtStreamStop(_s); }
-inline
-Stream::~Stream() 
-{ XtStreamDestroy(_s); }
-inline void*
-Stream::GetHandle() const
-{ return XtStreamGetHandle(_s); }
-inline bool
-Stream::IsRunning() const
-{ return XtStreamIsRunning(_s); }
-inline void
 Stream::Start() 
 { Detail::HandleError(XtStreamStart(_s)); }
+inline void
+Stream::Stop() 
+{ Detail::HandleVoidError(XtStreamStop, _s); }
+inline
+Stream::~Stream() 
+{ Detail::HandleDestroyError(XtStreamDestroy, _s); }
+inline void*
+Stream::GetHandle() const
+{ return Detail::HandleError(XtStreamGetHandle, _s); }
+inline bool
+Stream::IsRunning() const
+{ return Detail::HandleError(XtStreamIsRunning, _s); }
 
 inline int32_t
 Stream::GetFrames() const 
@@ -70,13 +70,6 @@ Stream::GetFrames() const
   return frames;
 }
 
-inline Format const& 
-Stream::GetFormat() const
-{
-  auto coreFormat = XtStreamGetFormat(_s);
-  return *reinterpret_cast<Format const*>(coreFormat);
-}
-
 inline Latency
 Stream::GetLatency() const
 {
@@ -84,6 +77,13 @@ Stream::GetLatency() const
   auto coreLatency = reinterpret_cast<XtLatency*>(&latency);
   Detail::HandleError(XtStreamGetLatency(_s, coreLatency));
   return latency;
+}
+
+inline Format const& 
+Stream::GetFormat() const
+{
+  auto coreFormat = Detail::HandleError(XtStreamGetFormat, _s);
+  return *reinterpret_cast<Format const*>(coreFormat);
 }
 
 } // namespace Xt
