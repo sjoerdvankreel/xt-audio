@@ -31,7 +31,7 @@ public:
 
 inline
 DeviceList::~DeviceList()
-{ XtDeviceListDestroy(_l); }
+{ Detail::HandleDestroyError(XtDeviceListDestroy, _l); }
 
 inline int32_t
 DeviceList::GetCount() const

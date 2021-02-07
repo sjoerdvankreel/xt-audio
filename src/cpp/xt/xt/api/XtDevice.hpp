@@ -39,10 +39,10 @@ public:
 
 inline
 Device::~Device()
-{ XtDeviceDestroy(_d); }
+{ Detail::HandleDestroyError(XtDeviceDestroy, _d); }
 inline void*
 Device::GetHandle() const
-{ return XtDeviceGetHandle(_d); }
+{ return Detail::HandleError(XtDeviceGetHandle, _d); }
 inline void 
 Device::ShowControlPanel() 
 { Detail::HandleError(XtDeviceShowControlPanel(_d)); }

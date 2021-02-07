@@ -4,6 +4,7 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
+#include <xt/cpp/Utility.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/XtService.hpp>
 #include <xt/api/XtPlatform.hpp>

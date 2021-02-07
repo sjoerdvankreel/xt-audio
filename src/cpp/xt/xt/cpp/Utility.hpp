@@ -7,7 +7,9 @@
 #include <xt/api/XtException.hpp>
 
 #include <utility>
+#include <iostream>
 #include <stdexcept>
+#include <exception>
 #include <type_traits>
 
 namespace Xt::Detail {
@@ -25,8 +27,12 @@ ForwardOnError(char const* message)
 { _onError(message); }
 inline Initializer::
 Initializer() { XtAudioSetAssertTerminates(XtFalse); }
+
 inline void HandleAssert()
-{ if(XtAudioGetLastAssert() != nullptr) throw std::logic_error(XtAudioGetLastAssert()); }
+{ 
+  char const* error = XtAudioGetLastAssert();
+  if(error != nullptr) throw std::logic_error(error); 
+}
 
 inline void 
 HandleError(XtError error) 
@@ -40,6 +46,17 @@ HandleVoidError(F f, Args&&... args)
 {
   f(std::forward<Args>(args)...);
   HandleAssert();
+}
+
+template <class F, class... Args> inline void
+HandleDestroyError(F f, Args&&... args)
+{
+  f(std::forward<Args>(args)...);
+  if(XtAudioGetLastAssert() != nullptr)
+  {
+    std::cerr << XtAudioGetLastAssert() << std::endl;
+    std::terminate();
+  }
 }
 
 template <class F, class... Args> inline decltype(auto)
