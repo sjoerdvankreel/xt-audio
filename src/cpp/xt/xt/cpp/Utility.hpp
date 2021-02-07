@@ -6,17 +6,49 @@
 #include <xt/api/XtStream.hpp>
 #include <xt/api/XtException.hpp>
 
+#include <utility>
+#include <stdexcept>
+#include <type_traits>
+
 namespace Xt::Detail {
 
-inline OnError _onError = nullptr;
+struct Initializer
+{ Initializer(); };
 
-inline void 
-HandleError(XtError error) 
-{ if(error != 0) throw Exception(error); }
+inline OnError
+_onError = nullptr;
+inline Initializer
+_initializer;
 
 inline void XT_CALLBACK 
 ForwardOnError(char const* message) 
 { _onError(message); }
+inline Initializer::
+Initializer() { XtAudioSetAssertTerminates(XtFalse); }
+inline void HandleAssert()
+{ if(XtAudioGetLastAssert() != nullptr) throw std::logic_error(XtAudioGetLastAssert()); }
+
+inline void 
+HandleError(XtError error) 
+{ 
+  HandleAssert();
+  if(error != 0) throw Exception(error); 
+}
+
+template <class F, class... Args> inline void
+HandleVoidError(F f, Args&&... args)
+{
+  f(std::forward<Args>(args)...);
+  HandleAssert();
+}
+
+template <class F, class... Args> inline decltype(auto)
+HandleError(F f, Args&&... args)
+{
+  auto result = f(std::forward<Args>(args)...);
+  HandleAssert();
+  return result;
+}
 
 inline void XT_CALLBACK 
 ForwardOnXRun(XtStream const* coreStream, int32_t index, void* user) 

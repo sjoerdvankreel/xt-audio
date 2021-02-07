@@ -31,8 +31,20 @@ public:
 inline Version
 Audio::GetVersion() 
 {
-  auto result = XtAudioGetVersion();
+  auto result = Detail::HandleError(XtAudioGetVersion);
   return *reinterpret_cast<Version*>(&result);
+}
+
+inline ErrorInfo
+Audio::GetErrorInfo(uint64_t error) 
+{ 
+  ErrorInfo result;
+  auto info = Detail::HandleError(XtAudioGetErrorInfo, error);
+  result.fault = info.fault;
+  result.system = static_cast<System>(info.system);
+  result.service.text = std::string(info.service.text);
+  result.service.cause = static_cast<Cause>(info.service.cause);
+  return result;
 }
 
 inline Attributes 
@@ -40,7 +52,7 @@ Audio::GetSampleAttributes(Sample sample)
 {
   Attributes result;
   auto coreSample = static_cast<XtSample>(sample);
-  auto attrs = XtAudioGetSampleAttributes(coreSample);
+  auto attrs = Detail::HandleError(XtAudioGetSampleAttributes, coreSample);
   result.size = attrs.size;
   result.count = attrs.count;
   result.isFloat = attrs.isFloat != XtFalse;
@@ -51,20 +63,8 @@ Audio::GetSampleAttributes(Sample sample)
 inline std::unique_ptr<Platform>
 Audio::Init(std::string const& id, void* window) 
 {
-  XtPlatform* result = XtAudioInit(id.c_str(), window);
+  XtPlatform* result = Detail::HandleError(XtAudioInit, id.c_str(), window);
   return std::unique_ptr<Platform>(new Platform(result));
-}
-
-inline ErrorInfo
-Audio::GetErrorInfo(uint64_t error) 
-{ 
-  ErrorInfo result;
-  auto info = XtAudioGetErrorInfo(error);
-  result.fault = info.fault;
-  result.system = static_cast<System>(info.system);
-  result.service.text = std::string(info.service.text);
-  result.service.cause = static_cast<Cause>(info.service.cause);
-  return result;
 }
 
 inline void
@@ -72,7 +72,7 @@ Audio::SetOnError(OnError onError)
 { 
   Detail::_onError = onError;
   XtOnError coreOnError = onError == nullptr? nullptr: &Detail::ForwardOnError;
-  XtAudioSetOnError(coreOnError);
+  Detail::HandleVoidError(XtAudioSetOnError, coreOnError);
 }
 
 } // namespace Xt
