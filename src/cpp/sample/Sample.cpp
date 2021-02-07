@@ -45,5 +45,9 @@ main(int argc, char** argv)
   { 
     std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; 
     return EXIT_FAILURE;
+  } catch(std::exception const& e)
+  {
+    std::cout << e.what() << "\n"; 
+    return EXIT_FAILURE;
   }
 }
