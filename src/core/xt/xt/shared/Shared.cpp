@@ -21,6 +21,9 @@ _lastAssert = nullptr;
 char const*
 XtiGetLastAssert()
 { return _lastAssert; }
+void
+XtiClearLastAssert()
+{ _lastAssert = nullptr; }
 void 
 XtiSetOnError(XtOnError onError)
 { _onError = onError; }
