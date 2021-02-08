@@ -38,14 +38,14 @@ namespace Xt
             XtAudioSetAssertTerminates(0);
         }
 
-        public static XtVersion GetVersion() => HandleError(XtAudioGetVersion());
-        public static XtErrorInfo GetErrorInfo(ulong error) => HandleError(XtAudioGetErrorInfo(error));
-        public static XtAttributes GetSampleAttributes(XtSample sample) => HandleError(XtAudioGetSampleAttributes(sample));
+        public static XtVersion GetVersion() => HandleAssert(XtAudioGetVersion());
+        public static XtErrorInfo GetErrorInfo(ulong error) => HandleAssert(XtAudioGetErrorInfo(error));
+        public static XtAttributes GetSampleAttributes(XtSample sample) => HandleAssert(XtAudioGetSampleAttributes(sample));
 
         public static void SetOnError(XtOnError onError)
         {
             _onError = onError;
-            Utility.HandleError(XtAudioSetOnError(onError));
+            HandleAssert(() => XtAudioSetOnError(onError));
         }
 
         internal static string GetLastAssert()
@@ -57,7 +57,7 @@ namespace Xt
         public static XtPlatform Init(string id, IntPtr window)
         {
             byte[] idBytes = Encoding.UTF8.GetBytes(id + char.MinValue);
-            return new XtPlatform(HandleError(XtAudioInit(idBytes, window)));
+            return new XtPlatform(HandleAssert(XtAudioInit(idBytes, window)));
         }
     }
 }

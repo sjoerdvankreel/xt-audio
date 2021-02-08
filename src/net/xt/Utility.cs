@@ -11,6 +11,12 @@ namespace Xt
     {
         [DllImport("xt-audio")] internal static extern IntPtr XtPrintErrorInfo(ref XtErrorInfo info);
 
+        internal static T HandleAssert<T>(T result)
+        {
+            HandleAssert();
+            return result;
+        }
+
         internal static bool HandleError(ulong error)
         {
             HandleAssert();
@@ -18,10 +24,10 @@ namespace Xt
             return true;
         }
 
-        internal static T HandleError<T>(T result)
+        internal static void HandleAssert(Action action)
         {
+            action();
             HandleAssert();
-            return result;
         }
 
         internal static T HandleError<T>(ulong error, T result)

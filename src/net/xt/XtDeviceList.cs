@@ -18,8 +18,8 @@ namespace Xt
         IntPtr _l;
         internal XtDeviceList(IntPtr l) => _l = l;
 
-        public void Dispose() { XtDeviceListDestroy(_l); _l = IntPtr.Zero; }
         public int GetCount() => HandleError(XtDeviceListGetCount(_l, out var r), r);
+        public void Dispose() { HandleAssert(() => XtDeviceListDestroy(_l)); _l = IntPtr.Zero; }
 
         public string GetId(int index)
         {

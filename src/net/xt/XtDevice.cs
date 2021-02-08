@@ -24,9 +24,9 @@ namespace Xt
         internal IntPtr Handle() => _d;
         internal XtDevice(IntPtr d) => _d = d;
 
-        public IntPtr GetHandle() => XtDeviceGetHandle(_d);
-        public void Dispose() { XtDeviceDestroy(_d); _d = IntPtr.Zero; }
+        public IntPtr GetHandle() => HandleAssert(XtDeviceGetHandle(_d));
         public void ShowControlPanel() => HandleError(XtDeviceShowControlPanel(_d));
+        public void Dispose() { HandleAssert(() => XtDeviceDestroy(_d)); _d = IntPtr.Zero; }
         public XtMix? GetMix() => HandleError(XtDeviceGetMix(_d, out var v, out var r)) && v ? r : (XtMix?)null;
         public int GetChannelCount(bool output) => HandleError(XtDeviceGetChannelCount(_d, output, out var r), r);
         public bool SupportsFormat(in XtFormat format) => HandleError(XtDeviceSupportsFormat(_d, in format, out var r), r);

@@ -19,7 +19,7 @@ namespace Xt
         readonly IntPtr _s;
         internal XtService(IntPtr s) => _s = s;
 
-        public XtServiceCaps GetCapabilities() => XtServiceGetCapabilities(_s);
+        public XtServiceCaps GetCapabilities() => HandleAssert(XtServiceGetCapabilities(_s));
         public XtDeviceList OpenDeviceList(XtEnumFlags flags) => HandleError(XtServiceOpenDeviceList(_s, flags, out var r), new XtDeviceList(r));
 
         static AggregateDeviceParams ToNative(XtAggregateDeviceParams managed)

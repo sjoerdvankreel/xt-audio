@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using static Xt.Utility;
 
 namespace Xt
 {
@@ -15,21 +16,21 @@ namespace Xt
         IntPtr _p;
         internal XtPlatform(IntPtr p) => _p = p;
 
-        public void Dispose() { XtPlatformDestroy(_p); _p = IntPtr.Zero; }
-        public XtSystem SetupToSystem(XtSetup setup) => XtPlatformSetupToSystem(_p, setup);
+        public void Dispose() { HandleAssert(() => XtPlatformDestroy(_p)); _p = IntPtr.Zero; }
+        public XtSystem SetupToSystem(XtSetup setup) => HandleAssert(XtPlatformSetupToSystem(_p, setup));
 
         public XtSystem[] GetSystems()
         {
             int size = 0;
-            XtPlatformGetSystems(_p, null, ref size);
+            HandleAssert(() => XtPlatformGetSystems(_p, null, ref size));
             var result = new XtSystem[size];
-            XtPlatformGetSystems(_p, result, ref size);
+            HandleAssert(() => XtPlatformGetSystems(_p, result, ref size));
             return result;
         }
 
         public XtService GetService(XtSystem system)
         {
-            IntPtr s = XtPlatformGetService(_p, system);
+            IntPtr s = HandleAssert(XtPlatformGetService(_p, system));
             return s == IntPtr.Zero ? null : new XtService(s);
         }
     }
