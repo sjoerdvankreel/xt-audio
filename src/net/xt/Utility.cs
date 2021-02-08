@@ -10,8 +10,32 @@ namespace Xt
     static class Utility
     {
         [DllImport("xt-audio")] internal static extern IntPtr XtPrintErrorInfo(ref XtErrorInfo info);
-        internal static bool HandleError(ulong error) => error == 0 ? true : throw new XtException(error);
-        internal static T HandleError<T>(ulong error, T result) => error == 0 ? result : throw new XtException(error);
+
+        internal static bool HandleError(ulong error)
+        {
+            HandleAssert();
+            if (error != 0) throw new XtException(error);
+            return true;
+        }
+
+        internal static T HandleError<T>(T result)
+        {
+            HandleAssert();
+            return result;
+        }
+
+        internal static T HandleError<T>(ulong error, T result)
+        {
+            HandleAssert();
+            if (error != 0) throw new XtException(error);
+            return result;
+        }
+
+        static void HandleAssert()
+        {
+            var assert = XtAudio.GetLastAssert();
+            if (assert != null) throw new InvalidOperationException(assert);
+        }
 
         internal static unsafe string PtrToStringUTF8(IntPtr ptr)
         {
