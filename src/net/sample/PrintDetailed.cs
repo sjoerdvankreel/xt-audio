@@ -71,7 +71,9 @@ namespace Xt
                     PrintDevices(service, outputs);
                 }
             } catch (XtException e)
-            { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError())); }
+            { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError()));
+            } catch (Exception e)
+            { Console.WriteLine(e.Message); }
         }
     }
 }
