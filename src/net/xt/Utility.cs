@@ -9,7 +9,8 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     static class Utility
     {
-        [DllImport("xt-audio")] internal static extern IntPtr XtPrintErrorInfo(ref XtErrorInfo info);
+        [DllImport("xt-audio")]
+        internal static extern IntPtr XtPrintErrorInfo(ref XtErrorInfo info);
 
         internal static T HandleAssert<T>(T result)
         {
