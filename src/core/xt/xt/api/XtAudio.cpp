@@ -57,7 +57,8 @@ XtPlatform* XT_CALL
 XtAudioInit(char const* id, void* window)
 {
   XT_ASSERT_API(XtPlatform::instance == nullptr);
-  auto result = std::make_unique<XtPlatform>(window);
+  auto result = std::make_unique<XtPlatform>();
+  if(!result->Init(window)) return nullptr;
   result->_threadId = std::this_thread::get_id();
   result->_id = id == nullptr || strlen(id) == 0? "XT-Audio": id;
   auto alsa = XtiCreateAlsaService();
