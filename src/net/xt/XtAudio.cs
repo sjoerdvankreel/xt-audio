@@ -11,16 +11,25 @@ namespace Xt
     public static class XtAudio
     {
         const int RTLD_NOW = 2;
-        [DllImport("kernel32.dll")] static extern IntPtr LoadLibrary(string file);
-        [DllImport("libdl.so")] static extern IntPtr dlopen(string filename, int flags);
+        [DllImport("kernel32.dll")]
+        static extern IntPtr LoadLibrary(string file);
+        [DllImport("libdl.so")]
+        static extern IntPtr dlopen(string filename, int flags);
 
-        [DllImport("xt-audio")] static extern IntPtr XtAudioGetLastAssert();
-        [DllImport("xt-audio")] static extern XtVersion XtAudioGetVersion();
-        [DllImport("xt-audio")] static extern void XtAudioSetOnError(XtOnError onError);
-        [DllImport("xt-audio")] static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
-        [DllImport("xt-audio")] static extern IntPtr XtAudioInit(byte[] id, IntPtr window);
-        [DllImport("xt-audio")] static extern void XtAudioSetAssertTerminates(int terminates);
-        [DllImport("xt-audio")] static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
+        [DllImport("xt-audio")]
+        static extern IntPtr XtAudioGetLastAssert();
+        [DllImport("xt-audio")]
+        static extern XtVersion XtAudioGetVersion();
+        [DllImport("xt-audio")]
+        static extern void XtAudioSetOnError(XtOnError onError);
+        [DllImport("xt-audio")]
+        static extern XtErrorInfo XtAudioGetErrorInfo(ulong error);
+        [DllImport("xt-audio")]
+        static extern IntPtr XtAudioInit(byte[] id, IntPtr window);
+        [DllImport("xt-audio")]
+        static extern void XtAudioSetAssertTerminates(int terminates);
+        [DllImport("xt-audio")]
+        static extern XtAttributes XtAudioGetSampleAttributes(XtSample sample);
 
         static XtOnError _onError;
 
@@ -38,9 +47,12 @@ namespace Xt
             XtAudioSetAssertTerminates(0);
         }
 
-        public static XtVersion GetVersion() => HandleAssert(XtAudioGetVersion());
-        public static XtErrorInfo GetErrorInfo(ulong error) => HandleAssert(XtAudioGetErrorInfo(error));
-        public static XtAttributes GetSampleAttributes(XtSample sample) => HandleAssert(XtAudioGetSampleAttributes(sample));
+        public static XtVersion GetVersion()
+        => HandleAssert(XtAudioGetVersion());
+        public static XtErrorInfo GetErrorInfo(ulong error)
+        => HandleAssert(XtAudioGetErrorInfo(error));
+        public static XtAttributes GetSampleAttributes(XtSample sample)
+        => HandleAssert(XtAudioGetSampleAttributes(sample));
 
         public static void SetOnError(XtOnError onError)
         {

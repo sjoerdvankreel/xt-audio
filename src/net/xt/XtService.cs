@@ -10,17 +10,24 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public sealed class XtService
     {
-        [DllImport("xt-audio")] static extern XtServiceCaps XtServiceGetCapabilities(IntPtr s);
-        [DllImport("xt-audio")] static extern ulong XtServiceOpenDevice(IntPtr s, byte[] id, out IntPtr device);
-        [DllImport("xt-audio")] static extern ulong XtServiceOpenDeviceList(IntPtr s, XtEnumFlags flags, out IntPtr list);
-        [DllImport("xt-audio")] static extern ulong XtServiceAggregateStream(IntPtr s, in AggregateStreamParams @params, IntPtr user, out IntPtr stream);
-        [DllImport("xt-audio")] static extern ulong XtServiceGetDefaultDeviceId(IntPtr s, bool output, out bool valid, [Out] byte[] buffer, ref int size);
+        [DllImport("xt-audio")]
+        static extern XtServiceCaps XtServiceGetCapabilities(IntPtr s);
+        [DllImport("xt-audio")]
+        static extern ulong XtServiceOpenDevice(IntPtr s, byte[] id, out IntPtr device);
+        [DllImport("xt-audio")]
+        static extern ulong XtServiceOpenDeviceList(IntPtr s, XtEnumFlags flags, out IntPtr list);
+        [DllImport("xt-audio")]
+        static extern ulong XtServiceAggregateStream(IntPtr s, in AggregateStreamParams @params, IntPtr user, out IntPtr stream);
+        [DllImport("xt-audio")] 
+        static extern ulong XtServiceGetDefaultDeviceId(IntPtr s, bool output, out bool valid, [Out] byte[] buffer, ref int size);
 
         readonly IntPtr _s;
         internal XtService(IntPtr s) => _s = s;
 
-        public XtServiceCaps GetCapabilities() => HandleAssert(XtServiceGetCapabilities(_s));
-        public XtDeviceList OpenDeviceList(XtEnumFlags flags) => HandleError(XtServiceOpenDeviceList(_s, flags, out var r), new XtDeviceList(r));
+        public XtServiceCaps GetCapabilities() 
+        => HandleAssert(XtServiceGetCapabilities(_s));
+        public XtDeviceList OpenDeviceList(XtEnumFlags flags) 
+        => HandleError(XtServiceOpenDeviceList(_s, flags, out var r), new XtDeviceList(r));
 
         static AggregateDeviceParams ToNative(XtAggregateDeviceParams managed)
         {

@@ -6,8 +6,11 @@ namespace Xt
 {
     public sealed class XtSafeBuffer : IDisposable
     {
-        static readonly Dictionary<XtStream, XtSafeBuffer> _map = new Dictionary<XtStream, XtSafeBuffer>();
-        static readonly Dictionary<XtSample, Type> _types = new Dictionary<XtSample, Type>()
+        static readonly Dictionary<XtStream, XtSafeBuffer> _map 
+        = new Dictionary<XtStream, XtSafeBuffer>();
+
+        static readonly Dictionary<XtSample, Type> _types 
+        = new Dictionary<XtSample, Type>()
         {
             { XtSample.UInt8, typeof(byte) },
             { XtSample.Int16, typeof(short) },

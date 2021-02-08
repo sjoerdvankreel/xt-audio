@@ -9,17 +9,28 @@ namespace Xt
     [SuppressUnmanagedCodeSecurity]
     public sealed class XtDeviceList : IDisposable
     {
-        [DllImport("xt-audio")] static extern void XtDeviceListDestroy(IntPtr l);
-        [DllImport("xt-audio")] static extern ulong XtDeviceListGetCount(IntPtr l, out int count);
-        [DllImport("xt-audio")] static extern ulong XtDeviceListGetId(IntPtr l, int index, [Out] byte[] buffer, ref int size);
-        [DllImport("xt-audio")] static extern ulong XtDeviceListGetName(IntPtr l, byte[] id, [Out] byte[] buffer, ref int size);
-        [DllImport("xt-audio")] static extern ulong XtDeviceListGetCapabilities(IntPtr l, byte[] id, out XtDeviceCaps capabilities);
+        [DllImport("xt-audio")]
+        static extern void XtDeviceListDestroy(IntPtr l);
+        [DllImport("xt-audio")]
+        static extern ulong XtDeviceListGetCount(IntPtr l, out int count);
+        [DllImport("xt-audio")]
+        static extern ulong XtDeviceListGetId(IntPtr l, int index, [Out] byte[] buffer, ref int size);
+        [DllImport("xt-audio")]
+        static extern ulong XtDeviceListGetName(IntPtr l, byte[] id, [Out] byte[] buffer, ref int size);
+        [DllImport("xt-audio")]
+        static extern ulong XtDeviceListGetCapabilities(IntPtr l, byte[] id, out XtDeviceCaps capabilities);
 
         IntPtr _l;
         internal XtDeviceList(IntPtr l) => _l = l;
 
-        public int GetCount() => HandleError(XtDeviceListGetCount(_l, out var r), r);
-        public void Dispose() { HandleAssert(() => XtDeviceListDestroy(_l)); _l = IntPtr.Zero; }
+        public int GetCount()
+        => HandleError(XtDeviceListGetCount(_l, out var r), r);
+
+        public void Dispose()
+        {
+            HandleAssert(() => XtDeviceListDestroy(_l));
+            _l = IntPtr.Zero;
+        }
 
         public string GetId(int index)
         {
