@@ -32,16 +32,16 @@ public:
 
 inline
 Platform::~Platform()
-{ XtPlatformDestroy(_p); }
+{ Detail::HandleDestroy(XtPlatformDestroy, _p); }
 
 inline std::vector<System> 
 Platform::GetSystems() 
 {
   int32_t size = 0;
-  Detail::HandleVoidError(XtPlatformGetSystems, _p, nullptr, &size);
+  Detail::HandleAssert(XtPlatformGetSystems, _p, nullptr, &size);
   std::vector<System> result(static_cast<size_t>(size));
   auto coreSystems = reinterpret_cast<XtSystem*>(result.data());
-  Detail::HandleVoidError(XtPlatformGetSystems, _p, coreSystems, &size);
+  Detail::HandleAssert(XtPlatformGetSystems, _p, coreSystems, &size);
   return result;
 }
 
@@ -49,7 +49,7 @@ inline System
 Platform::SetupToSystem(Setup setup) const
 { 
   auto coreSetup = static_cast<XtSetup>(setup);
-  auto result = Detail::HandleError(XtPlatformSetupToSystem, _p, coreSetup);
+  auto result = Detail::HandleAssert(XtPlatformSetupToSystem(_p, coreSetup));
   return static_cast<System>(result); 
 }
 
@@ -57,7 +57,7 @@ inline std::unique_ptr<Service>
 Platform::GetService(System system) 
 {
   auto coreSystem = static_cast<XtSystem>(system);
-  XtService const* service = Detail::HandleError(XtPlatformGetService, _p, coreSystem);
+  XtService const* service = Detail::HandleAssert(XtPlatformGetService(_p, coreSystem));
   if(!service) return std::unique_ptr<Service>();
   return std::unique_ptr<Service>(new Service(service));
 }

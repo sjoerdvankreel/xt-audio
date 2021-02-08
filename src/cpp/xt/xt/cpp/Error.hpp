@@ -26,10 +26,18 @@ ForwardOnError(char const* message)
 inline Initializer::
 Initializer() { XtAudioSetAssertTerminates(XtFalse); }
 
-inline void HandleAssert()
+inline void 
+HandleAssert()
 { 
   char const* error = XtAudioGetLastAssert();
   if(error != nullptr) throw std::logic_error(error); 
+}
+
+template <class T> inline T
+HandleAssert(T result)
+{
+  HandleAssert();
+  return result;
 }
 
 inline void 
@@ -40,29 +48,20 @@ HandleError(XtError error)
 }
 
 template <class F, class... Args> inline void
-HandleVoidError(F f, Args&&... args)
+HandleAssert(F f, Args&&... args)
 {
   f(std::forward<Args>(args)...);
   HandleAssert();
 }
 
 template <class F, class... Args> inline void
-HandleDestroyError(F f, Args&&... args)
+HandleDestroy(F f, Args&&... args)
 {
   f(std::forward<Args>(args)...);
-  if(XtAudioGetLastAssert() != nullptr)
-  {
-    std::cerr << XtAudioGetLastAssert() << std::endl;
-    std::terminate();
-  }
-}
-
-template <class F, class... Args> inline decltype(auto)
-HandleError(F f, Args&&... args)
-{
-  auto result = f(std::forward<Args>(args)...);
-  HandleAssert();
-  return result;
+  char const* error = XtAudioGetLastAssert(); 
+  if(error == nullptr) return;
+  std::cerr << XtAudioGetLastAssert() << std::endl;
+  std::terminate();
 }
 
 } // namespace Xt::Detail

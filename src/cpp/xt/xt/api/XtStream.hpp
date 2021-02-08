@@ -51,16 +51,16 @@ Stream::Start()
 { Detail::HandleError(XtStreamStart(_s)); }
 inline void
 Stream::Stop() 
-{ Detail::HandleVoidError(XtStreamStop, _s); }
+{ Detail::HandleAssert(XtStreamStop, _s); }
 inline
 Stream::~Stream() 
-{ Detail::HandleDestroyError(XtStreamDestroy, _s); }
+{ Detail::HandleDestroy(XtStreamDestroy, _s); }
 inline void*
 Stream::GetHandle() const
-{ return Detail::HandleError(XtStreamGetHandle, _s); }
+{ return Detail::HandleAssert(XtStreamGetHandle(_s)); }
 inline bool
 Stream::IsRunning() const
-{ return Detail::HandleError(XtStreamIsRunning, _s); }
+{ return Detail::HandleAssert(XtStreamIsRunning(_s)); }
 
 inline int32_t
 Stream::GetFrames() const 
@@ -82,7 +82,7 @@ Stream::GetLatency() const
 inline Format const& 
 Stream::GetFormat() const
 {
-  auto coreFormat = Detail::HandleError(XtStreamGetFormat, _s);
+  auto coreFormat = Detail::HandleAssert(XtStreamGetFormat(_s));
   return *reinterpret_cast<Format const*>(coreFormat);
 }
 

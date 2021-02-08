@@ -39,13 +39,13 @@ public:
 
 inline
 Device::~Device()
-{ Detail::HandleDestroyError(XtDeviceDestroy, _d); }
-inline void*
-Device::GetHandle() const
-{ return Detail::HandleError(XtDeviceGetHandle, _d); }
+{ Detail::HandleDestroy(XtDeviceDestroy, _d); }
 inline void 
 Device::ShowControlPanel() 
 { Detail::HandleError(XtDeviceShowControlPanel(_d)); }
+inline void*
+Device::GetHandle() const
+{ return Detail::HandleAssert(XtDeviceGetHandle(_d)); }
 
 inline int32_t 
 Device::GetChannelCount(bool output) const 

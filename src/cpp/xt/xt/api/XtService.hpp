@@ -55,7 +55,7 @@ Service::OpenDeviceList(EnumFlags flags) const
 inline ServiceCaps
 Service::GetCapabilities() const
 {
-  auto coreCapabilities = Detail::HandleError(XtServiceGetCapabilities, _s);
+  auto coreCapabilities = Detail::HandleAssert(XtServiceGetCapabilities(_s));
   return static_cast<ServiceCaps>(coreCapabilities); 
 }
 

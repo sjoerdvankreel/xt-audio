@@ -15,25 +15,25 @@ using namespace Detail;
 
 inline std::ostream& 
 operator<<(std::ostream& os, Cause cause) 
-{ return os << Detail::HandleError(XtPrintCause, static_cast<XtCause>(cause)); }
+{ return os << Detail::HandleAssert(XtPrintCause(static_cast<XtCause>(cause))); }
 inline std::ostream& 
 operator<<(std::ostream& os, Setup setup) 
-{ return os << Detail::HandleError(XtPrintSetup, static_cast<XtSetup>(setup)); }
+{ return os << Detail::HandleAssert(XtPrintSetup(static_cast<XtSetup>(setup))); }
 inline std::ostream& 
 operator<<(std::ostream& os, System system) 
-{ return os << Detail::HandleError(XtPrintSystem, static_cast<XtSystem>(system)); }
+{ return os << Detail::HandleAssert(XtPrintSystem(static_cast<XtSystem>(system))); }
 inline std::ostream& 
 operator<<(std::ostream& os, Sample sample) 
-{ return os << Detail::HandleError(XtPrintSample, static_cast<XtSample>(sample)); }
+{ return os << Detail::HandleAssert(XtPrintSample(static_cast<XtSample>(sample))); }
 inline std::ostream& 
 operator<<(std::ostream& os, EnumFlags flags) 
-{ return os << Detail::HandleError(XtPrintEnumFlags, static_cast<XtEnumFlags>(flags)); }
+{ return os << Detail::HandleAssert(XtPrintEnumFlags(static_cast<XtEnumFlags>(flags))); }
 inline std::ostream& 
 operator<<(std::ostream& os, DeviceCaps capabilities) 
-{ return os << Detail::HandleError(XtPrintDeviceCaps, static_cast<XtDeviceCaps>(capabilities)); }
+{ return os << Detail::HandleAssert(XtPrintDeviceCaps(static_cast<XtDeviceCaps>(capabilities))); }
 inline std::ostream& 
 operator<<(std::ostream& os, ServiceCaps capabilities) 
-{ return os << Detail::HandleError(XtPrintServiceCaps, static_cast<XtServiceCaps>(capabilities)); }
+{ return os << Detail::HandleAssert(XtPrintServiceCaps(static_cast<XtServiceCaps>(capabilities))); }
 
 inline std::ostream& 
 operator<<(std::ostream& os, ErrorInfo const& info) 
@@ -43,7 +43,7 @@ operator<<(std::ostream& os, ErrorInfo const& info)
   i.service.text = info.service.text.c_str();
   i.system = static_cast<XtSystem>(info.system);
   i.service.cause = static_cast<XtCause>(info.service.cause);
-  return os << Detail::HandleError(XtPrintErrorInfo, &i);
+  return os << Detail::HandleAssert(XtPrintErrorInfo(&i));
 }
 
 } // namespace Xt

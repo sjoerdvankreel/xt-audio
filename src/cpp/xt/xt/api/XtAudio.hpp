@@ -32,7 +32,7 @@ public:
 inline Version
 Audio::GetVersion() 
 {
-  auto result = Detail::HandleError(XtAudioGetVersion);
+  auto result = Detail::HandleAssert(XtAudioGetVersion());
   return *reinterpret_cast<Version*>(&result);
 }
 
@@ -40,7 +40,7 @@ inline ErrorInfo
 Audio::GetErrorInfo(uint64_t error) 
 { 
   ErrorInfo result;
-  auto info = Detail::HandleError(XtAudioGetErrorInfo, error);
+  auto info = Detail::HandleAssert(XtAudioGetErrorInfo(error));
   result.fault = info.fault;
   result.system = static_cast<System>(info.system);
   result.service.text = std::string(info.service.text);
@@ -53,7 +53,7 @@ Audio::GetSampleAttributes(Sample sample)
 {
   Attributes result;
   auto coreSample = static_cast<XtSample>(sample);
-  auto attrs = Detail::HandleError(XtAudioGetSampleAttributes, coreSample);
+  auto attrs = Detail::HandleAssert(XtAudioGetSampleAttributes(coreSample));
   result.size = attrs.size;
   result.count = attrs.count;
   result.isFloat = attrs.isFloat != XtFalse;
@@ -64,7 +64,7 @@ Audio::GetSampleAttributes(Sample sample)
 inline std::unique_ptr<Platform>
 Audio::Init(std::string const& id, void* window) 
 {
-  XtPlatform* result = Detail::HandleError(XtAudioInit, id.c_str(), window);
+  XtPlatform* result = Detail::HandleAssert(XtAudioInit(id.c_str(), window));
   return std::unique_ptr<Platform>(new Platform(result));
 }
 
@@ -73,7 +73,7 @@ Audio::SetOnError(OnError onError)
 { 
   Detail::_onError = onError;
   XtOnError coreOnError = onError == nullptr? nullptr: &Detail::ForwardOnError;
-  Detail::HandleVoidError(XtAudioSetOnError, coreOnError);
+  Detail::HandleAssert(XtAudioSetOnError, coreOnError);
 }
 
 } // namespace Xt
