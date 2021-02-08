@@ -34,16 +34,49 @@ class EnumConverter<E extends Enum<E>> implements TypeConverter {
 }
 
 class Utility {
+
     static final NativeLibrary LIBRARY;
+    static native String XtAudioGetLastAssert();
+    static native String XtPrintErrorInfo(XtErrorInfo info);
+    private static native void XtAudioSetAssertTerminates(boolean terminates);
+
     static {
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
         LIBRARY = NativeLibrary.getInstance("xt-audio", options);
         Native.register(LIBRARY);
+        XtAudioSetAssertTerminates(false);
     }
 
-    static native String XtPrintErrorInfo(XtErrorInfo info);
-    static void handleError(long error) { if(error != 0) throw new XtException(error); }
-    static <T> T handleError(long error, T result) { if(error != 0) throw new XtException(error); return result; }
+    static <T> T handleAssert(T result)
+    {
+        handleAssert();
+        return result;
+    }
+
+    static void handleError(long error)
+    {
+        handleAssert();
+        if (error != 0) throw new XtException(error);
+    }
+
+    static void handleAssert(Runnable action)
+    {
+        action.run();
+        handleAssert();
+    }
+
+    static <T> T handleError(long error, T result)
+    {
+        handleAssert();
+        if (error != 0) throw new XtException(error);
+        return result;
+    }
+
+    static void handleAssert()
+    {
+        var assertion = XtAudioGetLastAssert();
+        if (assertion != null) throw new AssertionError(assertion);
+    }
 }

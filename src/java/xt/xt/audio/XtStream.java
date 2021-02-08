@@ -10,6 +10,7 @@ import xt.audio.Structs.XtBuffer;
 import xt.audio.Structs.XtFormat;
 import xt.audio.Structs.XtLatency;
 import xt.audio.Structs.XtStreamParams;
+import static xt.audio.Utility.handleAssert;
 import static xt.audio.Utility.handleError;
 
 public final class XtStream implements AutoCloseable {
@@ -36,12 +37,12 @@ public final class XtStream implements AutoCloseable {
     private final XtLatency _latency = new XtLatency();
     private final IntByReference _frames = new IntByReference();
 
-    public void stop() { XtStreamStop(_s);}
     public XtFormat getFormat() { return _format; }
     public void start() { handleError(XtStreamStart(_s)); }
-    public Pointer getHandle() { return XtStreamGetHandle(_s); }
-    public boolean isRunning() { return XtStreamIsRunning(_s); }
-    @Override public void close() { XtStreamDestroy(_s); _s = Pointer.NULL; }
+    public void stop() { handleAssert(() -> XtStreamStop(_s));}
+    public Pointer getHandle() { return handleAssert(XtStreamGetHandle(_s)); }
+    public boolean isRunning() { return handleAssert(XtStreamIsRunning(_s)); }
+    @Override public void close() { handleAssert(() -> XtStreamDestroy(_s)); _s = Pointer.NULL; }
 
     OnXRun onNativeXRun() { return _onNativeXRun; }
     OnBuffer onNativeBuffer() { return _onNativeBuffer; }
@@ -57,7 +58,7 @@ public final class XtStream implements AutoCloseable {
 
     void init(Pointer s) {
         _s = s;
-        _format = XtStreamGetFormat(_s);
+        _format = handleAssert(XtStreamGetFormat(_s));
     }
 
     public int getFrames() {

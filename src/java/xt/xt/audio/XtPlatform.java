@@ -7,6 +7,7 @@ import com.sun.jna.ptr.IntByReference;
 import xt.audio.Enums.XtSetup;
 import xt.audio.Enums.XtSystem;
 import java.util.Arrays;
+import static xt.audio.Utility.handleAssert;
 
 public final class XtPlatform implements AutoCloseable {
 
@@ -19,20 +20,20 @@ public final class XtPlatform implements AutoCloseable {
     Pointer _p;
     XtPlatform(Pointer p) { _p = p; }
 
-    @Override public void close() { XtPlatformDestroy(_p); _p = Pointer.NULL; }
-    public XtSystem setupToSystem(XtSetup setup) { return XtPlatformSetupToSystem(_p, setup); }
+    @Override public void close() { handleAssert(() -> XtPlatformDestroy(_p)); _p = Pointer.NULL; }
+    public XtSystem setupToSystem(XtSetup setup) { return handleAssert(XtPlatformSetupToSystem(_p, setup)); }
 
     public XtService getService(XtSystem system) {
-        Pointer s = XtPlatformGetService(_p, system);
+        Pointer s = handleAssert(XtPlatformGetService(_p, system));
         return s == Pointer.NULL? null: new XtService(s);
     }
 
     public XtSystem[] getSystems() {
         var mapper = new XtTypeMapper();
         var size = new IntByReference();
-        XtPlatformGetSystems(_p, null, size);
+        handleAssert(() -> XtPlatformGetSystems(_p, null, size));
         var result = new int[size.getValue()];
-        XtPlatformGetSystems(_p, result, size);
+        handleAssert(() -> XtPlatformGetSystems(_p, result, size));
         var converter = mapper.getFromNativeConverter(XtSystem.class);
         return Arrays.stream(result).mapToObj(s -> converter.fromNative(s, null)).toArray(XtSystem[]::new);
     }

@@ -13,6 +13,7 @@ import com.sun.jna.ptr.PointerByReference;
 import xt.audio.NativeStructs.StreamParams;
 import xt.audio.Structs.XtAggregateDeviceParams;
 import xt.audio.Structs.XtAggregateStreamParams;
+import static xt.audio.Utility.handleAssert;
 import static xt.audio.Utility.handleError;
 import java.util.EnumSet;
 
@@ -63,7 +64,7 @@ public final class XtService {
 
     public EnumSet<XtServiceCaps> getCapabilities() {
         var result = EnumSet.noneOf(XtServiceCaps.class);
-        var flags = XtServiceGetCapabilities(_s);
+        var flags = handleAssert(XtServiceGetCapabilities(_s));
         for(XtServiceCaps caps: XtServiceCaps.values())
             if((flags & caps._flag) != 0)
                 result.add(caps);
