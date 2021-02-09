@@ -16,7 +16,7 @@
  * Note for languages that support exceptions: the error callback should NEVER throw.
  * It is considered a fatal error if an exception propagates through the callback.
 
- * @see XtAudioInit
+ * @see XtAudioSetOnError
  */
 
 /**

@@ -30,16 +30,64 @@
  */
 
 /**
- * @fn XtPlatform* XtAudioInit(char const* id, void* window, XtOnError onError)
+ * @fn void XtAudioSetOnError(XtOnError onError)
+ * @brief Set error logging callback.
+ * @param onError application-defined error logging callback. When NULL, no logging is performed.
+ *
+ * This function may be called from any thread.
+ * @see XtOnError
+ */
+
+/**
+ * @fn char const* XtAudioGetLastAssert(void)
+ * @brief Indicates last internal assertion failure, if any.
+ * @return a pointer to a statically allocated string containing the last assertion failure.
+ *
+ * Note: this function is only applicable to the C API.
+ * .NET, Java and C++ language bindings use it to translate assertion failures to exceptions,
+ * but do not expose this function. By default, in the C API, any assertion failures result in std::terminate().
+ *
+ * A C language application must check the result of XtAudioGetLastAssert() after each call
+ * into the XT-Audio library only if it disabled the default behaviour of calling
+ * std::terminate() on assertion failures using XtAudioSetAssertTerminates(XtFalse).
+ *
+ * This function may be called from any thread.
+ * @see XtAudioSetAssertTerminates
+ */
+
+/**
+ * @fn void XtAudioSetAssertTerminates(XtBool terminates)
+ * @brief Indicates whether internal assertion failures should result in std::terminate (true) or be handled by client code (false).
+ * @param terminates If true, assertion failures call std::terminate(). If false, client code should check XtAudioGetLastAssert().
+ *
+ * Note: this function is only applicable to the C API.
+ * .NET, Java and C++ language bindings use it to translate assertion failures to exceptions,
+ * but do not expose this function. By default, in the C API, any assertion failures result in std::terminate().
+ * In all languages, assertion failures pass through XtOnError.
+ *
+ * C language applications may call XtAudioSetAssertTerminates(XtFalse) to enable their own
+ * fatal error handling. To do so, any call into the XT-Audio library should be followed
+ * by a call to XtAudioGetLastAssert(), and if that returns non-null, invoke an application
+ * -defined fatal error handler. Note that if XtAudioGetLastAssert() returns non-null, the
+ * application should be considered in a non-recoverable error state.
+ *
+ * This function may be called from any thread.
+ * @see XtAudioSetOnError
+ * @see XtAudioGetLastAssert
+ */
+
+/**
+ * @fn XtPlatform* XtAudioInit(char const* id, void* window)
  * @brief Initialize the XT-Audio library.
  * @return platform-specific library handle. Use XtPlatformDestroy to cleanup.
  * @param id the application id. Used to identify against sound servers such as JACK and PulseAudio. When NULL, "XT-Audio" is used.
  * @param window application main window handle. ASIO uses this to show modal control panels. DSound uses this for SetCooperativeLevel. When NULL, a dummy message window is used.
- * @param onError application-defined error logging callback. When NULL, no logging is performed.
  *
  * This function may be called from any thread. The thread on which it is called becomes
  * the main thread, many other functions may only be called from the main thread. On Windows,
- * COM is initialized in STA mode by this call.
+ * COM is initialized in STA mode by this call. If desired, use XtAudioSetOnError() to enable
+ * error logging before calling this function.
  *
  * @see XtPlatformDestroy
+ * @see XtAudioSetOnError
  */
