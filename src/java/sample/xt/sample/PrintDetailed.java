@@ -79,6 +79,8 @@ public class PrintDetailed {
             }
         } catch(XtException e) {
             System.out.println(XtAudio.getErrorInfo(e.getError()));
+        } catch(Throwable t) {
+            System.out.println(t.getMessage());
         }
     }
 }
