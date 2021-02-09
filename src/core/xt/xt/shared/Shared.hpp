@@ -7,12 +7,19 @@
 #include <xt/shared/Structs.hpp>
 
 #include <atomic>
+#include <cstring>
 #include <cstdint>
 
 typedef uint32_t XtFault;
 
+#if WIN32
+#define XT_SEPARATOR '\\'
+#else
+#define XT_SEPARATOR '/'
+#endif // WIN32
 #define XT_STRINGIFY(s) #s
-#define XT_LOCATION {__FILE__,  __func__, __LINE__}
+#define XT_FILE (strrchr(__FILE__, XT_SEPARATOR) ? strrchr(__FILE__, XT_SEPARATOR) + 1 : __FILE__)
+#define XT_LOCATION {XT_FILE, __func__, __LINE__}
 
 #define XT_TRACE(m) XtiTrace(XT_LOCATION, m)
 #define XT_ASSERT(c) ((c) || (XtiAssert(XT_LOCATION, #c), 0))
