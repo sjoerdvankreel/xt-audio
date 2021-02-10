@@ -1,3 +1,2 @@
 * device correlation
 * check wrong device id handling
-* bugfix: wait for callback to return before stop blocking stream
