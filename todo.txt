@@ -1,2 +1,1 @@
 * device correlation
-* check wrong device id handling
