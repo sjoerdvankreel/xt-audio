@@ -15,7 +15,6 @@ typedef struct XtFormat XtFormat;
 typedef struct XtBuffer XtBuffer; 
 typedef struct XtVersion XtVersion; 
 typedef struct XtLatency XtLatency; 
-typedef struct XtLocation XtLocation;
 typedef struct XtChannels XtChannels; 
 typedef struct XtErrorInfo XtErrorInfo; 
 typedef struct XtBufferSize XtBufferSize;
@@ -53,13 +52,6 @@ struct XtLatency
 {
   double input;
   double output;
-};
-
-struct XtLocation
-{
-  char const* file;
-  char const* func;
-  int32_t line;
 };
 
 struct XtChannels 

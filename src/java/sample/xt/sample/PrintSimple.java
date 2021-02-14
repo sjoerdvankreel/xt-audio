@@ -11,7 +11,7 @@ import xt.audio.XtService;
 public class PrintSimple {
 
     public static void main() throws Exception {
-        try(XtPlatform platform = XtAudio.init(null, null, null)) {
+        try(XtPlatform platform = XtAudio.init(null, null)) {
             for(XtSystem system: platform.getSystems()) {
                 XtService service = platform.getService(system);
                 try(XtDeviceList list = service.openDeviceList(EnumSet.of(XtEnumFlags.ALL))) {

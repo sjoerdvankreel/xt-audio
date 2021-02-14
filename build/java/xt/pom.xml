@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <name>XT-Audio</name>
     <packaging>jar</packaging>
-    <version>1.8</version>
+    <version>1.9</version>
     <artifactId>xt.audio</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.sjoerdvankreel</groupId>
@@ -91,7 +91,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
                                     <includes>
-                                        <include>xt-core.dll</include>
+                                        <include>xt-audio.dll</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -109,7 +109,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
-                                        <include>xt-core.dll</include>
+                                        <include>xt-audio.dll</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -127,7 +127,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
                                     <includes>
-                                        <include>libxt-core.so</include>
+                                        <include>libxt-audio.so</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -145,7 +145,7 @@
                                 <resource>
                                     <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
-                                        <include>libxt-core.so</include>
+                                        <include>libxt-audio.so</include>
                                     </includes>
                                 </resource>
                             </resources>

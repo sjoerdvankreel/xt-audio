@@ -13,9 +13,9 @@ struct XtPlatform
 {
   ~XtPlatform();
   XtPlatform() = default;
-  XtPlatform(void* window);
   static inline XtPlatform* instance = nullptr;
 
+  bool Init(void* window);
   XtSystem SetupToSystem(XtSetup setup) const;
   XtService const* GetService(XtSystem system) const;
   void GetSystems(XtSystem* buffer, int32_t* size) const;
@@ -23,7 +23,6 @@ struct XtPlatform
   void* _window;
   bool _ownWindow;
   std::string _id;
-  XtOnError _onError;
   std::thread::id _threadId;
   std::vector<std::unique_ptr<XtService>> _services;
 

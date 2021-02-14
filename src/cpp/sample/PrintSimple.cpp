@@ -7,7 +7,7 @@
 int 
 PrintSimpleMain() 
 {
-  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr);
   for(Xt::System system: platform->GetSystems()) 
   {
     std::unique_ptr<Xt::Service> service = platform->GetService(system);

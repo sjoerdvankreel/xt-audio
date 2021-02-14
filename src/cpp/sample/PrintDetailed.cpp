@@ -6,8 +6,8 @@
 #include <iostream>
 
 static void 
-OnError(Xt::Location const& location, std::string const& message)
-{ std::cout << location << ": " << message << std::endl; }
+OnError(std::string const& message)
+{ std::cout << message << std::endl; }
 
 void
 PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)
@@ -35,7 +35,8 @@ PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)
 int 
 PrintDetailedMain()
 {
-  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, OnError);
+  Xt::Audio::SetOnError(OnError);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr);
   try 
   {
     Xt::Version version = Xt::Audio::GetVersion();
@@ -76,6 +77,10 @@ PrintDetailedMain()
   } catch(Xt::Exception const& e) 
   { 
     std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; 
+    return EXIT_FAILURE;
+  } catch(std::exception const& e)
+  {
+    std::cout << e.what() << "\n"; 
     return EXIT_FAILURE;
   }
 }

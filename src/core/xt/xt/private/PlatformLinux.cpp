@@ -3,12 +3,10 @@
 #include <errno.h>
 #include <pthread.h>
 
+XtPlatform::~XtPlatform() { }
 void XtPlatform::EndThread() { }
 void XtPlatform::BeginThread() { }
-
-XtPlatform::~XtPlatform() {}
-XtPlatform::XtPlatform(void* window):
-XtPlatform() {}
+bool XtPlatform::Init(void* window) { return true; }
 
 XtSystem
 XtPlatform::SetupToSystem(XtSetup setup) const

@@ -17,9 +17,9 @@ for /L %%A in (0, 1, 1) do (
   msbuild xt-audio.sln /p:Configuration=Release /verbosity:quiet
   if !errorlevel! neq 0 exit /b !errorlevel!
   cd ..\..\..
-  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-core.dll ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-core.dll
-  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-core.pdb ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-core.pdb
-  copy ..\dist\core\xt\!archs[%%A]!\Release\xt-core.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-core.dll
+  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-audio.dll ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-audio.dll
+  copy ..\dist\core\xt\!archs[%%A]!\Debug\xt-audio.pdb ..\dist\cpp\sample\!archs[%%A]!\Debug\xt-audio.pdb
+  copy ..\dist\core\xt\!archs[%%A]!\Release\xt-audio.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-audio.dll
 )
 
 REM include files
@@ -35,15 +35,15 @@ REM java
 cd java\xt
 call mvn -q install
 if !errorlevel! neq 0 exit /b !errorlevel!
-copy pom.xml ..\..\..\dist\java\xt\target\xt.audio-1.8.pom
+copy pom.xml ..\..\..\dist\java\xt\target\xt.audio-1.9.pom
 cd ..\..
 cd java\sample
 call mvn -q install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
 
-REM cli
-cd cli
+REM net
+cd net
 dotnet restore
 msbuild Xt.Audio.sln /p:Configuration=Debug /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
@@ -59,7 +59,7 @@ doxygen doc\core.doxyfile
 cd java\xt
 call mvn -q javadoc:javadoc
 cd ..\..
-msbuild cli\doc\Xt.Audio.shfbproj /verbosity:quiet
+msbuild net\doc\Xt.Audio.shfbproj /verbosity:quiet
 
 REM package
 cd ..

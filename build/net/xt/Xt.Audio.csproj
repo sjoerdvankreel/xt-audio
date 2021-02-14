@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Version>1.9</Version>
+    <LangVersion>8.0</LangVersion>
+    <FileVersion>1.9</FileVersion>
+    <RootNamespace>Xt</RootNamespace>
+    <AssemblyName>Xt.Audio</AssemblyName>
+    <AssemblyVersion>1.9</AssemblyVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <OutputPath>..\..\..\dist\net\xt\$(Configuration)</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\src\net\xt\*.cs" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\net\xt\Xt.Audio.dll.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-audio.dll" Link="x86/xt-audio.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-audio.dll" Link="x64/xt-audio.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/libxt-audio.so" Link="x86/libxt-audio.so" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/libxt-audio.so" Link="x64/libxt-audio.so" Pack="true" />
+  </ItemGroup>
+</Project>

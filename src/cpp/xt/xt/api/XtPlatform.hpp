@@ -4,6 +4,7 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
+#include <xt/cpp/Error.hpp>
 #include <xt/api/Enums.hpp>
 #include <xt/api/XtService.hpp>
 
@@ -31,32 +32,32 @@ public:
 
 inline
 Platform::~Platform()
-{ XtPlatformDestroy(_p); }
-
-inline System
-Platform::SetupToSystem(Setup setup) const
-{ 
-  auto coreSetup = static_cast<XtSetup>(setup);
-  auto result = XtPlatformSetupToSystem(_p, coreSetup);
-  return static_cast<System>(result); 
-}
+{ Detail::HandleDestroy(XtPlatformDestroy, _p); }
 
 inline std::vector<System> 
 Platform::GetSystems() 
 {
   int32_t size = 0;
-  XtPlatformGetSystems(_p, nullptr, &size);
+  Detail::HandleAssert(XtPlatformGetSystems, _p, nullptr, &size);
   std::vector<System> result(static_cast<size_t>(size));
   auto coreSystems = reinterpret_cast<XtSystem*>(result.data());
-  XtPlatformGetSystems(_p, coreSystems, &size);
+  Detail::HandleAssert(XtPlatformGetSystems, _p, coreSystems, &size);
   return result;
+}
+
+inline System
+Platform::SetupToSystem(Setup setup) const
+{ 
+  auto coreSetup = static_cast<XtSetup>(setup);
+  auto result = Detail::HandleAssert(XtPlatformSetupToSystem(_p, coreSetup));
+  return static_cast<System>(result); 
 }
 
 inline std::unique_ptr<Service> 
 Platform::GetService(System system) 
 {
   auto coreSystem = static_cast<XtSystem>(system);
-  XtService const* service = XtPlatformGetService(_p, coreSystem);
+  XtService const* service = Detail::HandleAssert(XtPlatformGetService(_p, coreSystem));
   if(!service) return std::unique_ptr<Service>();
   return std::unique_ptr<Service>(new Service(service));
 }

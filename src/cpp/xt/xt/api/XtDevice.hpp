@@ -4,7 +4,7 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
-#include <xt/cpp/Utility.hpp>
+#include <xt/cpp/Error.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/XtStream.hpp>
 
@@ -39,13 +39,13 @@ public:
 
 inline
 Device::~Device()
-{ XtDeviceDestroy(_d); }
-inline void*
-Device::GetHandle() const
-{ return XtDeviceGetHandle(_d); }
+{ Detail::HandleDestroy(XtDeviceDestroy, _d); }
 inline void 
 Device::ShowControlPanel() 
 { Detail::HandleError(XtDeviceShowControlPanel(_d)); }
+inline void*
+Device::GetHandle() const
+{ return Detail::HandleAssert(XtDeviceGetHandle(_d)); }
 
 inline int32_t 
 Device::GetChannelCount(bool output) const 

@@ -7,44 +7,74 @@
 #include <xt/shared/Structs.hpp>
 
 #include <atomic>
+#include <cstring>
 #include <cstdint>
 
 typedef uint32_t XtFault;
 
+#if WIN32
+#define XT_SEPARATOR '\\'
+#else
+#define XT_SEPARATOR '/'
+#endif // WIN32
 #define XT_STRINGIFY(s) #s
-#define XT_LOCATION {__FILE__,  __func__, __LINE__}
+#define XT_FILE (strrchr(__FILE__, XT_SEPARATOR) ? strrchr(__FILE__, XT_SEPARATOR) + 1 : __FILE__)
+#define XT_LOCATION {XT_FILE, __func__, __LINE__}
 
 #define XT_TRACE(m) XtiTrace(XT_LOCATION, m)
 #define XT_ASSERT(c) ((c) || (XtiAssert(XT_LOCATION, #c), 0))
 #define XT_TRACE_IF(c) (!(c) || (XtiTrace(XT_LOCATION, #c), 0))
 #define XT_VERIFY(e, f) do { auto e_ = (e); if(!(e)) { XT_TRACE(#e); return f; } } while(0)
+#define XT_ASSERT_API(c) do { if(!(c)) { XtiClearLastAssert(); XtiAssertApi(XT_LOCATION, #c); return { }; } } while(0)
+#define XT_ASSERT_VOID_API(c) do { if(!(c)) { XtiClearLastAssert(); XtiAssertApi(XT_LOCATION, #c); return; } } while(0)
 
-bool
-XtiCalledOnMainThread();
-int32_t
-XtiGetPopCount64(uint64_t x);
+char const*
+XtiGetLastAssert();
+void
+XtiClearLastAssert();
+void
+XtiOnError(char const* msg);
+void
+XtiSetOnError(XtOnError onError);
+void
+XtiSetAssertTerminates(XtBool terminates);
+
 uint32_t
 XtiGetErrorFault(XtError error);
-int32_t
-XtiGetSampleSize(XtSample sample);
 XtError
 XtiCreateError(XtSystem system, XtFault fault);
 XtServiceError
 XtiGetServiceError(XtSystem system, XtFault fault);
+
+bool
+XtiCalledOnMainThread();
+void
+XtiCopyString(char const* source, char* buffer, int32_t* size);
+
 void
 XtiTrace(XtLocation const& location, char const* msg);
 void
 XtiAssert(XtLocation const& location, char const* msg);
 void
-XtiCopyString(char const* source, char* buffer, int32_t* size);
+XtiAssertApi(XtLocation const& location, char const* msg);
+char const*
+XtiPrintErrorDetails(XtLocation const& location, char const* msg);
+
+int32_t
+XtiGetPopCount64(uint64_t x);
+int32_t
+XtiGetSampleSize(XtSample sample);
 XtFault
 XtiSupportsFormat(XtDevice const* device, XtFormat const* format);
+
 inline bool
 XtiCompareExchange(std::atomic_int& value, int32_t expected, int32_t desired);
+
 void 
 XtiInitIOBuffers(XtIOBuffers& buffers, XtFormat const* format, size_t frames);
 void
 XtiInitBuffers(XtBuffers& buffers, XtSample sample, size_t channels, size_t frames);
+
 void
 XtiDeinterleave(void** dst, void const* src, int32_t frames, int32_t channels, int32_t size);
 void

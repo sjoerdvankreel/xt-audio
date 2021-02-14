@@ -8,6 +8,34 @@
 #include <thread>
 #include <cassert>
 #include <cstring>
+#include <sstream>
+#include <algorithm>
+
+static XtOnError 
+_onError = nullptr;
+static XtBool 
+_assertTerminates = XtTrue;
+static thread_local char const* 
+_lastAssert = nullptr;
+
+char const*
+XtiGetLastAssert()
+{ return _lastAssert; }
+void
+XtiClearLastAssert()
+{ _lastAssert = nullptr; }
+void 
+XtiSetOnError(XtOnError onError)
+{ _onError = onError; }
+void
+XtiSetAssertTerminates(XtBool terminates)
+{ _assertTerminates = terminates; }
+void 
+XtiOnError(char const* msg) 
+{ if(_onError != nullptr) _onError(msg); }
+void 
+XtiTrace(XtLocation const& location, char const* msg)
+{ XtiOnError(XtiPrintErrorDetails(location, msg)); }
 
 int32_t
 XtiGetPopCount64(uint64_t x) 
@@ -43,6 +71,14 @@ XtiAssert(XtLocation const& location, char const* msg)
   std::terminate();
 }
 
+void
+XtiAssertApi(XtLocation const& location, char const* msg)
+{
+  _lastAssert = XtiPrintErrorDetails(location, msg);
+  XtiOnError(_lastAssert);
+  if(_assertTerminates) std::terminate();
+}
+
 XtServiceError
 XtiGetServiceError(XtSystem system, XtFault fault)
 {
@@ -74,14 +110,6 @@ XtiCreateError(XtSystem system, XtFault fault)
   auto info = XtAudioGetErrorInfo(result);
   XT_TRACE(XtPrintErrorInfo(&info));
   return result;
-}
-
-void
-XtiTrace(XtLocation const& location, char const* msg)
-{
-  auto platform = XtPlatform::instance;
-  if(platform == nullptr || platform->_onError == nullptr) return;
-  platform->_onError(&location, msg);
 }
 
 void
@@ -129,6 +157,18 @@ XtiInterleave(void* dst, void const* const* src, int32_t frames, int32_t channel
   for(int32_t f = 0; f < frames; f++)
     for(int32_t c = 0; c < channels; c++)
       memcpy(&d[(f * channels + c) * size], &s[c][f * size], size);
+}
+
+char const*
+XtiPrintErrorDetails(XtLocation const& location, char const* msg)
+{
+  std::ostringstream stream;
+  static thread_local char buffer[4096];
+  std::memset(buffer, 0, sizeof(buffer));
+  stream << location.file << ":" << location.line << ": in function " << location.func << ": " << msg;
+  auto result = stream.str();
+  std::memcpy(buffer, result.c_str(), std::min(static_cast<size_t>(4095), result.size()));
+  return buffer;
 }
 
 XtFault

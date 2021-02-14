@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+    <PropertyGroup>
+        <Version>1.9</Version>
+        <LangVersion>8.0</LangVersion>
+        <FileVersion>1.9</FileVersion>
+        <OutputType>WinExe</OutputType>
+        <RootNamespace>Xt</RootNamespace>
+        <AssemblyName>Xt.Gui</AssemblyName>
+        <AssemblyVersion>1.9</AssemblyVersion>
+        <UseWindowsForms>true</UseWindowsForms>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
+        <OutputPath>..\..\..\dist\net\gui\$(Configuration)</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="..\..\..\src\net\gui\**\*.cs" />
+        <EmbeddedResource Include="..\..\..\src\net\gui\UI\Gui.resx">
+            <Link>UI\Gui.resx</Link>
+            <DependentUpon>Gui.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\src\net\gui\UI\DeviceView.resx">
+            <Link>UI\DeviceView.resx</Link>
+            <DependentUpon>DeviceView.cs</DependentUpon>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\xt\Xt.Audio.csproj" />
+    </ItemGroup>
+</Project>

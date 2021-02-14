@@ -7,6 +7,13 @@
 #include <atomic>
 #include <cstdint>
 
+struct XtLocation
+{
+  char const* file;
+  char const* func;
+  int32_t line;
+};
+
 struct XtBlockingParams 
 {
   int32_t index;

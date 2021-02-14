@@ -1,3 +1,11 @@
+February 14, 2021 - V1.9
+* Static link against msvcrt.
+* Breaking change (all languages): changed XtOnError signature.
+* Breaking change (all languages): removed XtLocation and XtPrintLocation.
+* Breaking change (all languages): changed XtAudioInit signature, use XtAudioSetOnError instead.
+* Breaking change (native): renamed (lib)xt-core.(dll/so) to (lib)xt-audio.(dll/so).
+* Improved error handling (java/C++/.NET): internal assertion failures now throw exceptions instead of calling std::terminate().
+
 January 27, 2021 - V1.8
 * Minor bugfixes.
 * Switched LGPL to MIT.

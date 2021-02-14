@@ -4,8 +4,8 @@ read -p "C++ x86 sample..."
 read -p "C++ x64 sample..."
 ../dist/cpp/sample/x64/Release/xt-sample
 read -p "Java sample..."
-java -jar ../dist/java/sample/target/xt.sample-1.8.jar
+java -jar ../dist/java/sample/target/xt.sample-1.9.jar
 read -p ".NET Framework sample..."
-mono ../dist/cli/sample/Release/net48/Xt.Sample.exe
+mono ../dist/net/sample/Release/net48/Xt.Sample.exe
 read -p ".NET Core sample..."
-dotnet ../dist/cli/sample/Release/netcoreapp3.1/Xt.Sample.dll
+dotnet ../dist/net/sample/Release/netcoreapp3.1/Xt.Sample.dll

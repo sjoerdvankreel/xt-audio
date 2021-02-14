@@ -31,15 +31,16 @@ XtPlatform::SetupToSystem(XtSetup setup) const
   }
 }
 
-XtPlatform::XtPlatform(void* window):
-XtPlatform()
+bool
+XtPlatform::Init(void* window)
 {
+  XT_ASSERT_API(SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)));
   _window = window;
   _ownWindow = window == nullptr;
-  BeginThread();
-  if(window != nullptr) return;
+  if(window != nullptr) return true;
   auto handle = CreateWindow("STATIC", 0, 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0);
   XT_ASSERT(_window = handle);
+  return true;
 }
 
 #endif // _WIN32

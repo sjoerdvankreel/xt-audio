@@ -22,7 +22,7 @@ OnBuffer(Xt::Stream const& stream, Xt::Buffer const& buffer, void* user)
 int 
 CaptureSimpleMain() 
 {
-  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr, nullptr);
+  std::unique_ptr<Xt::Platform> platform = Xt::Audio::Init("", nullptr);
   Xt::System system = platform->SetupToSystem(Xt::Setup::ConsumerAudio);
   std::unique_ptr<Xt::Service> service = platform->GetService(system);
   if(!service) return 0;  

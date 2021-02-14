@@ -7,22 +7,9 @@
 #include <algorithm>
 
 char const* XT_CALL
-XtPrintSample(XtSample sample) 
-{
-  switch(sample) 
-  {
-  case XtSampleUInt8: return "UInt8";
-  case XtSampleInt16: return "Int16";
-  case XtSampleInt24: return "Int24";
-  case XtSampleInt32: return "Int32";
-  case XtSampleFloat32: return "Float32";
-  default: XT_ASSERT(false); return nullptr;
-  }
-}
-
-char const* XT_CALL
 XtPrintCause(XtCause cause) 
 {
+  XT_ASSERT_API(XtCauseFormat <= cause && cause <= XtCauseEndpoint);
   switch(cause) 
   {
   case XtCauseFormat: return "Format";
@@ -37,6 +24,7 @@ XtPrintCause(XtCause cause)
 char const* XT_CALL 
 XtPrintSystem(XtSystem system) 
 {
+  XT_ASSERT_API(XtSystemALSA <= system && system <= XtSystemDSound);
   switch(system) 
   {
   case XtSystemALSA: return "ALSA";
@@ -52,6 +40,7 @@ XtPrintSystem(XtSystem system)
 char const* XT_CALL
 XtPrintEnumFlags(XtEnumFlags flags)
 {
+  XT_ASSERT_API(XtEnumFlagsInput <= flags && flags <= XtEnumFlagsAll);
   if(flags == XtEnumFlagsAll) return "All";
   if(flags == XtEnumFlagsInput) return "Input";
   if(flags == XtEnumFlagsOutput) return "Output";
@@ -59,8 +48,24 @@ XtPrintEnumFlags(XtEnumFlags flags)
 }
 
 char const* XT_CALL
+XtPrintSample(XtSample sample) 
+{
+  XT_ASSERT_API(XtSampleUInt8 <= sample && sample <= XtSampleFloat32);
+  switch(sample) 
+  {
+  case XtSampleUInt8: return "UInt8";
+  case XtSampleInt16: return "Int16";
+  case XtSampleInt24: return "Int24";
+  case XtSampleInt32: return "Int32";
+  case XtSampleFloat32: return "Float32";
+  default: XT_ASSERT(false); return nullptr;
+  }
+}
+
+char const* XT_CALL
 XtPrintSetup(XtSetup setup) 
 {
+  XT_ASSERT_API(XtSetupProAudio <= setup && setup <= XtSetupConsumerAudio);
   switch(setup) 
   {
   case XtSetupProAudio: return "ProAudio";
@@ -106,20 +111,9 @@ XtPrintServiceCaps(XtServiceCaps capabilities)
 }
 
 char const* XT_CALL
-XtPrintLocation(XtLocation const* location) 
-{
-  std::ostringstream stream;
-  static thread_local char buffer[1024];
-  std::memset(buffer, 0, sizeof(buffer));
-  stream << location->file << ":" << location->line << ": in function " << location->func;
-  auto result = stream.str();
-  std::memcpy(buffer, result.c_str(), std::min(static_cast<size_t>(1023), result.size()));
-  return buffer;
-}
-
-char const* XT_CALL
 XtPrintErrorInfo(XtErrorInfo const* info) 
 {
+  XT_ASSERT_API(info != nullptr);
   std::ostringstream stream;
   static thread_local char buffer[1024];
   std::memset(buffer, 0, sizeof(buffer));

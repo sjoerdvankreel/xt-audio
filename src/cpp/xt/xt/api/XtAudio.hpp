@@ -4,6 +4,7 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
+#include <xt/cpp/Error.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/XtService.hpp>
 #include <xt/api/XtPlatform.hpp>
@@ -22,36 +23,24 @@ class Audio final
   Audio() = default;
 public:
   static Version GetVersion();
+  static void SetOnError(OnError onError);
   static ErrorInfo GetErrorInfo(uint64_t error);
   static Attributes GetSampleAttributes(Sample sample);
-  static std::unique_ptr<Platform> Init(std::string const& id, void* window, OnError onError);
+  static std::unique_ptr<Platform> Init(std::string const& id, void* window);
 };
 
 inline Version
 Audio::GetVersion() 
 {
-  auto result = XtAudioGetVersion();
+  auto result = Detail::HandleAssert(XtAudioGetVersion());
   return *reinterpret_cast<Version*>(&result);
-}
-
-inline Attributes 
-Audio::GetSampleAttributes(Sample sample) 
-{
-  Attributes result;
-  auto coreSample = static_cast<XtSample>(sample);
-  auto attrs = XtAudioGetSampleAttributes(coreSample);
-  result.size = attrs.size;
-  result.count = attrs.count;
-  result.isFloat = attrs.isFloat != XtFalse;
-  result.isSigned = attrs.isSigned != XtFalse;
-  return result;
 }
 
 inline ErrorInfo
 Audio::GetErrorInfo(uint64_t error) 
 { 
   ErrorInfo result;
-  auto info = XtAudioGetErrorInfo(error);
+  auto info = Detail::HandleAssert(XtAudioGetErrorInfo(error));
   result.fault = info.fault;
   result.system = static_cast<System>(info.system);
   result.service.text = std::string(info.service.text);
@@ -59,13 +48,32 @@ Audio::GetErrorInfo(uint64_t error)
   return result;
 }
 
-inline std::unique_ptr<Platform>
-Audio::Init(std::string const& id, void* window, OnError onError) 
+inline Attributes 
+Audio::GetSampleAttributes(Sample sample) 
 {
+  Attributes result;
+  auto coreSample = static_cast<XtSample>(sample);
+  auto attrs = Detail::HandleAssert(XtAudioGetSampleAttributes(coreSample));
+  result.size = attrs.size;
+  result.count = attrs.count;
+  result.isFloat = attrs.isFloat != XtFalse;
+  result.isSigned = attrs.isSigned != XtFalse;
+  return result;
+}
+
+inline std::unique_ptr<Platform>
+Audio::Init(std::string const& id, void* window) 
+{
+  XtPlatform* result = Detail::HandleAssert(XtAudioInit(id.c_str(), window));
+  return std::unique_ptr<Platform>(new Platform(result));
+}
+
+inline void
+Audio::SetOnError(OnError onError)
+{ 
   Detail::_onError = onError;
   XtOnError coreOnError = onError == nullptr? nullptr: &Detail::ForwardOnError;
-  XtPlatform* result = XtAudioInit(id.c_str(), window, coreOnError);
-  return std::unique_ptr<Platform>(new Platform(result));
+  Detail::HandleAssert(XtAudioSetOnError, coreOnError);
 }
 
 } // namespace Xt

@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import static xt.audio.Utility.handleAssert;
 import static xt.audio.Utility.handleError;
 
 public final class XtDevice implements AutoCloseable {
@@ -33,9 +34,9 @@ public final class XtDevice implements AutoCloseable {
     Pointer handle() { return _d; }
     XtDevice(Pointer d) { _d = d; }
 
-    public Pointer getHandle() { return XtDeviceGetHandle(_d); }
-    @Override public void close() { XtDeviceDestroy(_d); _d = Pointer.NULL; }
+    public Pointer getHandle() { return handleAssert(XtDeviceGetHandle(_d)); }
     public void showControlPanel() { handleError(XtDeviceShowControlPanel(_d)); }
+    @Override public void close() { handleAssert(() -> XtDeviceDestroy(_d)); _d = Pointer.NULL; }
 
     public XtBufferSize getBufferSize(XtFormat format) {
         var result = new XtBufferSize();

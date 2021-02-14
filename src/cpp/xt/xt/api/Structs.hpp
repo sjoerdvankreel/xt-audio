@@ -34,13 +34,6 @@ struct Version final
   int32_t minor;
 };
 
-struct Location final
-{
-  std::string file;
-  std::string func;
-  int32_t line;
-};
-
 struct ServiceError final
 {
   Cause cause;

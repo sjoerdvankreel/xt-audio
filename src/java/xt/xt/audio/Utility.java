@@ -7,11 +7,6 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.ToNativeContext;
 import com.sun.jna.TypeConverter;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
 import xt.audio.Enums.XtCause;
 import xt.audio.Enums.XtSample;
 import xt.audio.Enums.XtSetup;
@@ -19,7 +14,6 @@ import xt.audio.Enums.XtSystem;
 import xt.audio.Structs.XtErrorInfo;
 import java.util.HashMap;
 import java.util.Map;
-import xt.audio.Structs.XtLocation;
 
 class XtTypeMapper extends DefaultTypeMapper {
     XtTypeMapper() {
@@ -40,17 +34,49 @@ class EnumConverter<E extends Enum<E>> implements TypeConverter {
 }
 
 class Utility {
+
     static final NativeLibrary LIBRARY;
+    static native String XtAudioGetLastAssert();
+    static native String XtPrintErrorInfo(XtErrorInfo info);
+    private static native void XtAudioSetAssertTerminates(boolean terminates);
+
     static {
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
-        LIBRARY = NativeLibrary.getInstance("xt-core", options);
+        LIBRARY = NativeLibrary.getInstance("xt-audio", options);
         Native.register(LIBRARY);
+        XtAudioSetAssertTerminates(false);
     }
 
-    static native String XtPrintErrorInfo(XtErrorInfo info);
-    static native String XtPrintLocation(XtLocation location);
-    static void handleError(long error) { if(error != 0) throw new XtException(error); }
-    static <T> T handleError(long error, T result) { if(error != 0) throw new XtException(error); return result; }
+    static <T> T handleAssert(T result)
+    {
+        handleAssert();
+        return result;
+    }
+
+    static void handleError(long error)
+    {
+        handleAssert();
+        if (error != 0) throw new XtException(error);
+    }
+
+    static void handleAssert(Runnable action)
+    {
+        action.run();
+        handleAssert();
+    }
+
+    static <T> T handleError(long error, T result)
+    {
+        handleAssert();
+        if (error != 0) throw new XtException(error);
+        return result;
+    }
+
+    static void handleAssert()
+    {
+        var assertion = XtAudioGetLastAssert();
+        if (assertion != null) throw new AssertionError(assertion);
+    }
 }

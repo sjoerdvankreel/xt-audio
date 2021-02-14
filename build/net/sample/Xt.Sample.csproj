@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>1.9</Version>
+        <OutputType>Exe</OutputType>
+        <LangVersion>8.0</LangVersion>
+        <FileVersion>1.9</FileVersion>
+        <RootNamespace>Xt</RootNamespace>
+        <AssemblyVersion>1.9</AssemblyVersion>
+        <StartupObject>Xt.Sample</StartupObject>
+        <AssemblyName>Xt.Sample</AssemblyName>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
+        <OutputPath>..\..\..\dist\net\sample\$(Configuration)</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="..\..\..\src\net\sample\*.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\xt\Xt.Audio.csproj" />
+    </ItemGroup>
+</Project>

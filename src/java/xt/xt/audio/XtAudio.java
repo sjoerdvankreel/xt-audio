@@ -5,23 +5,27 @@ import com.sun.jna.Pointer;
 
 import xt.audio.Callbacks.XtOnError;
 import xt.audio.Enums.XtSample;
-import xt.audio.Enums.XtSetup;
-import xt.audio.Enums.XtSystem;
 import xt.audio.Structs.XtAttributes;
 import xt.audio.Structs.XtErrorInfo;
 import xt.audio.Structs.XtVersion;
+import static xt.audio.Utility.handleAssert;
 
 public final class XtAudio {
 
+    private static XtOnError _onError;
     static { Native.register(Utility.LIBRARY); }
+
     private static native XtVersion.ByValue XtAudioGetVersion();
+    private static native void XtAudioSetOnError(XtOnError onError);
+    private static native Pointer XtAudioInit(String id, Pointer window);
     private static native XtErrorInfo.ByValue XtAudioGetErrorInfo(long error);
     private static native XtAttributes.ByValue XtAudioGetSampleAttributes(XtSample sample);
-    private static native Pointer XtAudioInit(String id, Pointer window, XtOnError onError);
 
     private XtAudio() {}
-    public static XtVersion getVersion() { return XtAudioGetVersion(); }
-    public static XtErrorInfo getErrorInfo(long error) { return XtAudioGetErrorInfo(error); }
-    public static XtAttributes getSampleAttributes(XtSample sample) { return XtAudioGetSampleAttributes(sample); }
-    public static XtPlatform init(String id, Pointer window, XtOnError onError) { return new XtPlatform(XtAudioInit(id, window, onError), onError); }
+
+    public static XtVersion getVersion() { return handleAssert(XtAudioGetVersion()); }
+    public static XtErrorInfo getErrorInfo(long error) { return handleAssert(XtAudioGetErrorInfo(error)); }
+    public static void setOnError(XtOnError onError) { handleAssert(() -> XtAudioSetOnError(_onError = onError)); }
+    public static XtPlatform init(String id, Pointer window) { return new XtPlatform(handleAssert(XtAudioInit(id, window))); }
+    public static XtAttributes getSampleAttributes(XtSample sample) { return handleAssert(XtAudioGetSampleAttributes(sample)); }
 }

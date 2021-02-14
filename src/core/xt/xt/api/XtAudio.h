@@ -15,12 +15,18 @@ extern "C" {
 
 XT_API XtVersion XT_CALL 
 XtAudioGetVersion(void);
+XT_API char const* XT_CALL
+XtAudioGetLastAssert(void);
 XT_API XtErrorInfo XT_CALL 
 XtAudioGetErrorInfo(XtError error);
+XT_API void XT_CALL
+XtAudioSetOnError(XtOnError onError);
+XT_API XtPlatform* XT_CALL
+XtAudioInit(char const* id, void* window);
 XT_API XtAttributes XT_CALL 
 XtAudioGetSampleAttributes(XtSample sample);
-XT_API XtPlatform* XT_CALL
-XtAudioInit(char const* id, void* window, XtOnError onError);
+XT_API void XT_CALL
+XtAudioSetAssertTerminates(XtBool terminates);
 
 #ifdef __cplusplus
 }

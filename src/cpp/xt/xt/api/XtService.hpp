@@ -4,7 +4,9 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
+#include <xt/cpp/Error.hpp>
 #include <xt/cpp/Forward.hpp>
+
 #include <xt/api/Enums.hpp>
 #include <xt/api/Structs.hpp>
 #include <xt/api/XtDevice.hpp>
@@ -33,11 +35,12 @@ public:
   std::unique_ptr<Stream> AggregateStream(AggregateStreamParams const& params, void* user);
 };
 
-inline ServiceCaps
-Service::GetCapabilities() const
-{
-  auto coreCapabilities = XtServiceGetCapabilities(_s);
-  return static_cast<ServiceCaps>(coreCapabilities); 
+inline std::unique_ptr<Device> 
+Service::OpenDevice(std::string const& id) const 
+{ 
+  XtDevice* device; 
+  Detail::HandleError(XtServiceOpenDevice(_s, id.c_str(), &device));
+  return std::unique_ptr<Device>(new Device(device));
 }
 
 inline std::unique_ptr<DeviceList> 
@@ -49,12 +52,11 @@ Service::OpenDeviceList(EnumFlags flags) const
   return std::unique_ptr<DeviceList>(new DeviceList(list));
 }
 
-inline std::unique_ptr<Device> 
-Service::OpenDevice(std::string const& id) const 
-{ 
-  XtDevice* device; 
-  Detail::HandleError(XtServiceOpenDevice(_s, id.c_str(), &device));
-  return std::unique_ptr<Device>(new Device(device));
+inline ServiceCaps
+Service::GetCapabilities() const
+{
+  auto coreCapabilities = Detail::HandleAssert(XtServiceGetCapabilities(_s));
+  return static_cast<ServiceCaps>(coreCapabilities); 
 }
 
 inline std::optional<std::string>

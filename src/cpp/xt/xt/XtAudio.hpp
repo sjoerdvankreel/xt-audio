@@ -16,4 +16,6 @@
 #include <xt/api/XtException.hpp>
 #include <xt/api/XtDeviceList.hpp>
 
+#include <xt/cpp/ForwardImpl.hpp>
+
 #endif // XT_AUDIO_HPP

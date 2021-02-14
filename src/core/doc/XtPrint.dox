@@ -79,12 +79,3 @@
  *
  * This function may be called from any thread.
  */
- 
-/**
- * @fn const char* XtPrintLocation(XtLocation const* location)
- * @brief Convert source code location to a human-readable string.
- * @param location the source code location.
- * @return a pointer to a statically allocated string.
- *
- * This function may be called from any thread.
- */

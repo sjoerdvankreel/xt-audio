@@ -6,6 +6,7 @@ import com.sun.jna.ptr.IntByReference;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 import xt.audio.Enums.XtDeviceCaps;
+import static xt.audio.Utility.handleAssert;
 import static xt.audio.Utility.handleError;
 
 public final class XtDeviceList implements AutoCloseable {
@@ -19,7 +20,7 @@ public final class XtDeviceList implements AutoCloseable {
 
     private Pointer _l;
     XtDeviceList(Pointer l) { _l = l; }
-    @Override public void close() { XtDeviceListDestroy(_l); _l = Pointer.NULL; }
+    @Override public void close() { handleAssert(() -> XtDeviceListDestroy(_l)); _l = Pointer.NULL; }
 
     public int getCount() {
         var count = new IntByReference();

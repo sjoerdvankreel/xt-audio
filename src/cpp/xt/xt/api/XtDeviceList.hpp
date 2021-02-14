@@ -4,7 +4,7 @@
 /** @file */
 /** @cond */
 #include <xt/cpp/Core.hpp>
-#include <xt/cpp/Utility.hpp>
+#include <xt/cpp/Error.hpp>
 
 #include <string>
 #include <vector>
@@ -31,7 +31,7 @@ public:
 
 inline
 DeviceList::~DeviceList()
-{ XtDeviceListDestroy(_l); }
+{ Detail::HandleDestroy(XtDeviceListDestroy, _l); }
 
 inline int32_t
 DeviceList::GetCount() const
