@@ -1,3 +1,0 @@
-* device correlation
-* loosen caps error checking
-* update docs for assertion & correlation
