@@ -1,1 +1,2 @@
 * device correlation
+* update docs for assertion & correlation
