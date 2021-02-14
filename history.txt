@@ -1,4 +1,4 @@
-?, ? - V1.9
+February 14, 2021 - V1.9
 * Static link against msvcrt.
 * Breaking change (all languages): changed XtOnError signature.
 * Breaking change (all languages): removed XtLocation and XtPrintLocation.
