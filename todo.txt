@@ -1,0 +1,3 @@
+* Implement device correlation.
+* Derive interleaved parameter to safe buffer from the stream.
+* Add examples for non-blocking/non-allocating/async IO processing in the callback.
