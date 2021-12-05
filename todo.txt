@@ -4,3 +4,4 @@
 * Add examples for non-blocking/non-allocating/async IO processing in the callback.
 * Proper ToString()/Message for XtException.
 * Allow dynamic window handle for asio control panel.
+* Realtek asio control panel throws exception with ASE_Success.
