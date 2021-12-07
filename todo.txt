@@ -8,3 +8,4 @@
 * WASAPI: starting a shared mode stream on a device where another app is already running an exclusive mode stream
   produces an XtException which crashes the process if XtAudio.GetErrorInfo(e.GetError()) is called on it.
 * Provide debug builds.
+* Update tooling to LTS.
