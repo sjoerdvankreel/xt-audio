@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.9</Version>
+    <Version>2.0</Version>
     <LangVersion>8.0</LangVersion>
-    <FileVersion>1.9</FileVersion>
+    <FileVersion>2.0</FileVersion>
     <RootNamespace>Xt</RootNamespace>
     <AssemblyName>Xt.Audio</AssemblyName>
-    <AssemblyVersion>1.9</AssemblyVersion>
+    <AssemblyVersion>2.0</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
