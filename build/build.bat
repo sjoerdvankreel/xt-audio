@@ -10,7 +10,7 @@ set vsarchs[1]=x64
 for /L %%A in (0, 1, 1) do (
   if not exist native\win32\!archs[%%A]! (mkdir native\win32\!archs[%%A]!)
   cd native\win32\!archs[%%A]!
-  cmake ..\..\.. -G"Visual Studio 16 2019" -A !vsarchs[%%A]! -DXT_ARCH=!archs[%%A]! -DXT_ENABLE_ALSA=0 -DXT_ENABLE_JACK=0 -DXT_ENABLE_PULSE=0 -DXT_ENABLE_DSOUND=%1 -DXT_ENABLE_WASAPI=%2 -DXT_ENABLE_ASIO=%3 -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 > NUL
+  cmake ..\..\.. -G"Visual Studio 17 2022" -A !vsarchs[%%A]! -DXT_ARCH=!archs[%%A]! -DXT_ENABLE_ALSA=0 -DXT_ENABLE_JACK=0 -DXT_ENABLE_PULSE=0 -DXT_ENABLE_DSOUND=%1 -DXT_ENABLE_WASAPI=%2 -DXT_ENABLE_ASIO=%3 -DXT_ASIOSDK_DIR=%4 -DXT_ASMJIT_DIR=%5 > NUL
   if !errorlevel! neq 0 exit /b !errorlevel!
   msbuild xt-audio.sln /p:Configuration=Debug /verbosity:quiet
   if !errorlevel! neq 0 exit /b !errorlevel!
