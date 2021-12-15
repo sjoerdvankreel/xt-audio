@@ -1,7 +1,7 @@
-INPUT = ../../src/core/xt/xt/api ../../src/core/doc
+INPUT = ../src/core/xt/xt/api ../src/core/doc
 PROJECT_NAME = "XT-Audio"
 FILE_PATTERNS = *.h *.dox
-OUTPUT_DIRECTORY = ../../dist/core/doc
+OUTPUT_DIRECTORY = ../dist/core/doc
 
 QUIET = YES
 EXTRACT_ALL = YES
