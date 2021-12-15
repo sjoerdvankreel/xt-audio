@@ -12,3 +12,4 @@
 * Provide previous releases on website.
 * Fix .NET Core GUI.
 * Fix windows java bindings.
+* Remove nuget/mvn beta/snapshot qualifiers.
