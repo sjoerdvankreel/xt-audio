@@ -8,4 +8,4 @@ java -jar ../dist/java/sample/target/xt.sample-2.0.jar
 read -p ".NET Framework sample..."
 mono ../dist/net/sample/Release/net48/Xt.Sample.exe
 read -p ".NET Core sample..."
-dotnet ../dist/net/sample/Release/netcoreapp3.1/Xt.Sample.dll
+dotnet ../dist/net/sample/Release/net6.0/Xt.Sample.dll

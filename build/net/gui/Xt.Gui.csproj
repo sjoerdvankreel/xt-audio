@@ -9,7 +9,7 @@
         <AssemblyVersion>2.0</AssemblyVersion>
         <UseWindowsForms>true</UseWindowsForms>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net48;net6.0</TargetFrameworks>
         <OutputPath>..\..\..\dist\net\gui\$(Configuration)</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
