@@ -11,3 +11,4 @@
 * Update tooling to LTS.
 * Provide previous releases on website.
 * Fix .NET Core GUI.
+* Fix windows java bindings.
