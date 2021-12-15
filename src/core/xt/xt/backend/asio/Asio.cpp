@@ -167,7 +167,7 @@ XtiAsioJitBufferSwitch(asmjit::JitRuntime* runtime, XtAsioContextBufferSwitch ta
   code.init(runtime->environment());
   x86::Compiler compiler(&code);
   
-  auto sdkProto = FuncSignatureT<void, long, ASIOBool>(CallConv::kIdHostCDecl);
+  auto sdkProto = FuncSignatureT<void, long, ASIOBool>(CallConvId::kCDecl);
   FuncNode* function = compiler.addFunc(sdkProto);
   x86::Gp index = compiler.newInt32("index");
   x86::Gp directProcess = compiler.newInt32("directProcess");
@@ -175,7 +175,7 @@ XtiAsioJitBufferSwitch(asmjit::JitRuntime* runtime, XtAsioContextBufferSwitch ta
   compiler.setArg(1, directProcess);
 
   InvokeNode* invoke;
-  auto ctxProto = FuncSignatureT<void, long, ASIOBool, void*>(CallConv::kIdHostCDecl);
+  auto ctxProto = FuncSignatureT<void, long, ASIOBool, void*>(CallConvId::kCDecl);
   XT_ASSERT(compiler.invoke(&invoke, imm(target), ctxProto) == kErrorOk);
   invoke->setArg(0, index);
   invoke->setArg(1, directProcess);
@@ -196,7 +196,7 @@ XtiAsioJitBufferSwitchTimeInfo(asmjit::JitRuntime* runtime, XtAsioContextBufferS
   code.init(runtime->environment());
   x86::Compiler compiler(&code);
   
-  auto sdkProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool>(CallConv::kIdHostCDecl);
+  auto sdkProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool>(CallConvId::kCDecl);
   FuncNode* function = compiler.addFunc(sdkProto);
   x86::Gp params = compiler.newIntPtr("params");
   x86::Gp index = compiler.newInt32("index");
@@ -206,7 +206,7 @@ XtiAsioJitBufferSwitchTimeInfo(asmjit::JitRuntime* runtime, XtAsioContextBufferS
   compiler.setArg(2, directProcess);
 
   InvokeNode* invoke;
-  auto ctxProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool, void*>(CallConv::kIdHostCDecl);
+  auto ctxProto = FuncSignatureT<ASIOTime*, ASIOTime*, long, ASIOBool, void*>(CallConvId::kCDecl);
   XT_ASSERT(compiler.invoke(&invoke, imm(target), ctxProto) == kErrorOk);
   invoke->setArg(0, params);
   invoke->setArg(1, index);
