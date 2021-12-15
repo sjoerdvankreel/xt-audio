@@ -1,3 +1,6 @@
+? - V2.0
+* Breaking change (java): updated to java 17.
+
 February 14, 2021 - V1.9
 * Static link against msvcrt.
 * Breaking change (all languages): changed XtOnError signature.
