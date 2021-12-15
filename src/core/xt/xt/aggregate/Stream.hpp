@@ -19,6 +19,7 @@ public XtBlockingStream
   std::vector<XtIORingBuffers> _rings;
   std::vector<std::unique_ptr<XtBlockingStream>> _streams;
 
+  ~XtAggregateStream() { };
   XtAggregateStream() = default;
   XtSystem GetSystem() const override;
 
