@@ -9,3 +9,4 @@
   produces an XtException which crashes the process if XtAudio.GetErrorInfo(e.GetError()) is called on it.
 * Provide debug builds.
 * Update tooling to LTS.
+* Provide previous releases on website.
