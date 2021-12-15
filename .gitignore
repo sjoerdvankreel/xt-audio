@@ -2,7 +2,8 @@
 xt-audio.zip
 dist/**
 src/java/xt/.idea/**
-build/native/**
+build/native/win32/**
+build/native/linux/**
 build/net/.vs/**
 build/net/xt/*.user
 build/net/xt/obj/**

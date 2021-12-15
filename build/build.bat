@@ -53,9 +53,9 @@ cd ..
 
 REM doc
 if not exist ..\dist\cpp\doc (mkdir ..\dist\cpp\doc)
-doxygen doc\cpp.doxyfile
+doxygen native\doc\cpp.doxyfile
 if not exist ..\dist\core\doc (mkdir ..\dist\core\doc)
-doxygen doc\core.doxyfile
+doxygen native\doc\core.doxyfile
 cd java\xt
 call mvn -q javadoc:javadoc
 cd ..\..
