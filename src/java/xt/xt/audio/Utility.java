@@ -25,6 +25,13 @@ class XtTypeMapper extends DefaultTypeMapper {
     }
 }
 
+class XtCallMapper extends StdCallFunctionMapper {
+    @Override
+    protected int getArgumentNativeStackSize(Class<?> cls) {
+        return cls.isEnum()? 4: super.getArgumentNativeStackSize(cls);
+    }
+}
+
 class EnumConverter<E extends Enum<E>> implements TypeConverter {
     final int _base;
     final Class<E> _type;
@@ -45,7 +52,7 @@ class Utility {
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
-        options.put(Library.OPTION_FUNCTION_MAPPER, new StdCallFunctionMapper());
+        options.put(Library.OPTION_FUNCTION_MAPPER, new XtCallMapper());
         LIBRARY = NativeLibrary.getInstance("xt-audio", options);
         Native.register(LIBRARY);
         XtAudioSetAssertTerminates(false);
