@@ -13,3 +13,5 @@
 * Fix .NET Core GUI.
 * Fix windows java bindings.
 * Remove nuget/mvn beta/snapshot qualifiers.
+* Extend tests to all of net/core/java/native debug/release x86/64 win/lin.
+* Support wav writing?
