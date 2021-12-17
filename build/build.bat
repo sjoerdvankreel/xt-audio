@@ -35,7 +35,7 @@ REM java
 cd java\xt
 call mvn -q install
 if !errorlevel! neq 0 exit /b !errorlevel!
-copy pom.xml ..\..\..\dist\java\xt\target\xt.audio-2.0.pom
+copy pom.xml ..\..\..\dist\java\xt\target\xt.audio-2.0-SNAPSHOT.pom
 cd ..\..
 cd java\sample
 call mvn -q install
