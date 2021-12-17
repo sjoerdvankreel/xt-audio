@@ -1,12 +1,6 @@
 package xt.audio;
 
-import com.sun.jna.DefaultTypeMapper;
-import com.sun.jna.FromNativeContext;
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.ToNativeContext;
-import com.sun.jna.TypeConverter;
+import com.sun.jna.*;
 import com.sun.jna.win32.StdCallFunctionMapper;
 import xt.audio.Enums.XtCause;
 import xt.audio.Enums.XtSample;
@@ -52,7 +46,9 @@ class Utility {
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
-        options.put(Library.OPTION_FUNCTION_MAPPER, new XtCallMapper());
+        if(Platform.isWindows() && !Platform.is64Bit()) {
+            options.put(Library.OPTION_FUNCTION_MAPPER, new XtCallMapper());
+        }
         LIBRARY = NativeLibrary.getInstance("xt-audio", options);
         Native.register(LIBRARY);
         XtAudioSetAssertTerminates(false);
