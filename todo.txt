@@ -16,3 +16,4 @@
 * Extend tests to all of net/core/java/native debug/release x86/64 win/lin.
 * Support wav writing?
 * Override GetArgumentNativeStackSize().
+* Check java stdcall onerror callback.

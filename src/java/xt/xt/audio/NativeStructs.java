@@ -2,9 +2,9 @@ package xt.audio;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-import xt.audio.NativeCallbacks.OnBuffer;
-import xt.audio.NativeCallbacks.OnRunning;
-import xt.audio.NativeCallbacks.OnXRun;
+import xt.audio.NativeCallbacks.NativeOnBuffer;
+import xt.audio.NativeCallbacks.NativeOnRunning;
+import xt.audio.NativeCallbacks.NativeOnXRun;
 import xt.audio.Structs.XtChannels;
 import xt.audio.Structs.XtFormat;
 import xt.audio.Structs.XtMix;
@@ -42,9 +42,9 @@ interface NativeStructs {
 
     public static class StreamParams extends Structure {
         public boolean interleaved;
-        public OnBuffer onBuffer;
-        public OnXRun onXRun;
-        public OnRunning onRunning;
+        public NativeOnBuffer onBuffer;
+        public NativeOnXRun onXRun;
+        public NativeOnRunning onRunning;
         public StreamParams() {}
         @Override protected List getFieldOrder() { return Arrays.asList("interleaved", "onBuffer", "onXRun", "onRunning"); }
     }

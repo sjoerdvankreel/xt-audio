@@ -1,15 +1,19 @@
 package xt.audio;
 
 import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import xt.audio.NativeCallbacks.OnBuffer;
-import xt.audio.NativeCallbacks.OnRunning;
-import xt.audio.NativeCallbacks.OnXRun;
 import xt.audio.Structs.XtBuffer;
 import xt.audio.Structs.XtFormat;
 import xt.audio.Structs.XtLatency;
 import xt.audio.Structs.XtStreamParams;
+import xt.audio.NativeCallbacks.NativeOnBuffer;
+import xt.audio.NativeCallbacks.NativeOnRunning;
+import xt.audio.NativeCallbacks.NativeOnXRun;
+import xt.audio.NativeCallbacks.WinX86NativeOnBuffer;
+import xt.audio.NativeCallbacks.WinX86NativeOnRunning;
+import xt.audio.NativeCallbacks.WinX86NativeOnXRun;
 import static xt.audio.Utility.handleAssert;
 import static xt.audio.Utility.handleError;
 
@@ -30,9 +34,9 @@ public final class XtStream implements AutoCloseable {
 
     private final Object _user;
     private final XtStreamParams _params;
-    private final OnXRun _onNativeXRun;
-    private final OnBuffer _onNativeBuffer;
-    private final OnRunning _onNativeRunning;
+    private final NativeOnXRun _onNativeXRun;
+    private final NativeOnBuffer _onNativeBuffer;
+    private final NativeOnRunning _onNativeRunning;
     private final XtBuffer _buffer = new XtBuffer();
     private final XtLatency _latency = new XtLatency();
     private final IntByReference _frames = new IntByReference();
@@ -44,16 +48,17 @@ public final class XtStream implements AutoCloseable {
     public boolean isRunning() { return handleAssert(XtStreamIsRunning(_s)); }
     @Override public void close() { handleAssert(() -> XtStreamDestroy(_s)); _s = Pointer.NULL; }
 
-    OnXRun onNativeXRun() { return _onNativeXRun; }
-    OnBuffer onNativeBuffer() { return _onNativeBuffer; }
-    OnRunning onNativeRunning() { return _onNativeRunning; }
+    NativeOnXRun onNativeXRun() { return _onNativeXRun; }
+    NativeOnBuffer onNativeBuffer() { return _onNativeBuffer; }
+    NativeOnRunning onNativeRunning() { return _onNativeRunning; }
 
     XtStream(XtStreamParams params, Object user) {
         _user = user;
         _params = params;
-        _onNativeXRun = this::onXRun;
-        _onNativeBuffer = this::onBuffer;
-        _onNativeRunning = this::onRunning;
+        boolean stdcall = Platform.isWindows() && !Platform.is64Bit();
+        _onNativeXRun = stdcall? (WinX86NativeOnXRun) this::onXRun: (NativeOnXRun)this::onXRun;
+        _onNativeBuffer = stdcall? (WinX86NativeOnBuffer) this::onBuffer: (NativeOnBuffer)this::onBuffer;
+        _onNativeRunning = stdcall? (WinX86NativeOnRunning) this::onRunning: (NativeOnRunning)this::onRunning;
     }
 
     void init(Pointer s) {

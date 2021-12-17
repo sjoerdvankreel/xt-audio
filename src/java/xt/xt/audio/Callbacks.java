@@ -1,11 +1,10 @@
 package xt.audio;
 
-import com.sun.jna.Callback;
 import xt.audio.Structs.XtBuffer;
 
 public interface Callbacks {
 
-    interface XtOnError extends Callback {
+    interface XtOnError  {
         void callback(String message) throws Exception;
     }
 
