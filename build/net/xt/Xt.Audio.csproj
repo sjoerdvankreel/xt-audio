@@ -24,5 +24,7 @@
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-audio.dll" Link="x64/xt-audio.dll" Pack="true" />
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/libxt-audio.so" Link="x86/libxt-audio.so" Pack="true" />
     <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/libxt-audio.so" Link="x64/libxt-audio.so" Pack="true" />
+    <Content Condition="'$(Configuration)'=='Debug'" CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-audio.pdb" Link="x86/xt-audio.pdb" Pack="true" />
+    <Content Condition="'$(Configuration)'=='Debug'" CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-audio.pdb" Link="x64/xt-audio.pdb" Pack="true" />
   </ItemGroup>
 </Project>
