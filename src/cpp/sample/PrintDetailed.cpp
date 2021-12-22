@@ -27,8 +27,8 @@ PrintDevices(Xt::Service const* service, Xt::DeviceList const* list)
       std::cout << "      Interleaved access: " << device->SupportsAccess(true) << "\n";
       std::cout << "      Non-interleaved access: " << device->SupportsAccess(false) << "\n";
       if(mix) std::cout << "      Current mix: " << mix->rate << " " << mix->sample << "\n";
-    } catch(Xt::Exception const& e)
-    { std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; }
+    } catch(std::exception const& e)
+    { std::cout << e.what() << "\n"; }
   }
 }
 
@@ -74,10 +74,6 @@ PrintDetailedMain()
       PrintDevices(service.get(), outputs.get());
     }
     return EXIT_SUCCESS;
-  } catch(Xt::Exception const& e) 
-  { 
-    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; 
-    return EXIT_FAILURE;
   } catch(std::exception const& e)
   {
     std::cout << e.what() << "\n"; 
