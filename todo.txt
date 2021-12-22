@@ -8,7 +8,7 @@
 * WASAPI: starting a shared mode stream on a device where another app is already running an exclusive mode stream
   produces an XtException which crashes the process if XtAudio.GetErrorInfo(e.GetError()) is called on it.
 * Provide previous releases on website.
-* Fix .NET Core GUI.
+* Fix .NET Core/Mono GUI.
 * Remove nuget/mvn beta/snapshot qualifiers.
 * Extend tests to all of net/core/java/native debug/release x86/64 win/lin.
 * Support wav writing?
