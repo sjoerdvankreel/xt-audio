@@ -1,5 +1,6 @@
 *.nupkg
 xt-audio.zip
+launchsettings.json
 dist/**
 src/java/xt/.idea/**
 build/native/win32/**
