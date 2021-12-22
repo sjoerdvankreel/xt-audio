@@ -24,8 +24,8 @@ namespace Xt
                     Console.WriteLine("      Interleaved access: " + device.SupportsAccess(true));
                     Console.WriteLine("      Non-interleaved access: " + device.SupportsAccess(false));
                     if (mix != null) Console.WriteLine("      Current mix: " + mix.Value.rate + " " + mix.Value.sample);
-                } catch (XtException e)
-                { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError())); }
+                } catch (Exception e)
+                { Console.WriteLine(e); }
             }
         }
 
@@ -70,10 +70,8 @@ namespace Xt
                     Console.WriteLine("  Output device count: " + outputs.GetCount());
                     PrintDevices(service, outputs);
                 }
-            } catch (XtException e)
-            { Console.WriteLine(XtAudio.GetErrorInfo(e.GetError()));
             } catch (Exception e)
-            { Console.WriteLine(e.Message); }
+            { Console.WriteLine(e); }
         }
     }
 }

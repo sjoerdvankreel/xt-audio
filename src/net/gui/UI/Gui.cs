@@ -31,12 +31,7 @@ namespace Xt
         }
 
         static void OnError(Exception e)
-        {
-            string message = e.ToString();
-            if (e is XtException xt)
-                message = XtAudio.GetErrorInfo(xt.GetError()).ToString();
-            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        => MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         static IList<StreamType> GetStreamTypes(XtService service)
         {
@@ -195,8 +190,7 @@ namespace Xt
             {
                 Stop();
                 var caption = "Failed to start stream.";
-                var message = XtAudio.GetErrorInfo(e.GetError()).ToString();
-                MessageBox.Show(this, message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, e.Message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -228,7 +222,7 @@ namespace Xt
                     _allDevices.Add(info);
                 } catch (XtException e)
                 {
-                    AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
+                    AddMessage(() => e.Message);
                 }
             return result;
         }
