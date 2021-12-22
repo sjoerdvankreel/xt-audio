@@ -1,5 +1,7 @@
 dist/core/xt/include
+dist/core/xt/x86/Debug
 dist/core/xt/x86/Release
+dist/core/xt/x64/Debug
 dist/core/xt/x64/Release
 dist/cpp/xt/include
 dist/cpp/sample/x86/Release
