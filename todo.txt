@@ -4,7 +4,6 @@
 * Add examples for non-blocking/non-allocating/async IO processing in the callback.
 * Proper ToString()/Message for XtException.
 * Allow dynamic window handle for asio control panel.
-* Realtek asio control panel throws exception with ASE_Success.
 * WASAPI: starting a shared mode stream on a device where another app is already running an exclusive mode stream
   produces an XtException which crashes the process if XtAudio.GetErrorInfo(e.GetError()) is called on it.
 * Provide previous releases on website.

@@ -10,11 +10,15 @@ void*
 AsioDevice::GetHandle() const
 { return _asio.p; }
 XtFault
-AsioDevice::ShowControlPanel()
-{ return _asio->controlPanel(); }
-XtFault
 AsioDevice::SupportsAccess(XtBool interleaved, XtBool* supports) const
 { *supports = !interleaved; return ASE_OK; }
+
+XtFault
+AsioDevice::ShowControlPanel()
+{
+  ASIOError error = _asio->controlPanel();
+  return error == ASE_SUCCESS? ASE_OK: error;
+}
 
 XtFault
 AsioDevice::GetChannelCount(XtBool output, int32_t* count) const
