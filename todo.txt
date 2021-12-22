@@ -8,3 +8,4 @@
 * Extend tests to all of net/core/java/native debug/release x86/64 win/lin.
 * Support wav writing?
 * Include native debug builds for java.
+* Print error stacktrace in samples.
