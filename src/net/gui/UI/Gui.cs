@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -74,6 +75,7 @@ namespace Xt
         public XtGui()
         {
             InitializeComponent();
+            Font = new Font(new FontFamily("Helvetica"), 8f);
             _timer = new System.Windows.Forms.Timer();
             _timer.Interval = 1000;
             _timer.Tick += OnTimerTick;
