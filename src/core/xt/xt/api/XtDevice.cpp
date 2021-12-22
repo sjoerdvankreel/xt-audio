@@ -96,7 +96,7 @@ XtDeviceOpenStream(XtDevice* d, XtDeviceStreamParams const* params, void* user, 
   XT_ASSERT_API(params->bufferSize > 0.0);
   XT_ASSERT_API(params->stream.onBuffer != nullptr);
   if((fault = XtiSupportsFormat(d, &params->format)) != 0) return XtiCreateError(d->GetSystem(), fault);
-  return d->OpenStream(params, user, stream);
+  return XtiCreateError(d->GetSystem(), d->OpenStream(params, user, stream));
 }
 
 XtError XT_CALL

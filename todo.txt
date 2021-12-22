@@ -3,8 +3,6 @@
 * Derive interleaved parameter to safe buffer from the stream.
 * Add examples for non-blocking/non-allocating/async IO processing in the callback.
 * Proper ToString()/Message for XtException.
-* WASAPI: starting a shared mode stream on a device where another app is already running an exclusive mode stream
-  produces an XtException which crashes the process if XtAudio.GetErrorInfo(e.GetError()) is called on it.
 * Provide previous releases on website.
 * Remove nuget/mvn beta/snapshot qualifiers.
 * Extend tests to all of net/core/java/native debug/release x86/64 win/lin.
