@@ -9,3 +9,4 @@
 * Support wav writing?
 * Include native debug builds for java.
 * Print error stacktrace in samples.
+* Search for unneeded GetErrorInfo.
