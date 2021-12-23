@@ -67,7 +67,7 @@ public class Aggregate {
                 XtStreamParams streamParams = new XtStreamParams(true, Aggregate::onBuffer, Aggregate::onXRun, Aggregate::onRunning);
                 aggregateParams = new XtAggregateStreamParams(streamParams, deviceParams, 2, mix, output);
                 try(XtStream stream = service.aggregateStream(aggregateParams, null);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     stream.start();
                     Thread.sleep(2000);
                     stream.stop();

@@ -66,7 +66,7 @@ public class FullDuplex {
                 streamParams = new XtStreamParams(true, FullDuplex::onBuffer, FullDuplex::onXRun, FullDuplex::onRunning);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     stream.start();
                     Thread.sleep(2000);
                     stream.stop();

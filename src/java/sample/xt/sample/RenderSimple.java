@@ -58,7 +58,7 @@ public class RenderSimple {
                 streamParams = new XtStreamParams(true, RenderSimple::onBuffer, null, null);
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     stream.start();
                     Thread.sleep(2000);
                     stream.stop();
