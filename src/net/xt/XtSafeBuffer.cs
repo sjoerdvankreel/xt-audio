@@ -19,9 +19,9 @@ namespace Xt
             { XtSample.Float32, typeof(float) }
         };
 
-        public static XtSafeBuffer Register(XtStream stream, bool interleaved)
+        public static XtSafeBuffer Register(XtStream stream)
         {
-            var result = new XtSafeBuffer(stream, interleaved);
+            var result = new XtSafeBuffer(stream);
             _map.Add(stream, result);
             return result;
         }
@@ -40,13 +40,13 @@ namespace Xt
         public void Dispose() => _map.Remove(_stream);
         public static XtSafeBuffer Get(XtStream stream) => _map[stream];
 
-        internal XtSafeBuffer(XtStream stream, bool interleaved)
+        XtSafeBuffer(XtStream stream)
         {
             _stream = stream;
-            _interleaved = interleaved;
             _format = stream.GetFormat();
             _inputs = _format.channels.inputs;
             _outputs = _format.channels.outputs;
+            _interleaved = stream.IsInterleaved();
             _attrs = XtAudio.GetSampleAttributes(_format.mix.sample);
             _input = CreateBuffer(_inputs);
             _output = CreateBuffer(_outputs);

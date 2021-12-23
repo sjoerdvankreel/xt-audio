@@ -342,7 +342,7 @@ namespace Xt
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in inputFormat, buffer);
                 _stream = inputDevice.OpenStream(in deviceParams, "capture-user-data");
                 callback.Init(_stream.GetFormat(), _stream.GetFrames());
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             } else if (type == StreamType.Render)
             {
@@ -351,7 +351,7 @@ namespace Xt
                 var streamParams = new XtStreamParams(interleaved, callback.Callback, onXRun, OnRunning);
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in outputFormat, buffer);
                 _stream = outputDevice.OpenStream(in deviceParams, "render-user-data");
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             } else if (type == StreamType.Duplex)
             {
@@ -363,7 +363,7 @@ namespace Xt
                 var streamParams = new XtStreamParams(interleaved, callback.Callback, onXRun, OnRunning);
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, buffer);
                 _stream = outputDevice.OpenStream(in deviceParams, "duplex-user-data");
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             } else if (type == StreamType.Aggregate)
             {
@@ -379,7 +379,7 @@ namespace Xt
                 var aggregateParams = new XtAggregateStreamParams(in streamParams, devices.ToArray(), devices.Count, outputFormat.mix, master);
                 _stream = _platform.GetService(system).AggregateStream(in aggregateParams, "aggregate-user-data");
                 streamCallback.Init(_stream.GetFrames());
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             }
             return null;

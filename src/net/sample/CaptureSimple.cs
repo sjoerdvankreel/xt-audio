@@ -44,7 +44,7 @@ namespace Xt
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using var recording = new FileStream("xt-audio.raw", FileMode.Create, FileAccess.Write);
             using XtStream stream = device.OpenStream(in deviceParams, recording);
-            using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
+            using XtSafeBuffer safe = XtSafeBuffer.Register(stream);
             stream.Start();
             Thread.Sleep(2000);
             stream.Stop();

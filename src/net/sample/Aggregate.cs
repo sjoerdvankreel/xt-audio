@@ -57,7 +57,7 @@ namespace Xt
             XtStreamParams streamParams = new XtStreamParams(true, OnBuffer, OnXRun, OnRunning);
             aggregateParams = new XtAggregateStreamParams(in streamParams, deviceParams, 2, mix, output);
             using XtStream stream = service.AggregateStream(in aggregateParams, null);
-            using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
+            using XtSafeBuffer safe = XtSafeBuffer.Register(stream);
             stream.Start();
             Thread.Sleep(2000);
             stream.Stop();
