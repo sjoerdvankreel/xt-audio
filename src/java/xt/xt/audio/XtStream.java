@@ -26,6 +26,7 @@ public final class XtStream implements AutoCloseable {
     private static native Pointer XtStreamGetHandle(Pointer s);
     private static native boolean XtStreamIsRunning(Pointer s);
     private static native XtFormat XtStreamGetFormat(Pointer s);
+    private static native boolean XtStreamIsInterleaved(Pointer s);
     private static native long XtStreamGetLatency(Pointer s, XtLatency latency);
     private static native long XtStreamGetFrames(Pointer s, IntByReference frames);
 
@@ -46,6 +47,7 @@ public final class XtStream implements AutoCloseable {
     public void stop() { handleAssert(() -> XtStreamStop(_s));}
     public Pointer getHandle() { return handleAssert(XtStreamGetHandle(_s)); }
     public boolean isRunning() { return handleAssert(XtStreamIsRunning(_s)); }
+    public boolean isInterleaved() { return handleAssert(XtStreamIsInterleaved(_s)); }
     @Override public void close() { handleAssert(() -> XtStreamDestroy(_s)); _s = Pointer.NULL; }
 
     NativeOnXRun onNativeXRun() { return _onNativeXRun; }

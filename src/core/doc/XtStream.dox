@@ -68,6 +68,15 @@
  * @see XtStreamStart
  * @see XtStreamStop
  */
+ 
+/**
+ * @fn XtBool XtStreamIsInterleaved(XtStream const* s)
+ * @brief Get stream interleaved mode.
+ *
+ * This function may be called from any thread.
+ * @see XtDeviceOpenStream
+ * @see XtServiceAggregateStream
+ */
 
 /**
  * @fn XtFormat const* XtStreamGetFormat(XtStream const* s)

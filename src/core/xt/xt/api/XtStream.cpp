@@ -4,13 +4,6 @@
 
 #include <cstring>
 
-XtFormat const* XT_CALL 
-XtStreamGetFormat(XtStream const* s) 
-{
-  XT_ASSERT_API(s != nullptr);
-  return &s->_params.format;
-}
-
 XtBool XT_CALL
 XtStreamIsRunning(XtStream const* s)
 {
@@ -25,7 +18,21 @@ XtStreamGetHandle(XtStream const* s)
   return s->GetHandle();
 }
 
-void XT_CALL 
+XtFormat const* XT_CALL
+XtStreamGetFormat(XtStream const* s)
+{
+  XT_ASSERT_API(s != nullptr);
+  return &s->_params.format;
+}
+
+XT_API XtBool XT_CALL
+XtStreamIsInterleaved(XtStream const* s)
+{
+  XT_ASSERT_API(s != nullptr);
+  return s->_params.stream.interleaved;
+}
+
+void XT_CALL
 XtStreamDestroy(XtStream* s) 
 { 
   XT_ASSERT_VOID_API(XtiCalledOnMainThread());
