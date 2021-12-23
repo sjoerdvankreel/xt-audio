@@ -33,12 +33,13 @@ if !errorlevel! neq 0 exit /b !errorlevel!
 
 REM java
 cd java\xt
-call mvn -q install
+call mvn dependency:purge-local-repository -DmanualInclude="com.github.sjoerdvankreel:xt.audio"
+call mvn -f pom-release.xml -q clean install
 if !errorlevel! neq 0 exit /b !errorlevel!
-copy pom.xml ..\..\..\dist\java\xt\target\xt.audio-2.0-SNAPSHOT.pom
+copy pom-release.xml ..\..\..\dist\java\xt\release\target\xt.audio-2.0-SNAPSHOT.pom
 cd ..\..
 cd java\sample
-call mvn -q install
+call mvn -q clean install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
 
