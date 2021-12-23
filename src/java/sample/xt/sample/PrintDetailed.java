@@ -34,8 +34,8 @@ public class PrintDetailed {
                 System.out.println("      Non-interleaved access: " + device.supportsAccess(false));
                 if(mix.isPresent())
                     System.out.println("      Current mix: " + mix.get().rate + " " + mix.get().sample);
-            } catch(XtException e) {
-                System.out.println(XtAudio.getErrorInfo(e.getError()));
+            } catch(Throwable t) {
+                t.printStackTrace();
             }
         }
     }
@@ -77,10 +77,8 @@ public class PrintDetailed {
                     printDevices(service, outputs);
                 }
             }
-        } catch(XtException e) {
-            System.out.println(XtAudio.getErrorInfo(e.getError()));
         } catch(Throwable t) {
-            System.out.println(t.getMessage());
+            t.printStackTrace();
         }
     }
 }
