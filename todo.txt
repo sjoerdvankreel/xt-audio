@@ -2,11 +2,8 @@
 * Make timeout configurable including infinity.
 * Derive interleaved parameter to safe buffer from the stream.
 * Add examples for non-blocking/non-allocating/async IO processing in the callback.
-* Proper ToString()/Message for XtException.
 * Provide previous releases on website.
 * Remove nuget/mvn beta/snapshot qualifiers.
 * Extend tests to all of net/core/java/native debug/release x86/64 win/lin.
 * Support wav writing?
 * Include native debug builds for java.
-* Print error stacktrace in samples.
-* Search for unneeded GetErrorInfo.
