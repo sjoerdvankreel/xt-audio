@@ -1,5 +1,5 @@
 @echo off
-cd ..\dist\java\xt\target\release\
+cd ..\dist\java\xt\release\target
 gpg -ab xt.audio-2.0.pom
 gpg -ab xt.audio-2.0.jar
 gpg -ab xt.audio-2.0-sources.jar
