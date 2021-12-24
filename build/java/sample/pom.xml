@@ -2,28 +2,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <packaging>jar</packaging>
     <version>2.0-SNAPSHOT</version>
-    <artifactId>xt.sample</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.sjoerdvankreel</groupId>
+    <artifactId>xt.sample</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>
+            <version>2.0-SNAPSHOT</version>
+            <groupId>com.github.sjoerdvankreel</groupId>
+            <artifactId>xt.audio</artifactId>
+        </dependency>
+        <dependency>
             <version>5.10.0</version>
             <artifactId>jna</artifactId>
             <groupId>net.java.dev.jna</groupId>
         </dependency>
-        <dependency>
-            <version>2.0-SNAPSHOT</version>
-            <artifactId>xt.audio</artifactId>
-            <groupId>com.github.sjoerdvankreel</groupId>
-        </dependency>
     </dependencies>
     <build>
+        <directory>${basedir}/../../../dist/java/sample/target</directory>
         <sourceDirectory>${basedir}/../../../src/java/sample</sourceDirectory>
-        <directory>${basedir}/../../../dist/java/sample/${xt.audio.configuration}/target</directory>
-        <outputDirectory>${basedir}/../../../dist/java/sample/${xt.audio.configuration}/classes</outputDirectory>
+        <outputDirectory>${basedir}/../../../dist/java/sample/classes</outputDirectory>
         <plugins>
             <plugin>
                 <version>3.8.1</version>

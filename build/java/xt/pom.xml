@@ -42,9 +42,9 @@
         </dependency>
     </dependencies>
     <build>
+        <directory>${basedir}/../../../dist/java/xt/target</directory>
         <sourceDirectory>${basedir}/../../../src/java/xt</sourceDirectory>
-        <directory>${basedir}/../../../dist/java/xt/${xt.audio.configuration}/target</directory>
-        <outputDirectory>${basedir}/../../../dist/java/xt/${xt.audio.configuration}/classes</outputDirectory>
+        <outputDirectory>${basedir}/../../../dist/java/xt/classes</outputDirectory>
         <plugins>
             <plugin>
                 <version>3.8.1</version>
@@ -86,10 +86,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/${xt.audio.configuration}/classes/win32-x86</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/win32-x86</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x86/${xt.audio.configuration}</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
                                     <includes>
                                         <include>xt-audio.dll</include>
                                     </includes>
@@ -104,10 +104,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/${xt.audio.configuration}/classes/win32-x86-64</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/win32-x86-64</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x64/${xt.audio.configuration}</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
                                         <include>xt-audio.dll</include>
                                     </includes>
@@ -122,10 +122,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/${xt.audio.configuration}/classes/linux-x86</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/linux-x86</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x86/${xt.audio.configuration}</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
                                     <includes>
                                         <include>libxt-audio.so</include>
                                     </includes>
@@ -140,10 +140,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/${xt.audio.configuration}/classes/linux-x86-64</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/classes/linux-x86-64</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x64/${xt.audio.configuration}</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
                                     <includes>
                                         <include>libxt-audio.so</include>
                                     </includes>

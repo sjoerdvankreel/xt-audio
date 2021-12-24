@@ -6,8 +6,8 @@ dist/core/xt/x64/Release
 dist/cpp/xt/include
 dist/cpp/sample/x86/Release
 dist/cpp/sample/x64/Release
+dist/java/xt/target
+dist/java/sample/target
 dist/net/xt/Release
 dist/net/gui/Release
 dist/net/sample/Release
-dist/java/xt/Release/target
-dist/java/sample/Release/target
