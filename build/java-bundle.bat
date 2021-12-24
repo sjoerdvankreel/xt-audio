@@ -1,8 +1,8 @@
 @echo off
 cd ..\dist\java\xt\target\release\
-gpg -ab xt.audio-2.0-SNAPSHOT.pom
-gpg -ab xt.audio-2.0-SNAPSHOT.jar
-gpg -ab xt.audio-2.0-SNAPSHOT-sources.jar
-gpg -ab xt.audio-2.0-SNAPSHOT-javadoc.jar
-jar -cvf xt.audio-2.0-SNAPSHOT-bundle.jar xt.audio-2.0-SNAPSHOT.pom xt.audio-2.0-SNAPSHOT.jar xt.audio-2.0-SNAPSHOT-sources.jar xt.audio-2.0-SNAPSHOT-javadoc.jar xt.audio-2.0-SNAPSHOT.pom.asc xt.audio-2.0-SNAPSHOT.jar.asc xt.audio-2.0-SNAPSHOT-sources.jar.asc xt.audio-2.0-SNAPSHOT-javadoc.jar.asc
+gpg -ab xt.audio-2.0.pom
+gpg -ab xt.audio-2.0.jar
+gpg -ab xt.audio-2.0-sources.jar
+gpg -ab xt.audio-2.0-javadoc.jar
+jar -cvf xt.audio-2.0-bundle.jar xt.audio-2.0.pom xt.audio-2.0.jar xt.audio-2.0-sources.jar xt.audio-2.0-javadoc.jar xt.audio-2.0.pom.asc xt.audio-2.0.jar.asc xt.audio-2.0-sources.jar.asc xt.audio-2.0-javadoc.jar.asc
 cd ..\..\..\..\..\build

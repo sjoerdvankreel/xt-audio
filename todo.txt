@@ -2,4 +2,3 @@
 * Make timeout configurable including infinity.
 * Add examples for non-blocking/non-allocating/async IO processing in the callback.
 * Provide previous releases on website.
-* Remove nuget/mvn beta/snapshot qualifiers.
