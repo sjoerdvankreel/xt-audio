@@ -71,8 +71,10 @@ if not exist ..\dist\cpp\doc (mkdir ..\dist\cpp\doc)
 doxygen native\doc\cpp.doxyfile
 if not exist ..\dist\core\doc (mkdir ..\dist\core\doc)
 doxygen native\doc\core.doxyfile
+cd java\xt
+call mvn -q javadoc:javadoc
+cd ..\..
 msbuild net\doc\Xt.Audio.shfbproj /verbosity:quiet
-xcopy /e /i /q ..\dist\java\xt\Release\target\apidocs ..\dist\java\doc
 
 REM package
 cd ..
