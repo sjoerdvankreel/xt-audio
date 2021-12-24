@@ -1,12 +1,12 @@
 @echo off
 setLocal enableDelayedExpansion
 
-REM native
 set archs[0]=x86
 set archs[1]=x64
 set vsarchs[0]=Win32
 set vsarchs[1]=x64
 
+REM native binaries
 for /L %%A in (0, 1, 1) do (
   if not exist native\win32\!archs[%%A]! (mkdir native\win32\!archs[%%A]!)
   cd native\win32\!archs[%%A]!
@@ -22,7 +22,7 @@ for /L %%A in (0, 1, 1) do (
   copy ..\dist\core\xt\!archs[%%A]!\Release\xt-audio.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-audio.dll
 )
 
-REM include files
+REM native includes
 if not exist ..\dist\cpp\xt\include (mkdir ..\dist\cpp\xt\include)
 xcopy ..\src\cpp\xt ..\dist\cpp\xt\include /s /q /y
 if !errorlevel! neq 0 exit /b !errorlevel!
@@ -31,18 +31,33 @@ echo d | xcopy ..\src\core\xt\xt\api\*.h ..\dist\core\xt\include\xt\api /s /q /y
 echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\include\xt\XtAudio.h /s /q /y /f
 if !errorlevel! neq 0 exit /b !errorlevel!
 
-REM java
+REM java debug
 cd java\xt
-call mvn -q install
+call mvn dependency:purge-local-repository -DmanualInclude="com.github.sjoerdvankreel:xt.audio"
+call mvn -q -Dxt.audio.configuration=Debug clean install
 if !errorlevel! neq 0 exit /b !errorlevel!
-copy pom.xml ..\..\..\dist\java\xt\target\xt.audio-2.0-SNAPSHOT.pom
+copy pom.xml ..\..\..\dist\java\xt\Debug\target\xt.audio-2.0-SNAPSHOT.pom
 cd ..\..
 cd java\sample
-call mvn -q install
+call mvn dependency:purge-local-repository -DmanualInclude="com.github.sjoerdvankreel:xt.sample"
+call mvn -q -Dxt.audio.configuration=Debug clean install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
 
-REM net
+REM java release (must be after debug, gets installed by mvn)
+cd java\xt
+call mvn dependency:purge-local-repository -DmanualInclude="com.github.sjoerdvankreel:xt.audio"
+call mvn -q -Dxt.audio.configuration=Release clean install
+if !errorlevel! neq 0 exit /b !errorlevel!
+copy pom.xml ..\..\..\dist\java\xt\Release\target\xt.audio-2.0-SNAPSHOT.pom
+cd ..\..
+cd java\sample
+call mvn dependency:purge-local-repository -DmanualInclude="com.github.sjoerdvankreel:xt.sample"
+call mvn -q -Dxt.audio.configuration=Release clean install
+if !errorlevel! neq 0 exit /b !errorlevel!
+cd ..\..
+
+REM .NET all configurations
 cd net
 dotnet restore
 msbuild Xt.Audio.sln /p:Configuration=Debug /verbosity:quiet
@@ -51,7 +66,7 @@ msbuild Xt.Audio.sln /p:Configuration=Release /verbosity:quiet
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 
-REM doc
+REM all documentation
 if not exist ..\dist\cpp\doc (mkdir ..\dist\cpp\doc)
 doxygen native\doc\cpp.doxyfile
 if not exist ..\dist\core\doc (mkdir ..\dist\core\doc)
