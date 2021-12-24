@@ -1,4 +1,5 @@
-? - V2.0
+December 24, 2021 - V2.0
+* Provide debug builds.
 * Breaking change (java): updated to java 17.
 * Breaking change (java/.NET): changed XtSafeBuffer.Register() signature.
 * Bugfix: don't crash on ASIO drivers that return ASE_SUCCESS instead of ASE_OK from the control panel.
