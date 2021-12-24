@@ -21,12 +21,12 @@ if %errorlevel% neq 0 exit /b !errorlevel!
 echo:
 
 echo NetCore debug...
-..\dist\net\sample\Debug\net6.0\Xt.Sample.exe "%2"
+dotnet ..\dist\net\sample\Debug\net6.0\Xt.Sample.dll "%2"
 if %errorlevel% neq 0 exit /b !errorlevel!
 echo:
 
 echo NetCore release...
-..\dist\net\sample\Release\net6.0\Xt.Sample.exe "%2"
+dotnet ..\dist\net\sample\Release\net6.0\Xt.Sample.dll "%2"
 if %errorlevel% neq 0 exit /b !errorlevel!
 echo:
 
