@@ -1,12 +1,12 @@
 @echo off
 setLocal enableDelayedExpansion
 
-REM native
 set archs[0]=x86
 set archs[1]=x64
 set vsarchs[0]=Win32
 set vsarchs[1]=x64
 
+REM native binaries
 for /L %%A in (0, 1, 1) do (
   if not exist native\win32\!archs[%%A]! (mkdir native\win32\!archs[%%A]!)
   cd native\win32\!archs[%%A]!
@@ -22,7 +22,7 @@ for /L %%A in (0, 1, 1) do (
   copy ..\dist\core\xt\!archs[%%A]!\Release\xt-audio.dll ..\dist\cpp\sample\!archs[%%A]!\Release\xt-audio.dll
 )
 
-REM include files
+REM native includes
 if not exist ..\dist\cpp\xt\include (mkdir ..\dist\cpp\xt\include)
 xcopy ..\src\cpp\xt ..\dist\cpp\xt\include /s /q /y
 if !errorlevel! neq 0 exit /b !errorlevel!
@@ -35,10 +35,15 @@ REM java
 cd java\xt
 call mvn -q install
 if !errorlevel! neq 0 exit /b !errorlevel!
-copy pom.xml ..\..\..\dist\java\xt\target\xt.audio-2.0-SNAPSHOT.pom
+copy pom.xml ..\..\..\dist\java\xt\release\target\xt.audio-2.0-SNAPSHOT.pom
+call mvn -f pom.debug.xml -q install
+if !errorlevel! neq 0 exit /b !errorlevel!
+copy pom.debug.xml ..\..\..\dist\java\xt\debug\target\xt.audio.debug-2.0-SNAPSHOT.pom
 cd ..\..
 cd java\sample
 call mvn -q install
+if !errorlevel! neq 0 exit /b !errorlevel!
+call mvn -f pom.debug.xml -q install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
 

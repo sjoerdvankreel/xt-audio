@@ -3,7 +3,7 @@
     <packaging>jar</packaging>
     <version>2.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>xt.sample</artifactId>
+    <artifactId>xt.sample.debug</artifactId>
     <groupId>com.github.sjoerdvankreel</groupId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,14 +16,14 @@
         </dependency>
         <dependency>
             <version>2.0-SNAPSHOT</version>
-            <artifactId>xt.audio</artifactId>
+            <artifactId>xt.audio.debug</artifactId>
             <groupId>com.github.sjoerdvankreel</groupId>
         </dependency>
     </dependencies>
     <build>
         <sourceDirectory>${basedir}/../../../src/java/sample</sourceDirectory>
-        <directory>${basedir}/../../../dist/java/sample/release/target</directory>
-        <outputDirectory>${basedir}/../../../dist/java/sample/release/classes</outputDirectory>
+        <directory>${basedir}/../../../dist/java/sample/debug/target</directory>
+        <outputDirectory>${basedir}/../../../dist/java/sample/debug/classes</outputDirectory>
         <plugins>
             <plugin>
                 <version>3.8.1</version>
