@@ -1,3 +1,11 @@
+December 24, 2021 - V2.0
+* Provide debug builds.
+* Breaking change (java): updated to java 17.
+* Breaking change (java/.NET): changed XtSafeBuffer.Register() signature.
+* Bugfix: don't crash on ASIO drivers that return ASE_SUCCESS instead of ASE_OK from the control panel.
+* Bugfix: XtDeviceOpenStream did not properly translate backend errors into generic errors, causing XtAudioGetErrorInfo() to crash.
+* New API: XtStreamIsInterleaved, to complement XtStreamGetFormat. Primarily intended to allow generic OnBuffer implementations.
+
 February 14, 2021 - V1.9
 * Static link against msvcrt.
 * Breaking change (all languages): changed XtOnError signature.

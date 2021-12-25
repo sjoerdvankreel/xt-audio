@@ -21,8 +21,8 @@ public final class XtSafeBuffer implements AutoCloseable {
             XtSample.FLOAT32, float.class
     );
 
-    public static XtSafeBuffer register(XtStream stream, boolean interleaved) {
-        var result = new XtSafeBuffer(stream, interleaved);
+    public static XtSafeBuffer register(XtStream stream) {
+        var result = new XtSafeBuffer(stream);
         _map.put(stream, result);
         return result;
     }
@@ -41,12 +41,12 @@ public final class XtSafeBuffer implements AutoCloseable {
     public void close() { _map.remove(_stream); }
     public static XtSafeBuffer get(XtStream stream) { return _map.get(stream); }
 
-    XtSafeBuffer(XtStream stream, boolean interleaved) {
+    XtSafeBuffer(XtStream stream) {
         _stream = stream;
-        _interleaved = interleaved;
         _format = stream.getFormat();
         _inputs = _format.channels.inputs;
         _outputs = _format.channels.outputs;
+        _interleaved = stream.isInterleaved();
         _attrs = XtAudio.getSampleAttributes(_format.mix.sample);
         _input = createBuffer(_inputs);
         _output = createBuffer(_outputs);

@@ -41,10 +41,6 @@ main(int argc, char** argv)
     if (index >= 0) RunSample(index);
     else for (int32_t i = 0; i < sizeof(Samples)/sizeof(Samples[0]); i++) RunSample(i);
     return EXIT_SUCCESS;
-  } catch (Xt::Exception const& e)
-  { 
-    std::cout << Xt::Audio::GetErrorInfo(e.GetError()) << "\n"; 
-    return EXIT_FAILURE;
   } catch(std::exception const& e)
   {
     std::cout << e.what() << "\n"; 

@@ -29,10 +29,8 @@ public final class Sample {
         try {
             if(index >= 0) runSample(index);
             else for(int i = 0; i < SAMPLES.length; i++) runSample(i);
-        } catch(XtException e) {
-            System.out.println(XtAudio.getErrorInfo(e.getError()));
         } catch(Throwable t) {
-            System.out.println(t.getMessage());
+            t.printStackTrace();
         }
     }
 }

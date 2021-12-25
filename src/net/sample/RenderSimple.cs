@@ -48,7 +48,7 @@ namespace Xt
             streamParams = new XtStreamParams(true, OnBuffer, null, null);
             deviceParams = new XtDeviceStreamParams(in streamParams, in Format, size.current);
             using XtStream stream = device.OpenStream(in deviceParams, null);
-            using XtSafeBuffer safe = XtSafeBuffer.Register(stream, true);
+            using XtSafeBuffer safe = XtSafeBuffer.Register(stream);
             stream.Start();
             Thread.Sleep(2000);
             stream.Stop();

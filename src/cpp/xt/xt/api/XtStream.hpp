@@ -31,6 +31,7 @@ public:
   bool IsRunning() const;
   void* GetHandle() const;
   int32_t GetFrames() const;
+  bool IsInterleaved() const;
   Latency GetLatency() const;
   Format const& GetFormat() const;
 
@@ -84,6 +85,13 @@ Stream::GetFormat() const
 {
   auto coreFormat = Detail::HandleAssert(XtStreamGetFormat(_s));
   return *reinterpret_cast<Format const*>(coreFormat);
+}
+
+inline bool
+Stream::IsInterleaved() const
+{
+  auto coreInterleaved = Detail::HandleAssert(XtStreamIsInterleaved(_s));
+  return coreInterleaved != XtFalse;
 }
 
 } // namespace Xt

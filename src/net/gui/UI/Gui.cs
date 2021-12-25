@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -30,12 +31,7 @@ namespace Xt
         }
 
         static void OnError(Exception e)
-        {
-            string message = e.ToString();
-            if (e is XtException xt)
-                message = XtAudio.GetErrorInfo(xt.GetError()).ToString();
-            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        => MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
         static IList<StreamType> GetStreamTypes(XtService service)
         {
@@ -74,6 +70,7 @@ namespace Xt
         public XtGui()
         {
             InitializeComponent();
+            Font = new Font(new FontFamily("Helvetica"), 8f);
             _timer = new System.Windows.Forms.Timer();
             _timer.Interval = 1000;
             _timer.Tick += OnTimerTick;
@@ -193,8 +190,7 @@ namespace Xt
             {
                 Stop();
                 var caption = "Failed to start stream.";
-                var message = XtAudio.GetErrorInfo(e.GetError()).ToString();
-                MessageBox.Show(this, message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, e.Message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -226,7 +222,7 @@ namespace Xt
                     _allDevices.Add(info);
                 } catch (XtException e)
                 {
-                    AddMessage(() => XtAudio.GetErrorInfo(e.GetError()).ToString());
+                    AddMessage(() => e.Message);
                 }
             return result;
         }
@@ -346,7 +342,7 @@ namespace Xt
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in inputFormat, buffer);
                 _stream = inputDevice.OpenStream(in deviceParams, "capture-user-data");
                 callback.Init(_stream.GetFormat(), _stream.GetFrames());
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             } else if (type == StreamType.Render)
             {
@@ -355,7 +351,7 @@ namespace Xt
                 var streamParams = new XtStreamParams(interleaved, callback.Callback, onXRun, OnRunning);
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in outputFormat, buffer);
                 _stream = outputDevice.OpenStream(in deviceParams, "render-user-data");
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             } else if (type == StreamType.Duplex)
             {
@@ -367,7 +363,7 @@ namespace Xt
                 var streamParams = new XtStreamParams(interleaved, callback.Callback, onXRun, OnRunning);
                 var deviceParams = new XtDeviceStreamParams(in streamParams, in duplexFormat, buffer);
                 _stream = outputDevice.OpenStream(in deviceParams, "duplex-user-data");
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             } else if (type == StreamType.Aggregate)
             {
@@ -383,7 +379,7 @@ namespace Xt
                 var aggregateParams = new XtAggregateStreamParams(in streamParams, devices.ToArray(), devices.Count, outputFormat.mix, master);
                 _stream = _platform.GetService(system).AggregateStream(in aggregateParams, "aggregate-user-data");
                 streamCallback.Init(_stream.GetFrames());
-                _safeBuffer = XtSafeBuffer.Register(_stream, interleaved);
+                _safeBuffer = XtSafeBuffer.Register(_stream);
                 _stream.Start();
             }
             return null;

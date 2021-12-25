@@ -1,12 +1,7 @@
 package xt.audio;
 
-import com.sun.jna.DefaultTypeMapper;
-import com.sun.jna.FromNativeContext;
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.ToNativeContext;
-import com.sun.jna.TypeConverter;
+import com.sun.jna.*;
+import com.sun.jna.win32.StdCallFunctionMapper;
 import xt.audio.Enums.XtCause;
 import xt.audio.Enums.XtSample;
 import xt.audio.Enums.XtSetup;
@@ -21,6 +16,13 @@ class XtTypeMapper extends DefaultTypeMapper {
         addTypeConverter(XtCause.class, new EnumConverter<>(XtCause.class, 0));
         addTypeConverter(XtSample.class, new EnumConverter<>(XtSample.class, 0));
         addTypeConverter(XtSystem.class, new EnumConverter<>(XtSystem.class, 1));
+    }
+}
+
+class XtCallMapper extends StdCallFunctionMapper {
+    @Override
+    protected int getArgumentNativeStackSize(Class<?> cls) {
+        return cls.isEnum()? 4: super.getArgumentNativeStackSize(cls);
     }
 }
 
@@ -44,6 +46,9 @@ class Utility {
         System.setProperty("jna.encoding", "UTF-8");
         Map<String, Object> options = new HashMap<>();
         options.put(Library.OPTION_TYPE_MAPPER, new XtTypeMapper());
+        if(Platform.isWindows() && !Platform.is64Bit()) {
+            options.put(Library.OPTION_FUNCTION_MAPPER, new XtCallMapper());
+        }
         LIBRARY = NativeLibrary.getInstance("xt-audio", options);
         Native.register(LIBRARY);
         XtAudioSetAssertTerminates(false);

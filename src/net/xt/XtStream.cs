@@ -19,6 +19,8 @@ namespace Xt
         [DllImport("xt-audio")]
         static extern IntPtr XtStreamGetHandle(IntPtr s);
         [DllImport("xt-audio")]
+        static extern int XtStreamIsInterleaved(IntPtr s);
+        [DllImport("xt-audio")]
         static extern unsafe XtFormat* XtStreamGetFormat(IntPtr s);
         [DllImport("xt-audio")]
         static extern ulong XtStreamGetFrames(IntPtr s, out int frames);
@@ -59,6 +61,7 @@ namespace Xt
         public bool IsRunning() => HandleAssert(XtStreamIsRunning(_s) != 0);
         public unsafe XtFormat GetFormat() => HandleAssert(*XtStreamGetFormat(_s));
         public int GetFrames() => HandleError(XtStreamGetFrames(_s, out var r), r);
+        public bool IsInterleaved() => HandleAssert(XtStreamIsInterleaved(_s) != 0);
         public XtLatency GetLatency() => HandleError(XtStreamGetLatency(_s, out var r), r);
         public void Dispose() { HandleAssert(() => XtStreamDestroy(_s)); _s = IntPtr.Zero; }
     }

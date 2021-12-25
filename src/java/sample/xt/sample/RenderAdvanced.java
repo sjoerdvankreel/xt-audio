@@ -115,7 +115,7 @@ public class RenderAdvanced {
                 streamParams = new XtStreamParams(true, RenderAdvanced::onInterleavedSafeBuffer, RenderAdvanced::onXRun, RenderAdvanced::onRunning);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     runStream(stream);
                 }
 
@@ -130,7 +130,7 @@ public class RenderAdvanced {
                 streamParams = new XtStreamParams(false, RenderAdvanced::onNonInterleavedSafeBuffer, RenderAdvanced::onXRun, RenderAdvanced::onRunning);
                 deviceParams = new XtDeviceStreamParams(streamParams, format, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, false)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     runStream(stream);
                 }
 
@@ -146,7 +146,7 @@ public class RenderAdvanced {
                 streamParams = new XtStreamParams(true, RenderAdvanced::onInterleavedSafeBuffer, RenderAdvanced::onXRun, RenderAdvanced::onRunning);
                 deviceParams = new XtDeviceStreamParams(streamParams, sendTo0, size.current);
                 try(XtStream stream = device.openStream(deviceParams, null);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     runStream(stream);
                 }
 

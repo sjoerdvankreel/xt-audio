@@ -120,7 +120,7 @@ public class CaptureAdvanced {
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio-interleaved-safe.raw");
                     XtStream stream = device.openStream(deviceParams, recording);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, true)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     runStream(stream);
                 }
 
@@ -140,7 +140,7 @@ public class CaptureAdvanced {
                 deviceParams = new XtDeviceStreamParams(streamParams, FORMAT, size.current);
                 try(FileOutputStream recording = new FileOutputStream("xt-audio-non-interleaved-safe.raw");
                     XtStream stream = device.openStream(deviceParams, recording);
-                    XtSafeBuffer safe = XtSafeBuffer.register(stream, false)) {
+                    XtSafeBuffer safe = XtSafeBuffer.register(stream)) {
                     runStream(stream);
                 }
 

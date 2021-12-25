@@ -3,37 +3,12 @@
     <name>XT-Audio</name>
     <packaging>jar</packaging>
     <version>2.0</version>
-    <artifactId>xt.audio</artifactId>
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>xt.audio.debug</artifactId>
     <groupId>com.github.sjoerdvankreel</groupId>
-    <url>https://sjoerdvankreel.github.io/xt-audio/</url>
-    <description>Streaming audio focused on low latency, platform independence and API simplicity.</description>
-    <developers>
-        <developer>
-            <id>sjoerdvankreel</id>
-            <name>Sjoerd van Kreel</name>
-            <email>sjoerdvankreel@gmail.com</email>
-            <url>https://github.com/sjoerdvankreel</url>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
-    <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>http://www.opensource.org/licenses/mit-license.php</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <scm>
-        <url>https://github.com/sjoerdvankreel/xt-audio</url>
-        <connection>scm:git:git://github.com/sjoerdvankreel/xt-audio.git</connection>
-        <developerConnection>scm:git:git@github.com:sjoerdvankreel/xt-audio.git</developerConnection>
-    </scm>
     <dependencies>
         <dependency>
             <version>5.10.0</version>
@@ -43,8 +18,8 @@
     </dependencies>
     <build>
         <sourceDirectory>${basedir}/../../../src/java/xt</sourceDirectory>
-        <directory>${basedir}/../../../dist/java/xt/release/target</directory>
-        <outputDirectory>${basedir}/../../../dist/java/xt/release/classes</outputDirectory>
+        <directory>${basedir}/../../../dist/java/xt/debug/target</directory>
+        <outputDirectory>${basedir}/../../../dist/java/xt/debug/classes</outputDirectory>
         <plugins>
             <plugin>
                 <version>3.8.1</version>
@@ -86,10 +61,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/win32-x86</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/debug/classes/win32-x86</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x86/Debug</directory>
                                     <includes>
                                         <include>xt-audio.dll</include>
                                     </includes>
@@ -104,10 +79,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/win32-x86-64</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/debug/classes/win32-x86-64</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x64/Debug</directory>
                                     <includes>
                                         <include>xt-audio.dll</include>
                                     </includes>
@@ -122,10 +97,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/linux-x86</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/debug/classes/linux-x86</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x86/Debug</directory>
                                     <includes>
                                         <include>libxt-audio.so</include>
                                     </includes>
@@ -140,49 +115,16 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/linux-x86-64</outputDirectory>
+                            <outputDirectory>${basedir}/../../../dist/java/xt/debug/classes/linux-x86-64</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/x64/Debug</directory>
                                     <includes>
                                         <include>libxt-audio.so</include>
                                     </includes>
                                 </resource>
                             </resources>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <version>3.3.1</version>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <source>17</source>
-                    <sourceFileExcludes>
-                        <sourceFileExclude>**/module-info.java</sourceFileExclude>
-                    </sourceFileExcludes>
-                    <reportOutputDirectory>${basedir}/../../../dist/java/doc</reportOutputDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

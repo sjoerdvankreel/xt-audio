@@ -6,11 +6,11 @@
     <authors>Sjoerd van Kreel</authors>
 
     <license type="expression">MIT</license>
-    <copyright>2015-2021 Sjoerd van Kreel</copyright>
+    <copyright>2015-2022 Sjoerd van Kreel</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
 
     <id>Xt.Audio</id>
-    <version>1.9</version>
+    <version>2.0</version>
     <projectUrl>https://sjoerdvankreel.github.io/xt-audio/</projectUrl>
     <repository type="git" url="https://github.com/sjoerdvankreel/xt-audio" />
 

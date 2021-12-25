@@ -16,37 +16,58 @@
         <td>Linux x64</td>
       </tr>
       <tr>
-        <td>Java</td>
-        <td>JRE 11+</td>
-        <td>JRE 11+</td>
-        <td>JRE 11+</td>
-        <td>JRE 11+</td>
+        <td>Java (library and samples)</td>
+        <td>JRE 17+</td>
+        <td>JRE 17+</td>
+        <td>JRE 17+</td>
+        <td>JRE 17+</td>
       </tr>
       <tr>
-        <td>.NET Framework</td>
+        <td>Native (library and samples)</td>
+        <td>Windows 7+</td>
+        <td>Windows 7+</td>
+        <td>Something recent</td>
+        <td>Something recent</td>
+      </tr>
+      <tr>
+        <td>.NET Framework (library)</td>
+        <td>netstandard2.0</td>
+        <td>netstandard2.0</td>
+        <td>netstandard2.0</td>
+        <td>netstandard2.0</td>
+      </tr>
+      <tr>
+        <td>.NET Framework (samples and gui)</td>
         <td>.NET 4.8</td>
         <td>.NET 4.8</td>
         <td>Mono 6.8</td>
         <td>Mono 6.8</td>
       </tr>
       <tr>
-        <td>.NET Core</td>
-        <td>Runtime 3.1</td>
-        <td>Runtime 3.1</td>
+        <td>.NET Core (library)</td>
+        <td>netstandard2.0</td>
+        <td>netstandard2.0</td>
         <td>Not supported (1)</td>
-        <td>Runtime 3.1 (2)</td>
+        <td>netstandard2.0</td>
       </tr>
       <tr>
-        <td>Native</td>
-        <td>Windows 7+</td>
-        <td>Windows 7+</td>
-        <td>Something recent</td>
-        <td>Something recent</td>
+        <td>.NET Core (samples)</td>
+        <td>.NET Runtime 6.0</td>
+        <td>.NET Runtime 6.0</td>
+        <td>Not supported (1)</td>
+        <td>.NET Runtime 6.0</td>
+      </tr>
+      <tr>
+        <td>.NET Core (gui)</td>
+        <td>.NET Runtime 6.0</td>
+        <td>.NET Runtime 6.0</td>
+        <td>Not supported (1)</td>
+        <td>Not supported (2)</td>
       </tr>
     </table>
     <ul>
-      <li>(1): .NET Core on Linux is x64 only (x86 not supported by Microsoft).</li>
-      <li>(2): Library will work but GUI-demo will not (Winforms not supported on Linux).</li>
+      <li>(1): .NET Core on Linux does not support x86.</li>
+      <li>(2): .NET Core on Linux does not support Winforms.</li>
     </ul>
     <h1>Build-time requirements</h1>
     <h2>Dependencies</h2>
@@ -73,7 +94,7 @@
       </tr>
       <tr>
         <td>ASIO (2,3)</td>
-        <td>ASIO SDK 2.3 (source), asmjit (source, recent)
+        <td>ASIO SDK 2.3.3 (source), asmjit (source, commit 2a706fd2ba355808cada31ac1eed8ce28caa6b37)
       </tr>
     </table>
     <ul>
@@ -88,15 +109,15 @@
     <table border="1" cellspacing="0" cellpadding="2">
       <tr>
         <td>Linux x86 (1)</td>
-        <td>GCC 7.5+<br/>CMake 3.15+</td>
+        <td>GCC 7.5+<br/>CMake 3.21+</td>
       </tr>
       <tr>
         <td>Linux x64 (2)</td>
-        <td>GCC 7.5+<br/>CMake 3.15+</td>
+        <td>GCC 9.3+<br/>CMake 3.21+</td>
       </tr>
       <tr>
         <td>Windows x64 (3)</td>
-        <td>Visual Studio 2019+<br/>Java SDK 11+<br/>.NET SDK 4.8+<br/>.NET Core SDK 3.1+<br/>CMake 3.15+<br/>Maven 3.3.3+<br/>Doxygen 1.8.10+<br/>Sandcastle (SHFB) 2020.3.6.0+</td>
+        <td>Visual Studio 2022+<br/>Java SDK 17+<br/>.NET Framework SDK 4.8+<br/>.NET 6.0+ SDK<br/>CMake 3.21+<br/>Maven 3.8.4+<br/>Doxygen 1.8.10+<br/>Sandcastle (SHFB) 2021.11.7.0+</td>
       </tr>
     </table>
     <ul>
@@ -138,12 +159,16 @@
         <td>X86/x64, Linux/Windows, native executable</td>
       </tr>
       <tr>
-        <td>.NET bindings, samples and demo GUI</td>
-        <td>.NET 4.8/Mono 6.8/.NET Core 3.1</td>
+        <td>.NET bindings</td>
+        <td>netstandard2.0</td>
+      </tr>
+      <tr>
+        <td>.NET samples and demo GUI</td>
+        <td>.NET Framework 4.8 / .NET Core 6.0 / Mono 6.8</td>
       </tr>
       <tr>
         <td>Java bindings and samples</td>
-        <td>JRE 11+</td>
+        <td>JRE 17+</td>
       </tr>
     </table>
   </body>
