@@ -5,9 +5,15 @@
 void XtPlatform
 ::EndThread() { CoUninitialize(); }
 void XtPlatform::
-RevertThreadPriority(int32_t policy, int32_t previous) { }
+RevertThreadPriority(int32_t policy, int32_t previous) {
+	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
+}
 void XtPlatform::
-RaiseThreadPriority(int32_t* policy, int32_t* previous) { }
+RaiseThreadPriority(int32_t* policy, int32_t* previous) {
+	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+}
 void 
 XtPlatform::BeginThread() 
 { XT_ASSERT_COM(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)); }
