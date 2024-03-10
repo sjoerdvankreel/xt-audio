@@ -1,3 +1,7 @@
+March 10, 2024 - V2.0.1
+
+* Bugfix: build script copied a wrong header file to the native includes directory.
+
 December 24, 2021 - V2.0
 * Provide debug builds.
 * Breaking change (java): updated to java 17.

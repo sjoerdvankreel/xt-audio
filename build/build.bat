@@ -28,7 +28,7 @@ xcopy ..\src\cpp\xt ..\dist\cpp\xt\include /s /q /y
 if !errorlevel! neq 0 exit /b !errorlevel!
 if not exist ..\dist\core\xt\include (mkdir ..\dist\core\xt\include)
 echo d | xcopy ..\src\core\xt\xt\api\*.h ..\dist\core\xt\include\xt\api /s /q /y
-echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\include\xt\XtAudio.h /s /q /y /f
+echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\include\xt\XtAudio.h /q /y /f
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 REM java
