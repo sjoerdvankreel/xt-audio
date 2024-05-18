@@ -13,7 +13,7 @@ namespace Xt
         const int RTLD_NOW = 2;
         [DllImport("kernel32.dll")]
         static extern IntPtr LoadLibrary(string file);
-        [DllImport("libdl.so")]
+        [DllImport("libc")]
         static extern IntPtr dlopen(string filename, int flags);
 
         [DllImport("xt-audio")]
