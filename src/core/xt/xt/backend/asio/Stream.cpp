@@ -4,7 +4,7 @@
 
 AsioStream::
 ~AsioStream()
-{ XT_ASSERT(XtiIsAsioSuccess(_asio->disposeBuffers())); }
+{ if(_asio) XT_ASSERT(XtiIsAsioSuccess(_asio->disposeBuffers())); }
 
 void*
 AsioStream::GetHandle() const

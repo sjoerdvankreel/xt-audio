@@ -137,7 +137,6 @@ AsioDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** stream
   result->_runtime = std::make_unique<asmjit::JitRuntime>();
   auto bufferSwitch = XtiAsioJitBufferSwitch(result->_runtime.get(), &AsioStream::BufferSwitch, result.get());
   auto bufferSwitchTimeInfo = XtiAsioJitBufferSwitchTimeInfo(result->_runtime.get(), &AsioStream::BufferSwitchTimeInfo, result.get());
-  result->_asio = _asio;
   result->_running.store(0);
   result->_buffers = buffers;
   result->_bufferSize = bufferSize;
@@ -150,6 +149,9 @@ AsioDevice::OpenStreamCore(XtDeviceStreamParams const* params, XtStream** stream
   result->_inputs = std::vector<void*>(static_cast<size_t>(channels.inputs), nullptr);
   result->_outputs = std::vector<void*>(static_cast<size_t>(channels.outputs), nullptr);
   XT_VERIFY_ASIO(_asio->createBuffers(result->_buffers.data(), static_cast<long>(buffers.size()), bufferSize, &result->_callbacks));
+
+  // Be sure to publish the interface pointer *after* successfull initialize!
+  result->_asio = _asio;
   *stream = result.release();
   return ASE_OK;
 }
