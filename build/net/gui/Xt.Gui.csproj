@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <PropertyGroup>
-        <Version>2.0</Version>
+        <Version>2.1</Version>
         <LangVersion>8.0</LangVersion>
-        <FileVersion>2.0</FileVersion>
+        <FileVersion>2.1</FileVersion>
         <OutputType>WinExe</OutputType>
         <RootNamespace>Xt</RootNamespace>
         <AssemblyName>Xt.Gui</AssemblyName>
-        <AssemblyVersion>2.0</AssemblyVersion>
+        <AssemblyVersion>2.1</AssemblyVersion>
         <UseWindowsForms>true</UseWindowsForms>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
