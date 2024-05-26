@@ -26,7 +26,7 @@ public class RenderAdvanced {
 
     static float nextSample() {
         _phase += FREQUENCY / MIX.rate;
-        if(_phase >= 1.0) _phase = -1.0f;
+        if(_phase >= 1.0) _phase = 0.0f;
         return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 

@@ -27,7 +27,7 @@ public class RenderSimple {
 
     static float nextSample() {
         _phase += FREQUENCY / FORMAT.mix.rate;
-        if(_phase >= 1.0f) _phase = -1.0f;
+        if(_phase >= 1.0f) _phase = 0.0f;
         return (float)Math.sin(2.0 * _phase * Math.PI);
     }
 

@@ -12,7 +12,7 @@ namespace Xt
         static float NextSample()
         {
             _phase += Frequency / Mix.rate;
-            if (_phase >= 1.0f) _phase = -1.0f;
+            if (_phase >= 1.0f) _phase = 0.0f;
             return (float)Math.Sin(2.0 * _phase * Math.PI);
         }
 

@@ -17,7 +17,7 @@ namespace Xt
             {
                 double val = Math.Sin(_phase * 2.0 * Math.PI);
                 _phase += Frequency / format.mix.rate;
-                if (_phase >= 1.0) _phase = -1.0;
+                if (_phase >= 1.0) _phase = 0.0;
                 if (Params.Native && Params.Interleaved) ProcessInterleavedNative(in format, f, val, buffer.output);
                 if (Params.Native && !Params.Interleaved) ProcessNonInterleavedNative(in format, f, val, buffer.output);
                 if (!Params.Native && Params.Interleaved) ProcessInterleavedSafe(in format, f, val, safe.GetOutput());
