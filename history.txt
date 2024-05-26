@@ -1,3 +1,8 @@
+?, ? - V2.0.2.
+
+* Bugfix: dlopen moved from libdl to libc.
+* Bugfix: asio buffers were disposed regardless if they were initialized or not.
+
 March 10, 2024 - V2.0.1
 
 * Bugfix: build script copied a wrong header file to the native includes directory.
