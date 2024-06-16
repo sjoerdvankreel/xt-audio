@@ -17,37 +17,35 @@ copy ..\dist\core\xt\Release\xt-audio.dll ..\dist\cpp\sample\Release\xt-audio.dl
 
 REM native includes
 if not exist ..\dist\cpp\xt\include (mkdir ..\dist\cpp\xt\include)
-xcopy ..\src\cpp\xt ..\dist\cpp\xt\include /s /q /y
+xcopy ..\src\cpp\xt ..\dist\cpp\xt\include /s /y
 if !errorlevel! neq 0 exit /b !errorlevel!
 if not exist ..\dist\core\xt\include (mkdir ..\dist\core\xt\include)
-echo d | xcopy ..\src\core\xt\xt\api\*.h ..\dist\core\xt\include\xt\api /s /q /y
-echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\include\xt\XtAudio.h /q /y /f
+echo d | xcopy ..\src\core\xt\xt\api\*.h ..\dist\core\xt\include\xt\api /s /y
+echo f | xcopy ..\src\core\xt\xt\XtAudio.h ..\dist\core\xt\include\xt\XtAudio.h /y /f
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 REM java
 cd java\xt
-call mvn -q install
+call mvn install
 if !errorlevel! neq 0 exit /b !errorlevel!
 copy pom.xml ..\..\..\dist\java\xt\release\target\xt.audio-2.2.pom
-call mvn -f pom.debug.xml -q install
+call mvn -f pom.debug.xml install
 if !errorlevel! neq 0 exit /b !errorlevel!
 copy pom.debug.xml ..\..\..\dist\java\xt\debug\target\xt.audio.debug-2.2.pom
 cd ..\..
 cd java\sample
-call mvn -q install
+call mvn install
 if !errorlevel! neq 0 exit /b !errorlevel!
-call mvn -f pom.debug.xml -q install
+call mvn -f pom.debug.xml install
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..\..
-
-goto :EOF
 
 REM net
 cd net
 dotnet restore
-msbuild Xt.Audio.sln /p:Configuration=Debug /verbosity:quiet
+msbuild Xt.Audio.sln /p:Configuration=Debug
 if !errorlevel! neq 0 exit /b !errorlevel!
-msbuild Xt.Audio.sln /p:Configuration=Release /verbosity:quiet
+msbuild Xt.Audio.sln /p:Configuration=Release
 if !errorlevel! neq 0 exit /b !errorlevel!
 cd ..
 
@@ -57,9 +55,9 @@ doxygen native\doc\cpp.doxyfile
 if not exist ..\dist\core\doc (mkdir ..\dist\core\doc)
 doxygen native\doc\core.doxyfile
 cd java\xt
-call mvn -q javadoc:javadoc
+call mvn javadoc:javadoc
 cd ..\..
-msbuild net\doc\Xt.Audio.shfbproj /verbosity:quiet
+msbuild net\doc\Xt.Audio.shfbproj
 
 REM package
 cd ..
