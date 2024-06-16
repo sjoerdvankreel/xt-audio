@@ -25,7 +25,6 @@
 
   <files>
     <file src="Xt.Audio.targets" target="build\Xt.Audio.targets"/>
-    <file src="dist\net\xt\Release\netstandard2.0\x86\*.*" target="build\x86" />
     <file src="dist\net\xt\Release\netstandard2.0\x64\*.*" target="build\x64" />
     <file src="dist\net\xt\Release\netstandard2.0\*.*" target="lib\netstandard2.0" />
   </files>

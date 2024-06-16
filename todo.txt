@@ -1,3 +1,5 @@
+check WinX86NativeOn
 v2.2
+update readme
 drop x86 support
 look up x86/x64/win32/arch/xt_arch
