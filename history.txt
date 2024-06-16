@@ -1,5 +1,6 @@
-?, ? - V2.1.
+?, ? - V2.2.
 
+* Breaking change: drop x86 support.
 * Bugfix: dlopen moved from libdl to libc.
 * Bugfix: asio buffers were disposed regardless if they were initialized or not.
 
