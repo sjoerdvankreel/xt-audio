@@ -1,6 +1,7 @@
-?, ? - V2.2.
+June 16, 2024 - V2.2.
 
 * Breaking change: drop x86 support.
+* Dropped maven support, java users: you have to just download the jar manually.
 * Bugfix: dlopen moved from libdl to libc.
 * Bugfix: asio buffers were disposed regardless if they were initialized or not.
 
