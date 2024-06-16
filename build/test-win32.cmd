@@ -31,11 +31,11 @@ if %errorlevel% neq 0 exit /b !errorlevel!
 echo:
 
 echo Java debug...
-java -jar ..\dist\java\sample\debug\target\xt.sample.debug-2.1.jar "%2"
+java -jar ..\dist\java\sample\debug\target\xt.sample.debug-2.2.jar "%2"
 if %errorlevel% neq 0 exit /b !errorlevel!
 echo:
 
 echo Java release...
-java -jar ..\dist\java\sample\release\target\xt.sample-2.1.jar "%2"
+java -jar ..\dist\java\sample\release\target\xt.sample-2.2.jar "%2"
 if %errorlevel% neq 0 exit /b !errorlevel!
 echo:

@@ -18,11 +18,11 @@ mono ../dist/net/sample/Release/net48/Xt.Sample.exe $2
 echo $'\n'
 
 echo "Java debug..."
-java -jar ../dist/java/sample/debug/target/xt.sample.debug-2.1.jar $2
+java -jar ../dist/java/sample/debug/target/xt.sample.debug-2.2.jar $2
 echo $'\n'
 
 echo "Java release..."
-java -jar ../dist/java/sample/release/target/xt.sample-2.1.jar $2
+java -jar ../dist/java/sample/release/target/xt.sample-2.2.jar $2
 echo $'\n'
 
 if [[ "$1" == "x86" ]]

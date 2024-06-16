@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <name>XT-Audio</name>
     <packaging>jar</packaging>
-    <version>2.1</version>
+    <version>2.2</version>
     <artifactId>xt.audio</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.sjoerdvankreel</groupId>
