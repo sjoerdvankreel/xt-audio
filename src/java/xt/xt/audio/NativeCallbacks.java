@@ -7,11 +7,6 @@ import com.sun.jna.win32.StdCall;
 
 interface NativeCallbacks {
 
-    interface WinX86NativeOnXRun extends NativeOnXRun, StdCall { }
-    interface WinX86NativeOnError extends NativeOnError, StdCall { }
-    interface WinX86NativeOnBuffer extends NativeOnBuffer, StdCall { }
-    interface WinX86NativeOnRunning extends NativeOnRunning, StdCall { }
-
     interface NativeOnError extends Callback {
         void callback(String message) throws Exception;
     }

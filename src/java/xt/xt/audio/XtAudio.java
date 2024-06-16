@@ -10,7 +10,6 @@ import xt.audio.Structs.XtAttributes;
 import xt.audio.Structs.XtErrorInfo;
 import xt.audio.Structs.XtVersion;
 import xt.audio.NativeCallbacks.NativeOnError;
-import xt.audio.NativeCallbacks.WinX86NativeOnError;
 import static xt.audio.Utility.handleAssert;
 
 public final class XtAudio {
@@ -36,8 +35,7 @@ public final class XtAudio {
 
     public static void setOnError(XtOnError onError) {
         _onError = onError;
-        boolean stdcall = Platform.isWindows() && !Platform.is64Bit();
-        _onNativeError = stdcall? (WinX86NativeOnError)XtAudio::onError: (NativeOnError)XtAudio::onError;
+        _onNativeError = (NativeOnError)XtAudio::onError;
         handleAssert(() -> XtAudioSetOnError(_onNativeError));
     }
 }

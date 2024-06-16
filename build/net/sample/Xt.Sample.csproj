@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Version>2.1</Version>
+        <Version>2.2</Version>
         <OutputType>Exe</OutputType>
         <LangVersion>8.0</LangVersion>
-        <FileVersion>2.1</FileVersion>
+        <FileVersion>2.2</FileVersion>
         <RootNamespace>Xt</RootNamespace>
-        <AssemblyVersion>2.1</AssemblyVersion>
+        <AssemblyVersion>2.2</AssemblyVersion>
         <StartupObject>Xt.Sample</StartupObject>
         <AssemblyName>Xt.Sample</AssemblyName>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

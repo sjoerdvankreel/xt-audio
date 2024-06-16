@@ -1,11 +1,8 @@
 dist/core/xt/include
-dist/core/xt/x86/Debug
-dist/core/xt/x86/Release
-dist/core/xt/x64/Debug
-dist/core/xt/x64/Release
+dist/core/xt/Debug
+dist/core/xt/Release
 dist/cpp/xt/include
-dist/cpp/sample/x86/Release
-dist/cpp/sample/x64/Release
+dist/cpp/sample/Release
 dist/java/xt/release/target
 dist/java/sample/release/target
 dist/net/xt/Release

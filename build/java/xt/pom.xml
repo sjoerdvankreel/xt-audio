@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <name>XT-Audio</name>
     <packaging>jar</packaging>
-    <version>2.1</version>
+    <version>2.2</version>
     <artifactId>xt.audio</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.sjoerdvankreel</groupId>
@@ -80,24 +80,6 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>copy-resources-win32-x86</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/win32-x86</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
-                                    <includes>
-                                        <include>xt-audio.dll</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>copy-resources-win32-x86-64</id>
                         <phase>prepare-package</phase>
                         <goals>
@@ -107,27 +89,9 @@
                             <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/win32-x86-64</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/Release</directory>
                                     <includes>
                                         <include>xt-audio.dll</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-linux-x86</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/linux-x86</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x86/Release</directory>
-                                    <includes>
-                                        <include>libxt-audio.so</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -143,7 +107,7 @@
                             <outputDirectory>${basedir}/../../../dist/java/xt/release/classes/linux-x86-64</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../../../dist/core/xt/x64/Release</directory>
+                                    <directory>${basedir}/../../../dist/core/xt/Release</directory>
                                     <includes>
                                         <include>libxt-audio.so</include>
                                     </includes>

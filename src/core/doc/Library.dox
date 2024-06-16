@@ -15,12 +15,11 @@
  * ALSA, PulseAudio, JACK (Linux)
  *
  * Supported platforms are:\n
- * x86/x64 linux (native)\n
- * x86/x64 windows (native)\n
+ * x64 windows/linux (native)\n
  * x64 JVM (windows/linux)\n
- * x64 .NET Core (linux)\n
- * x86/x64 .NET Core (windows)\n
- * x86/x64 .NET framework (windows/linux)
+ * x64 .NET Core (windows/linux)\n
+ * x64 .NET framework (windows)
+ * x64 Mono (linux)
  *
  * Features (availability depends on the backend):
  *

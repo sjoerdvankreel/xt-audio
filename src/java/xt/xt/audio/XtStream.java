@@ -11,9 +11,6 @@ import xt.audio.Structs.XtStreamParams;
 import xt.audio.NativeCallbacks.NativeOnBuffer;
 import xt.audio.NativeCallbacks.NativeOnRunning;
 import xt.audio.NativeCallbacks.NativeOnXRun;
-import xt.audio.NativeCallbacks.WinX86NativeOnBuffer;
-import xt.audio.NativeCallbacks.WinX86NativeOnRunning;
-import xt.audio.NativeCallbacks.WinX86NativeOnXRun;
 import static xt.audio.Utility.handleAssert;
 import static xt.audio.Utility.handleError;
 
@@ -57,10 +54,9 @@ public final class XtStream implements AutoCloseable {
     XtStream(XtStreamParams params, Object user) {
         _user = user;
         _params = params;
-        boolean stdcall = Platform.isWindows() && !Platform.is64Bit();
-        _onNativeXRun = stdcall? (WinX86NativeOnXRun) this::onXRun: (NativeOnXRun)this::onXRun;
-        _onNativeBuffer = stdcall? (WinX86NativeOnBuffer) this::onBuffer: (NativeOnBuffer)this::onBuffer;
-        _onNativeRunning = stdcall? (WinX86NativeOnRunning) this::onRunning: (NativeOnRunning)this::onRunning;
+        _onNativeXRun = (NativeOnXRun)this::onXRun;
+        _onNativeBuffer = (NativeOnBuffer)this::onBuffer;
+        _onNativeRunning = (NativeOnRunning)this::onRunning;
     }
 
     void init(Pointer s) {

@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>2.1</Version>
+    <Version>2.2</Version>
     <LangVersion>8.0</LangVersion>
-    <FileVersion>2.1</FileVersion>
+    <FileVersion>2.2</FileVersion>
     <RootNamespace>Xt</RootNamespace>
     <AssemblyName>Xt.Audio</AssemblyName>
-    <AssemblyVersion>2.1</AssemblyVersion>
+    <AssemblyVersion>2.2</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -20,11 +20,8 @@
     <Content CopyToOutputDirectory="PreserveNewest" Include="..\..\..\src\net\xt\Xt.Audio.dll.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-audio.dll" Link="x86/xt-audio.dll" Pack="true" />
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-audio.dll" Link="x64/xt-audio.dll" Pack="true" />
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/libxt-audio.so" Link="x86/libxt-audio.so" Pack="true" />
-    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/libxt-audio.so" Link="x64/libxt-audio.so" Pack="true" />
-    <Content Condition="'$(Configuration)'=='Debug'" CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x86/$(Configuration)/xt-audio.pdb" Link="x86/xt-audio.pdb" Pack="true" />
-    <Content Condition="'$(Configuration)'=='Debug'" CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/x64/$(Configuration)/xt-audio.pdb" Link="x64/xt-audio.pdb" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/$(Configuration)/xt-audio.dll" Link="x64/xt-audio.dll" Pack="true" />
+    <Content CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/$(Configuration)/libxt-audio.so" Link="x64/libxt-audio.so" Pack="true" />
+    <Content Condition="'$(Configuration)'=='Debug'" CopyToOutputDirectory="PreserveNewest" Include="../../../dist/core/xt/$(Configuration)/xt-audio.pdb" Link="x64/xt-audio.pdb" Pack="true" />
   </ItemGroup>
 </Project>
