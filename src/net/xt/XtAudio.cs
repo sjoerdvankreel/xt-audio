@@ -35,9 +35,8 @@ namespace Xt
 
         static XtAudio()
         {
-            string prefix = IntPtr.Size == 4 ? "x86" : "x64";
             string location = Path.GetDirectoryName(typeof(XtAudio).Assembly.Location);
-            string path = Path.Combine(location, prefix);
+            string path = Path.Combine(location, "x64");
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 if (LoadLibrary(Path.Combine(path, "xt-audio.dll")) == IntPtr.Zero)
                     throw new DllNotFoundException();
