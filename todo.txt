@@ -1,2 +1,3 @@
+v2.2
 drop x86 support
 look up x86/x64/win32/arch/xt_arch
