@@ -49,10 +49,10 @@ target_include_directories (xt-sample PRIVATE ${CPP_DIR})
 target_include_directories (xt-sample PRIVATE ${CORE_DIR})
 if (WIN32)
   source_group(TREE "../../${SAMPLE_DIR}" FILES ${SAMPLE_SRC})
-  set_target_properties(xt-sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../../dist/cpp/sample/${XT_ARCH}")
+  set_target_properties(xt-sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../../dist/cpp/sample")
 endif ()
 if (UNIX)
-  set_target_properties(xt-sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../../../dist/cpp/sample/${XT_ARCH}/${CMAKE_BUILD_TYPE}")
+  set_target_properties(xt-sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../../../../dist/cpp/sample/${CMAKE_BUILD_TYPE}")
 endif ()
 
 # Runtime dependencies.
