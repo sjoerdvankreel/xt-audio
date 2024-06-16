@@ -2,11 +2,11 @@
 set -e
 
 echo "C++ debug..."
-../dist/cpp/sample/$1/Debug/xt-sample $1
+../dist/cpp/sample/Debug/xt-sample $1
 echo $'\n'
 
 echo "C++ release..."
-../dist/cpp/sample/$1/Release/xt-sample $1
+../dist/cpp/sample/Release/xt-sample $1
 echo $'\n'
 
 echo "Mono debug..."
