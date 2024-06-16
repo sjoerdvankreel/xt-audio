@@ -10,64 +10,47 @@
     <table border="1" cellspacing="0" cellpadding="2">
       <tr>
         <td/>
-        <td>Windows x86</td>
         <td>Windows x64</td>
-        <td>Linux x86</td>
         <td>Linux x64</td>
       </tr>
       <tr>
         <td>Java (library and samples)</td>
         <td>JRE 17+</td>
         <td>JRE 17+</td>
-        <td>JRE 17+</td>
-        <td>JRE 17+</td>
       </tr>
       <tr>
         <td>Native (library and samples)</td>
         <td>Windows 7+</td>
-        <td>Windows 7+</td>
-        <td>Something recent</td>
         <td>Something recent</td>
       </tr>
       <tr>
         <td>.NET Framework (library)</td>
         <td>netstandard2.0</td>
         <td>netstandard2.0</td>
-        <td>netstandard2.0</td>
-        <td>netstandard2.0</td>
       </tr>
       <tr>
         <td>.NET Framework (samples and gui)</td>
         <td>.NET 4.8</td>
-        <td>.NET 4.8</td>
-        <td>Mono 6.8</td>
         <td>Mono 6.8</td>
       </tr>
       <tr>
         <td>.NET Core (library)</td>
         <td>netstandard2.0</td>
         <td>netstandard2.0</td>
-        <td>Not supported (1)</td>
-        <td>netstandard2.0</td>
       </tr>
       <tr>
         <td>.NET Core (samples)</td>
         <td>.NET Runtime 6.0</td>
         <td>.NET Runtime 6.0</td>
-        <td>Not supported (1)</td>
-        <td>.NET Runtime 6.0</td>
       </tr>
       <tr>
         <td>.NET Core (gui)</td>
         <td>.NET Runtime 6.0</td>
-        <td>.NET Runtime 6.0</td>
         <td>Not supported (1)</td>
-        <td>Not supported (2)</td>
       </tr>
     </table>
     <ul>
-      <li>(1): .NET Core on Linux does not support x86.</li>
-      <li>(2): .NET Core on Linux does not support Winforms.</li>
+      <li>(1): .NET Core on Linux does not support Winforms.</li>
     </ul>
     <h1>Build-time requirements</h1>
     <h2>Dependencies</h2>
@@ -108,22 +91,17 @@
     <h2>Build tools</h2>
     <table border="1" cellspacing="0" cellpadding="2">
       <tr>
-        <td>Linux x86 (1)</td>
-        <td>GCC 7.5+<br/>CMake 3.21+</td>
-      </tr>
-      <tr>
-        <td>Linux x64 (2)</td>
+        <td>Linux x64 (1)</td>
         <td>GCC 9.3+<br/>CMake 3.21+</td>
       </tr>
       <tr>
-        <td>Windows x64 (3)</td>
+        <td>Windows x64 (2)</td>
         <td>Visual Studio 2022+<br/>Java SDK 17+<br/>.NET Framework SDK 4.8+<br/>.NET 6.0+ SDK<br/>CMake 3.21+<br/>Maven 3.8.4+<br/>Doxygen 1.8.10+<br/>Sandcastle (SHFB) 2021.11.7.0+</td>
       </tr>
     </table>
     <ul>
-      <li>(1): Builds Linux x86 core library and c++ samples only.</li>
-      <li>(2): Builds Linux x64 core library and c++ samples only.</li>
-      <li>(3): Builds x86/x64 Windows core library and c++ samples, Java, .NET Framework and .NET Core bindings and samples, and .NET GUI demo program.</li>
+      <li>(1): Builds Linux x64 core library and c++ samples only.</li>
+      <li>(2): Builds x64 Windows core library and c++ samples, Java, .NET Framework and .NET Core bindings and samples, and .NET GUI demo program.</li>
     </ul>
     <h1>Building XT-Audio</h1>
     <h2>Selective backend compilation</h2>
@@ -135,12 +113,11 @@
     Pre-built binaries are compiled with all supported backends enabled.
     <h2>Build instructions</h2>
     <ul>
-      <li>On X86 Linux: cd build && ./build.sh x86 [ENABLE_PULSE] [ENABLE_ALSA] [ENABLE_JACK] (1)</li>
-      <li>On X64 Linux: cd build && ./build.sh x64 [ENABLE_PULSE] [ENABLE_ALSA] [ENABLE_JACK]</li>
+      <li>On X64 Linux: cd build && ./build.sh [ENABLE_PULSE] [ENABLE_ALSA] [ENABLE_JACK]</li>
       <li>On X64 Windows: cd build && build.bat [ENABLE_DSOUND] [ENABLE_WASAPI] [ENABLE_ASIO] path/to/asiosdk path/to/asmjit/src (2,3)</li>
     </ul>
     <ul>
-      <li>(1) For example ./build.sh x86 ON OFF OFF builds with PulseAudio support only.</li>
+      <li>(1) For example ./build.sh ON OFF OFF builds with PulseAudio support only.</li>
       <li>(2) For example build.bat OFF ON OFF builds with WASAPI support only.</li>
       <li>(3) Paths to ASIO SDK and asmjit are required for builds with ASIO support.</li>
     </ul>
@@ -148,15 +125,15 @@
     <table border="1" cellspacing="0" cellpadding="2">
       <tr>
         <td>Core library</td>
-        <td>X86/x64, Linux/Windows, dynamic library and header files</td>
+        <td>x64, Linux/Windows, dynamic library and header files</td>
       </tr>
       <tr>
         <td>C++ bindings</td>
-        <td>X86/x64, Linux/Windows, header only</td>
+        <td>x64, Linux/Windows, header only</td>
       </tr>
       <tr>
         <td>C++ samples</td>
-        <td>X86/x64, Linux/Windows, native executable</td>
+        <td>x64, Linux/Windows, native executable</td>
       </tr>
       <tr>
         <td>.NET bindings</td>
